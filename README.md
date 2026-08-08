@@ -1,7 +1,10 @@
-# Merit
+# Merit&trade;
 
 AI spend tracker — tells a company what it spends on AI, who's spending it,
 and whether that spend is producing real work or slop.
+
+See [TRADEMARK.md](TRADEMARK.md) for the trademark notice and how the ™
+mark is used across this repo.
 
 **Status:** early prototype. `backend/` is a runnable FastAPI + SQLite
 reference implementation of the tracking pipeline; `frontend/` is the
