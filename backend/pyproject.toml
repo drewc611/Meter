@@ -1,0 +1,34 @@
+[project]
+name = "meter-backend"
+version = "0.1.0"
+description = "Meter — AI spend & value tracking backend"
+requires-python = ">=3.10"
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+# E/F: pyflakes+pycodestyle, I: import sorting, UP: pyupgrade, B: bugbear.
+select = ["E", "F", "I", "UP", "B"]
+ignore = [
+    "E501",  # line length is handled by the formatter, not enforced hard
+]
+
+[tool.ruff.lint.flake8-bugbear]
+# FastAPI's dependency-injection idiom relies on calling these in defaults;
+# that's correct usage, not the B008 anti-pattern.
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Header", "fastapi.Query"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests intentionally import app modules after setting env in conftest, and
+# reach into "private" helpers to assert internal behavior.
+"tests/*" = ["E402"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = [
+    # Starlette's TestClient emits an httpx deprecation notice we don't control.
+    "ignore::DeprecationWarning",
+]

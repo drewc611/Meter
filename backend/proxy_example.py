@@ -14,9 +14,9 @@ Point your team's ANTHROPIC_BASE_URL (or OPENAI_BASE_URL) at this proxy
 instead of the vendor directly, and every call is attributed for free —
 no code changes in the calling application.
 """
-import time
+
 import httpx
-from fastapi import FastAPI, Request, Header, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Request
 
 ANTHROPIC_UPSTREAM = "https://api.anthropic.com"
 METER_INGEST_URL = "http://localhost:8000/ingest/usage"
@@ -45,7 +45,6 @@ async def proxy_anthropic_messages(request: Request, x_meter_proxy_key: str = He
         raise HTTPException(status_code=401, detail="Unknown proxy key — issue one via /admin/identity-mapping first")
 
     body = await request.json()
-    started = time.monotonic()
 
     async with httpx.AsyncClient() as client:
         upstream_resp = await client.post(
@@ -54,7 +53,6 @@ async def proxy_anthropic_messages(request: Request, x_meter_proxy_key: str = He
             headers={"x-api-key": "<org-level-anthropic-key>", "anthropic-version": "2023-06-01"},
             timeout=120,
         )
-    latency_ms = (time.monotonic() - started) * 1000
     payload = upstream_resp.json()
 
     usage = payload.get("usage", {})
@@ -67,15 +65,18 @@ async def proxy_anthropic_messages(request: Request, x_meter_proxy_key: str = He
     # Fire-and-forget in production (a background task / queue) so a slow
     # Meter ingest call never adds latency to the employee's actual request.
     async with httpx.AsyncClient() as client:
-        await client.post(METER_INGEST_URL, json={
-            "source_system": "anthropic_api",
-            "external_id": external_id,
-            "tool": "anthropic_api",
-            "model": model,
-            "cost_usd": round(cost_usd, 6),
-            "tokens_in": tokens_in,
-            "tokens_out": tokens_out,
-        })
+        await client.post(
+            METER_INGEST_URL,
+            json={
+                "source_system": "anthropic_api",
+                "external_id": external_id,
+                "tool": "anthropic_api",
+                "model": model,
+                "cost_usd": round(cost_usd, 6),
+                "tokens_in": tokens_in,
+                "tokens_out": tokens_out,
+            },
+        )
 
     return payload
 

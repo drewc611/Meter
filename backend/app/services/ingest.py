@@ -18,13 +18,18 @@ what turns that into a canonical Identity row. Get this wrong and every
 number downstream is attributed to the wrong person — it is the load-bearing
 function in this file.
 """
-from datetime import datetime, timedelta
+
+from datetime import datetime
+
 from sqlalchemy.orm import Session
 
-from .models import (
-    Identity, IdentityMapping, UsageEvent, OutcomeEvent, QualitySignal,
-    OUTCOME_VALUE_WEIGHTS, QUALITY_SIGNAL_WEIGHTS,
-)
+from ..constants import OUTCOME_VALUE_WEIGHTS, QUALITY_SIGNAL_WEIGHTS
+from ..models import Identity, IdentityMapping, OutcomeEvent, QualitySignal, UsageEvent
+from ..time_utils import utcnow
+
+# A reverted PR is both a negative Tier-1 outcome and a Tier-2 quality signal;
+# this maps the outcome type to the quality signal it auto-derives.
+_AUTO_QUALITY_FROM_OUTCOME = {"pr_reverted": "code_reverted"}
 
 
 class UnresolvedIdentityError(Exception):
@@ -34,11 +39,7 @@ class UnresolvedIdentityError(Exception):
 
 
 def resolve_identity(db: Session, source_system: str, external_id: str) -> Identity:
-    mapping = (
-        db.query(IdentityMapping)
-        .filter_by(source_system=source_system, external_id=external_id)
-        .one_or_none()
-    )
+    mapping = db.query(IdentityMapping).filter_by(source_system=source_system, external_id=external_id).one_or_none()
     if mapping is None:
         raise UnresolvedIdentityError(
             f"No identity mapped for {source_system}:{external_id}. "
@@ -67,7 +68,7 @@ def ingest_usage_event(
         tokens_in=tokens_in,
         tokens_out=tokens_out,
         cost_usd=cost_usd,
-        occurred_at=occurred_at or datetime.utcnow(),
+        occurred_at=occurred_at or utcnow(),
     )
     db.add(event)
     db.commit()
@@ -93,23 +94,26 @@ def ingest_outcome_event(
         source=source,
         outcome_type=outcome_type,
         value_weight=weight,
-        occurred_at=occurred_at or datetime.utcnow(),
+        occurred_at=occurred_at or utcnow(),
         external_ref=external_ref,
     )
     db.add(event)
     db.commit()
     db.refresh(event)
 
-    # A reverted PR is both an outcome (negative value) AND a Tier-2 quality
-    # signal — this is the auto-derivation path described in the module docstring.
-    if outcome_type == "pr_reverted":
-        db.add(QualitySignal(
-            identity_id=identity.id,
-            signal_type="code_reverted",
-            severity=QUALITY_SIGNAL_WEIGHTS["code_reverted"],
-            occurred_at=event.occurred_at,
-            external_ref=external_ref,
-        ))
+    # Auto-derivation path described in the module docstring: some outcomes are
+    # also a Tier-2 quality signal from the same webhook payload.
+    auto_signal = _AUTO_QUALITY_FROM_OUTCOME.get(outcome_type)
+    if auto_signal:
+        db.add(
+            QualitySignal(
+                identity_id=identity.id,
+                signal_type=auto_signal,
+                severity=QUALITY_SIGNAL_WEIGHTS[auto_signal],
+                occurred_at=event.occurred_at,
+                external_ref=external_ref,
+            )
+        )
         db.commit()
 
     return event
@@ -131,7 +135,7 @@ def ingest_quality_signal(
         identity_id=identity.id,
         signal_type=signal_type,
         severity=sev,
-        occurred_at=occurred_at or datetime.utcnow(),
+        occurred_at=occurred_at or utcnow(),
         external_ref=external_ref,
     )
     db.add(signal)

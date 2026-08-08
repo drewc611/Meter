@@ -13,10 +13,10 @@ dashboard UI. Product name is a placeholder.
 backend/    FastAPI service: usage/outcome/quality-signal ingestion,
             identity resolution, Tier-1/Tier-2 scoring, REST API.
             See backend/README.md for the full architecture writeup.
-frontend/   index.html — sidebar dashboard (Overview, People, Teams &
-            Roles, Alerts, Integrations). Calls the backend API at
-            localhost:8000 and falls back to embedded demo data if
-            it's not running.
+frontend/   Sidebar dashboard (Overview, People, Teams & Roles, Alerts,
+            Integrations), split into index.html + styles.css + app.js +
+            fallback-data.js. Calls the backend API at localhost:8000 and
+            falls back to embedded demo data if it's not running.
 ```
 
 ## Quickstart
@@ -30,6 +30,30 @@ uvicorn app.main:app --reload --port 8000
 
 Then open `frontend/index.html` in a browser. The sidebar badge shows
 whether it's reading from the live API or the embedded fallback.
+
+Run the backend test suite with `make test` (or `pytest`) from `backend/`.
+
+## Running with Docker
+
+```bash
+docker compose up --build
+```
+
+- **Frontend:** http://localhost:8080 (served by nginx — not `file://`, so it
+  reaches the backend without the browser-security quirks of opening the file
+  directly)
+- **Backend API:** http://localhost:8000 — `curl http://localhost:8000/api/overview`
+
+First boot seeds a month of sample data automatically (the backend container
+runs `seed.py` once, only if its database volume is empty). The seeded data
+lives in the `meter-db` named volume, so `docker compose down` and `up` again
+picks up right where you left off; `docker compose down -v` wipes it for a
+clean re-seed.
+
+Two things to change before this ever points at real data: `METER_CORS_ORIGINS`
+on the backend service (wide open by default — see `docker-compose.yml`) and
+`METER_DATABASE_URL` if you're swapping SQLite for Postgres. See
+[`backend/README.md`](backend/README.md) for the full config surface.
 
 ## How it works
 
