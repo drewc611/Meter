@@ -1,7 +1,7 @@
-# Meter backend — FastAPI + SQLite (or Postgres via METER_DATABASE_URL).
+# Merit backend — FastAPI + SQLite (or Postgres via MERIT_DATABASE_URL).
 #
-# Build:  docker build -t meter-backend ./backend
-# Run:    docker run -p 8000:8000 -v meter-db:/data meter-backend
+# Build:  docker build -t merit-backend ./backend
+# Run:    docker run -p 8000:8000 -v merit-db:/data merit-backend
 # (see ../docker-compose.yml for the normal way to run this alongside the frontend)
 
 FROM python:3.11-slim
@@ -20,13 +20,13 @@ COPY seed.py entrypoint.sh ./
 # here means a fresh named volume (which Docker seeds from the image's copy
 # of this directory on first mount) inherits the right ownership.
 RUN chmod +x entrypoint.sh \
-    && useradd --create-home --uid 1000 meter \
+    && useradd --create-home --uid 1000 merit \
     && mkdir -p /data \
-    && chown -R meter:meter /app /data
-USER meter
+    && chown -R merit:merit /app /data
+USER merit
 
-ENV METER_DATABASE_URL=sqlite:////data/meter.db \
-    METER_DB_FILE=/data/meter.db \
+ENV MERIT_DATABASE_URL=sqlite:////data/merit.db \
+    MERIT_DB_FILE=/data/merit.db \
     PYTHONUNBUFFERED=1
 
 EXPOSE 8000

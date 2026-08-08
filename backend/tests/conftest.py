@@ -9,8 +9,8 @@ import tempfile
 
 # Must be set before importing anything under `app` — the engine binds to this
 # URL at import time.
-_TMPDIR = tempfile.mkdtemp(prefix="meter-tests-")
-os.environ["METER_DATABASE_URL"] = f"sqlite:///{_TMPDIR}/test_meter.db"
+_TMPDIR = tempfile.mkdtemp(prefix="merit-tests-")
+os.environ["MERIT_DATABASE_URL"] = f"sqlite:///{_TMPDIR}/test_merit.db"
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402

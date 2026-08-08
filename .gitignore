@@ -10,8 +10,8 @@ venv/
 .pytest_cache/
 .ruff_cache/
 
-# Meter backend runtime artifacts
-backend/meter.db
+# Merit backend runtime artifacts
+backend/merit.db
 backend/*.db
 backend/server.log
 backend/nohup.out

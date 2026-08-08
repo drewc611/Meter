@@ -2,7 +2,7 @@
 # source. Not intended for production deployment as-is — see comments below
 # for the two things you'd change first (CORS origin, sqlite -> Postgres).
 #
-#   docker compose up --build      # first run seeds a month of sample data
+#   docker compose up --build      # first run seeds 6 months of sample data
 #   docker compose down            # stop (keeps the seeded data volume)
 #   docker compose down -v         # stop and wipe the seeded data too
 
@@ -14,14 +14,14 @@ services:
     volumes:
       # Named volume so the seeded/scored data survives `compose down` and
       # `compose up` again without re-seeding. `compose down -v` removes it.
-      - meter-db:/data
+      - merit-db:/data
     environment:
       # Wide open by default, matching the backend's local-dev default (see
       # backend/app/config.py) — the dashboard is fetched from the browser at
       # http://localhost:8000, not proxied through the frontend container, so
       # CORS is what has to allow it. Narrow this to the frontend's published
       # origin (http://localhost:8080) before pointing this at real data.
-      - METER_CORS_ORIGINS=*
+      - MERIT_CORS_ORIGINS=*
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz', timeout=2)"]
       interval: 10s
@@ -38,4 +38,4 @@ services:
         condition: service_healthy
 
 volumes:
-  meter-db:
+  merit-db:

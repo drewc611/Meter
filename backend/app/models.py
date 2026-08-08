@@ -1,5 +1,5 @@
 """
-Core data model — mirrors §7 of the Meter product spec.
+Core data model — mirrors §7 of the Merit product spec.
 
 Identity -> Team / Role         (who someone is)
 UsageEvent                       (a dollar spent, attributed to an Identity)
@@ -79,7 +79,7 @@ class OutcomeEvent(Base):
     """
     Tier 1 signal. Pulled from systems of record the company already runs
     (GitHub/GitLab, Jira/Linear, Zendesk, Salesforce/HubSpot) via their webhooks
-    or a nightly pull. Not AI-specific — Meter correlates these against nearby
+    or a nightly pull. Not AI-specific — Merit correlates these against nearby
     UsageEvents rather than requiring the source system to say "AI wrote this".
 
     value_weight is resolved at ingest time from constants.OUTCOME_VALUE_WEIGHTS

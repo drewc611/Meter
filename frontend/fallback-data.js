@@ -1,5 +1,5 @@
 /* =====================================================================
-   Embedded fallback snapshot — a real capture from the Meter API, used
+   Embedded fallback snapshot — a real capture from the Merit API, used
    only when the live backend at API_BASE isn't reachable (most common:
    this file opened standalone over file://). Kept in its own module so
    app.js stays about behavior, not data. See app.js loadData().

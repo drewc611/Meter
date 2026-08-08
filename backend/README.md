@@ -1,7 +1,7 @@
-# Meter backend — reference implementation
+# Merit backend — reference implementation
 
 This is a working implementation of the tracking pipeline described in the
-Meter product spec (§6–§8): how AI spend actually gets attributed to a
+Merit product spec (§6–§8): how AI spend actually gets attributed to a
 person, how "value produced" and "slop risk" get computed, and what the
 dashboard reads. It's built to be run, not just read — see **Quickstart**.
 
@@ -59,7 +59,7 @@ loads stay fast regardless of how much history is underneath.
 
 ```bash
 pip install -r requirements.txt
-python seed.py                              # fabricates a month of activity for 20 people, scores it
+python seed.py                              # fabricates 6 months of activity for 20 people, scores it
 uvicorn app.main:app --reload --port 8000
 curl http://localhost:8000/api/overview | python3 -m json.tool
 ```
@@ -85,7 +85,7 @@ make fmt      # ruff format + import sort
 
 Tests point the app at a throwaway SQLite database (a temp path set in
 `tests/conftest.py` before any `app` module imports), so `make test` never
-touches your `meter.db`. Ruff/pytest config lives in `pyproject.toml`.
+touches your `merit.db`. Ruff/pytest config lives in `pyproject.toml`.
 
 ## Endpoints
 

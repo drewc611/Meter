@@ -1,12 +1,12 @@
 """
-Meter API — the FastAPI application factory. Wires the four routers
+Merit API — the FastAPI application factory. Wires the four routers
 (ingestion, admin, dashboard, health) onto an app, with CORS from config.
 Run with:
 
     uvicorn app.main:app --reload --port 8000
 
 CORS defaults to wide-open for the local demo (the dashboard is often served
-from a file:// origin); set METER_CORS_ORIGINS to your real frontend origin(s)
+from a file:// origin); set MERIT_CORS_ORIGINS to your real frontend origin(s)
 before this ever sees real customer data. See config.py.
 """
 
@@ -21,7 +21,7 @@ from .routers import admin, dashboard, health, ingestion
 def create_app() -> FastAPI:
     init_db()
 
-    app = FastAPI(title="Meter API", version="0.1.0")
+    app = FastAPI(title="Merit API", version="0.1.0")
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
