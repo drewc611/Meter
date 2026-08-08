@@ -7,6 +7,39 @@ and whether that spend is producing real work or slop.
 reference implementation of the tracking pipeline; `frontend/` is the
 dashboard UI. Product name is a placeholder.
 
+## What it looks like
+
+Every screenshot below is the real dashboard, running against the live
+backend on seeded demo data (`python seed.py`) — nothing mocked up.
+
+**Overview** — spend, blended value/$, slop risk, seat utilization, and
+score coverage at a glance, plus the spend-vs-value scatter, the four-segment
+breakdown (fund / coach / learn / monitor), a recoverable-spend estimate, and
+a multi-month spend trend.
+
+![Overview](docs/screenshots/overview.png)
+
+**People** — every AI-active person, searchable/filterable/sortable by
+spend, value/$, slop risk, confidence tier, and seat tier, each with Meter's
+recommendation.
+
+![People](docs/screenshots/people.png)
+
+**Teams & Roles** — the same spend/value/slop signal rolled up above the
+individual.
+
+![Teams & Roles](docs/screenshots/teams-roles.png)
+
+**Alerts** — what Meter thinks needs a look this period, each one linking
+back into a pre-filtered People view.
+
+![Alerts](docs/screenshots/alerts.png)
+
+**Integrations** — how spend, outcomes, and quality signals actually get in,
+plus a live spend-by-tool-and-model breakdown.
+
+![Integrations](docs/screenshots/integrations.png)
+
 ## What's here
 
 ```
@@ -24,7 +57,7 @@ frontend/   Sidebar dashboard (Overview, People, Teams & Roles, Alerts,
 ```bash
 cd backend
 pip install -r requirements.txt
-python seed.py                        # fabricates a month of sample activity, scores it
+python seed.py                        # fabricates 6 months of sample activity, scores it
 uvicorn app.main:app --reload --port 8000
 ```
 
