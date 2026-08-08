@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Meter backend runtime artifacts
+backend/meter.db
+backend/*.db
+backend/server.log
+backend/nohup.out
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
