@@ -14,23 +14,23 @@
     <b>Meter</b>
   </div>
   <div class="sb-nav" id="nav">
-    <div class="sb-item active" data-view="overview">
+    <div class="sb-item active" data-view="overview" tabindex="0" role="button" aria-current="page">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
       Overview
     </div>
-    <div class="sb-item" data-view="people">
+    <div class="sb-item" data-view="people" tabindex="0" role="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="8" r="2.6"/><path d="M15.5 14.2c2.6.3 4.7 2.6 4.7 5.8"/></svg>
       People
     </div>
-    <div class="sb-item" data-view="teams">
+    <div class="sb-item" data-view="teams" tabindex="0" role="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20V10M9 20V4M15 20v-7M21 20V8"/></svg>
       Teams &amp; Roles
     </div>
-    <div class="sb-item" data-view="alerts">
+    <div class="sb-item" data-view="alerts" tabindex="0" role="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l9 16H3L12 3z"/><path d="M12 10v4M12 17h.01"/></svg>
       Alerts
     </div>
-    <div class="sb-item" data-view="integrations">
+    <div class="sb-item" data-view="integrations" tabindex="0" role="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>
       Integrations
     </div>
@@ -44,7 +44,10 @@
 <main>
   <div class="topbar">
     <div>
-      <h1 id="pageTitle">Overview</h1>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <h1 id="pageTitle">Overview</h1>
+        <span class="sb-badge demo" id="sourceBadgeTop" style="margin-bottom:0"><i></i> checking API…</span>
+      </div>
       <div class="sub" id="pageSub">AI spend &amp; value, down to the person</div>
     </div>
     <div class="co"><b>Northwind Labs</b><span id="periodLabel">—</span></div>
@@ -113,9 +116,9 @@
       <div style="overflow-x:auto">
         <table id="peopleTable">
           <thead><tr>
-            <th data-k="name">Person</th><th data-k="spend_usd" class="num">Spend / mo</th>
-            <th data-k="value_per_dollar" class="num">Value / $</th><th data-k="slop_risk" class="num">Slop risk</th>
-            <th data-k="confidence">Confidence</th><th data-k="tier">Tier</th><th>Meter says</th>
+            <th data-k="name" tabindex="0" role="button" aria-sort="none">Person</th><th data-k="spend_usd" class="num" tabindex="0" role="button" aria-sort="descending">Spend / mo</th>
+            <th data-k="value_per_dollar" class="num" tabindex="0" role="button" aria-sort="none">Value / $</th><th data-k="slop_risk" class="num" tabindex="0" role="button" aria-sort="none">Slop risk</th>
+            <th data-k="confidence" tabindex="0" role="button" aria-sort="none">Confidence</th><th data-k="tier" tabindex="0" role="button" aria-sort="none">Tier</th><th>Meter says</th>
           </tr></thead>
           <tbody id="peopleBody"></tbody>
         </table>
