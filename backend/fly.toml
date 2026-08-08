@@ -1,0 +1,41 @@
+# Fly.io app config for the Merit backend. Deploy from backend/:
+#   fly launch --no-deploy          # first time only, adjust `app` below to what it picks
+#   fly volumes create merit_data --size 1 --region <region>   # match primary_region below
+#   fly deploy
+#
+# See ../DEPLOY.md for the full runbook, including the Cloudflare Pages
+# frontend and DNS setup this depends on.
+
+app = "merit-api"
+primary_region = "iad"
+
+[build]
+
+[env]
+  # Locks down CORS to the real frontend origin(s) instead of config.py's
+  # wide-open local-dev default. Update this if the frontend domain changes.
+  MERIT_CORS_ORIGINS = "https://usemeritai.com,https://www.usemeritai.com"
+
+# Persistent volume for merit.db — the image already points MERIT_DATABASE_URL
+# at /data/merit.db (see Dockerfile), this just makes /data survive deploys
+# and machine restarts instead of resetting on every new image.
+[[mounts]]
+  source = "merit_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  # Kept at 1 rather than scale-to-zero: this app serves a single SQLite file
+  # off the mounted volume, and machines stopping/starting adds volume
+  # attach/detach churn that's not worth it for a single-instance app.
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    interval = "10s"
+    timeout = "3s"
+    grace_period = "5s"
+    method = "GET"
+    path = "/healthz"

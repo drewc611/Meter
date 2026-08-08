@@ -1,7 +1,10 @@
-# Merit
+# Merit&trade;
 
 AI spend tracker — tells a company what it spends on AI, who's spending it,
 and whether that spend is producing real work or slop.
+
+See [TRADEMARK.md](TRADEMARK.md) for the trademark notice and how the ™
+mark is used across this repo.
 
 **Status:** early prototype. `backend/` is a runnable FastAPI + SQLite
 reference implementation of the tracking pipeline; `frontend/` is the
@@ -87,6 +90,11 @@ Two things to change before this ever points at real data: `MERIT_CORS_ORIGINS`
 on the backend service (wide open by default — see `docker-compose.yml`) and
 `MERIT_DATABASE_URL` if you're swapping SQLite for Postgres. See
 [`backend/README.md`](backend/README.md) for the full config surface.
+
+## Deploying
+
+See [`DEPLOY.md`](DEPLOY.md) for the production setup this repo is actually
+configured for: Cloudflare Pages for the frontend, Fly.io for the backend.
 
 ## How it works
 
