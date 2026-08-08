@@ -1,12 +1,13 @@
 /* =====================================================================
    Meter dashboard — front-end application logic.
 
-   Loads after fallback-data.js (which defines FALLBACK_OVERVIEW/TEAMS/ROLES).
+   Loads after fallback-data.js (which defines the FALLBACK_* consts below).
    Plain, non-module script on purpose so index.html works opened directly
    over file:// without a dev server or CORS gymnastics.
 
    Sections: DATA LAYER, FORMATTERS, RENDER, INTERACTIONS.
    ===================================================================== */
+/* global FALLBACK_OVERVIEW, FALLBACK_TEAMS, FALLBACK_ROLES, FALLBACK_TRENDS, FALLBACK_TOOL_BREAKDOWN, FALLBACK_ADOPTION */
 
 /* =====================================================================
    DATA LAYER
