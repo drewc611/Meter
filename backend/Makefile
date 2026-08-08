@@ -2,12 +2,12 @@
 
 help:
 	@echo "make install  - install runtime + dev dependencies"
-	@echo "make seed     - build meter.db with a month of sample data"
+	@echo "make seed     - build merit.db with 6 months of sample data"
 	@echo "make run      - start the API on :8000 (uvicorn --reload)"
 	@echo "make test     - run the pytest suite"
 	@echo "make lint     - ruff check"
 	@echo "make fmt      - ruff format + import fixes"
-	@echo "make clean    - remove meter.db and caches"
+	@echo "make clean    - remove merit.db and caches"
 
 install:
 	pip install -r requirements.txt -r requirements-dev.txt
@@ -29,6 +29,6 @@ fmt:
 	ruff format .
 
 clean:
-	rm -f meter.db
+	rm -f merit.db
 	find . -type d -name __pycache__ -prune -exec rm -rf {} +
 	rm -rf .pytest_cache .ruff_cache

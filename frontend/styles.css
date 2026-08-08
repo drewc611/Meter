@@ -93,7 +93,7 @@ table{width:100%;border-collapse:collapse;font-size:12.8px}
 th{text-align:left;font-size:10.5px;color:var(--muted);font-weight:700;letter-spacing:.03em;
   text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;user-select:none}
 /* Only columns with a data-k are actually sortable (the People table) — a
-   pointer cursor on every th, including non-sortable ones like "Meter says"
+   pointer cursor on every th, including non-sortable ones like "Merit says"
    or the Teams/Roles columns, was a false affordance. */
 th[data-k]{cursor:pointer}
 th[data-k]:hover{color:var(--ink)}

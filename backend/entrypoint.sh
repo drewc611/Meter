@@ -5,7 +5,7 @@
 # must never run against data you want to keep.
 set -e
 
-DB_FILE="${METER_DB_FILE:-/data/meter.db}"
+DB_FILE="${MERIT_DB_FILE:-/data/merit.db}"
 
 if [ ! -f "$DB_FILE" ]; then
   echo "entrypoint: no database at $DB_FILE — seeding sample data..."

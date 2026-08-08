@@ -1,11 +1,11 @@
-# Meter
+# Merit
 
 AI spend tracker — tells a company what it spends on AI, who's spending it,
 and whether that spend is producing real work or slop.
 
 **Status:** early prototype. `backend/` is a runnable FastAPI + SQLite
 reference implementation of the tracking pipeline; `frontend/` is the
-dashboard UI. Product name is a placeholder.
+dashboard UI.
 
 ## What it looks like
 
@@ -20,7 +20,7 @@ a multi-month spend trend.
 ![Overview](docs/screenshots/overview.png)
 
 **People** — every AI-active person, searchable/filterable/sortable by
-spend, value/$, slop risk, confidence tier, and seat tier, each with Meter's
+spend, value/$, slop risk, confidence tier, and seat tier, each with Merit's
 recommendation.
 
 ![People](docs/screenshots/people.png)
@@ -30,7 +30,7 @@ individual.
 
 ![Teams & Roles](docs/screenshots/teams-roles.png)
 
-**Alerts** — what Meter thinks needs a look this period, each one linking
+**Alerts** — what Merit thinks needs a look this period, each one linking
 back into a pre-filtered People view.
 
 ![Alerts](docs/screenshots/alerts.png)
@@ -77,15 +77,15 @@ docker compose up --build
   directly)
 - **Backend API:** http://localhost:8000 — `curl http://localhost:8000/api/overview`
 
-First boot seeds a month of sample data automatically (the backend container
+First boot seeds 6 months of sample data automatically (the backend container
 runs `seed.py` once, only if its database volume is empty). The seeded data
-lives in the `meter-db` named volume, so `docker compose down` and `up` again
+lives in the `merit-db` named volume, so `docker compose down` and `up` again
 picks up right where you left off; `docker compose down -v` wipes it for a
 clean re-seed.
 
-Two things to change before this ever points at real data: `METER_CORS_ORIGINS`
+Two things to change before this ever points at real data: `MERIT_CORS_ORIGINS`
 on the backend service (wide open by default — see `docker-compose.yml`) and
-`METER_DATABASE_URL` if you're swapping SQLite for Postgres. See
+`MERIT_DATABASE_URL` if you're swapping SQLite for Postgres. See
 [`backend/README.md`](backend/README.md) for the full config surface.
 
 ## How it works

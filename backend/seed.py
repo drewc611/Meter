@@ -191,4 +191,4 @@ for i, (h_start, h_end) in enumerate(historical_periods):
     print(f"Scored {n_h} people for {h_start.date()}")
 
 db.close()
-print("Seed complete: meter.db")
+print("Seed complete: merit.db")

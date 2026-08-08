@@ -1,7 +1,7 @@
 """
 Database wiring: the SQLAlchemy engine, session factory, and declarative Base.
 
-The connection URL comes from config.settings (METER_DATABASE_URL). FastAPI
+The connection URL comes from config.settings (MERIT_DATABASE_URL). FastAPI
 request-scoped sessions live in dependencies.get_db; schema creation lives in
 init_db() so it happens explicitly at app startup rather than as an import
 side effect (which is what lets the test suite point at a throwaway database).

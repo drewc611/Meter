@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Meter is an AI spend tracker: it tells a company what it spends on AI, who's
+Merit is an AI spend tracker: it tells a company what it spends on AI, who's
 spending it, and whether that spend is producing real work or slop. Early
 prototype status. Two parts:
 
@@ -14,8 +14,7 @@ prototype status. Two parts:
   backend API, with an embedded fallback dataset so it renders even when the
   API isn't running.
 
-Product name is a placeholder. Branches: `main` (stable), `develop` (active
-development).
+Branches: `main` (stable), `develop` (active development).
 
 ## Commands
 
@@ -23,18 +22,18 @@ development).
 
 ```bash
 make install   # pip install -r requirements.txt -r requirements-dev.txt
-make seed      # python seed.py — fabricates a month of sample data, scores it
+make seed      # python seed.py — fabricates 6 months of sample data, scores it
 make run       # uvicorn app.main:app --reload --port 8000
 make test      # pytest
 make lint      # ruff check .
 make fmt       # ruff check --select I --fix . && ruff format .
-make clean     # remove meter.db and caches
+make clean     # remove merit.db and caches
 ```
 
 Run a single test file or test: `pytest tests/test_scoring.py`,
 `pytest tests/test_scoring.py::test_name -v`.
 
-Tests never touch `meter.db` — `tests/conftest.py` points `METER_DATABASE_URL`
+Tests never touch `merit.db` — `tests/conftest.py` points `MERIT_DATABASE_URL`
 at a throwaway temp SQLite file *before* any `app` module is imported (the
 engine binds to the URL at import time), and rebuilds the schema fresh for
 every test via an autouse fixture.
@@ -58,14 +57,14 @@ CI lints frontend JS with ESLint (`.eslintrc.js`, `eslint:recommended`) via
 ### Docker (whole stack, from repo root)
 
 ```bash
-docker compose up --build     # first run auto-seeds a month of sample data
-docker compose down           # stop, keep the seeded data volume (meter-db)
+docker compose up --build     # first run auto-seeds 6 months of sample data
+docker compose down           # stop, keep the seeded data volume (merit-db)
 docker compose down -v        # stop and wipe seeded data
 ```
 
 Frontend on :8080 (nginx — needed to reach the backend without file://
 CORS quirks), backend API on :8000. Before pointing this at real data, change
-`METER_CORS_ORIGINS` (wide open by default) and `METER_DATABASE_URL` (SQLite
+`MERIT_CORS_ORIGINS` (wide open by default) and `MERIT_DATABASE_URL` (SQLite
 by default) on the backend service.
 
 ### CI (`.github/workflows/ci.yml`)

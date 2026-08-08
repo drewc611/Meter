@@ -1,5 +1,5 @@
 /* =====================================================================
-   Meter dashboard — front-end application logic.
+   Merit dashboard — front-end application logic.
 
    Loads after fallback-data.js (which defines the FALLBACK_* consts below).
    Plain, non-module script on purpose so index.html works opened directly
@@ -11,7 +11,7 @@
 
 /* =====================================================================
    DATA LAYER
-   Tries the live Meter API first (see ../backend/); if it's not reachable
+   Tries the live Merit API first (see ../backend/); if it's not reachable
    (most common — this file is usually opened standalone) it falls back to
    the snapshot in fallback-data.js, so the UI behaves identically either
    way. The sidebar badge tells you which mode it's in.
@@ -54,7 +54,7 @@ async function loadData() {
     if (!badge) return;
     if (STATE.live) {
       badge.className = "sb-badge live";
-      badge.innerHTML = "<i></i> LIVE · Meter API";
+      badge.innerHTML = "<i></i> LIVE · Merit API";
     } else {
       badge.className = "sb-badge demo";
       badge.innerHTML = "<i></i> DEMO DATA · API offline";
@@ -365,7 +365,7 @@ function renderIntegrations(){
 const VIEW_TITLES = {overview:['Overview','AI spend & value, down to the person'],
   people:['People','Every AI-active person — search, filter, sort'],
   teams:['Teams & Roles','Spend and value rolled up above the individual'],
-  alerts:['Alerts','What Meter thinks needs a look this period'],
+  alerts:['Alerts','What Merit thinks needs a look this period'],
   integrations:['Integrations','How spend, outcomes, and quality signals get in']};
 
 function switchView(view){

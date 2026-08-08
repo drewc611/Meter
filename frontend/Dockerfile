@@ -1,7 +1,7 @@
-# Meter frontend — static dashboard, served by nginx.
+# Merit frontend — static dashboard, served by nginx.
 #
-# Build:  docker build -t meter-frontend ./frontend
-# Run:    docker run -p 8080:80 meter-frontend
+# Build:  docker build -t merit-frontend ./frontend
+# Run:    docker run -p 8080:80 merit-frontend
 # (see ../docker-compose.yml for the normal way to run this alongside the backend)
 #
 # The dashboard is plain static files (index.html/styles.css/app.js/
