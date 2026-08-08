@@ -60,6 +60,12 @@
       <div class="kpi"><div class="lab">Value per $ (blended)</div><div class="val good" id="kpiValue">—</div><div class="note">Tier-1 correlation signal</div></div>
       <div class="kpi"><div class="lab">Avg slop risk</div><div class="val warn" id="kpiSlop">—</div><div class="note">Tier-2 quality proxies</div></div>
       <div class="kpi"><div class="lab">Recoverable / yr</div><div class="val good" id="kpiRecoverable">—</div><div class="note">re-tier + slop reduction</div></div>
+      <div class="kpi"><div class="lab">Active AI users</div><div class="val" id="kpiAdoption">—</div><div class="note" id="kpiAdoptionNote">—</div></div>
+    </div>
+
+    <div class="card" style="padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em">Score coverage</span>
+      <div id="confidenceBreakdown" style="display:flex;gap:14px;flex-wrap:wrap"></div>
     </div>
 
     <div class="grid2">
@@ -92,6 +98,12 @@
           <b>Contract math:</b> Growth plan for the AI-active seats shown here runs roughly $18–25/user/mo — first-quarter recovery alone typically covers it.
         </div>
       </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h2>Spend trend</h2>
+      <p class="desc">Total AI spend across the trailing months, read from PersonScore history — one point per scored period.</p>
+      <svg class="plot" id="trendsPlot" viewBox="0 0 900 190" role="img" aria-label="Line chart of total AI spend by month"></svg>
     </div>
 
     <footer>
@@ -158,6 +170,17 @@
       <h2>How tracking actually works</h2>
       <p class="desc">Three independent ingestion paths feed the scoring engine — spend, outcomes, and quality proxies never come from the same system, which is why the signal is hard to game from any one side.</p>
       <div class="int-grid" id="intGrid"></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h2>Spend by tool &amp; model</h2>
+      <p class="desc">Where this period's AI spend is actually going, straight from usage events — not attributed to a person here, just the underlying mix.</p>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Tool</th><th>Model</th><th class="num">Spend / mo</th><th class="num">Events</th></tr></thead>
+          <tbody id="toolBreakdownBody"></tbody>
+        </table>
+      </div>
     </div>
   </section>
 </main>

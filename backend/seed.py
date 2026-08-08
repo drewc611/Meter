@@ -1,8 +1,9 @@
 """
 Seeds the database with a fabricated month of activity for a 20-person
-company and runs the scoring job — so the API has something real to serve
-the moment the server starts. Deterministic (fixed random seed) so repeat
-runs produce the same numbers.
+company (plus a lighter-weight backfill of several preceding months) and
+runs the scoring job for each — so the API has something real to serve,
+trends included, the moment the server starts. Deterministic (fixed random
+seed) so repeat runs produce the same numbers.
 
     python seed.py
 """
@@ -13,7 +14,7 @@ from datetime import timedelta
 from app.constants import QUALITY_SIGNAL_WEIGHTS
 from app.database import Base, SessionLocal, engine
 from app.models import Identity, IdentityMapping, Team
-from app.periods import current_period, prior_period
+from app.periods import current_period, recent_periods
 from app.services import ingest, scoring
 
 random.seed(42)
@@ -28,7 +29,7 @@ db = SessionLocal()
 # the API queried PersonScore rows that existed but at a different period_end,
 # so every endpoint silently returned []. Sharing one function is the fix.)
 PERIOD_START, PERIOD_END = current_period()
-PRIOR_START, PRIOR_END = prior_period(PERIOD_START)
+HISTORY_MONTHS = 6  # trailing months of lightweight backfill, for /api/trends demo data
 
 TEAMS = ["Engineering", "Design", "Support", "Sales", "Marketing", "Data"]
 team_rows = {name: Team(name=name) for name in TEAMS}
@@ -165,23 +166,29 @@ for name, (ident, profile) in identities.items():
                 severity=jitter_severity(base_severity),
             )
 
-# score the current period, plus a lighter-weight prior period for the vs-last-month delta
+# score the current period, plus a lighter-weight backfill of preceding months below
 n = scoring.recompute_all(db, PERIOD_START, PERIOD_END)
 print(f"Scored {n} people for {PERIOD_START.date()}")
 
-# a rough prior-period baseline just for the "vs last month" KPI — reuse ~85% of this month's spend
-for _name, (ident, _profile) in identities.items():
-    for _ in range(random.randint(10, 25)):
-        ingest.ingest_usage_event(
-            db,
-            source_system="anthropic_api",
-            external_id=f"key_{ident.id}",
-            tool=random.choice(TOOLS),
-            cost_usd=round(random.uniform(20, 90) * 0.85, 2),
-            occurred_at=PRIOR_START + timedelta(days=random.randint(0, 26)),
-        )
-n2 = scoring.recompute_all(db, PRIOR_START, PRIOR_END)
-print(f"Scored {n2} people for prior period {PRIOR_START.date()}")
+# a rough baseline for the preceding months — lighter-weight than the current
+# month (spend only, no outcomes/quality), just for the "vs last month" KPI
+# and the /api/trends history. Ratio ramps up toward the present so the trend
+# reads as adoption growing over time rather than a flat line.
+historical_periods = recent_periods(HISTORY_MONTHS)[:-1]  # excludes the current month, already seeded above
+for i, (h_start, h_end) in enumerate(historical_periods):
+    ratio = 0.55 + 0.07 * i
+    for _name, (ident, _profile) in identities.items():
+        for _ in range(random.randint(10, 25)):
+            ingest.ingest_usage_event(
+                db,
+                source_system="anthropic_api",
+                external_id=f"key_{ident.id}",
+                tool=random.choice(TOOLS),
+                cost_usd=round(random.uniform(20, 90) * ratio, 2),
+                occurred_at=h_start + timedelta(days=random.randint(0, 26)),
+            )
+    n_h = scoring.recompute_all(db, h_start, h_end)
+    print(f"Scored {n_h} people for {h_start.date()}")
 
 db.close()
 print("Seed complete: meter.db")

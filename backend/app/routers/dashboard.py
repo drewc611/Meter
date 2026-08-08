@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from .. import schemas
 from ..dependencies import get_db
-from ..periods import current_period, prior_period
+from ..periods import current_period, prior_period, recent_periods
 from ..services import analytics
 
 router = APIRouter(prefix="/api", tags=["dashboard"])
@@ -37,3 +37,21 @@ def teams(db: Session = Depends(get_db)):
 def roles(db: Session = Depends(get_db)):
     start, end = current_period()
     return analytics.get_roles(db, start, end)
+
+
+@router.get("/trends", response_model=list[schemas.TrendPointOut])
+def trends(months: int = 6, db: Session = Depends(get_db)):
+    months = max(1, min(months, 24))
+    return analytics.get_trends(db, recent_periods(months))
+
+
+@router.get("/tool-breakdown", response_model=list[schemas.ToolBreakdownOut])
+def tool_breakdown(db: Session = Depends(get_db)):
+    start, end = current_period()
+    return analytics.get_tool_breakdown(db, start, end)
+
+
+@router.get("/adoption", response_model=schemas.AdoptionOut)
+def adoption(db: Session = Depends(get_db)):
+    start, end = current_period()
+    return analytics.get_adoption(db, start, end)

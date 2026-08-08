@@ -1,12 +1,13 @@
 /* =====================================================================
    Meter dashboard — front-end application logic.
 
-   Loads after fallback-data.js (which defines FALLBACK_OVERVIEW/TEAMS/ROLES).
+   Loads after fallback-data.js (which defines the FALLBACK_* consts below).
    Plain, non-module script on purpose so index.html works opened directly
    over file:// without a dev server or CORS gymnastics.
 
    Sections: DATA LAYER, FORMATTERS, RENDER, INTERACTIONS.
    ===================================================================== */
+/* global FALLBACK_OVERVIEW, FALLBACK_TEAMS, FALLBACK_ROLES, FALLBACK_TRENDS, FALLBACK_TOOL_BREAKDOWN, FALLBACK_ADOPTION */
 
 /* =====================================================================
    DATA LAYER
@@ -17,7 +18,7 @@
    ===================================================================== */
 const API_BASE = "http://localhost:8000";
 
-let STATE = { overview: null, teams: null, roles: null, live: false };
+let STATE = { overview: null, teams: null, roles: null, trends: null, toolBreakdown: null, adoption: null, live: false };
 
 async function fetchJSON(path, timeoutMs = 900) {
   const ctrl = new AbortController();
@@ -34,13 +35,17 @@ async function fetchJSON(path, timeoutMs = 900) {
 }
 
 async function loadData() {
-  const [ov, tm, rl] = await Promise.all([
-    fetchJSON("/api/overview"), fetchJSON("/api/teams"), fetchJSON("/api/roles")
+  const [ov, tm, rl, tr, tb, ad] = await Promise.all([
+    fetchJSON("/api/overview"), fetchJSON("/api/teams"), fetchJSON("/api/roles"),
+    fetchJSON("/api/trends"), fetchJSON("/api/tool-breakdown"), fetchJSON("/api/adoption")
   ]);
-  if (ov && tm && rl) {
-    STATE = { overview: ov, teams: tm, roles: rl, live: true };
+  if (ov && tm && rl && tr && tb && ad) {
+    STATE = { overview: ov, teams: tm, roles: rl, trends: tr, toolBreakdown: tb, adoption: ad, live: true };
   } else {
-    STATE = { overview: FALLBACK_OVERVIEW, teams: FALLBACK_TEAMS, roles: FALLBACK_ROLES, live: false };
+    STATE = {
+      overview: FALLBACK_OVERVIEW, teams: FALLBACK_TEAMS, roles: FALLBACK_ROLES,
+      trends: FALLBACK_TRENDS, toolBreakdown: FALLBACK_TOOL_BREAKDOWN, adoption: FALLBACK_ADOPTION, live: false
+    };
   }
   // Shown in two places — the sidebar footer (easy to miss) and next to the
   // page title (harder to miss) — since which mode the data is in matters
@@ -71,6 +76,8 @@ function fmtX(n){ return n.toFixed(2) + '×'; }
 // hues darkened for the small bold table text this feeds (WCAG AA needs
 // 4.5:1 there vs. the 3:1 large-text minimum the KPI numbers get away with).
 function valueColor(v){ return v>=1.6?'var(--value-text)':(v<0?'var(--slop-hi)':'var(--slop-text)'); }
+const TOOL_LABELS = { anthropic_api:'Anthropic API', github_copilot:'GitHub Copilot', chatgpt_enterprise:'ChatGPT Enterprise' };
+function toolLabel(t){ return TOOL_LABELS[t] || t; }
 
 /* =====================================================================
    RENDER
@@ -86,6 +93,17 @@ function renderAll(){
   document.getElementById('kpiValue').textContent = fmtX(ov.blended_value_per_dollar);
   document.getElementById('kpiSlop').textContent = ov.avg_slop_risk.toFixed(0) + '/100';
   document.getElementById('kpiRecoverable').textContent = fmtMoney(ov.recoverable_annual_usd);
+
+  const ad = STATE.adoption;
+  document.getElementById('kpiAdoption').textContent = `${ad.active_users} / ${ad.total_seats}`;
+  document.getElementById('kpiAdoptionNote').textContent = `${ad.utilization_pct.toFixed(0)}% seat utilization`;
+
+  const confOrder = ['tier1+2+3', 'tier1+2', 'tier1'];
+  const cb = ov.confidence_breakdown || {};
+  document.getElementById('confidenceBreakdown').innerHTML = confOrder
+    .filter(k => cb[k])
+    .map(k => `<span style="display:inline-flex;align-items:center;gap:5px">${confPill(k)}<b style="font-size:12px">${cb[k]}</b></span>`)
+    .join('') || '<span style="font-size:11.5px;color:var(--muted)">No scored people yet.</span>';
 
   document.getElementById('segFund').textContent = ov.people.filter(p=>p.segment==='fund').length;
   document.getElementById('segCoach').textContent = ov.people.filter(p=>p.segment==='coach').length;
@@ -103,8 +121,10 @@ function renderAll(){
   `).join('');
 
   renderScatter(ov.people);
+  renderTrends(STATE.trends);
   renderPeopleTable();
   renderAgg('teams');
+  renderToolBreakdown();
 
   const teamSel = document.getElementById('teamFilter');
   if (teamSel.options.length <= 1) {
@@ -166,6 +186,31 @@ function renderScatter(people){
     });
     d.addEventListener('blur', ()=> tip.style.opacity = 0);
   });
+}
+
+function renderTrends(trends){
+  if (!trends || !trends.length) return;
+  const W=900,H=190,padL=46,padR=16,padT=14,padB=26;
+  const spend = trends.map(t=>t.total_spend_usd);
+  const maxSpend = Math.max(...spend, 1) * 1.15;
+  const xPix = i => padL + (trends.length>1 ? i/(trends.length-1)*(W-padL-padR) : (W-padL-padR)/2);
+  const yPix = v => H-padB - (v/maxSpend)*(H-padT-padB);
+
+  let svg = `<line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="#e6e9ef"/>`;
+  svg += `<text x="${padL}" y="${padT+2}" font-size="10.5" fill="#5c6470">$${Math.round(maxSpend).toLocaleString()}</text>`;
+  const path = trends.map((t,i)=> `${i===0?'M':'L'}${xPix(i).toFixed(1)},${yPix(t.total_spend_usd).toFixed(1)}`).join(' ');
+  svg += `<path d="${path}" fill="none" stroke="var(--brand)" stroke-width="2.5"/>`;
+
+  trends.forEach((t,i)=>{
+    const monthLabel = new Date(t.period_start).toLocaleDateString(undefined,{month:'short',year:'2-digit'});
+    const label = `${new Date(t.period_start).toLocaleDateString(undefined,{month:'long',year:'numeric'})}: ${fmtMoney(t.total_spend_usd)}/mo, ${fmtX(t.blended_value_per_dollar)} value, slop ${t.avg_slop_risk.toFixed(0)}`;
+    svg += `<circle class="dot" tabindex="0" role="img" aria-label="${label}" cx="${xPix(i).toFixed(1)}" cy="${yPix(t.total_spend_usd).toFixed(1)}" r="4.5" fill="var(--brand)" stroke="#fff" stroke-width="1.2"><title>${label}</title></circle>`;
+    svg += `<text x="${xPix(i).toFixed(1)}" y="${H-8}" font-size="10" fill="#5c6470" text-anchor="middle">${monthLabel}</text>`;
+  });
+
+  const plot = document.getElementById('trendsPlot');
+  plot.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  plot.innerHTML = svg;
 }
 
 function pill(t){
@@ -278,6 +323,17 @@ function renderAlerts(ov, teams){
       <div><h4>${a.title}</h4><p>${a.body}</p>${clickable?'<span class="alert-cta">View in People →</span>':''}</div>
     </div>`;
   }).join('') || '<p style="color:var(--muted);font-size:13px">No alerts this period.</p>';
+}
+
+function renderToolBreakdown(){
+  const rows = STATE.toolBreakdown || [];
+  document.getElementById('toolBreakdownBody').innerHTML = rows.map(r => `
+    <tr>
+      <td>${toolLabel(r.tool)}</td>
+      <td>${r.model || '—'}</td>
+      <td class="num">${fmtMoney(r.spend_usd)}</td>
+      <td class="num">${r.event_count.toLocaleString()}</td>
+    </tr>`).join('') || `<tr><td colspan="4" style="color:var(--muted)">No usage yet this period.</td></tr>`;
 }
 
 function renderIntegrations(){
