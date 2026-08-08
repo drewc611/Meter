@@ -99,7 +99,13 @@ compresses everything into one scored row per person that the API/UI reads:
 Key invariant: **the dashboard and `/api/*` endpoints only ever read
 `PersonScore`, never raw events** — page loads stay fast regardless of how
 much event history accumulates. `PersonScore` is materialized by the nightly
-job, one row per `(identity, period)`.
+job, one row per `(identity, period)`. The one deliberate, documented
+exception: `analytics.get_tool_breakdown()` and `analytics.get_adoption()`
+query `UsageEvent` directly, because tool/model and active-user counts aren't
+attributes `PersonScore` carries — but both stay scoped to a single
+`[start, end)` period (the same bounded pattern `scoring.py`'s own nightly
+aggregates already use), not an unbounded scan, so the invariant's actual
+purpose (cost independent of history size) still holds.
 
 `IdentityMapping` is the load-bearing table: every external system id (an
 LLM-proxy API key, a GitHub login, a Zendesk agent id) resolves to exactly
@@ -137,11 +143,11 @@ database.py        engine, session factory, declarative Base, init_db()
 dependencies.py    FastAPI request-scoped session (get_db)
 models.py          data model (§7 of the product spec)
 schemas.py         Pydantic request/response contract
-periods.py         calendar-month [start, end) math, shared by API and seed.py
+periods.py         calendar-month [start, end) math + recent_periods() for trend windows, shared by API and seed.py
 services/
   ingest.py        identity resolution + the three ingestion functions
   scoring.py       Tier 1/2 formulas (pure math) + the nightly job (bulk queries)
-  analytics.py     read-side aggregation, segmentation, recoverable-spend estimate
+  analytics.py     read-side aggregation, segmentation, recoverable-spend estimate, trends/tool/adoption metrics
 routers/
   ingestion.py     /ingest/*
   admin.py         /admin/*
@@ -168,6 +174,9 @@ data team is most likely to actually read, keep it simple.
 | GET | `/api/overview` | Everything the Overview page needs, one call |
 | GET | `/api/people` | Full person list with segment + recommendation |
 | GET | `/api/teams` / `/api/roles` | Spend/value/slop rolled up above the individual |
+| GET | `/api/trends?months=6` | Spend/value/slop across the trailing N months (default 6, max 24) |
+| GET | `/api/tool-breakdown` | Current-period spend by (tool, model) |
+| GET | `/api/adoption` | Active vs. provisioned seats, current period, overall and by tier |
 
 ### What's stubbed, on purpose
 

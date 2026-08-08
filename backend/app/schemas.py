@@ -105,4 +105,35 @@ class OverviewOut(BaseModel):
     fund_count: int
     coach_count: int
     learn_count: int
+    confidence_breakdown: dict[str, int]
     people: list[PersonOut]
+
+
+class TrendPointOut(BaseModel):
+    period_start: datetime
+    period_end: datetime
+    total_spend_usd: float
+    blended_value_per_dollar: float
+    avg_slop_risk: float
+    people_scored: int
+
+
+class ToolBreakdownOut(BaseModel):
+    tool: str
+    model: str | None
+    spend_usd: float
+    event_count: int
+
+
+class AdoptionTierOut(BaseModel):
+    tier: str
+    total_seats: int
+    active_users: int
+    utilization_pct: float
+
+
+class AdoptionOut(BaseModel):
+    total_seats: int
+    active_users: int
+    utilization_pct: float
+    by_tier: list[AdoptionTierOut]

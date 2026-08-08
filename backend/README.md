@@ -99,6 +99,9 @@ touches your `meter.db`. Ruff/pytest config lives in `pyproject.toml`.
 | GET | `/api/overview` | Everything the Overview page needs, one call |
 | GET | `/api/people` | Full person list with segment + recommendation |
 | GET | `/api/teams` / `/api/roles` | Spend/value/slop rolled up above the individual |
+| GET | `/api/trends?months=6` | Spend/value/slop across the trailing N months (default 6, max 24) |
+| GET | `/api/tool-breakdown` | Current-period spend by (tool, model) |
+| GET | `/api/adoption` | Active vs. provisioned seats, current period, overall and by tier |
 
 All ingestion endpoints return **422** if the external id has no
 `IdentityMapping` yet — that's deliberate (§5.5 of the spec: an unmapped id is
@@ -116,16 +119,16 @@ app/
   dependencies.py    FastAPI request-scoped session (get_db)
   models.py          the data model (§7 of the spec)
   schemas.py         Pydantic request/response contract
-  periods.py         calendar-month [start, end) math, shared by API and seed
+  periods.py         calendar-month [start, end) math + recent_periods() for trend windows, shared by API and seed
   services/
     ingest.py        identity resolution + the three ingestion functions
     scoring.py       Tier 1/2 formulas (pure math) + the nightly job (bulk queries)
-    analytics.py     read-side aggregation, segmentation, recoverable-spend estimate
+    analytics.py     read-side aggregation, segmentation, recoverable-spend estimate, trends/tool/adoption metrics
   routers/
     ingestion.py     /ingest/*      admin.py  /admin/*
     dashboard.py     /api/*         health.py /healthz
 tests/               pytest suite (periods, scoring, ingest, analytics, full API)
-seed.py              fabricates a month of sample data across four behavioral profiles
+seed.py              fabricates a month of sample data (+ 5 lighter-weight backfill months) across four behavioral profiles
 proxy_example.py     reference-only usage-attributing LLM proxy (not wired into the demo)
 ```
 
@@ -138,8 +141,15 @@ proxy_example.py     reference-only usage-attributing LLM proxy (not wired into 
   buyer's data team will read.
 - `services/analytics.py` recovery percentages are labeled heuristics in the
   code — a real deployment calibrates them against actual re-tier outcomes.
+  Almost every function here reads only `PersonScore`; `get_tool_breakdown()`
+  and `get_adoption()` are a deliberate, documented exception — tool/model and
+  active-user counts aren't attributes `PersonScore` carries, so those two
+  query `UsageEvent` directly, but scoped to a single `[start, end)` period
+  (the same bounded pattern `scoring.py`'s own nightly aggregates use), not an
+  unbounded scan.
 - `seed.py` uses the four behavioral profiles (star / risky / steady / quiet) so
-  the demo shows a real spread rather than one canned number.
+  the demo shows a real spread rather than one canned number, plus a lighter
+  backfill across the preceding 5 months so `/api/trends` has real history.
 
 ## What's stubbed, on purpose
 

@@ -1,8 +1,14 @@
 """
-Read-side query logic backing the dashboard. Everything here reads
+Read-side query logic backing the dashboard. Almost everything here reads
 PersonScore (materialized by scoring.recompute_all), never raw events —
 keeps every dashboard page load to a handful of indexed queries regardless
 of how many millions of UsageEvent rows exist underneath.
+
+get_tool_breakdown() and get_adoption() are the deliberate exception: tool/
+model and "who's actually active" aren't attributes PersonScore carries, so
+they read UsageEvent directly, scoped to a single [start, end) period — see
+their docstrings for why that's still bounded, not a regression of the rule
+above.
 
 The thresholds and recovery coefficients are all in constants.py; this module
 is only the shape of the queries and the assembly of the response payloads.
@@ -11,6 +17,7 @@ is only the shape of the queries and the assembly of the response payloads.
 from collections import defaultdict
 from datetime import datetime
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from ..constants import (
@@ -29,7 +36,7 @@ from ..constants import (
     TOP_VALUE,
     VALUE_THRESHOLD,
 )
-from ..models import PersonScore
+from ..models import Identity, PersonScore, UsageEvent
 
 
 def recommend_action(spend: float, value: float, slop: float) -> str:
@@ -125,8 +132,10 @@ def get_overview(
     avg_slop = sum(p["slop_risk"] * p["spend_usd"] for p in people) / total_spend if total_spend else 0.0
 
     segment_counts = defaultdict(int)
+    confidence_breakdown = defaultdict(int)
     for p in people:
         segment_counts[p["segment"]] += 1
+        confidence_breakdown[p["confidence"]] += 1
 
     # Recoverable-spend estimate (§11 of the spec) — heuristic, always labeled as
     # such, and deliberately conservative. Coefficients live in constants.py and
@@ -167,5 +176,104 @@ def get_overview(
         "fund_count": segment_counts["fund"],
         "coach_count": segment_counts["coach"],
         "learn_count": segment_counts["learn"],
+        "confidence_breakdown": dict(confidence_breakdown),
         "people": people,
+    }
+
+
+def get_trends(db: Session, periods: list[tuple[datetime, datetime]]) -> list[dict]:
+    """
+    Spend/value/slop across the given periods (oldest first — the caller
+    passes e.g. periods.recent_periods(), same as every other function here
+    takes its [start, end) from the caller rather than resolving "now"
+    itself). Reuses the same weighted-average math as get_overview() and
+    reads only PersonScore — a period with no scored rows yet simply comes
+    back as zeros, no special-casing.
+    """
+    out = []
+    for start, end in periods:
+        people = get_people(db, start, end)
+        total_spend = sum(p["spend_usd"] for p in people)
+        blended_value = (
+            sum(p["value_per_dollar"] * p["spend_usd"] for p in people) / total_spend if total_spend else 0.0
+        )
+        avg_slop = sum(p["slop_risk"] * p["spend_usd"] for p in people) / total_spend if total_spend else 0.0
+        out.append(
+            {
+                "period_start": start,
+                "period_end": end,
+                "total_spend_usd": round(total_spend, 2),
+                "blended_value_per_dollar": round(blended_value, 2),
+                "avg_slop_risk": round(avg_slop, 1),
+                "people_scored": len(people),
+            }
+        )
+    return out
+
+
+def get_tool_breakdown(db: Session, period_start: datetime, period_end: datetime) -> list[dict]:
+    """
+    Spend by (tool, model) for one period. Deliberately reads UsageEvent
+    directly rather than PersonScore, unlike everything above — PersonScore
+    doesn't retain tool/model, and there's nowhere else to get this. It's a
+    scoped exception to the "dashboard only reads PersonScore" rule (see
+    module docstring): a single period-bounded [start, end) group-by, the
+    same filter/group shape scoring._spend_by_identity already runs nightly,
+    not an unbounded scan — so it doesn't reintroduce the cost-scales-with-
+    history problem PersonScore exists to avoid.
+    """
+    rows = (
+        db.query(
+            UsageEvent.tool,
+            UsageEvent.model,
+            func.sum(UsageEvent.cost_usd),
+            func.count(UsageEvent.id),
+        )
+        .filter(UsageEvent.occurred_at >= period_start, UsageEvent.occurred_at < period_end)
+        .group_by(UsageEvent.tool, UsageEvent.model)
+        .all()
+    )
+    out = [
+        {"tool": tool, "model": model, "spend_usd": round(float(spend or 0.0), 2), "event_count": count}
+        for tool, model, spend, count in rows
+    ]
+    return sorted(out, key=lambda r: -r["spend_usd"])
+
+
+def get_adoption(db: Session, period_start: datetime, period_end: datetime) -> dict:
+    """
+    Active (had a UsageEvent this period) vs. provisioned Identity count,
+    overall and by seat tier. Same deliberate, period-scoped exception to the
+    PersonScore-only rule as get_tool_breakdown() above — active users aren't
+    on PersonScore either (a person with zero spend never gets a row there).
+    """
+
+    def _pct(active: int, total: int) -> float:
+        return round(active / total * 100, 1) if total else 0.0
+
+    total_by_tier = dict(db.query(Identity.tier, func.count(Identity.id)).group_by(Identity.tier).all())
+    active_by_tier = dict(
+        db.query(Identity.tier, func.count(func.distinct(UsageEvent.identity_id)))
+        .join(UsageEvent, UsageEvent.identity_id == Identity.id)
+        .filter(UsageEvent.occurred_at >= period_start, UsageEvent.occurred_at < period_end)
+        .group_by(Identity.tier)
+        .all()
+    )
+
+    by_tier = [
+        {
+            "tier": tier,
+            "total_seats": total,
+            "active_users": active_by_tier.get(tier, 0),
+            "utilization_pct": _pct(active_by_tier.get(tier, 0), total),
+        }
+        for tier, total in sorted(total_by_tier.items())
+    ]
+    total_seats = sum(total_by_tier.values())
+    active_users = sum(active_by_tier.values())
+    return {
+        "total_seats": total_seats,
+        "active_users": active_users,
+        "utilization_pct": _pct(active_users, total_seats),
+        "by_tier": by_tier,
     }
