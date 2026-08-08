@@ -33,6 +33,28 @@ whether it's reading from the live API or the embedded fallback.
 
 Run the backend test suite with `make test` (or `pytest`) from `backend/`.
 
+## Running with Docker
+
+```bash
+docker compose up --build
+```
+
+- **Frontend:** http://localhost:8080 (served by nginx — not `file://`, so it
+  reaches the backend without the browser-security quirks of opening the file
+  directly)
+- **Backend API:** http://localhost:8000 — `curl http://localhost:8000/api/overview`
+
+First boot seeds a month of sample data automatically (the backend container
+runs `seed.py` once, only if its database volume is empty). The seeded data
+lives in the `meter-db` named volume, so `docker compose down` and `up` again
+picks up right where you left off; `docker compose down -v` wipes it for a
+clean re-seed.
+
+Two things to change before this ever points at real data: `METER_CORS_ORIGINS`
+on the backend service (wide open by default — see `docker-compose.yml`) and
+`METER_DATABASE_URL` if you're swapping SQLite for Postgres. See
+[`backend/README.md`](backend/README.md) for the full config surface.
+
 ## How it works
 
 Three independent ingestion paths (spend, outcomes, quality signals) resolve

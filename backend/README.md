@@ -70,6 +70,10 @@ Then open `../frontend/index.html` in a browser — it tries `http://localhost:8
 first and falls back to an embedded snapshot if the API isn't reachable, so it
 works either way. The sidebar badge tells you which mode it's in.
 
+Or run the whole stack in Docker instead — see [the root README](../README.md#running-with-docker)
+(`docker compose up --build` from the repo root). `Dockerfile` here builds this
+service; `entrypoint.sh` seeds an empty `/data` volume on first boot only.
+
 ## Tests & tooling
 
 ```bash
