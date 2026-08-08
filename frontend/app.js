@@ -42,14 +42,19 @@ async function loadData() {
   } else {
     STATE = { overview: FALLBACK_OVERVIEW, teams: FALLBACK_TEAMS, roles: FALLBACK_ROLES, live: false };
   }
-  const badge = document.getElementById("sourceBadge");
-  if (STATE.live) {
-    badge.className = "sb-badge live";
-    badge.innerHTML = "<i></i> LIVE · Meter API";
-  } else {
-    badge.className = "sb-badge demo";
-    badge.innerHTML = "<i></i> DEMO DATA · API offline";
-  }
+  // Shown in two places — the sidebar footer (easy to miss) and next to the
+  // page title (harder to miss) — since which mode the data is in matters
+  // for how much a viewer should trust the numbers.
+  [document.getElementById("sourceBadge"), document.getElementById("sourceBadgeTop")].forEach(badge=>{
+    if (!badge) return;
+    if (STATE.live) {
+      badge.className = "sb-badge live";
+      badge.innerHTML = "<i></i> LIVE · Meter API";
+    } else {
+      badge.className = "sb-badge demo";
+      badge.innerHTML = "<i></i> DEMO DATA · API offline";
+    }
+  });
   renderAll();
 }
 
@@ -61,7 +66,11 @@ function initials(n){ return n.split(' ').map(w=>w[0]).join('').slice(0,2); }
 function slopColor(s){ return s>=60?'#d1382c':s>=35?'#dc6803':'#0d9668'; }
 function fmtMoney(n){ return '$' + Math.round(n).toLocaleString(); }
 function fmtX(n){ return n.toFixed(2) + '×'; }
-function valueColor(v){ return v>=1.6?'var(--value)':(v<0?'var(--slop-hi)':'var(--slop)'); }
+// --value/--slop-hi/--slop are also used for large text and non-text (bars,
+// dots), where they're contrast-safe; --value-text/--slop-text are the same
+// hues darkened for the small bold table text this feeds (WCAG AA needs
+// 4.5:1 there vs. the 3:1 large-text minimum the KPI numbers get away with).
+function valueColor(v){ return v>=1.6?'var(--value-text)':(v<0?'var(--slop-hi)':'var(--slop-text)'); }
 
 /* =====================================================================
    RENDER
@@ -89,7 +98,7 @@ function renderAll(){
   const roiRows = document.getElementById('roiRows');
   const maxAmt = Math.max(...ov.recoverable_breakdown.map(r=>r.amount_usd), 1);
   roiRows.innerHTML = ov.recoverable_breakdown.map(r => `
-    <div class="roi-row"><span>${r.label}</span><span style="font-weight:700;color:var(--value)">${fmtMoney(r.amount_usd)}</span></div>
+    <div class="roi-row"><span>${r.label}</span><span style="font-weight:700;color:var(--value-text)">${fmtMoney(r.amount_usd)}</span></div>
     <div class="bar"><i style="width:${Math.max(4,r.amount_usd/maxAmt*100)}%"></i></div>
   `).join('');
 
@@ -132,22 +141,30 @@ function renderScatter(people){
 
   people.forEach((p,i)=>{
     const r = 5 + Math.sqrt(Math.max(p.spend_usd,1))/9;
-    svg += `<circle class="dot" data-i="${i}" cx="${xPix(p.spend_usd)}" cy="${yPix(p.value_per_dollar)}" r="${r}" fill="${slopColor(p.slop_risk)}" fill-opacity=".82" stroke="#fff" stroke-width="1.2"/>`;
+    const label = `${p.name}, ${p.team}: ${fmtMoney(p.spend_usd)} per month, ${fmtX(p.value_per_dollar)} value per dollar, slop risk ${p.slop_risk.toFixed(0)} of 100`;
+    svg += `<circle class="dot" tabindex="0" role="img" aria-label="${label}" data-i="${i}" cx="${xPix(p.spend_usd)}" cy="${yPix(p.value_per_dollar)}" r="${r}" fill="${slopColor(p.slop_risk)}" fill-opacity=".82" stroke="#fff" stroke-width="1.2"><title>${label}</title></circle>`;
   });
   const plot = document.getElementById('plot');
   plot.setAttribute('viewBox', `0 0 ${W} ${H}`);
   plot.innerHTML = svg;
   const tip = document.getElementById('tip');
+  const showTip = (p, clientX, clientY) => {
+    tip.innerHTML = `<b>${p.name}</b> · ${p.team}<br>${fmtMoney(p.spend_usd)}/mo · ${fmtX(p.value_per_dollar)} value · slop ${p.slop_risk.toFixed(0)}`;
+    const wrap = plot.closest('.plotwrap').getBoundingClientRect();
+    tip.style.left = (clientX - wrap.left + 12) + 'px';
+    tip.style.top = (clientY - wrap.top - 8) + 'px';
+    tip.style.opacity = 1;
+  };
   plot.querySelectorAll('.dot').forEach(d=>{
-    d.addEventListener('mousemove', e=>{
-      const p = people[d.dataset.i];
-      tip.innerHTML = `<b>${p.name}</b> · ${p.team}<br>${fmtMoney(p.spend_usd)}/mo · ${fmtX(p.value_per_dollar)} value · slop ${p.slop_risk.toFixed(0)}`;
-      const wrap = plot.closest('.plotwrap').getBoundingClientRect();
-      tip.style.left = (e.clientX - wrap.left + 12) + 'px';
-      tip.style.top = (e.clientY - wrap.top - 8) + 'px';
-      tip.style.opacity = 1;
-    });
+    d.addEventListener('mousemove', e=> showTip(people[d.dataset.i], e.clientX, e.clientY));
     d.addEventListener('mouseleave', ()=> tip.style.opacity = 0);
+    // Keyboard-focus equivalent of hover, so the tooltip isn't mouse-only —
+    // the aria-label above already covers screen readers on its own.
+    d.addEventListener('focus', ()=>{
+      const rect = d.getBoundingClientRect();
+      showTip(people[d.dataset.i], rect.left + rect.width / 2, rect.top);
+    });
+    d.addEventListener('blur', ()=> tip.style.opacity = 0);
   });
 }
 
@@ -167,6 +184,10 @@ function recClass(rec){
 }
 
 let sortKey='spend_usd', sortDir=-1;
+// Tier is a rank, not alphabetical text — Basic/Frontier/Standard sorted as
+// strings reads oddly given the app implies a hierarchy (matches the order
+// already used in the tier filter dropdown).
+const TIER_RANK = { Frontier: 3, Standard: 2, Basic: 1 };
 
 function currentFiltered(){
   const q = document.getElementById('searchBox').value.trim().toLowerCase();
@@ -174,10 +195,11 @@ function currentFiltered(){
   const tier = document.getElementById('tierFilter').value;
   const seg = document.getElementById('segFilter').value;
   let rows = STATE.overview.people.filter(p =>
-    (!q || p.name.toLowerCase().includes(q) || p.role.toLowerCase().includes(q)) &&
+    (!q || p.name.toLowerCase().includes(q) || p.role.toLowerCase().includes(q) || p.recommendation.toLowerCase().includes(q)) &&
     (!team || p.team===team) && (!tier || p.tier===tier) && (!seg || p.segment===seg)
   );
   rows.sort((a,b)=>{
+    if (sortKey === 'tier') return sortDir * ((TIER_RANK[a.tier]||0) - (TIER_RANK[b.tier]||0));
     const av=a[sortKey], bv=b[sortKey];
     if (typeof av === 'string') return sortDir*av.localeCompare(bv);
     return sortDir*(av-bv);
@@ -217,18 +239,24 @@ function renderAgg(view){
     </tr>`).join('');
 }
 
+// Alerts computed by the last renderAlerts() call, so the click/keydown
+// delegation below can look up which filter to apply without re-deriving it.
+let lastAlerts = [];
+
 function renderAlerts(ov, teams){
   const alerts = [];
   const worstTeam = [...teams].sort((a,b)=>b.slop_risk-a.slop_risk)[0];
   if (worstTeam && worstTeam.slop_risk >= 50) {
     alerts.push({sev:'high', title:`${worstTeam.name} has the highest slop risk of any team (${worstTeam.slop_risk.toFixed(0)}/100)`,
-      body:`${worstTeam.people_count} people, ${fmtMoney(worstTeam.spend_usd)}/mo. Worth a sampled Tier-3 review before the next budget cycle.`});
+      body:`${worstTeam.people_count} people, ${fmtMoney(worstTeam.spend_usd)}/mo. Worth a sampled Tier-3 review before the next budget cycle.`,
+      filterTeam: worstTeam.name});
   }
   const coachPeople = ov.people.filter(p=>p.recommendation==='Re-tier + coach');
   if (coachPeople.length) {
     const spend = coachPeople.reduce((a,p)=>a+p.spend_usd,0);
     alerts.push({sev:'high', title:`${coachPeople.length} people flagged for re-tier + coach`,
-      body:`Together they represent ${fmtMoney(spend)}/mo in high-spend, high-slop usage — the single largest recoverable bucket this period.`});
+      body:`Together they represent ${fmtMoney(spend)}/mo in high-spend, high-slop usage — the single largest recoverable bucket this period.`,
+      filterSearch: 're-tier + coach'});
   }
   if (ov.spend_change_pct >= 25) {
     alerts.push({sev:'med', title:`Company AI spend is up ${ov.spend_change_pct}% month over month`,
@@ -237,13 +265,19 @@ function renderAlerts(ov, teams){
   const stars = ov.people.filter(p=>p.recommendation.startsWith('Keep'));
   if (stars.length) {
     alerts.push({sev:'good', title:`${stars.length} people are top-performing outliers worth studying`,
-      body: stars.map(s=>s.name).join(', ') + ' — high value per dollar with low slop risk. Consider surfacing their workflows to the rest of the team.'});
+      body: stars.map(s=>s.name).join(', ') + ' — high value per dollar with low slop risk. Consider surfacing their workflows to the rest of the team.',
+      filterSearch: 'keep'});
   }
+  lastAlerts = alerts;
   const sevColor = {high:'var(--slop-hi)', med:'var(--slop)', good:'var(--value)'};
-  document.getElementById('alertsList').innerHTML = alerts.map(a => `
-    <div class="alert"><div class="dot2" style="background:${sevColor[a.sev]}"></div>
-      <div><h4>${a.title}</h4><p>${a.body}</p></div></div>
-  `).join('') || '<p style="color:var(--muted);font-size:13px">No alerts this period.</p>';
+  document.getElementById('alertsList').innerHTML = alerts.map((a,i) => {
+    const clickable = a.filterTeam || a.filterSearch;
+    return `
+    <div class="alert${clickable?' clickable':''}"${clickable?` role="button" tabindex="0" data-i="${i}"`:''}>
+      <div class="dot2" style="background:${sevColor[a.sev]}"></div>
+      <div><h4>${a.title}</h4><p>${a.body}</p>${clickable?'<span class="alert-cta">View in People →</span>':''}</div>
+    </div>`;
+  }).join('') || '<p style="color:var(--muted);font-size:13px">No alerts this period.</p>';
 }
 
 function renderIntegrations(){
@@ -272,31 +306,55 @@ function renderIntegrations(){
 /* =====================================================================
    INTERACTIONS
    ===================================================================== */
+const VIEW_TITLES = {overview:['Overview','AI spend & value, down to the person'],
+  people:['People','Every AI-active person — search, filter, sort'],
+  teams:['Teams & Roles','Spend and value rolled up above the individual'],
+  alerts:['Alerts','What Meter thinks needs a look this period'],
+  integrations:['Integrations','How spend, outcomes, and quality signals get in']};
+
+function switchView(view){
+  document.querySelectorAll('.sb-item').forEach(i=>{
+    const active = i.dataset.view === view;
+    i.classList.toggle('active', active);
+    if (active) i.setAttribute('aria-current', 'page'); else i.removeAttribute('aria-current');
+  });
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id === 'view-' + view));
+  document.getElementById('pageTitle').textContent = VIEW_TITLES[view][0];
+  document.getElementById('pageSub').textContent = VIEW_TITLES[view][1];
+}
+
 document.getElementById('nav').addEventListener('click', e=>{
   const item = e.target.closest('.sb-item');
   if (!item) return;
-  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
-  item.classList.add('active');
-  const view = item.dataset.view;
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-' + view).classList.add('active');
-  const titles = {overview:['Overview','AI spend & value, down to the person'],
-    people:['People','Every AI-active person — search, filter, sort'],
-    teams:['Teams & Roles','Spend and value rolled up above the individual'],
-    alerts:['Alerts','What Meter thinks needs a look this period'],
-    integrations:['Integrations','How spend, outcomes, and quality signals get in']};
-  document.getElementById('pageTitle').textContent = titles[view][0];
-  document.getElementById('pageSub').textContent = titles[view][1];
+  switchView(item.dataset.view);
+});
+document.getElementById('nav').addEventListener('keydown', e=>{
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const item = e.target.closest('.sb-item');
+  if (!item) return;
+  e.preventDefault();
+  switchView(item.dataset.view);
 });
 
 ['searchBox'].forEach(id=>document.getElementById(id).addEventListener('input', renderPeopleTable));
 ['teamFilter','tierFilter','segFilter'].forEach(id=>document.getElementById(id).addEventListener('change', renderPeopleTable));
 
-document.getElementById('peopleTable').querySelector('thead').addEventListener('click', e=>{
-  const th = e.target.closest('th'); if (!th || !th.dataset.k) return;
+function sortByHeader(th){
+  if (!th || !th.dataset.k) return;
   const k = th.dataset.k;
   if (sortKey === k) sortDir *= -1; else { sortKey = k; sortDir = -1; }
+  document.querySelectorAll('#peopleTable th[data-k]').forEach(h=>{
+    h.setAttribute('aria-sort', h.dataset.k === sortKey ? (sortDir === 1 ? 'ascending' : 'descending') : 'none');
+  });
   renderPeopleTable();
+}
+const peopleThead = document.getElementById('peopleTable').querySelector('thead');
+peopleThead.addEventListener('click', e=> sortByHeader(e.target.closest('th')));
+peopleThead.addEventListener('keydown', e=>{
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const th = e.target.closest('th'); if (!th || !th.dataset.k) return;
+  e.preventDefault();
+  sortByHeader(th);
 });
 
 document.getElementById('aggToggle').addEventListener('click', e=>{
@@ -304,6 +362,31 @@ document.getElementById('aggToggle').addEventListener('click', e=>{
   document.querySelectorAll('#aggToggle button').forEach(b=>b.classList.remove('on'));
   e.target.classList.add('on');
   renderAgg(e.target.dataset.v);
+});
+
+// Alerts that reference a specific cohort (a team, or people matching a
+// recommendation) cross-navigate into the People view pre-filtered to them.
+function goToPeopleWithFilter({filterTeam, filterSearch}){
+  document.getElementById('teamFilter').value = filterTeam || '';
+  document.getElementById('tierFilter').value = '';
+  document.getElementById('segFilter').value = '';
+  document.getElementById('searchBox').value = filterSearch || '';
+  renderPeopleTable();
+  switchView('people');
+}
+function activateAlert(target){
+  const card = target.closest('.alert.clickable');
+  if (!card) return;
+  const a = lastAlerts[Number(card.dataset.i)];
+  if (a) goToPeopleWithFilter(a);
+}
+const alertsList = document.getElementById('alertsList');
+alertsList.addEventListener('click', e=> activateAlert(e.target));
+alertsList.addEventListener('keydown', e=>{
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  if (!e.target.closest('.alert.clickable')) return;
+  e.preventDefault();
+  activateAlert(e.target);
 });
 
 loadData();

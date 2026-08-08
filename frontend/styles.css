@@ -3,6 +3,11 @@
   --brand:#4f46e5; --brand-soft:#eef0fe; --brand-dark:#3730a3;
   --value:#0d9668; --value-soft:#e5f4ee;
   --slop:#dc6803; --slop-hi:#d1382c; --slop-soft:#fdecdd;
+  /* Darkened variants of --value/--slop for use as normal-size text color —
+     the base tones are ~3.5:1 against white/--panel, below the 4.5:1 WCAG AA
+     text minimum. Fine as-is for large text (KPI numbers, bars, dots). */
+  --value-text:#0a7a54;
+  --slop-text:#b45a00;
   --navy:#141a3c; --navy2:#1b2352;
   --chip:#eef0f4;
   --shadow:0 1px 2px rgba(16,21,32,.06),0 6px 20px rgba(16,21,32,.05);
@@ -10,7 +15,7 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  -webkit-font-smoothing:antialiased;line-height:1.45;display:flex;min-height:100vh}
+  -webkit-font-smoothing:antialiased;line-height:1.45;display:flex;min-height:100vh;overflow-x:hidden}
 
 /* ---------- sidebar ---------- */
 .sidebar{width:224px;flex:none;background:var(--navy);color:#fff;display:flex;flex-direction:column;
@@ -24,6 +29,7 @@ body{margin:0;background:var(--bg);color:var(--ink);
   font-size:13.5px;font-weight:500;cursor:pointer;margin-bottom:2px;transition:background .12s,color .12s}
 .sb-item:hover{background:#242b58;color:#fff}
 .sb-item.active{background:var(--brand);color:#fff}
+.sb-item:focus-visible{outline:2px solid #8b93f5;outline-offset:-2px}
 .sb-item svg{width:16px;height:16px;flex:none;opacity:.9}
 .sb-foot{padding:14px 18px 18px;font-size:11.5px;color:#7d84ad;border-top:1px solid #262d5c}
 .sb-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:4px 9px;
@@ -44,14 +50,14 @@ main{flex:1;min-width:0;padding:26px 32px 60px;max-width:1240px}
 .view.active{display:block}
 
 /* ---------- kpis ---------- */
-.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}
 .kpi{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:15px 16px;box-shadow:var(--shadow)}
 .kpi .lab{font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.03em;text-transform:uppercase}
 .kpi .val{font-size:25px;font-weight:700;letter-spacing:-.5px;margin-top:6px}
 .kpi .note{font-size:11.5px;color:var(--muted);margin-top:3px}
 .kpi .val.good{color:var(--value)} .kpi .val.warn{color:var(--slop)}
 
-.grid2{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow)}
 .card h2{font-size:14.5px;margin:0 0 2px;letter-spacing:-.2px}
 .card .desc{font-size:12px;color:var(--muted);margin:0 0 14px}
@@ -59,7 +65,7 @@ main{flex:1;min-width:0;padding:26px 32px 60px;max-width:1240px}
 .plotwrap{position:relative}
 svg.plot{width:100%;height:auto;display:block;overflow:visible}
 .dot{cursor:pointer;transition:stroke-width .1s}
-.dot:hover{stroke:#12151c;stroke-width:1.6}
+.dot:hover,.dot:focus-visible{stroke:#12151c;stroke-width:1.6;outline:none}
 .tip{position:absolute;pointer-events:none;background:#12151c;color:#fff;font-size:11.5px;
   padding:8px 10px;border-radius:8px;opacity:0;transition:opacity .1s;white-space:nowrap;z-index:5;box-shadow:var(--shadow)}
 .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--muted)}
@@ -72,12 +78,12 @@ svg.plot{width:100%;height:auto;display:block;overflow:visible}
 .bar{height:6px;border-radius:6px;background:var(--chip);overflow:hidden;margin-bottom:4px}
 .bar i{display:block;height:100%;border-radius:6px;background:var(--value)}
 
-.segs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+.segs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
 .seg{border:1px solid var(--line);border-radius:12px;padding:11px 12px}
 .seg .t{font-size:11px;font-weight:700;letter-spacing:.02em}
 .seg .n{font-size:20px;font-weight:800;letter-spacing:-.5px;margin-top:2px}
 .seg .d{font-size:11px;color:var(--muted);margin-top:2px}
-.seg.a{background:var(--value-soft)} .seg.a .t{color:var(--value)}
+.seg.a{background:var(--value-soft)} .seg.a .t{color:var(--value-text)}
 .seg.b{background:var(--slop-soft)} .seg.b .t{color:var(--slop-hi)}
 .seg.c{background:var(--brand-soft)} .seg.c .t{color:var(--brand)}
 .seg.d{background:var(--chip)} .seg.d .t{color:var(--muted)}
@@ -85,8 +91,15 @@ svg.plot{width:100%;height:auto;display:block;overflow:visible}
 /* table */
 table{width:100%;border-collapse:collapse;font-size:12.8px}
 th{text-align:left;font-size:10.5px;color:var(--muted);font-weight:700;letter-spacing:.03em;
-  text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
-th:hover{color:var(--ink)}
+  text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;user-select:none}
+/* Only columns with a data-k are actually sortable (the People table) — a
+   pointer cursor on every th, including non-sortable ones like "Meter says"
+   or the Teams/Roles columns, was a false affordance. */
+th[data-k]{cursor:pointer}
+th[data-k]:hover{color:var(--ink)}
+th[data-k]:focus-visible{outline:2px solid var(--brand);outline-offset:2px;color:var(--ink)}
+th[aria-sort="ascending"]::after{content:" \25B2";font-size:9px}
+th[aria-sort="descending"]::after{content:" \25BC";font-size:9px}
 th.num,td.num{text-align:right}
 td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
 tr:last-child td{border-bottom:none}
@@ -100,20 +113,22 @@ tr:last-child td{border-bottom:none}
 .slopbar .track i{display:block;height:100%}
 .rec{font-size:11px;color:var(--muted)}
 .flag{color:var(--slop-hi);font-weight:600}
-.keep{color:var(--value);font-weight:600}
+.keep{color:var(--value-text);font-weight:600}
 
 /* filters */
 .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
 .filters input[type=text]{border:1px solid var(--line);border-radius:9px;padding:7px 11px;font-size:12.5px;
   min-width:180px;background:#fff}
 .filters select{border:1px solid var(--line);border-radius:9px;padding:7px 9px;font-size:12.5px;background:#fff;color:var(--ink)}
+.filters input:focus-visible,.filters select:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
 .toggle{display:inline-flex;background:var(--chip);border-radius:10px;padding:3px}
 .toggle button{border:none;background:transparent;padding:6px 13px;border-radius:8px;font-size:12px;
   font-weight:600;color:var(--muted);cursor:pointer}
 .toggle button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow)}
+.toggle button:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
 
 /* integrations */
-.int-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.int-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .int-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
 .int-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
 .int-icon{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:14px}
@@ -130,10 +145,35 @@ tr:last-child td{border-bottom:none}
 .alert .dot2{width:9px;height:9px;border-radius:50%;margin-top:5px;flex:none}
 .alert h4{margin:0 0 3px;font-size:13.5px}
 .alert p{margin:0;font-size:12.5px;color:var(--muted)}
+.alert.clickable{cursor:pointer}
+.alert.clickable:hover{border-color:var(--brand)}
+.alert.clickable:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.alert-cta{display:inline-block;margin-top:6px;font-size:11.5px;font-weight:600;color:var(--brand)}
 
 code.tag{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;background:var(--chip);
   padding:1px 6px;border-radius:5px}
 
 footer{margin-top:22px;font-size:11px;color:var(--muted);line-height:1.6}
-@media(max-width:980px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}
-  .segs{grid-template-columns:repeat(2,1fr)}.int-grid{grid-template-columns:1fr}}
+
+/* KPI cards wrap awkwardly (e.g. "VALUE PER $ (BLENDED)" onto 2 lines) a bit
+   above the main 980px breakpoint, so they get their own, slightly wider one. */
+@media(max-width:1100px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+@media(max-width:980px){.grid2{grid-template-columns:1fr}
+  .segs{grid-template-columns:repeat(2,minmax(0,1fr))}.int-grid{grid-template-columns:1fr}}
+
+/* Below ~720px the fixed 224px sidebar no longer leaves enough room for
+   content — collapse it into a horizontally-scrollable top bar instead of
+   letting the page overflow sideways with no scrollbar. */
+@media(max-width:720px){
+  body{flex-direction:column}
+  .sidebar{width:100%;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;padding:10px 12px}
+  .sb-brand{padding:0 10px 0 0}
+  .sb-nav{display:flex;flex-direction:row;flex:1;overflow-x:auto;margin-top:0;padding:0;gap:4px}
+  .sb-item{flex:none;margin-bottom:0;white-space:nowrap}
+  .sb-foot{width:100%;border-top:none;padding:8px 0 0;display:flex;align-items:center;gap:10px}
+  .sb-foot br{display:none}
+  main{padding:16px 14px 40px}
+}
+
+@media(max-width:480px){.kpis{grid-template-columns:1fr}.segs{grid-template-columns:1fr}}
