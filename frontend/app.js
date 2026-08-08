@@ -16,7 +16,14 @@
    the snapshot in fallback-data.js, so the UI behaves identically either
    way. The sidebar badge tells you which mode it's in.
    ===================================================================== */
-const API_BASE = "http://localhost:8000";
+// localhost/127.0.0.1/file:// (empty hostname) means local dev — hit the
+// local backend. Any other origin is a real deploy (the production domain,
+// or a Cloudflare Pages preview build) — hit the production API. A preview
+// build's origin won't be in MERIT_CORS_ORIGINS, so its fetches get CORS-
+// blocked and it falls back to demo data — expected, not a bug.
+const API_BASE = ["localhost", "127.0.0.1", ""].includes(location.hostname)
+  ? "http://localhost:8000"
+  : "https://api.usemeritai.com";
 
 let STATE = { overview: null, teams: null, roles: null, trends: null, toolBreakdown: null, adoption: null, live: false };
 

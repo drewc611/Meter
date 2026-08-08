@@ -91,6 +91,11 @@ on the backend service (wide open by default — see `docker-compose.yml`) and
 `MERIT_DATABASE_URL` if you're swapping SQLite for Postgres. See
 [`backend/README.md`](backend/README.md) for the full config surface.
 
+## Deploying
+
+See [`DEPLOY.md`](DEPLOY.md) for the production setup this repo is actually
+configured for: Cloudflare Pages for the frontend, Fly.io for the backend.
+
 ## How it works
 
 Three independent ingestion paths (spend, outcomes, quality signals) resolve
