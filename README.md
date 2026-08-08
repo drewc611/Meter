@@ -1,0 +1,2 @@
+# Meter
+Ai spending tracker
