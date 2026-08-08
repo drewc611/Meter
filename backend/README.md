@@ -40,16 +40,17 @@ loads stay fast regardless of how much history is underneath.
 
 ## Why three tiers, and where each lives in the code
 
-- **Tier 1 (usage × outcome)** — `scoring.raw_value_score` / `normalize_value_scores`.
-  Correlates spend against `OUTCOME_VALUE_WEIGHTS` (models.py) — PRs merged count
-  positive, PRs reverted count sharply negative. Normalized to the company median
-  so the dashboard shows "1.4x" rather than a raw, uninterpretable ratio.
-- **Tier 2 (quality proxies)** — `scoring.raw_slop_risk`. Built from
-  `QUALITY_SIGNAL_WEIGHTS` (models.py): reverted code, heavily-rewritten drafts,
-  regeneration loops, reopened tickets. `ingest.ingest_outcome_event` also shows
-  the auto-derivation path — a reverted PR is both a negative Tier-1 outcome
-  *and* a Tier-2 quality signal from the same webhook payload.
-- **Tier 3 (sampled grading)** — `models.RubricGrade` + `scoring.calibrate_weights`
+- **Tier 1 (usage × outcome)** — `services/scoring.py` (`raw_value_from_totals`
+  / `normalize_value_scores`). Correlates spend against `OUTCOME_VALUE_WEIGHTS`
+  (constants.py) — PRs merged count positive, PRs reverted count sharply negative.
+  Normalized to the company median so the dashboard shows "1.4x" rather than a
+  raw, uninterpretable ratio.
+- **Tier 2 (quality proxies)** — `services/scoring.py` (`raw_slop_from_severities`).
+  Built from `QUALITY_SIGNAL_WEIGHTS` (constants.py): reverted code, heavily-rewritten
+  drafts, regeneration loops, reopened tickets. `services/ingest.ingest_outcome_event`
+  also shows the auto-derivation path — a reverted PR is both a negative Tier-1
+  outcome *and* a Tier-2 quality signal from the same webhook payload.
+- **Tier 3 (sampled grading)** — `models.RubricGrade` + `services/scoring.calibrate_weights`
   (stubbed — see the docstring for what it would do once there's enough grading
   volume to calibrate against). Not run automatically; a human or an LLM grader
   writes to this table directly.
@@ -63,9 +64,24 @@ uvicorn app.main:app --reload --port 8000
 curl http://localhost:8000/api/overview | python3 -m json.tool
 ```
 
+Or use the Makefile: `make install`, `make seed`, `make run`, `make test`, `make lint`, `make fmt`.
+
 Then open `../frontend/index.html` in a browser — it tries `http://localhost:8000`
 first and falls back to an embedded snapshot if the API isn't reachable, so it
 works either way. The sidebar badge tells you which mode it's in.
+
+## Tests & tooling
+
+```bash
+pip install -r requirements.txt -r requirements-dev.txt
+make test     # pytest — pure scoring math, ingestion, analytics, and full API round-trips
+make lint     # ruff check
+make fmt      # ruff format + import sort
+```
+
+Tests point the app at a throwaway SQLite database (a temp path set in
+`tests/conftest.py` before any `app` module imports), so `make test` never
+touches your `meter.db`. Ruff/pytest config lives in `pyproject.toml`.
 
 ## Endpoints
 
@@ -86,23 +102,40 @@ a shadow-AI candidate, not a silently dropped event).
 
 ## Files
 
-- `app/models.py` — the data model (§7 of the spec), plus the two weight
-  tables (`OUTCOME_VALUE_WEIGHTS`, `QUALITY_SIGNAL_WEIGHTS`) a real deployment
-  would tune per company.
-- `app/ingest.py` — identity resolution + the three ingestion functions.
-- `app/scoring.py` — Tier 1/2 formulas and the nightly job. Deliberately
-  simple rather than clever — this is the part a buyer's data team will read.
-- `app/api.py` — read-side aggregation, segmentation (fund/coach/learn/monitor),
-  and the recoverable-spend estimate. The recovery percentages are labeled
-  heuristics in the code — a real deployment calibrates them against actual
-  re-tier outcomes over a few quarters.
-- `app/main.py` — FastAPI wiring.
-- `seed.py` — fabricates realistic sample data across four behavioral profiles
-  (star / risky / steady / quiet) so the demo shows a real spread rather than
-  one canned number.
-- `proxy_example.py` — reference-only: how spend attribution actually happens
-  in production, via a thin proxy in front of the Anthropic/OpenAI API. Not
-  wired into the running demo.
+```
+app/
+  main.py            FastAPI app factory (create_app) — mounts the routers, CORS from config
+  config.py          infra settings (database URL, CORS origins) read from the environment
+  constants.py       tunable business constants: the two weight tables + segment/recovery knobs
+  time_utils.py      single naive-UTC clock (utcnow) shared everywhere
+  database.py        engine, session factory, declarative Base, init_db()
+  dependencies.py    FastAPI request-scoped session (get_db)
+  models.py          the data model (§7 of the spec)
+  schemas.py         Pydantic request/response contract
+  periods.py         calendar-month [start, end) math, shared by API and seed
+  services/
+    ingest.py        identity resolution + the three ingestion functions
+    scoring.py       Tier 1/2 formulas (pure math) + the nightly job (bulk queries)
+    analytics.py     read-side aggregation, segmentation, recoverable-spend estimate
+  routers/
+    ingestion.py     /ingest/*      admin.py  /admin/*
+    dashboard.py     /api/*         health.py /healthz
+tests/               pytest suite (periods, scoring, ingest, analytics, full API)
+seed.py              fabricates a month of sample data across four behavioral profiles
+proxy_example.py     reference-only usage-attributing LLM proxy (not wired into the demo)
+```
+
+- `constants.py` holds `OUTCOME_VALUE_WEIGHTS` / `QUALITY_SIGNAL_WEIGHTS` and the
+  segment/recommendation thresholds and recovery coefficients — one place to
+  tune per company.
+- `services/scoring.py` keeps the math in pure functions (trivially unit-tested)
+  and does the whole population in three aggregate queries, so the nightly job
+  stays flat as the event tables grow. Deliberately simple — this is the part a
+  buyer's data team will read.
+- `services/analytics.py` recovery percentages are labeled heuristics in the
+  code — a real deployment calibrates them against actual re-tier outcomes.
+- `seed.py` uses the four behavioral profiles (star / risky / steady / quiet) so
+  the demo shows a real spread rather than one canned number.
 
 ## What's stubbed, on purpose
 

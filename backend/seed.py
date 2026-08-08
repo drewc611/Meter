@@ -6,17 +6,19 @@ runs produce the same numbers.
 
     python seed.py
 """
-import random
-from datetime import datetime, timedelta
 
-from app.database import SessionLocal, engine, Base
-from app.models import Identity, Team, IdentityMapping, QUALITY_SIGNAL_WEIGHTS
-from app import ingest, scoring
+import random
+from datetime import timedelta
+
+from app.constants import QUALITY_SIGNAL_WEIGHTS
+from app.database import Base, SessionLocal, engine
+from app.models import Identity, IdentityMapping, Team
 from app.periods import current_period, prior_period
+from app.services import ingest, scoring
 
 random.seed(42)
 
-Base.metadata.drop_all(bind=engine)   # clean slate on every seed run
+Base.metadata.drop_all(bind=engine)  # clean slate on every seed run
 Base.metadata.create_all(bind=engine)
 db = SessionLocal()
 
@@ -79,17 +81,25 @@ PROFILE_SPEND_RANGE = {"star": (500, 2400), "risky": (600, 2100), "steady": (250
 PROFILE_OUTCOME_MIX = {
     # (pr_merged, pr_reverted, ticket_resolved, ticket_reopened, deal_advanced, doc_published) event *base counts*
     # — jittered +/-30% per person below so nobody in a profile lands on an identical score.
-    "star":   dict(pr_merged=20, pr_reverted=0, ticket_resolved=12, ticket_reopened=0, deal_stage_advanced=7, doc_published=7),
-    "risky":  dict(pr_merged=4,  pr_reverted=5, ticket_resolved=3,  ticket_reopened=4, deal_stage_advanced=1, doc_published=1),
-    "steady": dict(pr_merged=7,  pr_reverted=1, ticket_resolved=6,  ticket_reopened=1, deal_stage_advanced=2, doc_published=2),
-    "quiet":  dict(pr_merged=2,  pr_reverted=0, ticket_resolved=2,  ticket_reopened=0, deal_stage_advanced=0, doc_published=1),
+    "star": dict(
+        pr_merged=20, pr_reverted=0, ticket_resolved=12, ticket_reopened=0, deal_stage_advanced=7, doc_published=7
+    ),
+    "risky": dict(
+        pr_merged=4, pr_reverted=5, ticket_resolved=3, ticket_reopened=4, deal_stage_advanced=1, doc_published=1
+    ),
+    "steady": dict(
+        pr_merged=7, pr_reverted=1, ticket_resolved=6, ticket_reopened=1, deal_stage_advanced=2, doc_published=2
+    ),
+    "quiet": dict(
+        pr_merged=2, pr_reverted=0, ticket_resolved=2, ticket_reopened=0, deal_stage_advanced=0, doc_published=1
+    ),
 }
 PROFILE_QUALITY_SIGNALS = {
     # signal_type -> base event count, jittered per person
-    "star":   dict(draft_heavily_rewritten=0, content_never_opened=0, regeneration_loop=1),
-    "risky":  dict(draft_heavily_rewritten=4, content_never_opened=3, regeneration_loop=5),
+    "star": dict(draft_heavily_rewritten=0, content_never_opened=0, regeneration_loop=1),
+    "risky": dict(draft_heavily_rewritten=4, content_never_opened=3, regeneration_loop=5),
     "steady": dict(draft_heavily_rewritten=1, content_never_opened=1, regeneration_loop=1),
-    "quiet":  dict(draft_heavily_rewritten=0, content_never_opened=0, regeneration_loop=0),
+    "quiet": dict(draft_heavily_rewritten=0, content_never_opened=0, regeneration_loop=0),
 }
 
 
@@ -140,7 +150,7 @@ for name, (ident, profile) in identities.items():
                 source="github",
                 outcome_type=outcome_type,
                 occurred_at=random_day_this_period(),
-                external_ref=f"ref-{random.randint(1000,9999)}",
+                external_ref=f"ref-{random.randint(1000, 9999)}",
             )
 
     for signal_type, base_count in PROFILE_QUALITY_SIGNALS[profile].items():
@@ -160,7 +170,7 @@ n = scoring.recompute_all(db, PERIOD_START, PERIOD_END)
 print(f"Scored {n} people for {PERIOD_START.date()}")
 
 # a rough prior-period baseline just for the "vs last month" KPI — reuse ~85% of this month's spend
-for name, (ident, profile) in identities.items():
+for _name, (ident, _profile) in identities.items():
     for _ in range(random.randint(10, 25)):
         ingest.ingest_usage_event(
             db,

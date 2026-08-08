@@ -13,10 +13,10 @@ dashboard UI. Product name is a placeholder.
 backend/    FastAPI service: usage/outcome/quality-signal ingestion,
             identity resolution, Tier-1/Tier-2 scoring, REST API.
             See backend/README.md for the full architecture writeup.
-frontend/   index.html — sidebar dashboard (Overview, People, Teams &
-            Roles, Alerts, Integrations). Calls the backend API at
-            localhost:8000 and falls back to embedded demo data if
-            it's not running.
+frontend/   Sidebar dashboard (Overview, People, Teams & Roles, Alerts,
+            Integrations), split into index.html + styles.css + app.js +
+            fallback-data.js. Calls the backend API at localhost:8000 and
+            falls back to embedded demo data if it's not running.
 ```
 
 ## Quickstart
@@ -30,6 +30,8 @@ uvicorn app.main:app --reload --port 8000
 
 Then open `frontend/index.html` in a browser. The sidebar badge shows
 whether it's reading from the live API or the embedded fallback.
+
+Run the backend test suite with `make test` (or `pytest`) from `backend/`.
 
 ## How it works
 
