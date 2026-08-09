@@ -16,8 +16,7 @@ router = APIRouter(prefix="/api", tags=["dashboard"])
 def overview(db: Session = Depends(get_db)):
     start, end = current_period()
     prior_start, prior_end = prior_period(start)
-    prior_scores = analytics._latest_scores(db, prior_start, prior_end)
-    prior_total = sum(s.spend_usd for s in prior_scores) or None
+    prior_total = analytics.get_total_spend(db, prior_start, prior_end) or None
     return analytics.get_overview(db, start, end, prior_total_spend=prior_total)
 
 

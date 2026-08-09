@@ -67,6 +67,11 @@ def _latest_scores(db: Session, period_start: datetime, period_end: datetime) ->
     )
 
 
+def get_total_spend(db: Session, period_start: datetime, period_end: datetime) -> float:
+    """Total spend for a period, straight off PersonScore -- no per-row assembly needed."""
+    return sum(s.spend_usd for s in _latest_scores(db, period_start, period_end))
+
+
 def get_people(db: Session, period_start: datetime, period_end: datetime) -> list[dict]:
     out = []
     for s in _latest_scores(db, period_start, period_end):
@@ -87,6 +92,16 @@ def get_people(db: Session, period_start: datetime, period_end: datetime) -> lis
             }
         )
     return sorted(out, key=lambda r: -r["spend_usd"])
+
+
+def _weighted_totals(people: list[dict]) -> tuple[float, float, float]:
+    """Spend-weighted (total_spend, blended value/$, avg slop risk) for a people list."""
+    total_spend = sum(p["spend_usd"] for p in people)
+    if not total_spend:
+        return 0.0, 0.0, 0.0
+    blended_value = sum(p["value_per_dollar"] * p["spend_usd"] for p in people) / total_spend
+    avg_slop = sum(p["slop_risk"] * p["spend_usd"] for p in people) / total_spend
+    return total_spend, blended_value, avg_slop
 
 
 def _aggregate(people: list[dict], key: str) -> list[dict]:
@@ -127,9 +142,7 @@ def get_overview(
     prior_total_spend: float | None = None,
 ) -> dict:
     people = get_people(db, period_start, period_end)
-    total_spend = sum(p["spend_usd"] for p in people)
-    blended_value = sum(p["value_per_dollar"] * p["spend_usd"] for p in people) / total_spend if total_spend else 0.0
-    avg_slop = sum(p["slop_risk"] * p["spend_usd"] for p in people) / total_spend if total_spend else 0.0
+    total_spend, blended_value, avg_slop = _weighted_totals(people)
 
     segment_counts = defaultdict(int)
     confidence_breakdown = defaultdict(int)
@@ -202,11 +215,7 @@ def get_trends(db: Session, periods: list[tuple[datetime, datetime]]) -> list[di
     out = []
     for start, end in periods:
         people = get_people(db, start, end)
-        total_spend = sum(p["spend_usd"] for p in people)
-        blended_value = (
-            sum(p["value_per_dollar"] * p["spend_usd"] for p in people) / total_spend if total_spend else 0.0
-        )
-        avg_slop = sum(p["slop_risk"] * p["spend_usd"] for p in people) / total_spend if total_spend else 0.0
+        total_spend, blended_value, avg_slop = _weighted_totals(people)
         out.append(
             {
                 "period_start": start,

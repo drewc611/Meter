@@ -4,6 +4,9 @@ All three return 422 if the external id has no IdentityMapping yet: an unmapped
 id is a shadow-AI candidate (§5.5 of the spec), not a silently dropped event.
 """
 
+from collections.abc import Callable
+from typing import TypeVar
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -14,11 +17,22 @@ from ..services import ingest
 
 router = APIRouter(tags=["ingestion"])
 
+T = TypeVar("T")
+
+
+def _or_422(fn: Callable[[], T]) -> T:
+    """Run an ingest call, translating an unmapped external id into the 422
+    the ingestion endpoints all return -- see module docstring for why."""
+    try:
+        return fn()
+    except ingest.UnresolvedIdentityError as e:
+        raise HTTPException(status_code=422, detail=str(e)) from e
+
 
 @router.post("/ingest/usage", status_code=201, response_model=schemas.IngestAccepted)
 def post_usage(evt: schemas.UsageEventIn, db: Session = Depends(get_db)):
-    try:
-        row = ingest.ingest_usage_event(
+    row = _or_422(
+        lambda: ingest.ingest_usage_event(
             db,
             source_system=evt.source_system,
             external_id=evt.external_id,
@@ -29,8 +43,7 @@ def post_usage(evt: schemas.UsageEventIn, db: Session = Depends(get_db)):
             tokens_out=evt.tokens_out,
             occurred_at=evt.occurred_at,
         )
-    except ingest.UnresolvedIdentityError as e:
-        raise HTTPException(status_code=422, detail=str(e)) from e
+    )
     return schemas.IngestAccepted(id=row.id)
 
 
@@ -41,8 +54,8 @@ def post_outcome(evt: schemas.OutcomeEventIn, db: Session = Depends(get_db)):
             status_code=400,
             detail=f"Unknown outcome_type '{evt.outcome_type}' — pass value_weight explicitly to use a custom type.",
         )
-    try:
-        row = ingest.ingest_outcome_event(
+    row = _or_422(
+        lambda: ingest.ingest_outcome_event(
             db,
             source_system=evt.source_system,
             external_id=evt.external_id,
@@ -52,15 +65,14 @@ def post_outcome(evt: schemas.OutcomeEventIn, db: Session = Depends(get_db)):
             external_ref=evt.external_ref,
             value_weight=evt.value_weight,
         )
-    except ingest.UnresolvedIdentityError as e:
-        raise HTTPException(status_code=422, detail=str(e)) from e
+    )
     return schemas.IngestAccepted(id=row.id)
 
 
 @router.post("/ingest/quality-signal", status_code=201, response_model=schemas.IngestAccepted)
 def post_quality_signal(evt: schemas.QualitySignalIn, db: Session = Depends(get_db)):
-    try:
-        row = ingest.ingest_quality_signal(
+    row = _or_422(
+        lambda: ingest.ingest_quality_signal(
             db,
             source_system=evt.source_system,
             external_id=evt.external_id,
@@ -69,6 +81,5 @@ def post_quality_signal(evt: schemas.QualitySignalIn, db: Session = Depends(get_
             external_ref=evt.external_ref,
             severity=evt.severity,
         )
-    except ingest.UnresolvedIdentityError as e:
-        raise HTTPException(status_code=422, detail=str(e)) from e
+    )
     return schemas.IngestAccepted(id=row.id)
