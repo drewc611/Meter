@@ -10,11 +10,12 @@ from a file:// origin); set MERIT_CORS_ORIGINS to your real frontend origin(s)
 before this ever sees real customer data. See config.py.
 """
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .database import init_db
+from .dependencies import require_api_key
 from .routers import admin, dashboard, health, ingestion
 
 
@@ -28,9 +29,12 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    app.include_router(ingestion.router)
-    app.include_router(admin.router)
-    app.include_router(dashboard.router)
+    # Gated by MERIT_API_KEY (see dependencies.require_api_key) -- unset in
+    # local/dev/docker-compose, set in production. /healthz stays open so
+    # Fly's health check doesn't need the secret.
+    app.include_router(ingestion.router, dependencies=[Depends(require_api_key)])
+    app.include_router(admin.router, dependencies=[Depends(require_api_key)])
+    app.include_router(dashboard.router, dependencies=[Depends(require_api_key)])
     app.include_router(health.router)
     return app
 

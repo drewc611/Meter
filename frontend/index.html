@@ -7,10 +7,12 @@
 <meta name="description" content="Merit tells a company what it spends on AI, who's spending it, and whether that spend is producing real work or slop. Coming soon.">
 <style>
   :root{
-    --navy:#141a3c; --navy2:#1b2352;
+    /* Same navy/brand family as the dashboard sidebar (styles.css --navy/--navy2/--brand)
+       so the two live surfaces read as one product, not two. */
+    --navy:#12152c; --navy2:#1a1f42;
     --brand:#4f46e5; --brand-soft:#7c74f4; --brand-pale:#cad2fb;
     --ink:#eef0fb; --muted:#a7aed8; --line:rgba(255,255,255,.1);
-    --value:#4ade9c;
+    --good:#4ade9c;
   }
   *{box-sizing:border-box}
   body{
@@ -28,13 +30,15 @@
   .badge{display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:700;
     padding:6px 14px; border-radius:20px; background:rgba(124,116,244,.15); color:var(--brand-pale);
     border:1px solid rgba(124,116,244,.3); margin-bottom:22px}
-  .badge i{width:7px; height:7px; border-radius:50%; background:var(--value); box-shadow:0 0 8px var(--value)}
+  .badge i{width:7px; height:7px; border-radius:50%; background:var(--good); box-shadow:0 0 8px var(--good)}
   h1{font-size:clamp(28px,5vw,42px); margin:0 0 14px; letter-spacing:-.5px; font-weight:700}
   .sub{font-size:17px; color:var(--muted); margin:0 0 40px; max-width:520px; margin-left:auto; margin-right:auto}
   .sub b{color:var(--ink); font-weight:600}
 
   .features{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; text-align:left; margin-bottom:36px}
-  .feature{background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:14px; padding:16px 18px}
+  .feature{background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:16px; padding:16px 18px;
+    transition:background .15s,border-color .15s}
+  .feature:hover{background:rgba(255,255,255,.07); border-color:rgba(255,255,255,.18)}
   .feature .t{font-size:13.5px; font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:8px}
   .feature .t i{width:7px; height:7px; border-radius:50%; background:var(--brand-soft); flex:none}
   .feature .d{font-size:12.5px; color:var(--muted); margin:0}

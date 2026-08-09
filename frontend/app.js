@@ -29,33 +29,68 @@ const API_BASE = ["localhost", "127.0.0.1", ""].includes(location.hostname)
 
 let STATE = { overview: null, teams: null, roles: null, trends: null, toolBreakdown: null, adoption: null, live: false };
 
+// The backend gates /api/* behind MERIT_API_KEY when that's set in production
+// (see backend/app/dependencies.py) -- a single shared secret, not per-user
+// auth (see ARCHITECTURE.md's gap list). Storing it in localStorage means a
+// visitor enters it once; it's sent as a Bearer token on every API call.
+const TOKEN_KEY = "merit_token";
+function getStoredToken() { return localStorage.getItem(TOKEN_KEY) || ""; }
+function setStoredToken(t) { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); }
+
+class AuthError extends Error {}
+
 async function fetchJSON(path, timeoutMs = 900) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    const res = await fetch(API_BASE + path, { signal: ctrl.signal });
+    const token = getStoredToken();
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(API_BASE + path, { signal: ctrl.signal, headers });
     clearTimeout(t);
-    if (!res.ok) throw new Error(res.status);
+    // A 401 means "the API is reachable but this token is wrong/missing" --
+    // distinct from every other failure mode below, which all mean "treat
+    // this the same as the API being offline and show demo data."
+    if (res.status === 401) throw new AuthError("unauthorized");
+    if (!res.ok) throw new Error(String(res.status));
     return await res.json();
   } catch (e) {
     clearTimeout(t);
+    if (e instanceof AuthError) throw e;
     return null;
   }
 }
 
-async function loadData() {
+async function fetchLive() {
   const [ov, tm, rl, tr, tb, ad] = await Promise.all([
     fetchJSON("/api/overview"), fetchJSON("/api/teams"), fetchJSON("/api/roles"),
     fetchJSON("/api/trends"), fetchJSON("/api/tool-breakdown"), fetchJSON("/api/adoption")
   ]);
   if (ov && tm && rl && tr && tb && ad) {
-    STATE = { overview: ov, teams: tm, roles: rl, trends: tr, toolBreakdown: tb, adoption: ad, live: true };
-  } else {
-    STATE = {
-      overview: FALLBACK_OVERVIEW, teams: FALLBACK_TEAMS, roles: FALLBACK_ROLES,
-      trends: FALLBACK_TRENDS, toolBreakdown: FALLBACK_TOOL_BREAKDOWN, adoption: FALLBACK_ADOPTION, live: false
-    };
+    return { overview: ov, teams: tm, roles: rl, trends: tr, toolBreakdown: tb, adoption: ad };
   }
+  return null;
+}
+
+async function loadData() {
+  const hadToken = !!getStoredToken();
+  let live = null;
+  try {
+    live = await fetchLive();
+  } catch (e) {
+    if (!(e instanceof AuthError)) throw e;
+    // Wrong/expired token -- clear it and ask again (with a "that didn't
+    // work" hint if one was already stored) rather than silently retrying
+    // forever. Demo data still renders underneath so the page isn't blank
+    // while the visitor sorts out their token.
+    setStoredToken("");
+    showTokenGate(hadToken);
+  }
+  STATE = live
+    ? { ...live, live: true }
+    : {
+        overview: FALLBACK_OVERVIEW, teams: FALLBACK_TEAMS, roles: FALLBACK_ROLES,
+        trends: FALLBACK_TRENDS, toolBreakdown: FALLBACK_TOOL_BREAKDOWN, adoption: FALLBACK_ADOPTION, live: false
+      };
   // Shown in two places — the sidebar footer (easy to miss) and next to the
   // page title (harder to miss) — since which mode the data is in matters
   // for how much a viewer should trust the numbers.
@@ -72,19 +107,59 @@ async function loadData() {
   renderAll();
 }
 
+function showTokenGate(hadWrongToken) {
+  const gate = document.getElementById("tokenGate");
+  if (!gate) return;
+  document.getElementById("tokenGateError").hidden = !hadWrongToken;
+  gate.hidden = false;
+  document.getElementById("tokenGateInput").focus();
+}
+function hideTokenGate() {
+  const gate = document.getElementById("tokenGate");
+  if (gate) gate.hidden = true;
+}
+const tokenGateForm = document.getElementById("tokenGateForm");
+if (tokenGateForm) {
+  tokenGateForm.addEventListener("submit", e => {
+    e.preventDefault();
+    const input = document.getElementById("tokenGateInput");
+    const val = input.value.trim();
+    if (!val) return;
+    setStoredToken(val);
+    input.value = "";
+    hideTokenGate();
+    loadData();
+  });
+  document.getElementById("tokenGateSkip").addEventListener("click", hideTokenGate);
+}
+
 /* =====================================================================
    FORMATTERS
    ===================================================================== */
-const teamColors = { Engineering:'#4f46e5', Design:'#0ea5b7', Support:'#8b5cf6', Sales:'#e0699a', Marketing:'#f0a020', Data:'#3b8a4e' };
+// Fixed categorical order (never cycled/reassigned) validated against the
+// dataviz palette gates for CVD + normal-vision separation. Each team gets a
+// soft tint background + a darkened version of its hue for text, since three
+// of these six hues (aqua, yellow, magenta) fall short of 3:1 white-on-color
+// contrast on their own — the "relief" the validator flags for those slots.
+const teamColors = {
+  Data:        { bg:'#e5eefb', text:'#2a78d6' },
+  Design:      { bg:'#fdece2', text:'#c8511f' },
+  Engineering: { bg:'#e0f6ee', text:'#0f9464' },
+  Marketing:   { bg:'#fdf1d9', text:'#9c6a00' },
+  Sales:       { bg:'#fbe7ef', text:'#c14883' },
+  Support:     { bg:'#dff3df', text:'#046b04' },
+};
+const FALLBACK_TEAM_COLOR = { bg:'var(--chip)', text:'var(--muted)' };
+function teamColor(name){ return teamColors[name] || FALLBACK_TEAM_COLOR; }
 function initials(n){ return n.split(' ').map(w=>w[0]).join('').slice(0,2); }
-function slopColor(s){ return s>=60?'#d1382c':s>=35?'#dc6803':'#0d9668'; }
+function slopColor(s){ return s>=60?'var(--bad)':s>=35?'var(--warn)':'var(--good)'; }
 function fmtMoney(n){ return '$' + Math.round(n).toLocaleString(); }
 function fmtX(n){ return n.toFixed(2) + '×'; }
-// --value/--slop-hi/--slop are also used for large text and non-text (bars,
-// dots), where they're contrast-safe; --value-text/--slop-text are the same
+// --good/--bad/--warn are also used for large text and non-text (bars,
+// dots), where they're contrast-safe; --good-text/--warn-text are the same
 // hues darkened for the small bold table text this feeds (WCAG AA needs
 // 4.5:1 there vs. the 3:1 large-text minimum the KPI numbers get away with).
-function valueColor(v){ return v>=1.6?'var(--value-text)':(v<0?'var(--slop-hi)':'var(--slop-text)'); }
+function valueColor(v){ return v>=1.6?'var(--good-text)':(v<0?'var(--bad)':'var(--warn-text)'); }
 const TOOL_LABELS = { anthropic_api:'Anthropic API', github_copilot:'GitHub Copilot', chatgpt_enterprise:'ChatGPT Enterprise' };
 function toolLabel(t){ return TOOL_LABELS[t] || t; }
 
@@ -111,8 +186,8 @@ function renderAll(){
   const cb = ov.confidence_breakdown || {};
   document.getElementById('confidenceBreakdown').innerHTML = confOrder
     .filter(k => cb[k])
-    .map(k => `<span style="display:inline-flex;align-items:center;gap:5px">${confPill(k)}<b style="font-size:12px">${cb[k]}</b></span>`)
-    .join('') || '<span style="font-size:11.5px;color:var(--muted)">No scored people yet.</span>';
+    .map(k => `<span class="coverage-item">${confPill(k)}<b>${cb[k]}</b></span>`)
+    .join('') || '<span class="coverage-empty">No scored people yet.</span>';
 
   document.getElementById('segFund').textContent = ov.people.filter(p=>p.segment==='fund').length;
   document.getElementById('segCoach').textContent = ov.people.filter(p=>p.segment==='coach').length;
@@ -125,7 +200,7 @@ function renderAll(){
   const roiRows = document.getElementById('roiRows');
   const maxAmt = Math.max(...ov.recoverable_breakdown.map(r=>r.amount_usd), 1);
   roiRows.innerHTML = ov.recoverable_breakdown.map(r => `
-    <div class="roi-row"><span>${r.label}</span><span style="font-weight:700;color:var(--value-text)">${fmtMoney(r.amount_usd)}</span></div>
+    <div class="roi-row"><span>${r.label}</span><span>${fmtMoney(r.amount_usd)}</span></div>
     <div class="bar"><i style="width:${Math.max(4,r.amount_usd/maxAmt*100)}%"></i></div>
   `).join('');
 
@@ -158,15 +233,15 @@ function renderScatter(people){
   const vx = xPix(SPEND_T), vy = yPix(VALUE_T), zeroY = yPix(0);
 
   let svg = '';
-  svg += `<rect x="${padL}" y="${padT}" width="${vx-padL}" height="${vy-padT}" fill="#e5f4ee" opacity=".45"/>`;
-  svg += `<rect x="${vx}" y="${vy}" width="${W-padR-vx}" height="${H-padB-vy}" fill="#fdecdd" opacity=".5"/>`;
-  svg += `<line x1="${padL}" y1="${zeroY}" x2="${W-padR}" y2="${zeroY}" stroke="#d7dbe3"/>`;
-  svg += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H-padB}" stroke="#e6e9ef"/>`;
-  svg += `<line x1="${vx}" y1="${padT}" x2="${vx}" y2="${H-padB}" stroke="#d7dbe3" stroke-dasharray="4 4"/>`;
-  svg += `<line x1="${padL}" y1="${vy}" x2="${W-padR}" y2="${vy}" stroke="#d7dbe3" stroke-dasharray="4 4"/>`;
-  svg += `<text x="${padL}" y="${H-10}" font-size="10.5" fill="#5c6470">$0</text>`;
-  svg += `<text x="${W-padR}" y="${H-10}" font-size="10.5" fill="#5c6470" text-anchor="end">$${Math.round(xMax).toLocaleString()}/mo →</text>`;
-  svg += `<text x="4" y="${padT+6}" font-size="10.5" fill="#5c6470">value/$ ↑</text>`;
+  svg += `<rect x="${padL}" y="${padT}" width="${vx-padL}" height="${vy-padT}" fill="var(--good-soft)" opacity=".5"/>`;
+  svg += `<rect x="${vx}" y="${vy}" width="${W-padR-vx}" height="${H-padB-vy}" fill="var(--bad-soft)" opacity=".5"/>`;
+  svg += `<line x1="${padL}" y1="${zeroY}" x2="${W-padR}" y2="${zeroY}" stroke="var(--line-strong)"/>`;
+  svg += `<line x1="${padL}" y1="${padT}" x2="${padL}" y2="${H-padB}" stroke="var(--line)"/>`;
+  svg += `<line x1="${vx}" y1="${padT}" x2="${vx}" y2="${H-padB}" stroke="var(--line-strong)" stroke-dasharray="4 4"/>`;
+  svg += `<line x1="${padL}" y1="${vy}" x2="${W-padR}" y2="${vy}" stroke="var(--line-strong)" stroke-dasharray="4 4"/>`;
+  svg += `<text x="${padL}" y="${H-10}" font-size="10.5" fill="var(--muted)">$0</text>`;
+  svg += `<text x="${W-padR}" y="${H-10}" font-size="10.5" fill="var(--muted)" text-anchor="end">$${Math.round(xMax).toLocaleString()}/mo →</text>`;
+  svg += `<text x="4" y="${padT+6}" font-size="10.5" fill="var(--muted)">value/$ ↑</text>`;
 
   people.forEach((p,i)=>{
     const r = 5 + Math.sqrt(Math.max(p.spend_usd,1))/9;
@@ -205,25 +280,66 @@ function renderTrends(trends){
   const xPix = i => padL + (trends.length>1 ? i/(trends.length-1)*(W-padL-padR) : (W-padL-padR)/2);
   const yPix = v => H-padB - (v/maxSpend)*(H-padT-padB);
 
-  let svg = `<line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="#e6e9ef"/>`;
-  svg += `<text x="${padL}" y="${padT+2}" font-size="10.5" fill="#5c6470">$${Math.round(maxSpend).toLocaleString()}</text>`;
+  let svg = `<line x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}" stroke="var(--line)"/>`;
+  svg += `<text x="${padL}" y="${padT+2}" font-size="10.5" fill="var(--muted)">$${Math.round(maxSpend).toLocaleString()}</text>`;
   const path = trends.map((t,i)=> `${i===0?'M':'L'}${xPix(i).toFixed(1)},${yPix(t.total_spend_usd).toFixed(1)}`).join(' ');
-  svg += `<path d="${path}" fill="none" stroke="var(--brand)" stroke-width="2.5"/>`;
+  svg += `<path d="${path}" fill="none" stroke="var(--brand)" stroke-width="2"/>`;
 
   trends.forEach((t,i)=>{
     const monthLabel = new Date(t.period_start).toLocaleDateString(undefined,{month:'short',year:'2-digit'});
     const label = `${new Date(t.period_start).toLocaleDateString(undefined,{month:'long',year:'numeric'})}: ${fmtMoney(t.total_spend_usd)}/mo, ${fmtX(t.blended_value_per_dollar)} value, slop ${t.avg_slop_risk.toFixed(0)}`;
-    svg += `<circle class="dot" tabindex="0" role="img" aria-label="${label}" cx="${xPix(i).toFixed(1)}" cy="${yPix(t.total_spend_usd).toFixed(1)}" r="4.5" fill="var(--brand)" stroke="#fff" stroke-width="1.2"><title>${label}</title></circle>`;
-    svg += `<text x="${xPix(i).toFixed(1)}" y="${H-8}" font-size="10" fill="#5c6470" text-anchor="middle">${monthLabel}</text>`;
+    svg += `<circle class="dot" tabindex="0" role="img" aria-label="${label}" data-i="${i}" cx="${xPix(i).toFixed(1)}" cy="${yPix(t.total_spend_usd).toFixed(1)}" r="4" fill="var(--brand)" stroke="#fff" stroke-width="1.2"><title>${label}</title></circle>`;
+    svg += `<text x="${xPix(i).toFixed(1)}" y="${H-8}" font-size="10" fill="var(--muted)" text-anchor="middle">${monthLabel}</text>`;
   });
+  svg += `<line class="crosshair" id="trendsCrosshair" x1="0" y1="${padT}" x2="0" y2="${H-padB}" style="opacity:0"/>`;
+  svg += `<rect id="trendsOverlay" x="${padL}" y="${padT}" width="${Math.max(0,W-padL-padR)}" height="${Math.max(0,H-padT-padB)}" fill="transparent"/>`;
 
   const plot = document.getElementById('trendsPlot');
   plot.setAttribute('viewBox', `0 0 ${W} ${H}`);
   plot.innerHTML = svg;
+
+  // Crosshair + tooltip: a transparent overlay tracks mouse position across
+  // the whole plot width so the tooltip follows continuously, not just when
+  // the cursor is exactly over a 4px dot (the dataviz interaction guidance
+  // for line charts). Per-dot focus/blur covers the same for keyboard users.
+  const tip = document.getElementById('trendsTip');
+  const crosshair = document.getElementById('trendsCrosshair');
+  const showTrendsTip = (i, clientX, clientY) => {
+    const t = trends[i];
+    const monthLabel = new Date(t.period_start).toLocaleDateString(undefined,{month:'long',year:'numeric'});
+    tip.innerHTML = `<b>${monthLabel}</b><br>${fmtMoney(t.total_spend_usd)}/mo · ${fmtX(t.blended_value_per_dollar)} value · slop ${t.avg_slop_risk.toFixed(0)}`;
+    const wrap = plot.closest('.plotwrap').getBoundingClientRect();
+    tip.style.left = (clientX - wrap.left + 12) + 'px';
+    tip.style.top = (clientY - wrap.top - 8) + 'px';
+    tip.style.opacity = 1;
+    crosshair.setAttribute('x1', xPix(i).toFixed(1));
+    crosshair.setAttribute('x2', xPix(i).toFixed(1));
+    crosshair.style.opacity = 1;
+  };
+  const hideTrendsTip = () => { tip.style.opacity = 0; crosshair.style.opacity = 0; };
+  document.getElementById('trendsOverlay').addEventListener('mousemove', e=>{
+    const rect = plot.getBoundingClientRect();
+    const mouseX = (e.clientX - rect.left) * (W / rect.width);
+    let idx = 0, minD = Infinity;
+    trends.forEach((t,i)=>{ const d = Math.abs(xPix(i)-mouseX); if (d<minD){ minD=d; idx=i; } });
+    showTrendsTip(idx, e.clientX, e.clientY);
+  });
+  document.getElementById('trendsOverlay').addEventListener('mouseleave', hideTrendsTip);
+  plot.querySelectorAll('.dot').forEach(d=>{
+    d.addEventListener('focus', ()=>{
+      const rect = d.getBoundingClientRect();
+      showTrendsTip(Number(d.dataset.i), rect.left + rect.width/2, rect.top);
+    });
+    d.addEventListener('blur', hideTrendsTip);
+  });
 }
 
 function pill(t){
-  const map = {Frontier:['#eef0fe','#4f46e5'], Standard:['#eef7f1','#0d9668'], Basic:['#f0f2f6','#5c6470']};
+  const map = {
+    Frontier: ['var(--brand-soft)', 'var(--brand-dark)'],
+    Standard: ['var(--good-soft)', 'var(--good-text)'],
+    Basic: ['var(--chip)', 'var(--muted)'],
+  };
   const [c,f] = map[t] || map.Basic;
   return `<span class="pill" style="background:${c};color:${f}">${t}</span>`;
 }
@@ -266,7 +382,7 @@ function renderPeopleTable(){
   document.getElementById('peopleCount').textContent = `${rows.length} of ${STATE.overview.people.length} people`;
   document.getElementById('peopleBody').innerHTML = rows.map(p => `
     <tr>
-      <td><div class="who"><div class="av" style="background:${teamColors[p.team]||'#8892a0'}">${initials(p.name)}</div>
+      <td><div class="who"><div class="av" style="background:${teamColor(p.team).bg};color:${teamColor(p.team).text}">${initials(p.name)}</div>
         <div><div class="nm">${p.name}</div><div class="rl">${p.team} · ${p.role}</div></div></div></td>
       <td class="num">${fmtMoney(p.spend_usd)}</td>
       <td class="num val-cell" style="color:${valueColor(p.value_per_dollar)}">${fmtX(p.value_per_dollar)}</td>
@@ -284,7 +400,7 @@ function renderAgg(view){
   document.getElementById('aggCol').textContent = aggView==='teams' ? 'Team' : 'Role';
   document.getElementById('aggBody').innerHTML = rows.map(r => `
     <tr>
-      <td><div class="who"><div class="av" style="background:${teamColors[r.name]||'#8892a0'}">${initials(r.name)}</div>
+      <td><div class="who"><div class="av" style="background:${teamColor(r.name).bg};color:${teamColor(r.name).text}">${initials(r.name)}</div>
         <div><div class="nm">${r.name}</div><div class="rl">${r.people_count} ${r.people_count===1?'person':'people'}</div></div></div></td>
       <td class="num">${r.people_count}</td>
       <td class="num">${fmtMoney(r.spend_usd)}</td>
@@ -323,7 +439,7 @@ function renderAlerts(ov, teams){
       filterSearch: 'keep'});
   }
   lastAlerts = alerts;
-  const sevColor = {high:'var(--slop-hi)', med:'var(--slop)', good:'var(--value)'};
+  const sevColor = {high:'var(--bad)', med:'var(--warn)', good:'var(--good)'};
   document.getElementById('alertsList').innerHTML = alerts.map((a,i) => {
     const clickable = a.filterTeam || a.filterSearch;
     return `
@@ -354,7 +470,7 @@ function renderIntegrations(){
     {name:'Zendesk', color:'#03363d', icon:'◉', status:false, feed:'ingest/outcome + quality-signal', desc:'Support resolutions and reopen rates. Not yet connected.'},
     {name:'HubSpot / Salesforce', color:'#e0699a', icon:'◆', status:false, feed:'ingest/outcome', desc:'Deal-stage advances for sales/marketing value attribution. Not yet connected.'},
     {name:'Okta / Entra (SSO+SCIM)', color:'#f0a020', icon:'⚿', status:true, feed:'IdentityMapping', desc:'The load-bearing integration — resolves every external id to one canonical person.'},
-    {name:'Sampled rubric grading', color:'#0d9668', icon:'★', status:false, feed:'RubricGrade (Tier 3)', desc:'Opt-in human/LLM grading on a sample, for teams that want a calibrated hard number.'},
+    {name:'Sampled rubric grading', color:'#0a8a4b', icon:'★', status:false, feed:'RubricGrade (Tier 3)', desc:'Opt-in human/LLM grading on a sample, for teams that want a calibrated hard number.'},
   ];
   document.getElementById('intGrid').innerHTML = items.map(it => `
     <div class="int-card">

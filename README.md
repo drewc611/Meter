@@ -113,6 +113,22 @@ risk score (Tier 2: reverts, heavy rewrites, regeneration loops). See
 [`backend/README.md`](backend/README.md) for the full data model, API
 contract, and what's stubbed vs. implemented.
 
+## Architecture
+
+```mermaid
+flowchart LR
+    EXT["LLM proxy · webhooks · SCIM"] --> INGEST["/ingest/*"] --> TABLES[("UsageEvent · OutcomeEvent\nQualitySignal · IdentityMapping")]
+    TABLES --> SCORING["nightly scoring job"] --> PS[("PersonScore")]
+    PS --> API["/api/*"] --> DASH["dashboard"]
+```
+
+That's the code. For where it actually runs — Fly.io for the backend,
+a Cloudflare Worker for the frontend, both deploying on push to `main` — plus
+an honest verdict on whether that hosting choice makes sense and what's
+missing before it's ready for real customer data, see
+[`ARCHITECTURE.md`](ARCHITECTURE.md). Known security gaps (there's no
+authentication on the API yet) are tracked in [`SECURITY.md`](SECURITY.md).
+
 ## Branches
 
 - `main` — stable
