@@ -73,19 +73,25 @@
   .calc{background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:16px;
     padding:22px 24px; margin-bottom:36px; text-align:left}
   .calc-h{font-size:13.5px; font-weight:700; margin-bottom:14px}
+  .calc-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 20px}
   .calc-row{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
   .calc-row label{font-size:13px; color:var(--muted)}
   .calc-input{display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.06);
     border:1px solid var(--line); border-radius:10px; padding:8px 12px; transition:border-color .15s}
-  .calc-input span{color:var(--muted); font-size:14px}
+  .calc-input span{color:var(--muted); font-size:12.5px; white-space:nowrap}
   .calc-input input{border:none; background:transparent; color:var(--ink); font-size:15px;
-    font-weight:600; width:110px; font-family:inherit}
+    font-weight:600; width:88px; font-family:inherit}
   .calc-input input:focus{outline:none}
   .calc-input:focus-within{border-color:var(--brand-soft)}
-  .calc-result{margin-top:16px; font-size:14px; font-weight:600; color:var(--muted); min-height:32px}
+  .calc-result{margin-top:18px; font-size:14px; font-weight:600; color:var(--muted); min-height:32px}
   .calc-result.has-value{font-size:20px; color:var(--good)}
   .calc-result b{font-size:26px}
+  .calc-breakdown{margin-top:12px; padding-top:12px; border-top:1px solid var(--line);
+    display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px 20px; font-size:12.5px}
+  .calc-breakdown .row{display:flex; justify-content:space-between; gap:8px; color:var(--muted)}
+  .calc-breakdown .row b{color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums}
   .calc-note{font-size:11px; color:var(--muted); margin:10px 0 0; line-height:1.5}
+  @media(max-width:520px){.calc-grid{grid-template-columns:1fr}.calc-breakdown{grid-template-columns:1fr}}
 
   .stats{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; text-align:left; margin-bottom:36px}
   .stat{background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:16px; padding:18px 16px}
@@ -152,13 +158,32 @@
   </div>
 
   <div class="calc">
-    <div class="calc-h">See what Merit might find</div>
-    <div class="calc-row">
-      <label for="calcSpend">Your team's monthly AI spend</label>
-      <div class="calc-input"><span>$</span><input type="number" id="calcSpend" inputmode="numeric" placeholder="10,000" min="0" step="100"></div>
+    <div class="calc-h">Estimate your AI ROI</div>
+    <div class="calc-grid">
+      <div class="calc-row">
+        <label for="calcEngineers">Engineers using AI tools</label>
+        <div class="calc-input"><input type="number" id="calcEngineers" inputmode="numeric" placeholder="120" min="0" step="1"></div>
+      </div>
+      <div class="calc-row">
+        <label for="calcComp">Average fully-loaded comp</label>
+        <div class="calc-input"><span>$</span><input type="number" id="calcComp" inputmode="numeric" placeholder="165,000" min="0" step="1000"></div>
+      </div>
+      <div class="calc-row">
+        <label for="calcLicense">AI license cost, per engineer</label>
+        <div class="calc-input"><span>$</span><input type="number" id="calcLicense" inputmode="numeric" placeholder="60" min="0" step="1"><span>/mo</span></div>
+      </div>
+      <div class="calc-row">
+        <label for="calcSaved">Time saved, per engineer</label>
+        <div class="calc-input"><input type="number" id="calcSaved" inputmode="numeric" placeholder="4" min="0" step="0.5"><span>hrs/wk</span></div>
+      </div>
+      <div class="calc-row">
+        <label for="calcRework">Rework/review overhead, per engineer</label>
+        <div class="calc-input"><input type="number" id="calcRework" inputmode="numeric" placeholder="1.5" min="0" step="0.5"><span>hrs/wk</span></div>
+      </div>
     </div>
-    <div class="calc-result" id="calcResult">Enter a number to see an estimate</div>
-    <p class="calc-note">Illustrative, not a personalized audit — based on the ~24% recovery rate Merit's own scoring typically finds in over-tiered and high-slop usage.</p>
+    <div class="calc-result" id="calcResult">Fill in the fields above to see an estimate</div>
+    <div class="calc-breakdown" id="calcBreakdown" hidden></div>
+    <p class="calc-note">Illustrative, not a personalized audit — "time saved" and "rework overhead" are numbers <em>you</em> supply here. Connect Merit to replace these guesses with measured numbers from your own GitHub, Jira, and AI usage history.</p>
   </div>
 
   <div class="features">
@@ -227,23 +252,57 @@
       });
   });
 
-  // Pure client-side illustration of the product's own recoverable-spend
-  // math (see backend/app/services/analytics.py) -- no backend call, no
-  // claim of a personalized result, just a concrete preview of the idea.
-  var RECOVERY_RATE = 0.24;
-  var calcSpend = document.getElementById("calcSpend");
+  // Pure client-side arithmetic, not a backend call or a personalized
+  // result -- "time saved" and "rework overhead" are guesses the visitor
+  // supplies. WORK_HOURS_PER_YEAR is the standard 40hrs/wk * 52wk
+  // annualization used to turn a salary into an hourly rate; nothing here
+  // is measured, which is exactly what the note below says.
+  var WORK_HOURS_PER_YEAR = 2080;
+  var WEEKS_PER_YEAR = 52;
+  var calcInputs = ["calcEngineers", "calcComp", "calcLicense", "calcSaved", "calcRework"].map(function (id) {
+    return document.getElementById(id);
+  });
   var calcResult = document.getElementById("calcResult");
-  calcSpend.addEventListener("input", function () {
-    var v = parseFloat(calcSpend.value);
-    if (!v || v <= 0) {
-      calcResult.textContent = "Enter a number to see an estimate";
+  var calcBreakdown = document.getElementById("calcBreakdown");
+  var fmtCalcMoney = function (n) { return "$" + Math.round(n).toLocaleString(); };
+
+  function recalc() {
+    var engineers = parseFloat(calcInputs[0].value);
+    var comp = parseFloat(calcInputs[1].value);
+    var licensePerMonth = parseFloat(calcInputs[2].value);
+    var savedHrsPerWeek = parseFloat(calcInputs[3].value);
+    var reworkHrsPerWeek = parseFloat(calcInputs[4].value);
+
+    if (!engineers || engineers <= 0 || !comp || comp <= 0) {
+      calcResult.textContent = "Fill in the fields above to see an estimate";
       calcResult.classList.remove("has-value");
+      calcBreakdown.hidden = true;
       return;
     }
-    var recoverable = v * 12 * RECOVERY_RATE;
-    calcResult.innerHTML = "&asymp; <b>$" + Math.round(recoverable).toLocaleString() + "</b>/year potentially recoverable";
+    savedHrsPerWeek = savedHrsPerWeek || 0;
+    reworkHrsPerWeek = reworkHrsPerWeek || 0;
+    licensePerMonth = licensePerMonth || 0;
+
+    var hourlyRate = comp / WORK_HOURS_PER_YEAR;
+    var licensingCost = engineers * licensePerMonth * 12;
+    var reworkCost = engineers * reworkHrsPerWeek * WEEKS_PER_YEAR * hourlyRate;
+    var grossValue = engineers * savedHrsPerWeek * WEEKS_PER_YEAR * hourlyRate;
+    var totalCost = licensingCost + reworkCost;
+    var netValue = grossValue - totalCost;
+    var meritScore = totalCost > 0 ? grossValue / totalCost : 0;
+
+    calcResult.innerHTML = "<b>" + meritScore.toFixed(2) + "&times;</b> Merit Score &mdash; " +
+      fmtCalcMoney(netValue) + "/year net AI value";
     calcResult.classList.add("has-value");
-  });
+
+    calcBreakdown.hidden = false;
+    calcBreakdown.innerHTML =
+      '<div class="row"><span>AI licensing</span><b>' + fmtCalcMoney(licensingCost) + '/yr</b></div>' +
+      '<div class="row"><span>Estimated rework cost</span><b>' + fmtCalcMoney(reworkCost) + '/yr</b></div>' +
+      '<div class="row"><span>Gross productivity value</span><b>' + fmtCalcMoney(grossValue) + '/yr</b></div>' +
+      '<div class="row"><span>Net AI value</span><b>' + fmtCalcMoney(netValue) + '/yr</b></div>';
+  }
+  calcInputs.forEach(function (el) { el.addEventListener("input", recalc); });
 })();
 </script>
 </body>

@@ -84,6 +84,12 @@ class RecomputeResult(BaseModel):
     people_scored: int
 
 
+class NotifyWaitlistResult(BaseModel):
+    sent: int
+    failed: int
+    dry_run: bool
+
+
 class HealthOut(BaseModel):
     status: str = "ok"
 

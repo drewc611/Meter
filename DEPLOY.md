@@ -52,6 +52,12 @@ that record to DNS-only and retry until it reports the cert as issued.
 
 Verify: `curl https://api.usemeritai.com/healthz` should return `{"status":"ok"}`.
 
+**Email the waitlist when you're ready** — `/admin/notify-waitlist` needs
+`MERIT_SMTP_HOST`/`MERIT_FROM_EMAIL` (plus optionally `MERIT_SMTP_PORT`/
+`MERIT_SMTP_USER`/`MERIT_SMTP_PASSWORD`) set as Fly secrets first, same as
+`MERIT_API_KEY` below. See [`backend/README.md`](backend/README.md#outbound-email)
+for the full list and how to preview the send with `dry_run=true` first.
+
 **Seed it** (optional, but the dashboard is a lot more convincing with real
 numbers in it): `fly ssh console -C "python seed.py"` once the volume is
 attached — same seed script used locally, fabricates 6 months of sample data.

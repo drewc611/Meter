@@ -98,6 +98,7 @@ touches your `merit.db`. Ruff/pytest config lives in `pyproject.toml`.
 | POST | `/ingest/quality-signal` | Record a revert, rewrite, regeneration loop, etc. |
 | POST | `/admin/identity-mapping` | Wire a new external id to an existing person |
 | POST | `/admin/recompute-scores` | Trigger the nightly scoring job on demand |
+| POST | `/admin/notify-waitlist?dry_run=false` | One-off "the site is live" email to every unnotified waitlist signup — see [Outbound email](#outbound-email) below |
 | GET | `/api/overview` | Everything the Overview page needs, one call |
 | GET | `/api/people` | Full person list with segment + recommendation |
 | GET | `/api/teams` / `/api/roles` | Spend/value/slop rolled up above the individual |
@@ -120,6 +121,28 @@ exactly as open as before; see [`DEPLOY.md`](../DEPLOY.md)'s go-live
 checklist for turning it on in production, and
 [`ARCHITECTURE.md`](../ARCHITECTURE.md) for why this is a single shared
 secret rather than per-user auth.
+
+## Outbound email
+
+`/admin/notify-waitlist` sends one fixed announcement email to every
+`WaitlistSignup` row that hasn't been emailed yet (`notified_at IS NULL`) —
+it's a one-off "the site is live" send, not a campaign tool, and re-running
+it only reaches signups that joined since the last run. It talks plain SMTP
+(`services/email.py`) rather than a specific vendor's API, so any provider
+works — Postmark, SES, a Workspace account, whatever's already on hand:
+
+```bash
+MERIT_SMTP_HOST=smtp.postmarkapp.com
+MERIT_SMTP_PORT=587          # optional, defaults to 587 (STARTTLS)
+MERIT_SMTP_USER=...          # optional if your provider allows unauthenticated relay
+MERIT_SMTP_PASSWORD=...
+MERIT_FROM_EMAIL=noreply@usemeritai.com
+```
+
+Unset `MERIT_SMTP_HOST`/`MERIT_FROM_EMAIL` means the endpoint returns a
+**503** rather than silently pretending the send happened. Preview the
+pending count without configuring email or sending anything real via
+`POST /admin/notify-waitlist?dry_run=true`.
 
 ## Files
 

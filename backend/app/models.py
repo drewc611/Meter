@@ -146,6 +146,7 @@ class WaitlistSignup(Base):
     email = Column(String, unique=True, nullable=False, index=True)
     company = Column(String, nullable=True)
     created_at = Column(DateTime, default=utcnow)
+    notified_at = Column(DateTime, nullable=True)  # set by /admin/notify-waitlist, so a re-run doesn't double-email
 
 
 class PersonScore(Base):
