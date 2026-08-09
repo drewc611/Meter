@@ -1,7 +1,11 @@
 # Merit&trade;
 
-AI spend tracker — tells a company what it spends on AI, who's spending it,
-and whether that spend is producing real work or slop.
+AI spend tracker built around the question spend-attribution tools don't
+ask: is the work behind that spend any good? Merit attributes AI spend to
+the person who generated it and correlates it against outcomes — table
+stakes now — then layers a quality-risk score on top (reverts, heavy
+rewrites, regeneration loops) so a clean "value per dollar" number can't
+hide slop.
 
 See [TRADEMARK.md](TRADEMARK.md) for the trademark notice and how the ™
 mark is used across this repo.
