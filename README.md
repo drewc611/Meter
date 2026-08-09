@@ -100,7 +100,8 @@ on the backend service (wide open by default — see `docker-compose.yml`) and
 ## Deploying
 
 See [`DEPLOY.md`](DEPLOY.md) for the production setup this repo is actually
-configured for: Cloudflare Pages for the frontend, Fly.io for the backend.
+configured for: a Cloudflare Worker (static assets) for the frontend, Fly.io
+for the backend.
 
 ## How it works
 
