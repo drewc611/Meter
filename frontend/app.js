@@ -164,9 +164,28 @@ function fmtX(n){ return n.toFixed(2) + '×'; }
 // dots), where they're contrast-safe; --good-text/--warn-text are the same
 // hues darkened for the small bold table text this feeds (WCAG AA needs
 // 4.5:1 there vs. the 3:1 large-text minimum the KPI numbers get away with).
-function valueColor(v){ return v>=1.6?'var(--good-text)':(v<0?'var(--bad)':'var(--warn-text)'); }
+// Same number the scatter plot's quadrant line (renderScatter) is drawn at --
+// both mark "good" value/$ at the same place, so they share this constant.
+const VALUE_GOOD_THRESHOLD = 1.6;
+function valueColor(v){ return v>=VALUE_GOOD_THRESHOLD?'var(--good-text)':(v<0?'var(--bad)':'var(--warn-text)'); }
 const TOOL_LABELS = { anthropic_api:'Anthropic API', github_copilot:'GitHub Copilot', chatgpt_enterprise:'ChatGPT Enterprise' };
 function toolLabel(t){ return TOOL_LABELS[t] || t; }
+function slopBarHtml(risk){
+  return `<div class="slopbar"><div class="track"><i style="width:${risk}%;background:${slopColor(risk)}"></i></div><span>${risk.toFixed(0)}</span></div>`;
+}
+function avatarCellHtml(name, subtitle, colorKey){
+  const c = teamColor(colorKey);
+  return `<div class="who"><div class="av" style="background:${c.bg};color:${c.text}">${initials(name)}</div>
+        <div><div class="nm">${name}</div><div class="rl">${subtitle}</div></div></div>`;
+}
+// Shared crosshair/dot tooltip positioning for renderScatter + renderTrends --
+// both float a `.tip` element inside a `.plotwrap`, anchored to the cursor.
+function positionTooltip(tip, plotEl, clientX, clientY){
+  const wrap = plotEl.closest('.plotwrap').getBoundingClientRect();
+  tip.style.left = (clientX - wrap.left + 12) + 'px';
+  tip.style.top = (clientY - wrap.top - 8) + 'px';
+  tip.style.opacity = 1;
+}
 
 /* =====================================================================
    RENDER
@@ -262,10 +281,7 @@ function renderScatter(people){
   const tip = document.getElementById('tip');
   const showTip = (p, clientX, clientY) => {
     tip.innerHTML = `<b>${p.name}</b> · ${p.team}<br>${fmtMoney(p.spend_usd)}/mo · ${fmtX(p.value_per_dollar)} value · slop ${p.slop_risk.toFixed(0)}`;
-    const wrap = plot.closest('.plotwrap').getBoundingClientRect();
-    tip.style.left = (clientX - wrap.left + 12) + 'px';
-    tip.style.top = (clientY - wrap.top - 8) + 'px';
-    tip.style.opacity = 1;
+    positionTooltip(tip, plot, clientX, clientY);
   };
   plot.querySelectorAll('.dot').forEach(d=>{
     d.addEventListener('mousemove', e=> showTip(people[d.dataset.i], e.clientX, e.clientY));
@@ -316,10 +332,7 @@ function renderTrends(trends){
     const t = trends[i];
     const monthLabel = new Date(t.period_start).toLocaleDateString(undefined,{month:'long',year:'numeric'});
     tip.innerHTML = `<b>${monthLabel}</b><br>${fmtMoney(t.total_spend_usd)}/mo · ${fmtX(t.blended_value_per_dollar)} value · slop ${t.avg_slop_risk.toFixed(0)}`;
-    const wrap = plot.closest('.plotwrap').getBoundingClientRect();
-    tip.style.left = (clientX - wrap.left + 12) + 'px';
-    tip.style.top = (clientY - wrap.top - 8) + 'px';
-    tip.style.opacity = 1;
+    positionTooltip(tip, plot, clientX, clientY);
     crosshair.setAttribute('x1', xPix(i).toFixed(1));
     crosshair.setAttribute('x2', xPix(i).toFixed(1));
     crosshair.style.opacity = 1;
@@ -402,15 +415,14 @@ function renderPeopleTable(){
   document.getElementById('peopleCount').textContent = `${rows.length} of ${STATE.overview.people.length} people`;
   document.getElementById('peopleBody').innerHTML = rows.map(p => `
     <tr>
-      <td><div class="who"><div class="av" style="background:${teamColor(p.team).bg};color:${teamColor(p.team).text}">${initials(p.name)}</div>
-        <div><div class="nm">${p.name}</div><div class="rl">${p.team} · ${p.role}</div></div></div></td>
+      <td>${avatarCellHtml(p.name, `${p.team} · ${p.role}`, p.team)}</td>
       <td class="num">${fmtMoney(p.spend_usd)}</td>
       <td class="num val-cell" style="color:${valueColor(p.value_per_dollar)}">${fmtX(p.value_per_dollar)}</td>
-      <td class="num"><div class="slopbar"><div class="track"><i style="width:${p.slop_risk}%;background:${slopColor(p.slop_risk)}"></i></div><span>${p.slop_risk.toFixed(0)}</span></div></td>
+      <td class="num">${slopBarHtml(p.slop_risk)}</td>
       <td>${confPill(p.confidence)}</td>
       <td>${pill(p.tier)}</td>
       <td class="rec"><span class="${recClass(p.recommendation)}">${p.recommendation}</span></td>
-    </tr>`).join('');
+    </tr>`).join('') || `<tr><td colspan="7" style="color:var(--muted)">No people match these filters.</td></tr>`;
 }
 
 let aggView = 'teams';
@@ -420,13 +432,12 @@ function renderAgg(view){
   document.getElementById('aggCol').textContent = aggView==='teams' ? 'Team' : 'Role';
   document.getElementById('aggBody').innerHTML = rows.map(r => `
     <tr>
-      <td><div class="who"><div class="av" style="background:${teamColor(r.name).bg};color:${teamColor(r.name).text}">${initials(r.name)}</div>
-        <div><div class="nm">${r.name}</div><div class="rl">${r.people_count} ${r.people_count===1?'person':'people'}</div></div></div></td>
+      <td>${avatarCellHtml(r.name, `${r.people_count} ${r.people_count===1?'person':'people'}`, r.name)}</td>
       <td class="num">${r.people_count}</td>
       <td class="num">${fmtMoney(r.spend_usd)}</td>
       <td class="num val-cell" style="color:${valueColor(r.value_per_dollar)}">${fmtX(r.value_per_dollar)}</td>
-      <td class="num"><div class="slopbar"><div class="track"><i style="width:${r.slop_risk}%;background:${slopColor(r.slop_risk)}"></i></div><span>${r.slop_risk.toFixed(0)}</span></div></td>
-    </tr>`).join('');
+      <td class="num">${slopBarHtml(r.slop_risk)}</td>
+    </tr>`).join('') || `<tr><td colspan="5" style="color:var(--muted)">No data for this period yet.</td></tr>`;
 }
 
 // Alerts computed by the last renderAlerts() call, so the click/keydown
@@ -488,7 +499,7 @@ function renderToolPerformance(){
       <td>${toolLabel(r.tool)}</td>
       <td class="num">${fmtMoney(r.spend_usd)}</td>
       <td class="num val-cell" style="color:${valueColor(r.value_per_dollar)}">${fmtX(r.value_per_dollar)}</td>
-      <td class="num"><div class="slopbar"><div class="track"><i style="width:${r.slop_risk}%;background:${slopColor(r.slop_risk)}"></i></div><span>${r.slop_risk.toFixed(0)}</span></div></td>
+      <td class="num">${slopBarHtml(r.slop_risk)}</td>
       <td class="num">${r.people_count}</td>
     </tr>`).join('') || `<tr><td colspan="5" style="color:var(--muted)">No usage yet this period.</td></tr>`;
 }

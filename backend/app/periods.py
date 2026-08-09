@@ -7,15 +7,16 @@ from datetime import datetime, timedelta
 from .time_utils import utcnow
 
 
+def _month_after(start: datetime) -> datetime:
+    """The first moment of the calendar month after `start` (which must be day 1, midnight)."""
+    return start.replace(year=start.year + 1, month=1) if start.month == 12 else start.replace(month=start.month + 1)
+
+
 def current_period(now: datetime | None = None) -> tuple[datetime, datetime]:
     """The [start, end) of the calendar month containing `now` (default: today)."""
     now = now or utcnow()
     start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    if start.month == 12:
-        end = start.replace(year=start.year + 1, month=1)
-    else:
-        end = start.replace(month=start.month + 1)
-    return start, end
+    return start, _month_after(start)
 
 
 def prior_period(period_start: datetime) -> tuple[datetime, datetime]:
@@ -31,7 +32,6 @@ def recent_periods(n: int, end_period_start: datetime | None = None) -> list[tup
     start = end_period_start if end_period_start is not None else current_period()[0]
     periods = []
     for _ in range(n):
-        end = start.replace(year=start.year + 1, month=1) if start.month == 12 else start.replace(month=start.month + 1)
-        periods.append((start, end))
+        periods.append((start, _month_after(start)))
         start, _ = prior_period(start)
     return list(reversed(periods))
