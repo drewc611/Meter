@@ -214,6 +214,51 @@ def test_adoption_endpoint(client, db):
     assert body["utilization_pct"] == 100.0
 
 
+def test_tool_performance_endpoint(client, db):
+    _bootstrap_person(db)
+    now = datetime(*current_period()[0].timetuple()[:3], 10)
+    client.post(
+        "/ingest/usage",
+        json={
+            "source_system": "anthropic_api",
+            "external_id": "key_live",
+            "tool": "anthropic_api",
+            "cost_usd": 40.0,
+            "occurred_at": now.isoformat(),
+        },
+    )
+    client.post("/admin/recompute-scores")
+
+    r = client.get("/api/tool-performance")
+    assert r.status_code == 200
+    body = r.json()
+    assert len(body) == 1
+    assert body[0]["tool"] == "anthropic_api"
+    assert body[0]["spend_usd"] == 40.0
+    assert body[0]["people_count"] == 1
+
+
+def test_spend_forecast_endpoint_insufficient_history(client, db):
+    _bootstrap_person(db)
+    now = datetime(*current_period()[0].timetuple()[:3], 10)
+    client.post(
+        "/ingest/usage",
+        json={
+            "source_system": "anthropic_api",
+            "external_id": "key_live",
+            "tool": "anthropic_api",
+            "cost_usd": 40.0,
+            "occurred_at": now.isoformat(),
+        },
+    )
+    client.post("/admin/recompute-scores")
+
+    # Fresh test DB has no backfilled history -- fewer than 3 non-zero periods.
+    r = client.get("/api/spend-forecast")
+    assert r.status_code == 200
+    assert r.json()["available"] is False
+
+
 def test_identity_mapping_unknown_email_404(client, db):
     r = _map(client, "nobody@example.com", "slack", "U123")
     assert r.status_code == 404

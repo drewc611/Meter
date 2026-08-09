@@ -122,6 +122,7 @@ class OverviewOut(BaseModel):
     spend_change_pct: float
     blended_value_per_dollar: float
     avg_slop_risk: float
+    rework_tax_pct: float
     recoverable_annual_usd: float
     recoverable_breakdown: list[RecoverableItem]
     fund_count: int
@@ -145,6 +146,21 @@ class ToolBreakdownOut(BaseModel):
     model: str | None
     spend_usd: float
     event_count: int
+
+
+class ToolPerformanceOut(BaseModel):
+    tool: str
+    spend_usd: float
+    value_per_dollar: float
+    slop_risk: float
+    people_count: int
+
+
+class SpendForecastOut(BaseModel):
+    available: bool
+    projected_spend_usd: float = 0.0
+    trend_direction: str = "insufficient_data"
+    based_on_periods: int = 0
 
 
 class AdoptionTierOut(BaseModel):

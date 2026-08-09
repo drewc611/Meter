@@ -147,6 +147,14 @@ def get_overview(
     high_slop = [p for p in people if p["slop_risk"] >= SLOP_HIGH]
     slop_recoverable = sum(p["spend_usd"] for p in high_slop) * HIGH_SLOP_RECOVERY_RATE
 
+    # "AI Rework Tax": the share of this period's spend sitting in high-slop-risk
+    # usage. Not a new signal -- high_slop and total_spend are both already
+    # computed above for the recoverable-spend estimate -- just a ratio of two
+    # real numbers, not a fabricated one. Answers "how much of what we spend is
+    # in the danger zone" more directly than a 0-100 risk score does on its own.
+    high_slop_spend = sum(p["spend_usd"] for p in high_slop)
+    rework_tax_pct = round(high_slop_spend / total_spend * 100, 1) if total_spend else 0.0
+
     # Shadow AI: not modeled in this demo's ingestion (§5.5 ships separately) —
     # illustrative placeholder, flagged as an estimate rather than a measured figure.
     shadow_ai_recoverable = total_spend * SHADOW_AI_RATE
@@ -164,6 +172,7 @@ def get_overview(
         "spend_change_pct": spend_change_pct,
         "blended_value_per_dollar": round(blended_value, 2),
         "avg_slop_risk": round(avg_slop, 1),
+        "rework_tax_pct": rework_tax_pct,
         "recoverable_annual_usd": round(recoverable_total * MONTHS_PER_YEAR, 0),
         "recoverable_breakdown": [
             {"label": "Over-tiered seats", "amount_usd": round(over_tiered_recoverable * MONTHS_PER_YEAR, 0)},
@@ -238,6 +247,90 @@ def get_tool_breakdown(db: Session, period_start: datetime, period_end: datetime
         for tool, model, spend, count in rows
     ]
     return sorted(out, key=lambda r: -r["spend_usd"])
+
+
+def get_tool_performance(db: Session, period_start: datetime, period_end: datetime) -> list[dict]:
+    """
+    Spend-weighted value/$ and slop risk per tool, for one period.
+
+    An honest approximation, not causal attribution: PersonScore doesn't know
+    which specific tool produced which specific outcome or quality signal --
+    that link doesn't exist in the data model (see models.py). So each
+    person's overall score is attributed across the tools they used that
+    period, weighted by how much they spent on each. Someone who splits spend
+    evenly across two tools contributes half their score's weight to each.
+    This is a real, defensible rollup of data Merit already has -- it is not
+    a claim that tool X caused outcome Y. Surface it in the UI with that
+    caveat, not as a per-tool causal ranking.
+
+    Same deliberate, period-scoped exception to the PersonScore-only rule as
+    get_tool_breakdown()/get_adoption() -- reads UsageEvent directly because
+    per-tool spend isn't an attribute PersonScore carries, but stays bounded
+    to a single [start, end) group-by, not an unbounded scan.
+    """
+    tool_spend_by_identity = (
+        db.query(UsageEvent.identity_id, UsageEvent.tool, func.sum(UsageEvent.cost_usd))
+        .filter(UsageEvent.occurred_at >= period_start, UsageEvent.occurred_at < period_end)
+        .group_by(UsageEvent.identity_id, UsageEvent.tool)
+        .all()
+    )
+    scores_by_identity = {s.identity_id: s for s in _latest_scores(db, period_start, period_end)}
+
+    buckets = defaultdict(lambda: {"spend_usd": 0.0, "vw": 0.0, "sw": 0.0, "people": set()})
+    for identity_id, tool, spend in tool_spend_by_identity:
+        spend = float(spend or 0.0)
+        score = scores_by_identity.get(identity_id)
+        if score is None or spend <= 0:
+            continue
+        b = buckets[tool]
+        b["spend_usd"] += spend
+        b["vw"] += score.value_per_dollar * spend
+        b["sw"] += score.slop_risk * spend
+        b["people"].add(identity_id)
+
+    out = []
+    for tool, b in buckets.items():
+        spend = b["spend_usd"] or 1e-9
+        out.append(
+            {
+                "tool": tool,
+                "spend_usd": round(b["spend_usd"], 2),
+                "value_per_dollar": round(b["vw"] / spend, 2),
+                "slop_risk": round(b["sw"] / spend, 1),
+                "people_count": len(b["people"]),
+            }
+        )
+    return sorted(out, key=lambda r: -r["spend_usd"])
+
+
+def forecast_next_period_spend(trend_points: list[dict]) -> dict | None:
+    """
+    A transparent linear trend projection over trailing-period spend --
+    literally ordinary least squares on (period index, total_spend_usd).
+    Deliberately not a black-box model: with a handful of monthly points,
+    that's the right amount of sophistication for the data available, and
+    every number in it is inspectable by hand. Returns None with fewer than
+    3 non-zero periods -- not enough signal to project responsibly, and a
+    caller should show "not enough history yet" rather than a number.
+    """
+    points = [(i, p["total_spend_usd"]) for i, p in enumerate(trend_points) if p["total_spend_usd"] > 0]
+    if len(points) < 3:
+        return None
+    n = len(points)
+    mean_x = sum(x for x, _ in points) / n
+    mean_y = sum(y for _, y in points) / n
+    denom = sum((x - mean_x) ** 2 for x, _ in points)
+    if denom == 0:
+        return None
+    slope = sum((x - mean_x) * (y - mean_y) for x, y in points) / denom
+    intercept = mean_y - slope * mean_x
+    next_x = max(x for x, _ in points) + 1
+    projected = max(0.0, slope * next_x + intercept)
+    return {
+        "projected_spend_usd": round(projected, 2),
+        "trend_direction": "up" if slope > 0.01 else ("down" if slope < -0.01 else "flat"),
+        "based_on_periods": n,
+    }
 
 
 def get_adoption(db: Session, period_start: datetime, period_end: datetime) -> dict:

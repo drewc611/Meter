@@ -51,6 +51,22 @@ def tool_breakdown(db: Session = Depends(get_db)):
     return analytics.get_tool_breakdown(db, start, end)
 
 
+@router.get("/tool-performance", response_model=list[schemas.ToolPerformanceOut])
+def tool_performance(db: Session = Depends(get_db)):
+    start, end = current_period()
+    return analytics.get_tool_performance(db, start, end)
+
+
+@router.get("/spend-forecast", response_model=schemas.SpendForecastOut)
+def spend_forecast(months: int = 6, db: Session = Depends(get_db)):
+    months = max(3, min(months, 24))
+    trend_points = analytics.get_trends(db, recent_periods(months))
+    forecast = analytics.forecast_next_period_spend(trend_points)
+    if forecast is None:
+        return schemas.SpendForecastOut(available=False)
+    return schemas.SpendForecastOut(available=True, **forecast)
+
+
 @router.get("/adoption", response_model=schemas.AdoptionOut)
 def adoption(db: Session = Depends(get_db)):
     start, end = current_period()

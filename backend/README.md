@@ -103,6 +103,8 @@ touches your `merit.db`. Ruff/pytest config lives in `pyproject.toml`.
 | GET | `/api/teams` / `/api/roles` | Spend/value/slop rolled up above the individual |
 | GET | `/api/trends?months=6` | Spend/value/slop across the trailing N months (default 6, max 24) |
 | GET | `/api/tool-breakdown` | Current-period spend by (tool, model) |
+| GET | `/api/tool-performance` | Current-period value/$ and slop risk per tool (spend-weighted rollup, not causal attribution) |
+| GET | `/api/spend-forecast?months=6` | Linear trend projection of next period's spend from trailing history; `available:false` under 3 non-zero periods |
 | GET | `/api/adoption` | Active vs. provisioned seats, current period, overall and by tier |
 | POST | `/waitlist` | Pre-launch signup from the coming-soon page. The one endpoint not gated by `MERIT_API_KEY` — see `ARCHITECTURE.md` |
 

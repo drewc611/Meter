@@ -48,7 +48,7 @@
         <h1 id="pageTitle">Overview</h1>
         <span class="sb-badge demo" id="sourceBadgeTop" style="margin-bottom:0"><i></i> checking API…</span>
       </div>
-      <div class="sub" id="pageSub">AI spend &amp; value, down to the person</div>
+      <div class="sub" id="pageSub">AI spend, value, and rework risk — by team, with person-level detail when you need it</div>
     </div>
     <div class="co"><b>Northwind Labs</b><span id="periodLabel">—</span></div>
   </div>
@@ -59,6 +59,7 @@
       <div class="kpi"><div class="lab">AI spend / mo</div><div class="val" id="kpiSpend">—</div><div class="note" id="kpiSpendNote">—</div></div>
       <div class="kpi"><div class="lab">Value per $ (blended)</div><div class="val good" id="kpiValue">—</div><div class="note">Tier-1 correlation signal</div></div>
       <div class="kpi"><div class="lab">Avg slop risk</div><div class="val warn" id="kpiSlop">—</div><div class="note">Tier-2 quality proxies</div></div>
+      <div class="kpi"><div class="lab">AI rework tax</div><div class="val warn" id="kpiReworkTax">—</div><div class="note">spend in high-slop-risk usage</div></div>
       <div class="kpi"><div class="lab">Recoverable / yr</div><div class="val good" id="kpiRecoverable">—</div><div class="note">re-tier + slop reduction</div></div>
       <div class="kpi"><div class="lab">Active AI users</div><div class="val" id="kpiAdoption">—</div><div class="note" id="kpiAdoptionNote">—</div></div>
     </div>
@@ -105,6 +106,7 @@
       <p class="desc">Total AI spend across the trailing months, read from PersonScore history — one point per scored period.</p>
       <svg class="plot" id="trendsPlot" viewBox="0 0 900 190" role="img" aria-label="Line chart of total AI spend by month"></svg>
       <div class="tip" id="trendsTip"></div>
+      <div class="forecast-note" id="forecastNote" hidden></div>
     </div>
 
     <footer>
@@ -180,6 +182,17 @@
         <table>
           <thead><tr><th>Tool</th><th>Model</th><th class="num">Spend / mo</th><th class="num">Events</th></tr></thead>
           <tbody id="toolBreakdownBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h2>Tool performance</h2>
+      <p class="desc">Value per dollar and slop risk by tool — a spend-weighted estimate, not a causal claim. PersonScore doesn't know which tool produced which outcome, so a person's overall score is split across the tools they used, proportional to spend on each. Read it as where the signal concentrates, not "tool X caused outcome Y."</p>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Tool</th><th class="num">Spend / mo</th><th class="num">Value / $</th><th class="num">Slop risk</th><th class="num">People</th></tr></thead>
+          <tbody id="toolPerformanceBody"></tbody>
         </table>
       </div>
     </div>

@@ -3,9 +3,11 @@ from datetime import datetime, timedelta
 from app.services import scoring
 from app.services.analytics import (
     _aggregate,
+    forecast_next_period_spend,
     get_adoption,
     get_overview,
     get_tool_breakdown,
+    get_tool_performance,
     get_trends,
     recommend_action,
     segment,
@@ -110,6 +112,48 @@ def test_get_overview_confidence_breakdown(db, person, ingest_helpers):
     assert overview["confidence_breakdown"] == {"tier1": 1, "tier1+2": 1}
 
 
+def test_rework_tax_pct_is_share_of_spend_in_high_slop_bucket(db, person, ingest_helpers):
+    """rework_tax_pct = spend belonging to slop_risk>=SLOP_HIGH people / total spend."""
+    risky = person(name="Risky")
+    clean = person(name="Clean")
+
+    ingest_helpers.usage(
+        source_system="anthropic_api",
+        external_id=f"key_{risky.id}",
+        tool="anthropic_api",
+        cost_usd=100.0,
+        occurred_at=START + timedelta(days=5),
+    )
+    ingest_helpers.usage(
+        source_system="anthropic_api",
+        external_id=f"key_{clean.id}",
+        tool="anthropic_api",
+        cost_usd=100.0,
+        occurred_at=START + timedelta(days=5),
+    )
+    # Enough high-severity signals to push risky's slop_risk past SLOP_HIGH (60).
+    for _ in range(5):
+        ingest_helpers.quality(
+            source_system="github",
+            external_id=f"gh_{risky.id}",
+            signal_type="code_reverted",
+            occurred_at=START + timedelta(days=6),
+        )
+    scoring.recompute_all(db, START, END)
+
+    overview = get_overview(db, START, END)
+    risky_row = next(p for p in overview["people"] if p["name"] == "Risky")
+    assert risky_row["slop_risk"] >= 60.0
+    # risky's $100 out of $200 total spend is in the high-slop bucket
+    assert overview["rework_tax_pct"] == 50.0
+
+
+def test_rework_tax_pct_zero_when_no_activity(db):
+    overview = get_overview(db, START, END)
+    assert overview["total_spend_usd"] == 0.0
+    assert overview["rework_tax_pct"] == 0.0
+
+
 # -------------------------------------------------------------------- get_trends
 
 
@@ -180,6 +224,109 @@ def test_get_tool_breakdown_excludes_events_outside_period(db, person, ingest_he
         occurred_at=datetime(2026, 7, 15),  # before START
     )
     assert get_tool_breakdown(db, START, END) == []
+
+
+# --------------------------------------------------------------- get_tool_performance
+
+
+def test_tool_performance_weights_by_spend_per_tool(db, person, ingest_helpers):
+    # One person, entirely on one tool: that tool's numbers equal the person's.
+    solo = person(name="Solo")
+    ingest_helpers.usage(
+        source_system="anthropic_api",
+        external_id=f"key_{solo.id}",
+        tool="anthropic_api",
+        cost_usd=200.0,
+        occurred_at=START + timedelta(days=2),
+    )
+    ingest_helpers.outcome(
+        source_system="github",
+        external_id=f"gh_{solo.id}",
+        source="github",
+        outcome_type="pr_merged",
+        occurred_at=START + timedelta(days=3),
+    )
+    scoring.recompute_all(db, START, END)
+
+    rows = get_tool_performance(db, START, END)
+    assert len(rows) == 1
+    assert rows[0]["tool"] == "anthropic_api"
+    assert rows[0]["spend_usd"] == 200.0
+    assert rows[0]["people_count"] == 1
+
+
+def test_tool_performance_splits_one_persons_score_across_their_tools(db, person, ingest_helpers):
+    # A person spending 75% on tool A / 25% on tool B contributes their one
+    # overall score to both buckets, weighted 3:1 -- not the same score twice.
+    p = person(name="Splitter")
+    ingest_helpers.usage(
+        source_system="anthropic_api",
+        external_id=f"key_{p.id}",
+        tool="anthropic_api",
+        cost_usd=150.0,
+        occurred_at=START + timedelta(days=2),
+    )
+    ingest_helpers.usage(
+        source_system="anthropic_api",
+        external_id=f"key_{p.id}",
+        tool="github_copilot",
+        cost_usd=50.0,
+        occurred_at=START + timedelta(days=2),
+    )
+    scoring.recompute_all(db, START, END)
+
+    rows = {r["tool"]: r for r in get_tool_performance(db, START, END)}
+    assert rows["anthropic_api"]["spend_usd"] == 150.0
+    assert rows["github_copilot"]["spend_usd"] == 50.0
+    # same person -> same underlying value/slop numbers in both buckets
+    assert rows["anthropic_api"]["value_per_dollar"] == rows["github_copilot"]["value_per_dollar"]
+    assert rows["anthropic_api"]["slop_risk"] == rows["github_copilot"]["slop_risk"]
+
+
+def test_tool_performance_excludes_people_with_no_scored_period(db, person, ingest_helpers):
+    # Usage exists but recompute_all() was never run for this period -- no
+    # PersonScore row yet, so this person contributes nothing (not a crash).
+    p = person(name="Unscored")
+    ingest_helpers.usage(
+        source_system="anthropic_api",
+        external_id=f"key_{p.id}",
+        tool="anthropic_api",
+        cost_usd=75.0,
+        occurred_at=START + timedelta(days=2),
+    )
+    assert get_tool_performance(db, START, END) == []
+
+
+# -------------------------------------------------------------- forecast_next_period_spend
+
+
+def test_forecast_returns_none_with_fewer_than_three_points():
+    points = [{"total_spend_usd": 100.0}, {"total_spend_usd": 200.0}]
+    assert forecast_next_period_spend(points) is None
+
+
+def test_forecast_projects_upward_trend():
+    points = [{"total_spend_usd": v} for v in (100.0, 200.0, 300.0)]
+    forecast = forecast_next_period_spend(points)
+    assert forecast["trend_direction"] == "up"
+    assert forecast["projected_spend_usd"] == 400.0
+    assert forecast["based_on_periods"] == 3
+
+
+def test_forecast_projects_flat_trend():
+    points = [{"total_spend_usd": v} for v in (500.0, 500.0, 500.0)]
+    forecast = forecast_next_period_spend(points)
+    assert forecast["trend_direction"] == "flat"
+    assert forecast["projected_spend_usd"] == 500.0
+
+
+def test_forecast_ignores_leading_zero_periods():
+    # Zero-spend periods before history starts shouldn't drag the trend down --
+    # they're "not scored yet," not "spent nothing."
+    points = [{"total_spend_usd": v} for v in (0.0, 0.0, 100.0, 200.0, 300.0)]
+    forecast = forecast_next_period_spend(points)
+    assert forecast["based_on_periods"] == 3
+    assert forecast["trend_direction"] == "up"
 
 
 # ------------------------------------------------------------------ get_adoption
