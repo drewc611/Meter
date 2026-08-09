@@ -91,20 +91,15 @@ where you expected LIVE.
 
 - `https://api.usemeritai.com/healthz` — should return `{"status":"ok"}`.
 - `https://usemeritai.com` — currently shows the "coming soon" placeholder
-  (`frontend/index.html`), not the dashboard. That's deliberate: until you've
-  completed the **Go-live checklist** below, `/api/*`, `/ingest/*`, and
-  `/admin/*` are all open to anyone with the URL — CORS only restricts
-  browser reads, not direct requests. To check the dashboard works
-  end-to-end without exposing it publicly, run it locally against the live
-  backend (`frontend/dashboard.html`, or the local `docker compose` flow)
-  rather than visiting the production domain.
+  (`frontend/index.html`), not the dashboard, until the **go-live checklist**
+  below is complete. To check the dashboard works end-to-end before then,
+  run it locally against the live backend (`frontend/dashboard.html`, or the
+  local `docker compose` flow) rather than visiting the production domain.
 
 ## Go-live checklist (cutting over from the placeholder to the real dashboard)
 
-The backend now supports a bearer-token gate on every `/api/*`, `/ingest/*`,
-and `/admin/*` endpoint (`app/dependencies.py:require_api_key`) — but it's
-**inert until you set the secret**. Do these in order; steps 1–5 are what
-actually make it safe to flip the switch in step 6.
+Do these in order; steps 1–5 are what make it safe to flip the switch in
+step 6.
 
 1. **Generate a strong token.** Anything long and random works:
    ```bash
@@ -157,8 +152,7 @@ actually make it safe to flip the switch in step 6.
    exists to capture, and registering the domain alone doesn't count.
 
 **What this checklist does not give you:** per-user accounts, audit logging
-of who accessed what, or rate limiting. It's one shared secret gating the
-whole API — a real improvement over "wide open to the internet," not a
+of who accessed what, or rate limiting — that's one shared secret, not a
 replacement for actual SSO. See
 [`ARCHITECTURE.md`](ARCHITECTURE.md#3-does-this-hosting-choice-make-sense)
-for the full gap list and what to prioritize next.
+for what to prioritize next.
