@@ -1,7 +1,7 @@
 """
-Merit API — the FastAPI application factory. Wires the four routers
-(ingestion, admin, dashboard, health) onto an app, with CORS from config.
-Run with:
+Merit API — the FastAPI application factory. Wires the five routers
+(ingestion, admin, dashboard, health, waitlist) onto an app, with CORS
+from config. Run with:
 
     uvicorn app.main:app --reload --port 8000
 
@@ -16,7 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
 from .database import init_db
 from .dependencies import require_api_key
-from .routers import admin, dashboard, health, ingestion
+from .routers import admin, dashboard, health, ingestion, waitlist
 
 
 def create_app() -> FastAPI:
@@ -36,6 +36,9 @@ def create_app() -> FastAPI:
     app.include_router(admin.router, dependencies=[Depends(require_api_key)])
     app.include_router(dashboard.router, dependencies=[Depends(require_api_key)])
     app.include_router(health.router)
+    # Deliberately ungated -- see routers/waitlist.py: an anonymous coming-soon
+    # visitor has no bearer token, and this endpoint doesn't touch product data.
+    app.include_router(waitlist.router)
     return app
 
 

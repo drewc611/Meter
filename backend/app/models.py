@@ -132,6 +132,22 @@ class RubricGrade(Base):
     graded_at = Column(DateTime, default=utcnow)
 
 
+class WaitlistSignup(Base):
+    """
+    Pre-launch lead capture from the coming-soon page (frontend/index.html).
+    Deliberately outside the product data model above -- not tied to an
+    Identity, since a waitlist signup happens before anyone's a customer.
+    See routers/waitlist.py: this is the one router mounted without the
+    MERIT_API_KEY gate, since anonymous visitors have no token.
+    """
+
+    __tablename__ = "waitlist_signups"
+    id = Column(Integer, primary_key=True)
+    email = Column(String, unique=True, nullable=False, index=True)
+    company = Column(String, nullable=True)
+    created_at = Column(DateTime, default=utcnow)
+
+
 class PersonScore(Base):
     """
     Materialized output of the nightly scoring job (see services/scoring.recompute_all).

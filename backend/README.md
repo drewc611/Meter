@@ -104,6 +104,7 @@ touches your `merit.db`. Ruff/pytest config lives in `pyproject.toml`.
 | GET | `/api/trends?months=6` | Spend/value/slop across the trailing N months (default 6, max 24) |
 | GET | `/api/tool-breakdown` | Current-period spend by (tool, model) |
 | GET | `/api/adoption` | Active vs. provisioned seats, current period, overall and by tier |
+| POST | `/waitlist` | Pre-launch signup from the coming-soon page. The one endpoint not gated by `MERIT_API_KEY` — see `ARCHITECTURE.md` |
 
 All ingestion endpoints return **422** if the external id has no
 `IdentityMapping` yet — that's deliberate (§5.5 of the spec: an unmapped id is
