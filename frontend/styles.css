@@ -69,7 +69,7 @@ main{flex:1;min-width:0;padding:28px 34px 60px;max-width:1280px}
 .view.active{display:block}
 
 /* ---------- kpis ---------- */
-.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:16px}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:14px;margin-bottom:16px}
 .kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 18px;
   box-shadow:var(--shadow-sm);transition:box-shadow .15s,border-color .15s}
 .kpi:hover{box-shadow:var(--shadow-md);border-color:var(--line-strong)}
@@ -98,6 +98,8 @@ svg.plot{width:100%;height:auto;display:block;overflow:visible}
 .tip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;font-size:11.5px;
   padding:9px 11px;border-radius:var(--r-sm);opacity:0;transition:opacity .1s;white-space:nowrap;
   z-index:5;box-shadow:var(--shadow-lg);line-height:1.5}
+.forecast-note{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);font-size:12px;color:var(--muted)}
+.forecast-note b{color:var(--ink);font-variant-numeric:tabular-nums}
 .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;font-size:11px;color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .swatch{width:9px;height:9px;border-radius:50%}
@@ -196,7 +198,8 @@ footer{margin-top:24px;font-size:11px;color:var(--faint);line-height:1.6}
 
 /* KPI cards wrap awkwardly (e.g. "VALUE PER $ (BLENDED)" onto 2 lines) a bit
    above the main 980px breakpoint, so they get their own, slightly wider one. */
-@media(max-width:1100px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:640px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 @media(max-width:980px){.grid2{grid-template-columns:1fr}
   .segs{grid-template-columns:repeat(2,minmax(0,1fr))}.int-grid{grid-template-columns:1fr}}

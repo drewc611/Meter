@@ -9,7 +9,7 @@
 
    Sections: DATA LAYER, FORMATTERS, RENDER, INTERACTIONS.
    ===================================================================== */
-/* global FALLBACK_OVERVIEW, FALLBACK_TEAMS, FALLBACK_ROLES, FALLBACK_TRENDS, FALLBACK_TOOL_BREAKDOWN, FALLBACK_ADOPTION */
+/* global FALLBACK_OVERVIEW, FALLBACK_TEAMS, FALLBACK_ROLES, FALLBACK_TRENDS, FALLBACK_TOOL_BREAKDOWN, FALLBACK_ADOPTION, FALLBACK_TOOL_PERFORMANCE, FALLBACK_SPEND_FORECAST */
 
 /* =====================================================================
    DATA LAYER
@@ -27,7 +27,10 @@ const API_BASE = ["localhost", "127.0.0.1", ""].includes(location.hostname)
   ? "http://localhost:8000"
   : "https://api.usemeritai.com";
 
-let STATE = { overview: null, teams: null, roles: null, trends: null, toolBreakdown: null, adoption: null, live: false };
+let STATE = {
+  overview: null, teams: null, roles: null, trends: null, toolBreakdown: null, adoption: null,
+  toolPerformance: null, spendForecast: null, live: false
+};
 
 // The backend gates /api/* behind MERIT_API_KEY when that's set in production
 // (see backend/app/dependencies.py) -- a single shared secret, not per-user
@@ -61,12 +64,13 @@ async function fetchJSON(path, timeoutMs = 900) {
 }
 
 async function fetchLive() {
-  const [ov, tm, rl, tr, tb, ad] = await Promise.all([
+  const [ov, tm, rl, tr, tb, ad, tp, sf] = await Promise.all([
     fetchJSON("/api/overview"), fetchJSON("/api/teams"), fetchJSON("/api/roles"),
-    fetchJSON("/api/trends"), fetchJSON("/api/tool-breakdown"), fetchJSON("/api/adoption")
+    fetchJSON("/api/trends"), fetchJSON("/api/tool-breakdown"), fetchJSON("/api/adoption"),
+    fetchJSON("/api/tool-performance"), fetchJSON("/api/spend-forecast")
   ]);
-  if (ov && tm && rl && tr && tb && ad) {
-    return { overview: ov, teams: tm, roles: rl, trends: tr, toolBreakdown: tb, adoption: ad };
+  if (ov && tm && rl && tr && tb && ad && tp && sf) {
+    return { overview: ov, teams: tm, roles: rl, trends: tr, toolBreakdown: tb, adoption: ad, toolPerformance: tp, spendForecast: sf };
   }
   return null;
 }
@@ -89,7 +93,8 @@ async function loadData() {
     ? { ...live, live: true }
     : {
         overview: FALLBACK_OVERVIEW, teams: FALLBACK_TEAMS, roles: FALLBACK_ROLES,
-        trends: FALLBACK_TRENDS, toolBreakdown: FALLBACK_TOOL_BREAKDOWN, adoption: FALLBACK_ADOPTION, live: false
+        trends: FALLBACK_TRENDS, toolBreakdown: FALLBACK_TOOL_BREAKDOWN, adoption: FALLBACK_ADOPTION,
+        toolPerformance: FALLBACK_TOOL_PERFORMANCE, spendForecast: FALLBACK_SPEND_FORECAST, live: false
       };
   // Shown in two places — the sidebar footer (easy to miss) and next to the
   // page title (harder to miss) — since which mode the data is in matters
@@ -176,6 +181,7 @@ function renderAll(){
     (ov.spend_change_pct>=0?'▲ ':'▼ ') + Math.abs(ov.spend_change_pct) + '% vs last month';
   document.getElementById('kpiValue').textContent = fmtX(ov.blended_value_per_dollar);
   document.getElementById('kpiSlop').textContent = ov.avg_slop_risk.toFixed(0) + '/100';
+  document.getElementById('kpiReworkTax').textContent = ov.rework_tax_pct.toFixed(1) + '%';
   document.getElementById('kpiRecoverable').textContent = fmtMoney(ov.recoverable_annual_usd);
 
   const ad = STATE.adoption;
@@ -206,9 +212,11 @@ function renderAll(){
 
   renderScatter(ov.people);
   renderTrends(STATE.trends);
+  renderForecast(STATE.spendForecast);
   renderPeopleTable();
   renderAgg('teams');
   renderToolBreakdown();
+  renderToolPerformance();
 
   const teamSel = document.getElementById('teamFilter');
   if (teamSel.options.length <= 1) {
@@ -332,6 +340,18 @@ function renderTrends(trends){
     });
     d.addEventListener('blur', hideTrendsTip);
   });
+}
+
+// A plain linear trend projection (see backend/app/services/analytics.py
+// forecast_next_period_spend) -- not a black-box prediction. Hidden entirely
+// rather than shown with a fake number when there isn't enough history yet.
+function renderForecast(forecast){
+  const el = document.getElementById('forecastNote');
+  if (!el) return;
+  if (!forecast || !forecast.available) { el.hidden = true; return; }
+  const arrow = forecast.trend_direction === 'up' ? '▲' : forecast.trend_direction === 'down' ? '▼' : '→';
+  el.innerHTML = `${arrow} Next period trend projection: <b>${fmtMoney(forecast.projected_spend_usd)}</b> — a straight-line projection from the last ${forecast.based_on_periods} scored periods, not a guarantee.`;
+  el.hidden = false;
 }
 
 function pill(t){
@@ -461,6 +481,18 @@ function renderToolBreakdown(){
     </tr>`).join('') || `<tr><td colspan="4" style="color:var(--muted)">No usage yet this period.</td></tr>`;
 }
 
+function renderToolPerformance(){
+  const rows = STATE.toolPerformance || [];
+  document.getElementById('toolPerformanceBody').innerHTML = rows.map(r => `
+    <tr>
+      <td>${toolLabel(r.tool)}</td>
+      <td class="num">${fmtMoney(r.spend_usd)}</td>
+      <td class="num val-cell" style="color:${valueColor(r.value_per_dollar)}">${fmtX(r.value_per_dollar)}</td>
+      <td class="num"><div class="slopbar"><div class="track"><i style="width:${r.slop_risk}%;background:${slopColor(r.slop_risk)}"></i></div><span>${r.slop_risk.toFixed(0)}</span></div></td>
+      <td class="num">${r.people_count}</td>
+    </tr>`).join('') || `<tr><td colspan="5" style="color:var(--muted)">No usage yet this period.</td></tr>`;
+}
+
 function renderIntegrations(){
   const items = [
     {name:'Anthropic / OpenAI API', color:'#4f46e5', icon:'$', status:true, feed:'ingest/usage', desc:'Model-provider billing & token usage, attributed via proxy key → Identity.'},
@@ -487,7 +519,7 @@ function renderIntegrations(){
 /* =====================================================================
    INTERACTIONS
    ===================================================================== */
-const VIEW_TITLES = {overview:['Overview','AI spend & value, down to the person'],
+const VIEW_TITLES = {overview:['Overview','AI spend, value, and rework risk — by team, with person-level detail when you need it'],
   people:['People','Every AI-active person — search, filter, sort'],
   teams:['Teams & Roles','Spend and value rolled up above the individual'],
   alerts:['Alerts','What Merit thinks needs a look this period'],
