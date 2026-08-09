@@ -109,6 +109,15 @@ All ingestion endpoints return **422** if the external id has no
 `IdentityMapping` yet — that's deliberate (§5.5 of the spec: an unmapped id is
 a shadow-AI candidate, not a silently dropped event).
 
+Every endpoint above except `/healthz` sits behind `dependencies.require_api_key`
+— a no-op until the `MERIT_API_KEY` environment variable is set, at which
+point every request needs `Authorization: Bearer <key>` or gets a **401**.
+Unset by default so local dev, `docker compose`, and the test suite stay
+exactly as open as before; see [`DEPLOY.md`](../DEPLOY.md)'s go-live
+checklist for turning it on in production, and
+[`ARCHITECTURE.md`](../ARCHITECTURE.md) for why this is a single shared
+secret rather than per-user auth.
+
 ## Files
 
 ```

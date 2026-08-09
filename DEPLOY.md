@@ -91,22 +91,74 @@ where you expected LIVE.
 
 - `https://api.usemeritai.com/healthz` — should return `{"status":"ok"}`.
 - `https://usemeritai.com` — currently shows the "coming soon" placeholder
-  (`frontend/index.html`), not the dashboard. That's deliberate: the backend
-  has no authentication on any endpoint yet (`/api/*`, `/ingest/*`,
+  (`frontend/index.html`), not the dashboard. That's deliberate: until you've
+  completed the **Go-live checklist** below, `/api/*`, `/ingest/*`, and
   `/admin/*` are all open to anyone with the URL — CORS only restricts
-  browser reads, not direct requests), so the real dashboard isn't meant to
-  be publicly reachable until that's addressed. To check the dashboard
-  works end-to-end without exposing it publicly, run it locally against the
-  live backend (`frontend/dashboard.html`, or the local `docker compose`
-  flow) rather than visiting the production domain.
+  browser reads, not direct requests. To check the dashboard works
+  end-to-end without exposing it publicly, run it locally against the live
+  backend (`frontend/dashboard.html`, or the local `docker compose` flow)
+  rather than visiting the production domain.
 
-## Going live with the real dashboard (not the placeholder)
+## Go-live checklist (cutting over from the placeholder to the real dashboard)
 
-Once auth is in place: swap which file is `frontend/index.html` (currently
-the placeholder; the real app is `frontend/dashboard.html`) and push. That
-single-file swap is the whole cutover — everything else (backend, CORS,
-API_BASE) is already wired up and working.
+The backend now supports a bearer-token gate on every `/api/*`, `/ingest/*`,
+and `/admin/*` endpoint (`app/dependencies.py:require_api_key`) — but it's
+**inert until you set the secret**. Do these in order; steps 1–5 are what
+actually make it safe to flip the switch in step 6.
 
-At that point, fill in the first row of [`TRADEMARK.md`](TRADEMARK.md)'s
-events table with the date — that's the "first use in commerce" evidence
-the file exists to capture, and registering the domain alone doesn't count.
+1. **Generate a strong token.** Anything long and random works:
+   ```bash
+   openssl rand -hex 32
+   ```
+2. **Set it as a Fly secret** — never put this in `fly.toml` (that file is
+   committed to the repo):
+   ```bash
+   fly secrets set MERIT_API_KEY=<the-token-from-step-1> -a meter
+   ```
+   Setting a secret triggers an automatic redeploy; wait for it to finish.
+3. **Verify it's actually enforced**:
+   ```bash
+   curl -s -o /dev/null -w "%{http_code}\n" https://api.usemeritai.com/api/overview
+   # -> 401
+
+   curl -s -o /dev/null -w "%{http_code}\n" \
+     -H "Authorization: Bearer <the-token-from-step-1>" \
+     https://api.usemeritai.com/api/overview
+   # -> 200
+
+   curl -s https://api.usemeritai.com/healthz
+   # -> {"status":"ok"} -- must stay open with no token, or Fly's own health
+   #    check starts failing and the machine gets marked unhealthy.
+   ```
+4. **Check backup coverage on the SQLite volume** — a single volume with no
+   snapshot is a single point of failure for every customer's data:
+   ```bash
+   fly volumes list -a meter
+   # note the volume ID, then:
+   fly volumes show <volume-id> -a meter
+   # check the snapshot retention window; increase it if you want more
+   # headroom than the default:
+   fly volumes update <volume-id> --snapshot-retention <days> -a meter
+   ```
+5. **Add the `www` custom domain** (known gap — root domain works, `www`
+   currently 502s): Cloudflare dashboard → the `meter` Worker → **Settings →
+   Domains & Routes** → add `www.usemeritai.com`.
+6. **Swap the files and push.** This is the actual cutover — everything
+   else (backend, CORS, API_BASE) is already wired up and working:
+   ```bash
+   # frontend/index.html is currently the placeholder; frontend/dashboard.html
+   # is the real app. Swap which content lives at which filename, then push.
+   ```
+7. **Share the token from step 1 with your real users** through a channel
+   that isn't the public repo or a public Slack/Discord — a password
+   manager entry or a DM, not a commit message or a GitHub issue.
+8. Fill in the first row of [`TRADEMARK.md`](TRADEMARK.md)'s events table
+   with today's date — that's the "first use in commerce" evidence the file
+   exists to capture, and registering the domain alone doesn't count.
+
+**What this checklist does not give you:** per-user accounts, audit logging
+of who accessed what, or rate limiting. It's one shared secret gating the
+whole API — a real improvement over "wide open to the internet," not a
+replacement for actual SSO. See
+[`ARCHITECTURE.md`](ARCHITECTURE.md#3-does-this-hosting-choice-make-sense)
+for the full gap list and what to prioritize next.

@@ -29,33 +29,68 @@ const API_BASE = ["localhost", "127.0.0.1", ""].includes(location.hostname)
 
 let STATE = { overview: null, teams: null, roles: null, trends: null, toolBreakdown: null, adoption: null, live: false };
 
+// The backend gates /api/* behind MERIT_API_KEY when that's set in production
+// (see backend/app/dependencies.py) -- a single shared secret, not per-user
+// auth (see ARCHITECTURE.md's gap list). Storing it in localStorage means a
+// visitor enters it once; it's sent as a Bearer token on every API call.
+const TOKEN_KEY = "merit_token";
+function getStoredToken() { return localStorage.getItem(TOKEN_KEY) || ""; }
+function setStoredToken(t) { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); }
+
+class AuthError extends Error {}
+
 async function fetchJSON(path, timeoutMs = 900) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    const res = await fetch(API_BASE + path, { signal: ctrl.signal });
+    const token = getStoredToken();
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(API_BASE + path, { signal: ctrl.signal, headers });
     clearTimeout(t);
-    if (!res.ok) throw new Error(res.status);
+    // A 401 means "the API is reachable but this token is wrong/missing" --
+    // distinct from every other failure mode below, which all mean "treat
+    // this the same as the API being offline and show demo data."
+    if (res.status === 401) throw new AuthError("unauthorized");
+    if (!res.ok) throw new Error(String(res.status));
     return await res.json();
   } catch (e) {
     clearTimeout(t);
+    if (e instanceof AuthError) throw e;
     return null;
   }
 }
 
-async function loadData() {
+async function fetchLive() {
   const [ov, tm, rl, tr, tb, ad] = await Promise.all([
     fetchJSON("/api/overview"), fetchJSON("/api/teams"), fetchJSON("/api/roles"),
     fetchJSON("/api/trends"), fetchJSON("/api/tool-breakdown"), fetchJSON("/api/adoption")
   ]);
   if (ov && tm && rl && tr && tb && ad) {
-    STATE = { overview: ov, teams: tm, roles: rl, trends: tr, toolBreakdown: tb, adoption: ad, live: true };
-  } else {
-    STATE = {
-      overview: FALLBACK_OVERVIEW, teams: FALLBACK_TEAMS, roles: FALLBACK_ROLES,
-      trends: FALLBACK_TRENDS, toolBreakdown: FALLBACK_TOOL_BREAKDOWN, adoption: FALLBACK_ADOPTION, live: false
-    };
+    return { overview: ov, teams: tm, roles: rl, trends: tr, toolBreakdown: tb, adoption: ad };
   }
+  return null;
+}
+
+async function loadData() {
+  const hadToken = !!getStoredToken();
+  let live = null;
+  try {
+    live = await fetchLive();
+  } catch (e) {
+    if (!(e instanceof AuthError)) throw e;
+    // Wrong/expired token -- clear it and ask again (with a "that didn't
+    // work" hint if one was already stored) rather than silently retrying
+    // forever. Demo data still renders underneath so the page isn't blank
+    // while the visitor sorts out their token.
+    setStoredToken("");
+    showTokenGate(hadToken);
+  }
+  STATE = live
+    ? { ...live, live: true }
+    : {
+        overview: FALLBACK_OVERVIEW, teams: FALLBACK_TEAMS, roles: FALLBACK_ROLES,
+        trends: FALLBACK_TRENDS, toolBreakdown: FALLBACK_TOOL_BREAKDOWN, adoption: FALLBACK_ADOPTION, live: false
+      };
   // Shown in two places — the sidebar footer (easy to miss) and next to the
   // page title (harder to miss) — since which mode the data is in matters
   // for how much a viewer should trust the numbers.
@@ -70,6 +105,32 @@ async function loadData() {
     }
   });
   renderAll();
+}
+
+function showTokenGate(hadWrongToken) {
+  const gate = document.getElementById("tokenGate");
+  if (!gate) return;
+  document.getElementById("tokenGateError").hidden = !hadWrongToken;
+  gate.hidden = false;
+  document.getElementById("tokenGateInput").focus();
+}
+function hideTokenGate() {
+  const gate = document.getElementById("tokenGate");
+  if (gate) gate.hidden = true;
+}
+const tokenGateForm = document.getElementById("tokenGateForm");
+if (tokenGateForm) {
+  tokenGateForm.addEventListener("submit", e => {
+    e.preventDefault();
+    const input = document.getElementById("tokenGateInput");
+    const val = input.value.trim();
+    if (!val) return;
+    setStoredToken(val);
+    input.value = "";
+    hideTokenGate();
+    loadData();
+  });
+  document.getElementById("tokenGateSkip").addEventListener("click", hideTokenGate);
 }
 
 /* =====================================================================

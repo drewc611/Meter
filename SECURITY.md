@@ -5,21 +5,29 @@ both how to report a problem, and what's already known to be missing.
 
 ## Known limitations (read before pointing this at real data)
 
-**No authentication on any backend endpoint.** `/api/*`, `/ingest/*`, and
-`/admin/*` are all reachable by anyone with the URL. CORS
-(`MERIT_CORS_ORIGINS`) restricts which browser origins can read the API from
-JavaScript — it does nothing against a direct request (`curl`, a script, a
-second browser tab pointed straight at `api.usemeritai.com`). This is the
-reason the production domain currently serves a "coming soon" placeholder
-(`frontend/index.html`) instead of the real dashboard: the data isn't safe
-to expose publicly until this is closed. See
+**No authentication on any backend endpoint, unless explicitly turned on.**
+`/api/*`, `/ingest/*`, and `/admin/*` are all reachable by anyone with the
+URL by default. CORS (`MERIT_CORS_ORIGINS`) restricts which browser origins
+can read the API from JavaScript — it does nothing against a direct request
+(`curl`, a script, a second browser tab pointed straight at
+`api.usemeritai.com`).
+
+A bearer-token gate exists (`app/dependencies.py:require_api_key`, wired
+onto every `/api/*`, `/ingest/*`, and `/admin/*` route) and is enforced the
+moment the `MERIT_API_KEY` environment variable is set — see `DEPLOY.md`'s
+go-live checklist for the exact steps. Until that secret is set in
+production, the endpoints stay open, which is why the production domain
+currently serves a "coming soon" placeholder (`frontend/index.html`)
+instead of the real dashboard. Note this is **one shared secret, not
+per-user accounts** — adequate for a small trusted group, not a substitute
+for real SSO/OAuth once this has more than a handful of users. See
 [`ARCHITECTURE.md`](ARCHITECTURE.md#3-does-this-hosting-choice-make-sense)
 for the full gap list and priority order (auth is gap #1).
 
 Don't use this deployment to store real people's names, spend, or
-performance data until that's fixed. The seeded demo data
-(`backend/seed.py`) is fabricated and safe to run publicly for exactly that
-reason.
+performance data until the token is actually set in production (not just
+present in the code). The seeded demo data (`backend/seed.py`) is
+fabricated and safe to run publicly for exactly that reason.
 
 ## Reporting a vulnerability
 
