@@ -167,6 +167,7 @@ app/
 tests/               pytest suite (periods, scoring, ingest, analytics, full API)
 seed.py              fabricates a month of sample data (+ 5 lighter-weight backfill months) across four behavioral profiles
 proxy_example.py     reference-only usage-attributing LLM proxy (not wired into the demo)
+personal.py          optional: wire your own real usage/GitHub PRs into a local instance -- see its docstring
 ```
 
 - `constants.py` holds `OUTCOME_VALUE_WEIGHTS` / `QUALITY_SIGNAL_WEIGHTS` and the
