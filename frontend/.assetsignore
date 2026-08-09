@@ -1,0 +1,10 @@
+# Cloudflare Workers static-assets deploy uploads everything in this
+# directory by default (it doesn't know which files are actually meant to
+# be public web assets vs. deploy tooling) -- exclude the non-asset files
+# so they aren't served at e.g. usemeritai.com/Dockerfile. Nothing in these
+# was ever sensitive (all public in the repo anyway), just not meant to be
+# a served URL.
+Dockerfile
+.dockerignore
+wrangler.jsonc
+.wrangler/
