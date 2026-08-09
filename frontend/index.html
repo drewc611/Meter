@@ -35,6 +35,12 @@
   .sub{font-size:17px; color:var(--muted); margin:0 0 40px; max-width:520px; margin-left:auto; margin-right:auto}
   .sub b{color:var(--ink); font-weight:600}
 
+  .stats{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; text-align:left; margin-bottom:36px}
+  .stat{background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:16px; padding:18px 16px}
+  .stat .n{font-size:30px; font-weight:800; letter-spacing:-1px; color:var(--ink); line-height:1}
+  .stat .d{font-size:12px; color:var(--muted); margin:8px 0 0; line-height:1.5}
+  .stat .src{font-size:10px; color:var(--brand-pale); margin-top:9px; opacity:.7}
+
   .features{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; text-align:left; margin-bottom:36px}
   .feature{background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:16px; padding:16px 18px;
     transition:background .15s,border-color .15s}
@@ -47,7 +53,7 @@
   footer a{color:var(--brand-pale); text-decoration:none}
   footer a:hover{text-decoration:underline}
 
-  @media(max-width:520px){.features{grid-template-columns:1fr}}
+  @media(max-width:520px){.features{grid-template-columns:1fr}.stats{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -69,6 +75,24 @@
     so a clean "value per dollar" number can't hide slop. We're heads-down
     building it. Here's what's coming:
   </p>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="n">31%</div>
+      <div class="d">of organizations have accurate visibility into their AI software spend</div>
+      <div class="src">Flexera, 2026 State of ITAM Report</div>
+    </div>
+    <div class="stat">
+      <div class="n">59%</div>
+      <div class="d">say wasted AI spend increased in the last year</div>
+      <div class="src">Flexera, 2026 State of ITAM Report</div>
+    </div>
+    <div class="stat">
+      <div class="n">Half</div>
+      <div class="d">of companies running AI in production still can't prove it delivers business value</div>
+      <div class="src">Plug and Play, 2026 Enterprise AI Survey</div>
+    </div>
+  </div>
 
   <div class="features">
     <div class="feature">
