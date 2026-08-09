@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Merit — AI Spend &amp; Value</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo"><i style="height:10px;background:#cad2fb"></i><i style="height:15px;background:#7c74f4"></i><i style="height:20px;background:#4f46e5"></i></div>
+    <b>Merit<span style="font-size:10px;font-weight:400;vertical-align:super;margin-left:1px">&trade;</span></b>
+  </div>
+  <div class="sb-nav" id="nav">
+    <div class="sb-item active" data-view="overview" tabindex="0" role="button" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      Overview
+    </div>
+    <div class="sb-item" data-view="people" tabindex="0" role="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="8" r="2.6"/><path d="M15.5 14.2c2.6.3 4.7 2.6 4.7 5.8"/></svg>
+      People
+    </div>
+    <div class="sb-item" data-view="teams" tabindex="0" role="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20V10M9 20V4M15 20v-7M21 20V8"/></svg>
+      Teams &amp; Roles
+    </div>
+    <div class="sb-item" data-view="alerts" tabindex="0" role="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l9 16H3L12 3z"/><path d="M12 10v4M12 17h.01"/></svg>
+      Alerts
+    </div>
+    <div class="sb-item" data-view="integrations" tabindex="0" role="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg>
+      Integrations
+    </div>
+  </div>
+  <div class="sb-foot">
+    <div class="sb-badge demo" id="sourceBadge"><i></i> checking API…</div>
+    Merit<br>illustrative prototype
+  </div>
+</nav>
+
+<main>
+  <div class="topbar">
+    <div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <h1 id="pageTitle">Overview</h1>
+        <span class="sb-badge demo" id="sourceBadgeTop" style="margin-bottom:0"><i></i> checking API…</span>
+      </div>
+      <div class="sub" id="pageSub">AI spend &amp; value, down to the person</div>
+    </div>
+    <div class="co"><b>Northwind Labs</b><span id="periodLabel">—</span></div>
+  </div>
+
+  <!-- ============ OVERVIEW ============ -->
+  <section class="view active" id="view-overview">
+    <div class="kpis">
+      <div class="kpi"><div class="lab">AI spend / mo</div><div class="val" id="kpiSpend">—</div><div class="note" id="kpiSpendNote">—</div></div>
+      <div class="kpi"><div class="lab">Value per $ (blended)</div><div class="val good" id="kpiValue">—</div><div class="note">Tier-1 correlation signal</div></div>
+      <div class="kpi"><div class="lab">Avg slop risk</div><div class="val warn" id="kpiSlop">—</div><div class="note">Tier-2 quality proxies</div></div>
+      <div class="kpi"><div class="lab">Recoverable / yr</div><div class="val good" id="kpiRecoverable">—</div><div class="note">re-tier + slop reduction</div></div>
+      <div class="kpi"><div class="lab">Active AI users</div><div class="val" id="kpiAdoption">—</div><div class="note" id="kpiAdoptionNote">—</div></div>
+    </div>
+
+    <div class="card" style="padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.03em">Score coverage</span>
+      <div id="confidenceBreakdown" style="display:flex;gap:14px;flex-wrap:wrap"></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card plotwrap">
+        <h2>Spend vs. value — every AI-active person</h2>
+        <p class="desc">Each dot is a person, drawn from live PersonScore rows. Right = spends more. Up = more value per dollar. Color = slop risk.</p>
+        <svg class="plot" id="plot" viewBox="0 0 560 340" role="img" aria-label="Scatter of spend versus value by person"></svg>
+        <div class="legend">
+          <span><i class="swatch" style="background:var(--value)"></i> Low slop</span>
+          <span><i class="swatch" style="background:var(--slop)"></i> Medium slop</span>
+          <span><i class="swatch" style="background:var(--slop-hi)"></i> High slop</span>
+          <span style="margin-left:auto">bubble size = spend</span>
+        </div>
+        <div class="segs">
+          <div class="seg a"><div class="t">FUND</div><div class="n" id="segFund">—</div><div class="d">High value, high spend</div></div>
+          <div class="seg b"><div class="t">COACH</div><div class="n" id="segCoach">—</div><div class="d">High spend, high slop</div></div>
+          <div class="seg c"><div class="t">LEARN</div><div class="n" id="segLearn">—</div><div class="d">Low spend, high value</div></div>
+          <div class="seg d"><div class="t">MONITOR</div><div class="n" id="segWatch">—</div><div class="d">Low spend, low signal</div></div>
+        </div>
+        <div class="tip" id="tip"></div>
+      </div>
+
+      <div class="card">
+        <h2>Recoverable spend</h2>
+        <p class="desc">What Merit estimates recoverable this year without cutting a high-value user.</p>
+        <div class="roi-big" id="roiBig">—</div>
+        <div class="roi-sub" id="roiSub">—</div>
+        <div id="roiRows"></div>
+        <div style="margin-top:16px;padding:11px 12px;background:var(--brand-soft);border-radius:12px;font-size:12px;color:#33306b">
+          <b>Contract math:</b> Growth plan for the AI-active seats shown here runs roughly $18–25/user/mo — first-quarter recovery alone typically covers it.
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h2>Spend trend</h2>
+      <p class="desc">Total AI spend across the trailing months, read from PersonScore history — one point per scored period.</p>
+      <svg class="plot" id="trendsPlot" viewBox="0 0 900 190" role="img" aria-label="Line chart of total AI spend by month"></svg>
+    </div>
+
+    <footer>
+      Values are confidence-tiered signals (see the Confidence column on the People view), not exact measures. Illustrative sample data.
+    </footer>
+  </section>
+
+  <!-- ============ PEOPLE ============ -->
+  <section class="view" id="view-people">
+    <div class="card">
+      <div class="filters">
+        <input type="text" id="searchBox" placeholder="Search people…">
+        <select id="teamFilter"><option value="">All teams</option></select>
+        <select id="tierFilter"><option value="">All tiers</option><option>Frontier</option><option>Standard</option><option>Basic</option></select>
+        <select id="segFilter">
+          <option value="">All segments</option>
+          <option value="fund">Fund</option><option value="coach">Coach</option>
+          <option value="learn">Learn</option><option value="watch">Monitor</option>
+        </select>
+        <span style="margin-left:auto;font-size:11.5px;color:var(--muted)" id="peopleCount"></span>
+      </div>
+      <div style="overflow-x:auto">
+        <table id="peopleTable">
+          <thead><tr>
+            <th data-k="name" tabindex="0" role="button" aria-sort="none">Person</th><th data-k="spend_usd" class="num" tabindex="0" role="button" aria-sort="descending">Spend / mo</th>
+            <th data-k="value_per_dollar" class="num" tabindex="0" role="button" aria-sort="none">Value / $</th><th data-k="slop_risk" class="num" tabindex="0" role="button" aria-sort="none">Slop risk</th>
+            <th data-k="confidence" tabindex="0" role="button" aria-sort="none">Confidence</th><th data-k="tier" tabindex="0" role="button" aria-sort="none">Tier</th><th>Merit says</th>
+          </tr></thead>
+          <tbody id="peopleBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TEAMS & ROLES ============ -->
+  <section class="view" id="view-teams">
+    <div class="card">
+      <div class="filters">
+        <div class="toggle" id="aggToggle">
+          <button class="on" data-v="teams">Teams</button>
+          <button data-v="roles">Roles</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th id="aggCol">Team</th><th class="num">People</th><th class="num">Spend / mo</th>
+            <th class="num">Value / $</th><th class="num">Slop risk</th></tr></thead>
+          <tbody id="aggBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ALERTS ============ -->
+  <section class="view" id="view-alerts">
+    <div class="card" style="box-shadow:none;border:none;padding:0;background:transparent">
+      <div id="alertsList"></div>
+    </div>
+  </section>
+
+  <!-- ============ INTEGRATIONS ============ -->
+  <section class="view" id="view-integrations">
+    <div class="card">
+      <h2>How tracking actually works</h2>
+      <p class="desc">Three independent ingestion paths feed the scoring engine — spend, outcomes, and quality proxies never come from the same system, which is why the signal is hard to game from any one side.</p>
+      <div class="int-grid" id="intGrid"></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h2>Spend by tool &amp; model</h2>
+      <p class="desc">Where this period's AI spend is actually going, straight from usage events — not attributed to a person here, just the underlying mix.</p>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Tool</th><th>Model</th><th class="num">Spend / mo</th><th class="num">Events</th></tr></thead>
+          <tbody id="toolBreakdownBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="fallback-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

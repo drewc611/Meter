@@ -13,7 +13,11 @@ dashboard UI.
 ## What it looks like
 
 Every screenshot below is the real dashboard, running against the live
-backend on seeded demo data (`python seed.py`) — nothing mocked up.
+backend on seeded demo data (`python seed.py`) — nothing mocked up. Note:
+the public production site currently shows a "coming soon" placeholder
+instead of this dashboard (see [Quickstart](#quickstart) and
+[DEPLOY.md](DEPLOY.md)) — the dashboard itself is fully built and exactly
+what's pictured here, just not what's deployed to visitors yet.
 
 **Overview** — spend, blended value/$, slop risk, seat utilization, and
 score coverage at a glance, plus the spend-vs-value scatter, the four-segment
@@ -50,9 +54,11 @@ backend/    FastAPI service: usage/outcome/quality-signal ingestion,
             identity resolution, Tier-1/Tier-2 scoring, REST API.
             See backend/README.md for the full architecture writeup.
 frontend/   Sidebar dashboard (Overview, People, Teams & Roles, Alerts,
-            Integrations), split into index.html + styles.css + app.js +
+            Integrations) lives at dashboard.html + styles.css + app.js +
             fallback-data.js. Calls the backend API at localhost:8000 and
             falls back to embedded demo data if it's not running.
+            index.html is a separate "coming soon" placeholder -- currently
+            what's actually deployed to the public production site.
 ```
 
 ## Quickstart
@@ -64,7 +70,7 @@ python seed.py                        # fabricates 6 months of sample activity, 
 uvicorn app.main:app --reload --port 8000
 ```
 
-Then open `frontend/index.html` in a browser. The sidebar badge shows
+Then open `frontend/dashboard.html` in a browser. The sidebar badge shows
 whether it's reading from the live API or the embedded fallback.
 
 Run the backend test suite with `make test` (or `pytest`) from `backend/`.

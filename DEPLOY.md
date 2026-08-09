@@ -77,13 +77,24 @@ production visit where you expected LIVE.
 
 ## 4. Verify
 
-- `https://usemeritai.com` — sidebar badge should read **LIVE · Merit API**,
-  not DEMO DATA.
-- `https://api.usemeritai.com/api/overview` — should return real JSON, not
-  a CORS error in the browser console (check devtools if the badge says DEMO).
+- `https://api.usemeritai.com/healthz` — should return `{"status":"ok"}`.
+- `https://usemeritai.com` — currently shows the "coming soon" placeholder
+  (`frontend/index.html`), not the dashboard. That's deliberate for now
+  (the backend has no auth yet — see the security note in `README.md`'s
+  history). To check the actual dashboard is working end-to-end without
+  exposing it publicly, run it locally against the live backend: open
+  `frontend/dashboard.html` on your own machine and edit its `API_BASE`
+  logic temporarily, or just run the local dev flow (`docker compose up`)
+  pointed at the live API's CORS-approved origin.
 
-## Once it's actually live
+## Going live with the real dashboard (not the placeholder)
 
-Fill in the first row of [`TRADEMARK.md`](TRADEMARK.md)'s events table with
-today's date — that's the "first use in commerce" evidence the file exists
-to capture, and registering the domain alone doesn't count.
+When the site's actually ready to show the dashboard instead of "coming
+soon": swap which file is `frontend/index.html` (currently the placeholder;
+the real app is `frontend/dashboard.html`) and push. That single-file swap
+is the whole cutover — everything else (backend, CORS, API_BASE) is already
+wired up and working.
+
+At that point, fill in the first row of [`TRADEMARK.md`](TRADEMARK.md)'s
+events table with the date — that's the "first use in commerce" evidence
+the file exists to capture, and registering the domain alone doesn't count.
