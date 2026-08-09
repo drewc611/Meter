@@ -44,11 +44,15 @@ and pytest config live in `backend/pyproject.toml`, not separate ini files.
 ### Frontend
 
 No build step, no package.json — `frontend/app.js` is a plain non-module
-script by design, so `index.html` can be opened directly over `file://`.
-Just open `frontend/index.html` in a browser, or serve it (Docker/nginx does
-this in the compose stack). It tries `http://localhost:8000` first and falls
-back to `fallback-data.js`'s embedded snapshot if the API is unreachable
-(900ms timeout) — the sidebar badge shows which mode it's in.
+script by design, so `dashboard.html` (the actual app) can be opened directly
+over `file://`. Just open `frontend/dashboard.html` in a browser, or serve it
+(Docker/nginx does this in the compose stack, aliased back to `index.html`
+inside the container so local dev is unchanged). It tries `http://localhost:8000`
+first and falls back to `fallback-data.js`'s embedded snapshot if the API is
+unreachable (900ms timeout) — the sidebar badge shows which mode it's in.
+`frontend/index.html` itself is currently a separate, static "coming soon"
+placeholder — that's what's actually deployed to the public production site
+right now, not the dashboard (see DEPLOY.md).
 
 CI lints frontend JS with ESLint (`.eslintrc.js`, `eslint:recommended`) via
 `.github/workflows/eslint.yml`; there's no local lint script, run

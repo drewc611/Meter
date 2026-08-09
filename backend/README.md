@@ -66,9 +66,11 @@ curl http://localhost:8000/api/overview | python3 -m json.tool
 
 Or use the Makefile: `make install`, `make seed`, `make run`, `make test`, `make lint`, `make fmt`.
 
-Then open `../frontend/index.html` in a browser — it tries `http://localhost:8000`
+Then open `../frontend/dashboard.html` in a browser — it tries `http://localhost:8000`
 first and falls back to an embedded snapshot if the API isn't reachable, so it
 works either way. The sidebar badge tells you which mode it's in.
+(`../frontend/index.html` is a separate "coming soon" placeholder, currently
+what's actually deployed to the public production site — see `../DEPLOY.md`.)
 
 Or run the whole stack in Docker instead — see [the root README](../README.md#running-with-docker)
 (`docker compose up --build` from the repo root). `Dockerfile` here builds this
