@@ -1,12 +1,17 @@
 # Fly.io app config for the Merit backend. Deploy from backend/:
-#   fly launch --no-deploy          # first time only, adjust `app` below to what it picks
-#   fly volumes create merit_data --size 1 --region <region>   # match primary_region below
-#   fly deploy
+#   fly deploy -a meter
+#
+# `app` below must match whatever Fly actually named the app when it was
+# created — Fly's "Launch an App from GitHub" web flow generates its own
+# app config rather than reading this file, so if you used that instead of
+# `fly launch`, the app name (and things like the health-check port) can
+# drift from what's committed here until you run `fly deploy` with this
+# file to reconcile them.
 #
 # See ../DEPLOY.md for the full runbook, including the Cloudflare Pages
 # frontend and DNS setup this depends on.
 
-app = "merit-api"
+app = "meter"
 primary_region = "iad"
 
 [build]
