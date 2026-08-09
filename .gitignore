@@ -16,6 +16,10 @@ backend/*.db
 backend/server.log
 backend/nohup.out
 
+# Cloudflare Workers CLI local cache/temp (created if you run wrangler locally
+# in frontend/ -- frontend/wrangler.jsonc itself is intentionally committed)
+frontend/.wrangler/
+
 # OS / editor
 .DS_Store
 .vscode/

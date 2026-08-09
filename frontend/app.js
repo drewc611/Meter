@@ -20,7 +20,7 @@
    ===================================================================== */
 // localhost/127.0.0.1/file:// (empty hostname) means local dev — hit the
 // local backend. Any other origin is a real deploy (the production domain,
-// or a Cloudflare Pages preview build) — hit the production API. A preview
+// or a Cloudflare Workers preview build) — hit the production API. A preview
 // build's origin won't be in MERIT_CORS_ORIGINS, so its fetches get CORS-
 // blocked and it falls back to demo data — expected, not a bug.
 const API_BASE = ["localhost", "127.0.0.1", ""].includes(location.hostname)
