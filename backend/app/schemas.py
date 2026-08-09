@@ -2,9 +2,27 @@
 
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 # ------------------------------------------------------------- requests
+
+
+class WaitlistSignupIn(BaseModel):
+    email: str
+    company: str | None = None
+
+    @field_validator("email")
+    @classmethod
+    def _basic_email_shape(cls, v: str) -> str:
+        # Deliberately not pydantic's EmailStr -- that needs the optional
+        # email-validator dependency, which isn't installed. This is a
+        # lightweight sanity check for a pre-launch signup form, not RFC 5321
+        # validation; the real bar is "does mail actually land," which no
+        # amount of regex checking here can guarantee anyway.
+        v = v.strip()
+        if "@" not in v or " " in v or len(v) > 254:
+            raise ValueError("not a valid email address")
+        return v
 
 
 class UsageEventIn(BaseModel):
@@ -44,6 +62,10 @@ class IdentityMappingIn(BaseModel):
 
 
 # ------------------------------------------------------------- responses
+
+
+class WaitlistSignupOut(BaseModel):
+    status: str = "joined"
 
 
 class IngestAccepted(BaseModel):
