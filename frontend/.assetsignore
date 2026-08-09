@@ -4,7 +4,11 @@
 # so they aren't served at e.g. usemeritai.com/Dockerfile. Nothing in these
 # was ever sensitive (all public in the repo anyway), just not meant to be
 # a served URL.
+#
+# Deliberately NOT excluding wrangler.jsonc or .wrangler/ here -- an earlier
+# version of this file did, and the very next deploy failed. Those are
+# wrangler's own generated config and the no-op worker script it needs to
+# actually serve static assets at all, not just extra public-facing noise
+# like Dockerfile is -- excluding them broke the build, not just hid a file.
 Dockerfile
 .dockerignore
-wrangler.jsonc
-.wrangler/
