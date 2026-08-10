@@ -96,41 +96,20 @@ where you expected LIVE.
 ## 4. Verify
 
 - `https://api.usemeritai.com/healthz` — should return `{"status":"ok"}`.
-- `https://usemeritai.com` — currently shows the "coming soon" placeholder
-  (`frontend/index.html`), not the dashboard, until the **go-live checklist**
-  below is complete. To check the dashboard works end-to-end before then,
-  run it locally against the live backend (`frontend/dashboard.html`, or the
-  local `docker compose` flow) rather than visiting the production domain.
+- `https://usemeritai.com` — shows the real dashboard (`frontend/index.html`)
+  as of the **go-live checklist** below. The old "coming soon" placeholder
+  is still around at `frontend/coming-soon.html` (its waitlist form and ROI
+  calculator), just no longer served at the site root.
 
 ## Go-live checklist (cutting over from the placeholder to the real dashboard)
 
-Do these in order; steps 1–5 are what make it safe to flip the switch in
-step 6.
+Steps 1–3 and 6 are done — `MERIT_API_KEY` is live and enforced, and
+`frontend/index.html` is the real dashboard. What's left:
 
-1. **Generate a strong token.** Anything long and random works:
-   ```bash
-   openssl rand -hex 32
-   ```
-2. **Set it as a Fly secret** — never put this in `fly.toml` (that file is
-   committed to the repo):
-   ```bash
-   fly secrets set MERIT_API_KEY=<the-token-from-step-1> -a meter
-   ```
-   Setting a secret triggers an automatic redeploy; wait for it to finish.
-3. **Verify it's actually enforced**:
-   ```bash
-   curl -s -o /dev/null -w "%{http_code}\n" https://api.usemeritai.com/api/overview
-   # -> 401
-
-   curl -s -o /dev/null -w "%{http_code}\n" \
-     -H "Authorization: Bearer <the-token-from-step-1>" \
-     https://api.usemeritai.com/api/overview
-   # -> 200
-
-   curl -s https://api.usemeritai.com/healthz
-   # -> {"status":"ok"} -- must stay open with no token, or Fly's own health
-   #    check starts failing and the machine gets marked unhealthy.
-   ```
+1. ~~Generate a strong token.~~ Done.
+2. ~~Set it as a Fly secret.~~ Done.
+3. ~~Verify it's actually enforced~~ (401 without a token, 200 with it,
+   `/healthz` still open). Done.
 4. **Check backup coverage on the SQLite volume** — a single volume with no
    snapshot is a single point of failure for every customer's data:
    ```bash
@@ -144,12 +123,8 @@ step 6.
 5. **Add the `www` custom domain** (known gap — root domain works, `www`
    currently 502s): Cloudflare dashboard → the `meter` Worker → **Settings →
    Domains & Routes** → add `www.usemeritai.com`.
-6. **Swap the files and push.** This is the actual cutover — everything
-   else (backend, CORS, API_BASE) is already wired up and working:
-   ```bash
-   # frontend/index.html is currently the placeholder; frontend/dashboard.html
-   # is the real app. Swap which content lives at which filename, then push.
-   ```
+6. ~~Swap the files and push.~~ Done — `frontend/index.html` is now the
+   dashboard; the old placeholder lives at `frontend/coming-soon.html`.
 7. **Share the token from step 1 with your real users** through a channel
    that isn't the public repo or a public Slack/Discord — a password
    manager entry or a DM, not a commit message or a GitHub issue.

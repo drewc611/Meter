@@ -2,10 +2,10 @@
    Merit dashboard — front-end application logic.
 
    Loads after fallback-data.js (which defines the FALLBACK_* consts below).
-   Plain, non-module script on purpose so dashboard.html works opened directly
-   over file:// without a dev server or CORS gymnastics. (index.html is the
-   public coming-soon placeholder -- this app lives at dashboard.html until
-   it's ready to be the front door again.)
+   Plain, non-module script on purpose so index.html works opened directly
+   over file:// without a dev server or CORS gymnastics. (coming-soon.html
+   is the old pre-launch placeholder, kept around for its waitlist form and
+   ROI calculator but no longer served at the site root.)
 
    Sections: DATA LAYER, FORMATTERS, RENDER, INTERACTIONS.
    ===================================================================== */

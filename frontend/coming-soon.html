@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Merit — AI Spend &amp; Value (coming soon)</title>
+<meta name="description" content="Merit tells a company what it spends on AI, what that spend is actually producing, and how much of it is rework risk instead of real work. Coming soon.">
+<style>
+  :root{
+    /* Same navy/brand family as the dashboard sidebar (styles.css --navy/--navy2/--brand)
+       so the two live surfaces read as one product, not two. */
+    --navy:#12152c; --navy2:#1a1f42;
+    --brand:#4f46e5; --brand-soft:#7c74f4; --brand-pale:#cad2fb;
+    --ink:#eef0fb; --muted:#a7aed8; --line:rgba(255,255,255,.1);
+    --good:#4ade9c;
+  }
+  *{box-sizing:border-box}
+  body{
+    /* Deliberately NOT flex-centered with a fixed/min height + overflow:hidden --
+       that combination clips content with no way to scroll to it the moment the
+       page (now with a waitlist form + calculator) grows taller than the
+       viewport, which is true on most real screens. Plain top-down flow with
+       generous padding + margin:0 auto on main is simpler and can't clip. */
+    position:relative;
+    margin:0; min-height:100vh;
+    background:var(--navy);
+    color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.5; padding:56px 20px;
+  }
+  /* Layered gradient mesh + hairline dot grid, instead of one flat radial --
+     the soft-glow-blob-behind-content treatment most enterprise SaaS
+     marketing pages use pre-launch, rather than a literal product screenshot. */
+  body::before{
+    content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(760px 520px at 14% -8%, rgba(124,116,244,.28), transparent 60%),
+      radial-gradient(640px 520px at 104% 8%, rgba(79,70,229,.22), transparent 58%),
+      radial-gradient(1100px 640px at 50% 115%, rgba(10,12,28,.9), transparent 65%),
+      radial-gradient(rgba(255,255,255,.055) 1px, transparent 1px);
+    background-size: auto, auto, auto, 26px 26px;
+  }
+  main{position:relative; z-index:1; max-width:1080px; width:100%; margin:0 auto; text-align:center}
+  .logo{display:flex; gap:3px; align-items:flex-end; justify-content:center; height:30px; margin-bottom:22px}
+  .logo i{display:block; width:8px; border-radius:3px}
+  .brand{display:flex; align-items:center; justify-content:center; gap:6px; font-size:15px; font-weight:600;
+    letter-spacing:.02em; color:var(--muted); text-transform:uppercase; margin-bottom:28px}
+  .brand sup{font-size:9px; font-weight:400}
+  .badge{display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:700;
+    padding:6px 14px; border-radius:20px; background:rgba(124,116,244,.15); color:var(--brand-pale);
+    border:1px solid rgba(124,116,244,.3); margin-bottom:22px}
+  .badge i{width:7px; height:7px; border-radius:50%; background:var(--good); box-shadow:0 0 8px var(--good)}
+  h1{font-size:clamp(28px,5vw,42px); margin:0 auto 14px; letter-spacing:-.5px; font-weight:700; max-width:740px}
+  .sub{font-size:17px; color:var(--muted); margin:0 0 28px; max-width:520px; margin-left:auto; margin-right:auto}
+  .sub b{color:var(--ink); font-weight:600}
+
+  .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
+    clip:rect(0,0,0,0); white-space:nowrap; border:0}
+
+  .waitlist{display:flex; gap:8px; max-width:420px; margin:0 auto; flex-wrap:wrap; justify-content:center}
+  .waitlist input{flex:1; min-width:220px; padding:12px 14px; border-radius:10px; border:1px solid var(--line);
+    background:rgba(255,255,255,.06); color:var(--ink); font-size:14px; font-family:inherit}
+  .waitlist input::placeholder{color:var(--muted)}
+  .waitlist input:focus-visible{outline:2px solid var(--brand-soft); outline-offset:1px}
+  .waitlist button{padding:12px 22px; border-radius:10px; border:none; background:var(--brand); color:#fff;
+    font-weight:700; font-size:14px; cursor:pointer; transition:background .15s; white-space:nowrap; font-family:inherit}
+  .waitlist button:hover{background:#3d35c4}
+  .waitlist button:disabled{opacity:.6; cursor:default}
+  .waitlist button:focus-visible{outline:2px solid var(--brand-soft); outline-offset:2px}
+  .waitlist-msg{font-size:12.5px; min-height:18px; margin:10px 0 32px}
+  .waitlist-msg.ok{color:var(--good)}
+  .waitlist-msg.err{color:#ff9d9d}
+
+  .calc{background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:16px;
+    padding:22px 24px; margin-bottom:36px; text-align:left}
+  .calc-h{font-size:13.5px; font-weight:700; margin-bottom:14px}
+  .calc-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 20px}
+  .calc-row{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
+  .calc-row label{font-size:13px; color:var(--muted)}
+  .calc-input{display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.06);
+    border:1px solid var(--line); border-radius:10px; padding:8px 12px; transition:border-color .15s}
+  .calc-input span{color:var(--muted); font-size:12.5px; white-space:nowrap}
+  .calc-input input{border:none; background:transparent; color:var(--ink); font-size:15px;
+    font-weight:600; width:88px; font-family:inherit}
+  .calc-input input:focus{outline:none}
+  .calc-input:focus-within{border-color:var(--brand-soft)}
+  .calc-result{margin-top:18px; font-size:14px; font-weight:600; color:var(--muted); min-height:32px}
+  .calc-result.has-value{font-size:20px; color:var(--good)}
+  .calc-result b{font-size:26px}
+  .calc-breakdown{margin-top:12px; padding-top:12px; border-top:1px solid var(--line);
+    display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px 20px; font-size:12.5px}
+  .calc-breakdown .row{display:flex; justify-content:space-between; gap:8px; color:var(--muted)}
+  .calc-breakdown .row b{color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums}
+  .calc-note{font-size:11px; color:var(--muted); margin:10px 0 0; line-height:1.5}
+  @media(max-width:520px){.calc-grid{grid-template-columns:1fr}.calc-breakdown{grid-template-columns:1fr}}
+
+  .stats{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; text-align:left; margin-bottom:36px}
+  .stat{background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:16px; padding:18px 16px}
+  .stat .n{font-size:30px; font-weight:800; letter-spacing:-1px; color:var(--ink); line-height:1}
+  .stat .d{font-size:12px; color:var(--muted); margin:8px 0 0; line-height:1.5}
+  .stat .src{font-size:10px; color:var(--brand-pale); margin-top:9px; opacity:.7}
+
+  .features{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; text-align:left; margin-bottom:36px}
+  .feature{background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:16px; padding:16px 18px;
+    transition:background .15s,border-color .15s}
+  .feature:hover{background:rgba(255,255,255,.07); border-color:rgba(255,255,255,.18)}
+  .feature .t{font-size:13.5px; font-weight:700; margin-bottom:4px; display:flex; align-items:center; gap:8px}
+  .feature .t i{width:7px; height:7px; border-radius:50%; background:var(--brand-soft); flex:none}
+  .feature .d{font-size:12.5px; color:var(--muted); margin:0}
+
+  footer{font-size:12px; color:var(--muted)}
+  footer a{color:var(--brand-pale); text-decoration:none}
+  footer a:hover{text-decoration:underline}
+
+  @media(max-width:520px){.features{grid-template-columns:1fr}.stats{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+  <div class="logo" aria-hidden="true">
+    <i style="height:14px;background:var(--brand-pale)"></i>
+    <i style="height:22px;background:var(--brand-soft)"></i>
+    <i style="height:30px;background:var(--brand)"></i>
+  </div>
+  <div class="brand">Merit<sup>&trade;</sup></div>
+
+  <div class="badge"><i></i> Under development</div>
+
+  <h1>AI spend isn't the risk. Slop wearing a good ROI number is.</h1>
+  <p class="sub">
+    Most tools stop at "who spent what." Merit checks if the work was
+    <b>any good</b> — reverts, rewrites, regeneration loops — before it
+    counts as value.
+  </p>
+
+  <form class="waitlist" id="waitlistForm" novalidate>
+    <label for="waitlistEmail" class="sr-only">Work email</label>
+    <input type="email" id="waitlistEmail" name="email" placeholder="you@company.com" required autocomplete="email">
+    <button type="submit">Notify me</button>
+  </form>
+  <p class="waitlist-msg" id="waitlistMsg" role="status" aria-live="polite"></p>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="n">31%</div>
+      <div class="d">of organizations have accurate visibility into their AI software spend</div>
+      <div class="src">Flexera, 2026 State of ITAM Report</div>
+    </div>
+    <div class="stat">
+      <div class="n">59%</div>
+      <div class="d">say wasted AI spend increased in the last year</div>
+      <div class="src">Flexera, 2026 State of ITAM Report</div>
+    </div>
+    <div class="stat">
+      <div class="n">Half</div>
+      <div class="d">of companies running AI in production still can't prove it delivers business value</div>
+      <div class="src">Plug and Play, 2026 Enterprise AI Survey</div>
+    </div>
+  </div>
+
+  <div class="calc">
+    <div class="calc-h">Estimate your AI ROI</div>
+    <div class="calc-grid">
+      <div class="calc-row">
+        <label for="calcEngineers">Engineers using AI tools</label>
+        <div class="calc-input"><input type="number" id="calcEngineers" inputmode="numeric" placeholder="120" min="0" step="1"></div>
+      </div>
+      <div class="calc-row">
+        <label for="calcComp">Average fully-loaded comp</label>
+        <div class="calc-input"><span>$</span><input type="number" id="calcComp" inputmode="numeric" placeholder="165,000" min="0" step="1000"></div>
+      </div>
+      <div class="calc-row">
+        <label for="calcLicense">AI license cost, per engineer</label>
+        <div class="calc-input"><span>$</span><input type="number" id="calcLicense" inputmode="numeric" placeholder="60" min="0" step="1"><span>/mo</span></div>
+      </div>
+      <div class="calc-row">
+        <label for="calcSaved">Time saved, per engineer</label>
+        <div class="calc-input"><input type="number" id="calcSaved" inputmode="numeric" placeholder="4" min="0" step="0.5"><span>hrs/wk</span></div>
+      </div>
+      <div class="calc-row">
+        <label for="calcRework">Rework/review overhead, per engineer</label>
+        <div class="calc-input"><input type="number" id="calcRework" inputmode="numeric" placeholder="1.5" min="0" step="0.5"><span>hrs/wk</span></div>
+      </div>
+    </div>
+    <div class="calc-result" id="calcResult">Fill in the fields above to see an estimate</div>
+    <div class="calc-breakdown" id="calcBreakdown" hidden></div>
+    <p class="calc-note">Illustrative, not a personalized audit — "time saved" and "rework overhead" are numbers <em>you</em> supply here. Connect Merit to replace these guesses with measured numbers from your own GitHub, Jira, and AI usage history.</p>
+  </div>
+
+  <div class="features">
+    <div class="feature">
+      <div class="t"><i></i>Quality risk scoring</div>
+      <p class="d">Reverts. Heavy rewrites. Regeneration loops. A slop score that plain spend attribution can't produce.</p>
+    </div>
+    <div class="feature">
+      <div class="t"><i></i>Spend, by team and tool</div>
+      <p class="d">Every dollar, every tool — Anthropic, OpenAI, Copilot, and the rest — rolled up by team, with person-level detail when you need it. Necessary. Not sufficient.</p>
+    </div>
+    <div class="feature">
+      <div class="t"><i></i>Value, weighed against risk</div>
+      <p class="d">Spend correlated against outcomes: PRs merged, tickets closed, deals moved. Then weighed against the slop score, because attributed isn't the same as good.</p>
+    </div>
+    <div class="feature">
+      <div class="t"><i></i>Team &amp; company rollups</div>
+      <p class="d">Rolled up by team, role, and trend. One click, not a spreadsheet.</p>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2026 Merit&trade;. All rights reserved.
+  </footer>
+</main>
+
+<script>
+(function(){
+  // Same environment split app.js uses: local dev hits the local backend,
+  // any other origin (the real domain, a Cloudflare preview build) hits
+  // production. A preview build's origin isn't in MERIT_CORS_ORIGINS, so a
+  // signup there will fail CORS -- expected there, not a bug.
+  var API_BASE = ["localhost", "127.0.0.1", ""].indexOf(location.hostname) !== -1
+    ? "http://localhost:8000"
+    : "https://api.usemeritai.com";
+
+  var form = document.getElementById("waitlistForm");
+  var input = document.getElementById("waitlistEmail");
+  var msg = document.getElementById("waitlistMsg");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var email = input.value.trim();
+    if (!email) return;
+    var btn = form.querySelector("button");
+    var label = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Joining…";
+    fetch(API_BASE + "/waitlist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email }),
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error("bad status");
+        msg.textContent = "You're on the list — we'll email you at launch.";
+        msg.className = "waitlist-msg ok";
+        form.reset();
+      })
+      .catch(function () {
+        msg.textContent = "Couldn't reach the server — try again in a moment.";
+        msg.className = "waitlist-msg err";
+      })
+      .finally(function () {
+        btn.disabled = false;
+        btn.textContent = label;
+      });
+  });
+
+  // Pure client-side arithmetic, not a backend call or a personalized
+  // result -- "time saved" and "rework overhead" are guesses the visitor
+  // supplies. WORK_HOURS_PER_YEAR is the standard 40hrs/wk * 52wk
+  // annualization used to turn a salary into an hourly rate; nothing here
+  // is measured, which is exactly what the note below says.
+  var WORK_HOURS_PER_YEAR = 2080;
+  var WEEKS_PER_YEAR = 52;
+  var calcInputs = ["calcEngineers", "calcComp", "calcLicense", "calcSaved", "calcRework"].map(function (id) {
+    return document.getElementById(id);
+  });
+  var calcResult = document.getElementById("calcResult");
+  var calcBreakdown = document.getElementById("calcBreakdown");
+  var fmtCalcMoney = function (n) { return "$" + Math.round(n).toLocaleString(); };
+
+  function recalc() {
+    var engineers = parseFloat(calcInputs[0].value);
+    var comp = parseFloat(calcInputs[1].value);
+    var licensePerMonth = parseFloat(calcInputs[2].value);
+    var savedHrsPerWeek = parseFloat(calcInputs[3].value);
+    var reworkHrsPerWeek = parseFloat(calcInputs[4].value);
+
+    if (!engineers || engineers <= 0 || !comp || comp <= 0) {
+      calcResult.textContent = "Fill in the fields above to see an estimate";
+      calcResult.classList.remove("has-value");
+      calcBreakdown.hidden = true;
+      return;
+    }
+    savedHrsPerWeek = savedHrsPerWeek || 0;
+    reworkHrsPerWeek = reworkHrsPerWeek || 0;
+    licensePerMonth = licensePerMonth || 0;
+
+    var hourlyRate = comp / WORK_HOURS_PER_YEAR;
+    var licensingCost = engineers * licensePerMonth * 12;
+    var reworkCost = engineers * reworkHrsPerWeek * WEEKS_PER_YEAR * hourlyRate;
+    var grossValue = engineers * savedHrsPerWeek * WEEKS_PER_YEAR * hourlyRate;
+    var totalCost = licensingCost + reworkCost;
+    var netValue = grossValue - totalCost;
+    var meritScore = totalCost > 0 ? grossValue / totalCost : 0;
+
+    calcResult.innerHTML = "<b>" + meritScore.toFixed(2) + "&times;</b> Merit Score &mdash; " +
+      fmtCalcMoney(netValue) + "/year net AI value";
+    calcResult.classList.add("has-value");
+
+    calcBreakdown.hidden = false;
+    calcBreakdown.innerHTML =
+      '<div class="row"><span>AI licensing</span><b>' + fmtCalcMoney(licensingCost) + '/yr</b></div>' +
+      '<div class="row"><span>Estimated rework cost</span><b>' + fmtCalcMoney(reworkCost) + '/yr</b></div>' +
+      '<div class="row"><span>Gross productivity value</span><b>' + fmtCalcMoney(grossValue) + '/yr</b></div>' +
+      '<div class="row"><span>Net AI value</span><b>' + fmtCalcMoney(netValue) + '/yr</b></div>';
+  }
+  calcInputs.forEach(function (el) { el.addEventListener("input", recalc); });
+})();
+</script>
+</body>
+</html>
