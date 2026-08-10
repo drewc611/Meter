@@ -35,7 +35,7 @@ flowchart LR
     SCORING --> PERSONSCORE[("PersonScore\none row per person, per period")]
 
     PERSONSCORE --> API["/api/* endpoints"]
-    API --> DASH["Dashboard\n(frontend/dashboard.html)"]
+    API --> DASH["Dashboard\n(frontend/index.html)"]
 ```
 
 **The load-bearing invariant:** the dashboard and every `/api/*` endpoint

@@ -43,8 +43,8 @@ companies have carried this name in adjacent spend-analytics markets,
 which is useful context for how crowded generic "spend" naming is in
 this space generally, separate from the live spend360.ai product.
 
-In response, Merit's public copy (`README.md`, `frontend/index.html`) was
-rewritten to lead with the one capability spend360.ai doesn't claim:
+In response, Merit's public copy (`README.md`, `frontend/coming-soon.html`)
+was rewritten to lead with the one capability spend360.ai doesn't claim:
 quality-risk / slop scoring (reverts, heavy rewrites, regeneration
 loops). Spend attribution and outcome-correlation are still described
 accurately as real capabilities Merit has — just framed as necessary
