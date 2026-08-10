@@ -15,7 +15,7 @@ record to point to if the claim is ever challenged.
 
 | Date | Event |
 |---|---|
-| | (fill in: first public beta launch) |
+| 2026-08-10 | First public beta launch — real dashboard live at usemeritai.com (auth-gated) |
 | | (fill in: first customer / paid use) |
 | | (fill in: USPTO application filed, serial number) |
 
