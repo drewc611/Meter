@@ -1,14 +1,38 @@
 Copyright (c) 2026 A_ROCK. All rights reserved.
 
 This software and its associated source code, documentation, and other
-files in this repository (the "Software") are proprietary and
-confidential. No license, right, or interest in the Software is granted
-to any person or entity except as expressly authorized in writing by the
-copyright holder.
+files in this repository (the "Software") are dual-licensed as follows.
 
-Without such written authorization, no person may use, copy, modify,
-merge, publish, distribute, sublicense, sell, or create derivative works
-of the Software, in whole or in part, for any purpose.
+1. PERSONAL USE
+
+   You may use, copy, modify, and self-host the Software free of charge
+   for your own personal, non-commercial purposes -- for example, running
+   it locally to track your own individual AI-tool spend (see
+   backend/personal.py). "Personal use" means: you are an individual, not
+   acting on behalf of a company or other organization; you are not using
+   the Software to generate revenue, provide a paid or unpaid service to
+   others, or evaluate it for a purchasing decision on an organization's
+   behalf; and you are not redistributing, sublicensing, or selling the
+   Software or any derivative of it.
+
+2. COMMERCIAL / BUSINESS USE
+
+   Any use that is not Personal Use as defined above -- including but not
+   limited to internal use within a company or other organization, use in
+   the course of business, offering the Software (or a modified or hosted
+   version of it) as a product or service to others, or evaluating it for
+   an organizational purchasing decision -- requires a separate written
+   commercial license from the copyright holder. Contact the copyright
+   holder to obtain one before putting the Software to any such use.
+
+3. NO OTHER RIGHTS
+
+   Outside of the Personal Use grant in Section 1, no license, right, or
+   interest in the Software is granted to any person or entity except as
+   expressly authorized in writing by the copyright holder. In particular,
+   distributing, sublicensing, or selling the Software or derivative works
+   of it is not permitted under either Section 1 or Section 2 without such
+   separate written authorization.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -17,3 +41,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+This is not a widely-audited standard license template and is not legal
+advice -- it's a plain-language dual-use grant covering the common case
+(free individual use, paid license for business use). Have a lawyer review
+it before relying on it for anything high-stakes, like actually enforcing
+it against a violator.
