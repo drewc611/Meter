@@ -12,6 +12,9 @@ own metadata into it instead of typing curl by hand. `sync-github` talks
 only to api.github.com with a token *you* supply via GITHUB_TOKEN -- it
 never goes anywhere near an LLM or any Merit-hosted server.
 
+This is exactly the "personal use" case ../LICENSE grants free of charge --
+an individual tracking their own usage, not business/commercial use.
+
     # one-time: create your personal Identity + IdentityMapping(s)
     python personal.py setup --name "Ada Novak" --email you@example.com \\
         --github-username yourhandle
