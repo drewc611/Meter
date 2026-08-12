@@ -61,11 +61,52 @@ class IdentityMappingIn(BaseModel):
     external_id: str
 
 
+class SignupIn(BaseModel):
+    email: str
+    password: str
+    name: str
+    signup_code: str | None = None
+
+    @field_validator("email")
+    @classmethod
+    def _basic_email_shape(cls, v: str) -> str:
+        v = v.strip()
+        if "@" not in v or " " in v or len(v) > 254:
+            raise ValueError("not a valid email address")
+        return v
+
+    @field_validator("password")
+    @classmethod
+    def _min_length(cls, v: str) -> str:
+        if len(v) < 8:
+            raise ValueError("password must be at least 8 characters")
+        return v
+
+
+class LoginIn(BaseModel):
+    email: str
+    password: str
+
+
 # ------------------------------------------------------------- responses
 
 
 class WaitlistSignupOut(BaseModel):
     status: str = "joined"
+
+
+class UserOut(BaseModel):
+    id: int
+    email: str
+    name: str
+    has_password: bool
+    has_google: bool
+
+
+class TokenOut(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserOut
 
 
 class IngestAccepted(BaseModel):

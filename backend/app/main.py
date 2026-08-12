@@ -1,6 +1,6 @@
 """
-Merit API — the FastAPI application factory. Wires the five routers
-(ingestion, admin, dashboard, health, waitlist) onto an app, with CORS
+Merit API — the FastAPI application factory. Wires the six routers
+(auth, ingestion, admin, dashboard, health, waitlist) onto an app, with CORS
 from config. Run with:
 
     uvicorn app.main:app --reload --port 8000
@@ -15,8 +15,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .database import init_db
-from .dependencies import require_api_key
-from .routers import admin, dashboard, health, ingestion, waitlist
+from .dependencies import get_current_user, require_api_key
+from .routers import admin, auth, dashboard, health, ingestion, waitlist
 
 
 def create_app() -> FastAPI:
@@ -29,15 +29,18 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    # Gated by MERIT_API_KEY (see dependencies.require_api_key) -- unset in
-    # local/dev/docker-compose, set in production. /healthz stays open so
-    # Fly's health check doesn't need the secret.
+    # /ingest/* is a service token (MERIT_API_KEY) for machines -- proxies,
+    # webhooks, personal.py -- not a human login. See dependencies.py.
     app.include_router(ingestion.router, dependencies=[Depends(require_api_key)])
-    app.include_router(admin.router, dependencies=[Depends(require_api_key)])
-    app.include_router(dashboard.router, dependencies=[Depends(require_api_key)])
+    # /admin/* and /api/* are human-facing, gated by a real per-user login
+    # (password or Google, see routers/auth.py) once MERIT_JWT_SECRET is
+    # set; unset means open, same convention as every other secret here.
+    app.include_router(admin.router, dependencies=[Depends(get_current_user)])
+    app.include_router(dashboard.router, dependencies=[Depends(get_current_user)])
     app.include_router(health.router)
-    # Deliberately ungated -- see routers/waitlist.py: an anonymous coming-soon
-    # visitor has no bearer token, and this endpoint doesn't touch product data.
+    # Deliberately ungated -- an anonymous visitor logging in or joining the
+    # waitlist has no token yet by definition.
+    app.include_router(auth.router)
     app.include_router(waitlist.router)
     return app
 
