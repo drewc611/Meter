@@ -103,13 +103,14 @@ where you expected LIVE.
 
 ## Go-live checklist (cutting over from the placeholder to the real dashboard)
 
-Steps 1–3 and 6 are done — `MERIT_API_KEY` is live and enforced, and
-`frontend/index.html` is the real dashboard. What's left:
+Steps 1–3 and 6 are done — `MERIT_API_KEY` (the ingestion service token) is
+live and enforced, and `frontend/index.html` is the real dashboard. What's
+left:
 
-1. ~~Generate a strong token.~~ Done.
+1. ~~Generate a strong ingestion token (`MERIT_API_KEY`).~~ Done.
 2. ~~Set it as a Fly secret.~~ Done.
-3. ~~Verify it's actually enforced~~ (401 without a token, 200 with it,
-   `/healthz` still open). Done.
+3. ~~Verify it's actually enforced on `/ingest/*`~~ (401 without a token,
+   200 with it, `/healthz` still open). Done.
 4. **Check backup coverage on the SQLite volume** — a single volume with no
    snapshot is a single point of failure for every customer's data:
    ```bash
@@ -125,15 +126,79 @@ Steps 1–3 and 6 are done — `MERIT_API_KEY` is live and enforced, and
    Domains & Routes** → add `www.usemeritai.com`.
 6. ~~Swap the files and push.~~ Done — `frontend/index.html` is now the
    dashboard; the old placeholder lives at `frontend/coming-soon.html`.
-7. **Share the token from step 1 with your real users** through a channel
-   that isn't the public repo or a public Slack/Discord — a password
-   manager entry or a DM, not a commit message or a GitHub issue.
+7. **Turn on real dashboard login** — see the next section.
 8. Fill in the first row of [`TRADEMARK.md`](TRADEMARK.md)'s events table
    with today's date — that's the "first use in commerce" evidence the file
-   exists to capture, and registering the domain alone doesn't count.
+   exists to capture, and registering the domain alone doesn't count. Done.
 
-**What this checklist does not give you:** per-user accounts, audit logging
-of who accessed what, or rate limiting — that's one shared secret, not a
-replacement for actual SSO. See
+## Turning on dashboard login
+
+`/api/*` and `/admin/*` stay open until `MERIT_JWT_SECRET` is set — same
+"unset = open" convention `MERIT_API_KEY` uses. Once it's set, visitors need
+a real account (password or Google) to see live data.
+
+1. **Generate a strong signing secret and set it as a Fly secret:**
+   ```bash
+   openssl rand -hex 32
+   fly secrets set MERIT_JWT_SECRET=<the-token-above> -a meter
+   ```
+2. **(Optional) Gate new account creation** so not anyone who finds the URL
+   can sign up and see your company's AI spend data — skip this if you're
+   still the only user:
+   ```bash
+   fly secrets set MERIT_SIGNUP_CODE=<something-only-you-share> -a meter
+   ```
+3. **(Optional) Set up "Sign in with Google"** — see the section below for
+   the Google Cloud Console steps, then:
+   ```bash
+   fly secrets set GOOGLE_CLIENT_ID=<...> GOOGLE_CLIENT_SECRET=<...> \
+     GOOGLE_REDIRECT_URI=https://api.usemeritai.com/auth/google/callback \
+     MERIT_FRONTEND_URL=https://usemeritai.com -a meter
+   ```
+   Password login/signup work fine without this — the Google button just
+   won't until it's configured.
+4. **Verify it's actually enforced:**
+   ```bash
+   curl -s -o /dev/null -w "%{http_code}\n" https://api.usemeritai.com/api/overview
+   # -> 401
+
+   curl -s -X POST https://api.usemeritai.com/auth/signup -H "Content-Type: application/json" \
+     -d '{"email":"you@example.com","password":"<a-real-password>","name":"You"}'
+   # -> 201, with an access_token in the response
+
+   curl -s -o /dev/null -w "%{http_code}\n" \
+     -H "Authorization: Bearer <the-access_token-above>" \
+     https://api.usemeritai.com/api/overview
+   # -> 200
+
+   curl -s https://api.usemeritai.com/healthz
+   # -> {"status":"ok"} -- must stay open with no token, or Fly's own health
+   #    check starts failing and the machine gets marked unhealthy.
+   ```
+5. Sign up for your own account at `https://usemeritai.com` (or via the curl
+   above) and confirm the dashboard loads with the `LIVE · Merit API` badge.
+
+## Setting up "Sign in with Google"
+
+Entirely optional — password login works without it. In
+[Google Cloud Console](https://console.cloud.google.com/):
+
+1. Create a project (or use an existing one) → **APIs & Services →
+   OAuth consent screen**. User type "External" is fine for a small number
+   of named users; fill in the required app name/support email fields.
+2. **APIs & Services → Credentials → Create Credentials → OAuth client ID**,
+   application type **Web application**.
+3. **Authorized redirect URIs** → add exactly
+   `https://api.usemeritai.com/auth/google/callback` (must match
+   `GOOGLE_REDIRECT_URI` above, including scheme and no trailing slash).
+4. Save, then copy the generated **Client ID** and **Client secret** into
+   the `fly secrets set` command in step 3 above.
+5. While the OAuth consent screen is in "Testing" mode, only email
+   addresses you explicitly add as test users can complete the flow —
+   add yours under **OAuth consent screen → Test users**, or publish the
+   app if you want it open to any Google account.
+
+**What this doesn't give you:** rate limiting on login attempts, an audit
+log of who accessed what, or a forgot-password flow. See
 [`ARCHITECTURE.md`](ARCHITECTURE.md#3-does-this-hosting-choice-make-sense)
 for what to prioritize next.

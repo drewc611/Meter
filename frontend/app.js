@@ -32,10 +32,12 @@ let STATE = {
   toolPerformance: null, spendForecast: null, live: false
 };
 
-// The backend gates /api/* behind MERIT_API_KEY when that's set in production
-// (see backend/app/dependencies.py) -- a single shared secret, not per-user
-// auth (see ARCHITECTURE.md's gap list). Storing it in localStorage means a
-// visitor enters it once; it's sent as a Bearer token on every API call.
+// The backend gates /api/* behind MERIT_JWT_SECRET when that's set in
+// production (see backend/app/dependencies.py) -- a real per-user login
+// (password or Google, see backend/app/routers/auth.py), not a shared
+// secret. Storing the issued JWT in localStorage means a visitor logs in
+// once; it's sent as a Bearer token on every API call, same delivery
+// mechanism the old shared token used.
 const TOKEN_KEY = "merit_token";
 function getStoredToken() { return localStorage.getItem(TOKEN_KEY) || ""; }
 function setStoredToken(t) { if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); }
@@ -82,12 +84,12 @@ async function loadData() {
     live = await fetchLive();
   } catch (e) {
     if (!(e instanceof AuthError)) throw e;
-    // Wrong/expired token -- clear it and ask again (with a "that didn't
-    // work" hint if one was already stored) rather than silently retrying
-    // forever. Demo data still renders underneath so the page isn't blank
-    // while the visitor sorts out their token.
+    // Expired/invalid session -- clear it and ask again (with a hint if one
+    // was already stored) rather than silently retrying forever. Demo data
+    // still renders underneath so the page isn't blank while the visitor
+    // logs back in.
     setStoredToken("");
-    showTokenGate(hadToken);
+    showAuthGate(hadToken ? "Your session expired -- sign in again." : "");
   }
   STATE = live
     ? { ...live, live: true }
@@ -112,31 +114,90 @@ async function loadData() {
   renderAll();
 }
 
-function showTokenGate(hadWrongToken) {
-  const gate = document.getElementById("tokenGate");
+function showAuthGate(errorMsg) {
+  const gate = document.getElementById("authGate");
   if (!gate) return;
-  document.getElementById("tokenGateError").hidden = !hadWrongToken;
+  const err = document.getElementById("authError");
+  err.textContent = errorMsg || "";
+  err.hidden = !errorMsg;
   gate.hidden = false;
-  document.getElementById("tokenGateInput").focus();
+  document.getElementById("authEmail").focus();
 }
-function hideTokenGate() {
-  const gate = document.getElementById("tokenGate");
+function hideAuthGate() {
+  const gate = document.getElementById("authGate");
   if (gate) gate.hidden = true;
 }
-const tokenGateForm = document.getElementById("tokenGateForm");
-if (tokenGateForm) {
-  tokenGateForm.addEventListener("submit", e => {
-    e.preventDefault();
-    const input = document.getElementById("tokenGateInput");
-    const val = input.value.trim();
-    if (!val) return;
-    setStoredToken(val);
-    input.value = "";
-    hideTokenGate();
-    loadData();
-  });
-  document.getElementById("tokenGateSkip").addEventListener("click", hideTokenGate);
+
+// login/signup toggle -- same form, different endpoint + an extra "name"
+// field for signup. Kept as one form rather than two so there's only one
+// place handling the submit/error/loading dance.
+let authMode = "login";
+function setAuthMode(mode) {
+  authMode = mode;
+  const isSignup = mode === "signup";
+  document.getElementById("authGateTitle").textContent = isSignup ? "Create your account" : "Sign in to Merit";
+  document.getElementById("authName").hidden = !isSignup;
+  document.getElementById("authName").required = isSignup;
+  document.getElementById("authPassword").autocomplete = isSignup ? "new-password" : "current-password";
+  document.getElementById("authSubmit").textContent = isSignup ? "Sign up" : "Sign in";
+  document.getElementById("authToggleText").textContent = isSignup ? "Already have an account?" : "Don't have an account?";
+  document.getElementById("authToggleBtn").textContent = isSignup ? "Sign in" : "Sign up";
+  document.getElementById("authError").hidden = true;
 }
+
+const authForm = document.getElementById("authForm");
+if (authForm) {
+  document.getElementById("authGoogleBtn").href = API_BASE + "/auth/google/login";
+  document.getElementById("authToggleBtn").addEventListener("click", () => setAuthMode(authMode === "login" ? "signup" : "login"));
+  document.getElementById("authGateSkip").addEventListener("click", hideAuthGate);
+
+  authForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    const email = document.getElementById("authEmail").value.trim();
+    const password = document.getElementById("authPassword").value;
+    const name = document.getElementById("authName").value.trim();
+    const errEl = document.getElementById("authError");
+    const submitBtn = document.getElementById("authSubmit");
+    if (!email || !password) return;
+
+    const path = authMode === "signup" ? "/auth/signup" : "/auth/login";
+    const body = authMode === "signup" ? { email, password, name } : { email, password };
+    submitBtn.disabled = true;
+    try {
+      const res = await fetch(API_BASE + path, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        errEl.textContent = data.detail || "Something went wrong -- try again.";
+        errEl.hidden = false;
+        return;
+      }
+      setStoredToken(data.access_token);
+      document.getElementById("authPassword").value = "";
+      hideAuthGate();
+      loadData();
+    } catch {
+      errEl.textContent = "Couldn't reach the server -- try again in a moment.";
+      errEl.hidden = false;
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+}
+
+// Google's OAuth callback redirects the whole page back here with either
+// ?token=... (success) or ?auth_error=... (failure) -- pick it up once,
+// then scrub the URL so a refresh/share doesn't carry the token along.
+(function handleAuthRedirect() {
+  const params = new URLSearchParams(location.search);
+  const token = params.get("token");
+  const authError = params.get("auth_error");
+  if (!token && !authError) return;
+  if (token) setStoredToken(token);
+  history.replaceState({}, "", location.pathname);
+  if (authError) showAuthGate(authError);
+})();
 
 /* =====================================================================
    FORMATTERS

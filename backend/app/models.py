@@ -132,6 +132,25 @@ class RubricGrade(Base):
     graded_at = Column(DateTime, default=utcnow)
 
 
+class DashboardUser(Base):
+    """
+    Someone who can log into the dashboard -- deliberately separate from
+    Identity (models.Identity is a person being *tracked*; a DashboardUser
+    is a person *viewing* the tracking). Password login, Google login, or
+    both can be set on the same row (password_hash/google_sub are each
+    nullable) -- e.g. a user who signs up with a password can later link
+    Google, or vice versa, without a second account. See services/auth.py.
+    """
+
+    __tablename__ = "dashboard_users"
+    id = Column(Integer, primary_key=True)
+    email = Column(String, unique=True, nullable=False, index=True)
+    name = Column(String, nullable=False)
+    password_hash = Column(String, nullable=True)
+    google_sub = Column(String, unique=True, nullable=True)  # Google's stable per-account id ("sub" claim)
+    created_at = Column(DateTime, default=utcnow)
+
+
 class WaitlistSignup(Base):
     """
     Pre-launch lead capture from the coming-soon page (frontend/index.html).

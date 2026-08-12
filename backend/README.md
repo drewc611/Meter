@@ -108,20 +108,64 @@ touches your `merit.db`. Ruff/pytest config lives in `pyproject.toml`.
 | GET | `/api/tool-performance` | Current-period value/$ and slop risk per tool (spend-weighted rollup, not causal attribution) |
 | GET | `/api/spend-forecast?months=6` | Linear trend projection of next period's spend from trailing history; `available:false` under 3 non-zero periods |
 | GET | `/api/adoption` | Active vs. provisioned seats, current period, overall and by tier |
-| POST | `/waitlist` | Pre-launch signup from the coming-soon page. The one endpoint not gated by `MERIT_API_KEY` — see `ARCHITECTURE.md` |
+| POST | `/auth/signup` | Create a dashboard account (email + password) |
+| POST | `/auth/login` | Password login, returns a JWT |
+| GET | `/auth/google/login` | Redirects to Google's consent screen ("Sign in with Google") |
+| GET | `/auth/google/callback` | Google's redirect target — exchanges the code, redirects to the frontend with a token |
+| GET | `/auth/me` | The logged-in user, given a valid token |
+| POST | `/waitlist` | Pre-launch signup from the coming-soon page. Ungated, same as `/auth/*` — an anonymous visitor has no token yet by definition |
 
 All ingestion endpoints return **422** if the external id has no
 `IdentityMapping` yet — that's deliberate (§5.5 of the spec: an unmapped id is
 a shadow-AI candidate, not a silently dropped event).
 
-Every endpoint above except `/healthz` sits behind `dependencies.require_api_key`
-— a no-op until the `MERIT_API_KEY` environment variable is set, at which
-point every request needs `Authorization: Bearer <key>` or gets a **401**.
-Unset by default so local dev, `docker compose`, and the test suite stay
-exactly as open as before; see [`DEPLOY.md`](../DEPLOY.md)'s go-live
-checklist for turning it on in production, and
-[`ARCHITECTURE.md`](../ARCHITECTURE.md) for why this is a single shared
-secret rather than per-user auth.
+Two independent auth layers, covering two different kinds of caller:
+
+- **`/ingest/*`** sits behind `dependencies.require_api_key` — a service
+  token for machines (a proxy, a webhook, `personal.py`), not a human login.
+  A no-op until `MERIT_API_KEY` is set, at which point every request needs
+  `Authorization: Bearer <key>` or gets a **401**.
+- **`/api/*` and `/admin/*`** sit behind `dependencies.get_current_user` — a
+  real per-user login (password or Google, via `/auth/*` above), backed by
+  a signed JWT. A no-op until `MERIT_JWT_SECRET` is set, at which point
+  every request needs a valid `Authorization: Bearer <token>` from
+  `/auth/login`, `/auth/signup`, or the Google callback, or it gets a
+  **401**.
+
+Both default to unset/open, so local dev, `docker compose`, and the test
+suite stay exactly as open as before; see [`DEPLOY.md`](../DEPLOY.md)'s
+go-live checklist for turning them on in production. `/healthz` and
+`/waitlist` are always open — Fly's health check and an anonymous visitor
+signing up both have no token by definition.
+
+## Login
+
+`/auth/signup` and `/auth/login` are plain email + bcrypt-hashed password.
+`/auth/google/login` redirects to Google's OAuth consent screen; the
+callback verifies the returned ID token against Google's public keys
+(not just decodes it), finds-or-creates a `DashboardUser` by Google's
+stable per-account id, and redirects back to the frontend with a Merit
+session token attached. A user can have a password, a linked Google
+account, or both on the same row — `services/auth.py` links by email on
+first Google login if a password account with that email already exists.
+
+Sessions are stateless signed JWTs (`pyjwt`, `MERIT_JWT_SECRET`), 14-day
+expiry, no server-side session table — rotating the secret invalidates
+every issued session at once if that's ever needed.
+
+Env vars:
+
+```bash
+MERIT_JWT_SECRET=...              # required to turn login on at all -- openssl rand -hex 32
+GOOGLE_CLIENT_ID=...               # optional -- omit and "Sign in with Google" just won't work
+GOOGLE_CLIENT_SECRET=...
+GOOGLE_REDIRECT_URI=https://api.usemeritai.com/auth/google/callback
+MERIT_FRONTEND_URL=https://usemeritai.com   # where /auth/google/callback sends the browser back to
+MERIT_SIGNUP_CODE=...              # optional -- gates *new* account creation (password or Google) so
+                                    # not anyone who finds the URL can sign up and see your spend data
+```
+
+See [`DEPLOY.md`](../DEPLOY.md) for how to create a Google OAuth client.
 
 ## Outbound email
 

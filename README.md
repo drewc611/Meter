@@ -131,8 +131,8 @@ That's the code. For where it actually runs — Fly.io for the backend,
 a Cloudflare Worker for the frontend, both deploying on push to `main` — plus
 an honest verdict on whether that hosting choice makes sense and what's
 missing before it's ready for real customer data, see
-[`ARCHITECTURE.md`](ARCHITECTURE.md). Known security gaps (a single shared
-API token rather than per-user accounts, no rate limiting) are tracked in
+[`ARCHITECTURE.md`](ARCHITECTURE.md). Dashboard access is real per-user login
+(password or Google) now, not a shared secret — known gaps still tracked in
 [`SECURITY.md`](SECURITY.md).
 
 ## License

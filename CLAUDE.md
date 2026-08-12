@@ -143,19 +143,21 @@ config.py          infra settings (database URL, CORS origins) read from env
 constants.py       tunable business constants: weight tables + segment/recovery knobs
 time_utils.py      single naive-UTC clock (utcnow), used everywhere instead of datetime.utcnow()
 database.py        engine, session factory, declarative Base, init_db()
-dependencies.py    FastAPI request-scoped session (get_db)
-models.py          data model (§7 of the product spec)
+dependencies.py    FastAPI request-scoped session (get_db); require_api_key (/ingest/* service token);
+                   get_current_user (/api/* + /admin/* real per-user login, see services/auth.py)
+models.py          data model (§7 of the product spec) + DashboardUser (login, separate from Identity)
 schemas.py         Pydantic request/response contract
 periods.py         calendar-month [start, end) math + recent_periods() for trend windows, shared by API and seed.py
 services/
   ingest.py        identity resolution + the three ingestion functions
   scoring.py       Tier 1/2 formulas (pure math) + the nightly job (bulk queries)
   analytics.py     read-side aggregation, segmentation, recoverable-spend estimate, trends/tool/adoption metrics
+  auth.py          password hashing (bcrypt), JWT issue/verify (pyjwt), Google OAuth flow
+  email.py         plain-SMTP outbound mail (/admin/notify-waitlist)
 routers/
-  ingestion.py     /ingest/*
-  admin.py         /admin/*
-  dashboard.py     /api/*
-  health.py        /healthz
+  ingestion.py     /ingest/*      admin.py    /admin/*
+  dashboard.py     /api/*         auth.py     /auth/*
+  waitlist.py      /waitlist      health.py   /healthz
 ```
 
 `constants.py` is the single place a customer-facing "where does this number
@@ -179,7 +181,14 @@ data team is most likely to actually read, keep it simple.
 | GET | `/api/teams` / `/api/roles` | Spend/value/slop rolled up above the individual |
 | GET | `/api/trends?months=6` | Spend/value/slop across the trailing N months (default 6, max 24) |
 | GET | `/api/tool-breakdown` | Current-period spend by (tool, model) |
+| GET | `/api/tool-performance` | Current-period value/$ and slop risk per tool (spend-weighted, not causal) |
+| GET | `/api/spend-forecast?months=6` | Linear trend projection of next period's spend |
 | GET | `/api/adoption` | Active vs. provisioned seats, current period, overall and by tier |
+| POST | `/admin/notify-waitlist?dry_run=false` | One-off "the site is live" email to unnotified waitlist signups |
+| POST | `/auth/signup` / `/auth/login` | Real per-user dashboard login — email + bcrypt-hashed password |
+| GET | `/auth/google/login` / `/auth/google/callback` | "Sign in with Google" OAuth flow |
+| GET | `/auth/me` | The logged-in user, given a valid token |
+| POST | `/waitlist` | Pre-launch signup from the coming-soon page — ungated, same as `/auth/*` |
 
 ### What's stubbed, on purpose
 

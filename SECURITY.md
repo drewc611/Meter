@@ -6,10 +6,20 @@ report anything found.
 
 ## Status
 
-Access-control work is in progress. Don't point this deployment at real
-people's data, and don't assume the live site is production-hardened, until
-that work is confirmed complete. The seeded demo data (`backend/seed.py`) is
-fabricated and safe to run publicly for exactly that reason.
+Dashboard access requires a real per-user login (password, hashed with
+bcrypt, or "Sign in with Google") once `MERIT_JWT_SECRET` is set — not a
+single shared secret. Session tokens are signed JWTs; rotating the secret
+invalidates every issued session at once if that's ever needed. Password
+signup can be gated behind an invite code (`MERIT_SIGNUP_CODE`) before
+sharing a deployment's URL widely.
+
+That said, this is still an early-stage prototype: no rate limiting on
+login attempts, no audit log of who accessed what, and account recovery
+(forgot-password) isn't built. Don't point this deployment at real people's
+data, and don't assume the live site is production-hardened, until you've
+reviewed those gaps against your own risk tolerance. The seeded demo data
+(`backend/seed.py`) is fabricated and safe to run publicly for exactly that
+reason.
 
 ## Reporting a vulnerability
 

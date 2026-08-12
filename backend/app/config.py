@@ -29,3 +29,12 @@ class Settings:
 
 
 settings = Settings()
+
+# The auth-related env vars below (MERIT_JWT_SECRET, GOOGLE_CLIENT_ID,
+# GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI, MERIT_FRONTEND_URL,
+# MERIT_SIGNUP_CODE) are deliberately NOT on Settings above -- Settings is
+# read once at import time, but these need to be read live so a rotated Fly
+# secret takes effect on restart without a code change, and so tests can
+# toggle them per-test with monkeypatch.setenv (same reasoning as
+# dependencies.require_api_key). See services/auth.py, routers/auth.py, and
+# dependencies.get_current_user, which read os.environ.get(...) directly.
