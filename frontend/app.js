@@ -121,11 +121,13 @@ function showAuthGate(errorMsg) {
   err.textContent = errorMsg || "";
   err.hidden = !errorMsg;
   gate.hidden = false;
+  document.body.style.overflow = "hidden"; // full-page takeover -- nothing behind it should scroll either
   document.getElementById("authEmail").focus();
 }
 function hideAuthGate() {
   const gate = document.getElementById("authGate");
   if (gate) gate.hidden = true;
+  document.body.style.overflow = "";
 }
 
 // login/signup toggle -- same form, different endpoint + an extra "name"
