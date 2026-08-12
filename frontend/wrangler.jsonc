@@ -5,6 +5,12 @@
   // "Missing entry-point to Worker script or to assets directory": it has
   // no auto-detection the way "wrangler deploy" (the production-branch
   // command) does. This is the one file both commands can rely on.
+  //
+  // "directory" points at Vite's build output, not the source tree -- the
+  // dashboard is now a Vite/React app (see src/), so something has to run
+  // `npm run build` before either wrangler command deploys anything. That's
+  // configured as the project's Build command in the Cloudflare dashboard
+  // (Settings -> Build), not here -- see DEPLOY.md.
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "meter",
   "compatibility_date": "2026-08-09",
@@ -12,7 +18,7 @@
     "enabled": true
   },
   "assets": {
-    "directory": "."
+    "directory": "dist"
   },
   "compatibility_flags": [
     "nodejs_compat"

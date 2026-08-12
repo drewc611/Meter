@@ -10,9 +10,9 @@ prototype status. Two parts:
 
 - `backend/` — a runnable FastAPI + SQLite reference implementation of the
   tracking/scoring pipeline. This is where almost all the logic lives.
-- `frontend/` — a static (no build step) dashboard that reads from the
-  backend API, with an embedded fallback dataset so it renders even when the
-  API isn't running.
+- `frontend/` — a Vite + React dashboard that reads from the backend API,
+  with an embedded fallback dataset so it renders even when the API isn't
+  running.
 
 Branches: `main` (stable), `develop` (active development).
 
@@ -41,22 +41,38 @@ every test via an autouse fixture.
 Ruff config (line length 120, `E F I UP B`, `E501` ignored — formatter's job)
 and pytest config live in `backend/pyproject.toml`, not separate ini files.
 
-### Frontend
+### Frontend (run from `frontend/`)
 
-No build step, no package.json — `frontend/app.js` is a plain non-module
-script by design, so `index.html` (the actual app) can be opened directly
-over `file://`. Just open `frontend/index.html` in a browser, or serve it
-(Docker/nginx does this in the compose stack). It tries `http://localhost:8000`
-first and falls back to `fallback-data.js`'s embedded snapshot if the API is
-unreachable (900ms timeout) — the sidebar badge shows which mode it's in.
-This is what's deployed at the production site root as of the go-live
-cutover (see DEPLOY.md). `frontend/coming-soon.html` is the old pre-launch
-placeholder — kept around for its waitlist form and ROI calculator, still
-reachable at that path, just no longer served at `/`.
+Vite + React app (plain `.jsx`, no TypeScript) under `src/` — see
+`frontend/README.md` for the full layout. No state library beyond React
+context; SVG charts are plain JSX, not string-built.
+
+```bash
+npm install
+npm run dev       # Vite dev server, http://localhost:5173
+npm run build     # production build -> dist/
+npm run preview   # serve the dist/ build locally
+```
+
+It tries `http://localhost:8000` first and falls back to
+`src/lib/fallbackData.js`'s embedded snapshot if the API is unreachable
+(900ms timeout) — the sidebar badge shows which mode it's in. The built
+`dist/` output is what's deployed at the production site root (see
+DEPLOY.md — Cloudflare's Build command runs `npm run build`).
+`frontend/coming-soon.html` is the old pre-launch placeholder — a separate,
+unconverted static Vite entry (plain JS, no React), kept around for its
+waitlist form and ROI calculator, still reachable at that path, just no
+longer served at `/`.
+
+`styles.css` is shared, unchanged, referenced via a plain `<link>` tag in
+both HTML entries — Vite processes `<link rel="stylesheet">` tags in any
+HTML entry natively, so it doesn't need to be imported via JS or turned into
+CSS modules.
 
 CI lints frontend JS with ESLint (`.eslintrc.js`, `eslint:recommended`) via
 `.github/workflows/eslint.yml`; there's no local lint script, run
-`npx eslint . --config .eslintrc.js --ext .js,.jsx,.ts,.tsx` if needed.
+`npx eslint . --config .eslintrc.js --ext .js,.jsx,.ts,.tsx` from the repo
+root if needed.
 
 ### Docker (whole stack, from repo root)
 

@@ -1,20 +1,28 @@
-# Merit frontend — static dashboard, served by nginx.
+# Merit frontend — Vite/React dashboard, built then served by nginx.
 #
 # Build:  docker build -t merit-frontend ./frontend
 # Run:    docker run -p 8080:80 merit-frontend
 # (see ../docker-compose.yml for the normal way to run this alongside the backend)
 #
-# The dashboard is plain static files (index.html/styles.css/app.js/
-# fallback-data.js) that call the backend directly from the browser at
-# http://localhost:8000 — nginx here just serves files, it does not proxy
-# API calls. See app.js's API_BASE if that origin needs to change.
+# Two stages: the first runs the Vite build (React dashboard + the static
+# coming-soon.html, both HTML entries in vite.config.js) into dist/; the
+# second just serves that dist/ with nginx -- no Node or build tooling ships
+# in the final image.
 #
-# coming-soon.html (the old pre-launch placeholder) is deliberately left out
-# of this image -- it's not part of the deployed dashboard.
+# The dashboard calls the backend directly from the browser at
+# http://localhost:8000 — nginx here just serves files, it does not proxy
+# API calls. See src/lib/api.js's API_BASE if that origin needs to change.
+
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
 
 FROM nginx:1.27-alpine
 
-COPY index.html styles.css app.js fallback-data.js /usr/share/nginx/html/
+COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 

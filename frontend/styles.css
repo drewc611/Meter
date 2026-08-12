@@ -32,6 +32,11 @@
 body{margin:0;background:var(--bg);color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   -webkit-font-smoothing:antialiased;line-height:1.45;display:flex;min-height:100vh;overflow-x:hidden}
+/* The React app's root container (#root) sits between body and .sidebar/main
+   -- display:contents drops it out of the box tree so .sidebar and main are
+   still direct flex children of body, same layout as before React owned
+   the DOM. */
+#root{display:contents}
 
 /* ---------- sidebar ---------- */
 .sidebar{width:228px;flex:none;background:linear-gradient(180deg,var(--navy),var(--navy2));color:#fff;

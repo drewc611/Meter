@@ -70,14 +70,20 @@ repository** (this deploys as a Worker with static assets, not the older
 
 1. Select the `drewc611/Meter` repo, branch `main`.
 2. Root/working directory: `frontend`.
-3. `frontend/wrangler.jsonc` is committed in the repo and is load-bearing —
+3. **Build command:** `npm run build`. **Build output directory:** `dist`.
+   The dashboard is a Vite/React app (see `frontend/src/`) — this is what
+   actually compiles it; without it Cloudflare would deploy the repo's
+   source files as-is, not a built site.
+4. `frontend/wrangler.jsonc` is committed in the repo and is load-bearing —
    without it, Cloudflare's build for any non-`main` branch (every PR
    preview) fails outright with "Missing entry-point to Worker script or to
    assets directory". The production-branch deploy command (`wrangler
    deploy`) auto-detects a static site fine on its own; the non-production
-   command (`wrangler versions upload`) does not and needs this file.
-4. Deploy. Confirm the build succeeds and the given `*.workers.dev` URL loads.
-5. Worker's **Settings → Domains & Routes** → add `usemeritai.com` and
+   command (`wrangler versions upload`) does not and needs this file. Its
+   `assets.directory` points at `dist`, matching the build output directory
+   from step 3.
+5. Deploy. Confirm the build succeeds and the given `*.workers.dev` URL loads.
+6. Worker's **Settings → Domains & Routes** → add `usemeritai.com` and
    `www.usemeritai.com` as custom domains. Since the domain's already in
    this Cloudflare account, DNS gets configured automatically for the root
    domain; `www` may need its own explicit custom-domain entry if visiting
