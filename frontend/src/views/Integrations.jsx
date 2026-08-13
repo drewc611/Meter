@@ -107,7 +107,7 @@ export default function Integrations({ active }) {
           Where this period's AI spend is actually going, straight from usage events — not attributed to a person
           here, just the underlying mix.
         </p>
-        <div style={{ overflowX: "auto" }}>
+        <div className="table-scroll">
           <table>
             <thead>
               <tr>
@@ -147,7 +147,7 @@ export default function Integrations({ active }) {
           used, proportional to spend on each. Read it as where the signal concentrates, not "tool X caused outcome
           Y."
         </p>
-        <div style={{ overflowX: "auto" }}>
+        <div className="table-scroll">
           <table>
             <thead>
               <tr>

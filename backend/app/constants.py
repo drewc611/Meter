@@ -50,9 +50,11 @@ SLOP_VOLUME_STEP = 0.13
 VALUE_THRESHOLD = 1.6
 SPEND_THRESHOLD = 900.0
 
-# Slop cutoffs used by recommendations and the recoverable-spend estimate.
+# Slop cutoff used by recommendations and the recoverable-spend estimate.
+# recommend_action() checks this same bar twice -- once gated on high spend
+# ("Re-tier + coach"), once not ("Review output quality") -- so one high-slop
+# person always lands in one bucket or the other, not both.
 SLOP_HIGH = 60.0
-SLOP_REVIEW = 60.0
 
 # Recommendation cutoffs (see analytics.recommend_action).
 TOP_VALUE = 2.2

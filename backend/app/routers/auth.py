@@ -26,6 +26,7 @@ def _user_out(user: models.DashboardUser) -> schemas.UserOut:
         name=user.name,
         has_password=bool(user.password_hash),
         has_google=bool(user.google_sub),
+        is_admin=user.is_admin,
     )
 
 
@@ -39,13 +40,28 @@ def _check_signup_code(provided: str | None) -> None:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid or missing signup code")
 
 
+def _should_be_admin(db: Session, email: str) -> bool:
+    """The first-ever DashboardUser is always admin, so a fresh deployment
+    isn't locked out of its own /admin/* actions before MERIT_ADMIN_EMAILS
+    is set. After that, only emails in MERIT_ADMIN_EMAILS (comma-separated,
+    read live like MERIT_SIGNUP_CODE above) get admin at creation -- there's
+    no UI to promote someone later, that's a direct DB edit for now."""
+    if db.query(models.DashboardUser).count() == 0:
+        return True
+    admin_emails = {e.strip().lower() for e in os.environ.get("MERIT_ADMIN_EMAILS", "").split(",") if e.strip()}
+    return email.strip().lower() in admin_emails
+
+
 @router.post("/signup", status_code=201, response_model=schemas.TokenOut)
 def signup(body: schemas.SignupIn, db: Session = Depends(get_db)):
     _check_signup_code(body.signup_code)
     if db.query(models.DashboardUser).filter_by(email=body.email).one_or_none():
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="An account with that email already exists")
     user = models.DashboardUser(
-        email=body.email, name=body.name, password_hash=auth_service.hash_password(body.password)
+        email=body.email,
+        name=body.name,
+        password_hash=auth_service.hash_password(body.password),
+        is_admin=_should_be_admin(db, body.email),
     )
     db.add(user)
     db.commit()
@@ -97,7 +113,11 @@ def google_callback(code: str, state: str = "-", db: Session = Depends(get_db)):
             user = db.query(models.DashboardUser).filter_by(email=claims["email"]).one_or_none()
             if user is None:
                 _check_signup_code(None if state == "-" else state)
-                user = models.DashboardUser(email=claims["email"], name=claims.get("name", claims["email"]))
+                user = models.DashboardUser(
+                    email=claims["email"],
+                    name=claims.get("name", claims["email"]),
+                    is_admin=_should_be_admin(db, claims["email"]),
+                )
                 db.add(user)
             user.google_sub = claims["sub"]  # link (new account) or backfill (existing password account)
             db.commit()

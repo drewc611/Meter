@@ -65,3 +65,23 @@ def get_current_user(
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User no longer exists")
     return user
+
+
+def require_admin(
+    user: models.DashboardUser | None = Depends(get_current_user),
+) -> models.DashboardUser | None:
+    """Admin-only gate for /admin/* -- layers on top of get_current_user.
+
+    get_current_user returns None only in the "unset = open" dev case
+    (MERIT_JWT_SECRET not set); this passes that through unchanged so local
+    dev/docker-compose/tests keep working without login. Once login is on,
+    the authenticated user must also have is_admin set -- any other
+    authenticated DashboardUser gets a 403, not silent access to
+    identity-mapping/recompute-scores. See routers/auth.py's
+    _should_be_admin for how is_admin gets set.
+    """
+    if user is None:
+        return None
+    if not user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
+    return user

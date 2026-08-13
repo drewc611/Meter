@@ -107,7 +107,7 @@ export default function People({ active, presetFilter, onFilterConsumed }) {
             {rows.length} of {ov.people.length} people
           </span>
         </div>
-        <div style={{ overflowX: "auto" }}>
+        <div className="table-scroll">
           <table id="peopleTable">
             <thead>
               <tr>
@@ -115,6 +115,7 @@ export default function People({ active, presetFilter, onFilterConsumed }) {
                   <th
                     key={col.label}
                     className={col.num ? "num" : undefined}
+                    data-k={col.sortable ? col.key : undefined}
                     tabIndex={col.sortable ? 0 : undefined}
                     role={col.sortable ? "button" : undefined}
                     aria-sort={col.sortable ? (col.key === sortKey ? (sortDir === 1 ? "ascending" : "descending") : "none") : undefined}

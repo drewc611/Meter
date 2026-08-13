@@ -1,13 +1,7 @@
 import { useRef } from "react";
 
-import { fmtMoney, fmtX, slopColor } from "../lib/format.js";
-
-function positionTooltip(tipEl, plotEl, clientX, clientY) {
-  const wrap = plotEl.closest(".plotwrap").getBoundingClientRect();
-  tipEl.style.left = clientX - wrap.left + 12 + "px";
-  tipEl.style.top = clientY - wrap.top - 8 + "px";
-  tipEl.style.opacity = 1;
-}
+import { useChartTooltip } from "../hooks/useChartTooltip.js";
+import { VALUE_GOOD_THRESHOLD, fmtMoney, fmtX, slopColor } from "../lib/format.js";
 
 const W = 560,
   H = 340,
@@ -15,14 +9,10 @@ const W = 560,
   padR = 16,
   padT = 16,
   padB = 38;
-// Same number the "good value/$" quadrant line is drawn at as the KPI/table
-// color threshold (see lib/format.js VALUE_GOOD_THRESHOLD) -- both mark
-// "good" value/$ at the same place, so they share this constant.
-const VALUE_T = 1.6;
 
 export default function ScatterChart({ people }) {
   const plotRef = useRef(null);
-  const tipRef = useRef(null);
+  const { tooltip, show, hide } = useChartTooltip();
 
   const spends = people.map((p) => p.spend_usd);
   const values = people.map((p) => p.value_per_dollar);
@@ -33,18 +23,20 @@ export default function ScatterChart({ people }) {
   const yPix = (v) => H - padB - ((v - yMin) / (yMax - yMin)) * (H - padT - padB);
   const SPEND_T = people.length ? spends.reduce((a, b) => a + b, 0) / people.length : 900;
   const vx = xPix(SPEND_T),
-    vy = yPix(VALUE_T),
+    vy = yPix(VALUE_GOOD_THRESHOLD),
     zeroY = yPix(0);
 
   const showTip = (p, clientX, clientY) => {
-    const tip = tipRef.current,
-      plot = plotRef.current;
-    if (!tip || !plot) return;
-    tip.innerHTML = `<b>${p.name}</b> · ${p.team}<br>${fmtMoney(p.spend_usd)}/mo · ${fmtX(p.value_per_dollar)} value · slop ${p.slop_risk.toFixed(0)}`;
-    positionTooltip(tip, plot, clientX, clientY);
-  };
-  const hideTip = () => {
-    if (tipRef.current) tipRef.current.style.opacity = 0;
+    show(
+      plotRef.current,
+      <>
+        <b>{p.name}</b> · {p.team}
+        <br />
+        {fmtMoney(p.spend_usd)}/mo · {fmtX(p.value_per_dollar)} value · slop {p.slop_risk.toFixed(0)}
+      </>,
+      clientX,
+      clientY,
+    );
   };
 
   return (
@@ -89,19 +81,21 @@ export default function ScatterChart({ people }) {
               stroke="#fff"
               strokeWidth="1.2"
               onMouseMove={(e) => showTip(p, e.clientX, e.clientY)}
-              onMouseLeave={hideTip}
+              onMouseLeave={hide}
               onFocus={(e) => {
                 const rect = e.target.getBoundingClientRect();
                 showTip(p, rect.left + rect.width / 2, rect.top);
               }}
-              onBlur={hideTip}
+              onBlur={hide}
             >
               <title>{label}</title>
             </circle>
           );
         })}
       </svg>
-      <div className="tip" ref={tipRef} />
+      <div className="tip" style={{ left: tooltip.x, top: tooltip.y, opacity: tooltip.visible ? 1 : 0 }}>
+        {tooltip.content}
+      </div>
     </>
   );
 }

@@ -6,7 +6,7 @@
 // soft tint background + a darkened version of its hue for text, since three
 // of these six hues (aqua, yellow, magenta) fall short of 3:1 white-on-color
 // contrast on their own — the "relief" the validator flags for those slots.
-export const teamColors = {
+const teamColors = {
   Data: { bg: "#e5eefb", text: "#2a78d6" },
   Design: { bg: "#fdece2", text: "#c8511f" },
   Engineering: { bg: "#e0f6ee", text: "#0f9464" },
@@ -40,7 +40,7 @@ export const VALUE_GOOD_THRESHOLD = 1.6;
 export function valueColor(v) {
   return v >= VALUE_GOOD_THRESHOLD ? "var(--good-text)" : v < 0 ? "var(--bad)" : "var(--warn-text)";
 }
-export const TOOL_LABELS = {
+const TOOL_LABELS = {
   anthropic_api: "Anthropic API",
   github_copilot: "GitHub Copilot",
   chatgpt_enterprise: "ChatGPT Enterprise",

@@ -28,7 +28,6 @@ from ..constants import (
     OVER_TIERED_VALUE,
     SHADOW_AI_RATE,
     SLOP_HIGH,
-    SLOP_REVIEW,
     SPEND_THRESHOLD,
     STUDY_SPEND,
     TOP_LOW_SLOP,
@@ -44,7 +43,7 @@ def recommend_action(spend: float, value: float, slop: float) -> str:
         return "Keep — top performer"
     if slop >= SLOP_HIGH and spend >= SPEND_THRESHOLD:
         return "Re-tier + coach"
-    if slop >= SLOP_REVIEW:
+    if slop >= SLOP_HIGH:
         return "Review output quality"
     if spend >= OVER_TIERED_SPEND and value < OVER_TIERED_VALUE:
         return "Over-tiered for usage"

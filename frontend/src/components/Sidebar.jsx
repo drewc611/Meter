@@ -1,4 +1,5 @@
 import { useAppData } from "../context/AppDataContext.jsx";
+import Logo from "./Logo.jsx";
 
 const NAV_ITEMS = [
   {
@@ -77,17 +78,11 @@ export function SourceBadge({ style }) {
 }
 
 export default function Sidebar({ view, onSelect }) {
+  const { hasSession, logout } = useAppData();
   return (
     <nav className="sidebar">
       <div className="sb-brand">
-        <div className="sb-logo">
-          <i style={{ height: "10px", background: "#cad2fb" }} />
-          <i style={{ height: "15px", background: "#7c74f4" }} />
-          <i style={{ height: "20px", background: "#4f46e5" }} />
-        </div>
-        <b>
-          Merit<span style={{ fontSize: "10px", fontWeight: 400, verticalAlign: "super", marginLeft: "1px" }}>&trade;</span>
-        </b>
+        <Logo />
       </div>
       <div className="sb-nav" id="nav">
         {NAV_ITEMS.map((item) => {
@@ -117,6 +112,14 @@ export default function Sidebar({ view, onSelect }) {
         Merit
         <br />
         illustrative prototype
+        {hasSession && (
+          <>
+            <br />
+            <button type="button" className="sb-logout" onClick={logout}>
+              Log out
+            </button>
+          </>
+        )}
       </div>
     </nav>
   );

@@ -1,13 +1,7 @@
 import { useRef } from "react";
 
+import { useChartTooltip } from "../hooks/useChartTooltip.js";
 import { fmtMoney, fmtX } from "../lib/format.js";
-
-function positionTooltip(tipEl, plotEl, clientX, clientY) {
-  const wrap = plotEl.closest(".plotwrap").getBoundingClientRect();
-  tipEl.style.left = clientX - wrap.left + 12 + "px";
-  tipEl.style.top = clientY - wrap.top - 8 + "px";
-  tipEl.style.opacity = 1;
-}
 
 const W = 900,
   H = 190,
@@ -18,8 +12,8 @@ const W = 900,
 
 export default function TrendChart({ trends }) {
   const plotRef = useRef(null);
-  const tipRef = useRef(null);
   const crosshairRef = useRef(null);
+  const { tooltip, show, hide } = useChartTooltip();
 
   if (!trends || !trends.length) return null;
 
@@ -33,20 +27,26 @@ export default function TrendChart({ trends }) {
     .join(" ");
 
   const showTrendsTip = (i, clientX, clientY) => {
-    const tip = tipRef.current,
-      plot = plotRef.current,
-      crosshair = crosshairRef.current;
-    if (!tip || !plot || !crosshair) return;
+    const crosshair = crosshairRef.current;
+    if (!crosshair) return;
     const t = trends[i];
     const monthLabel = new Date(t.period_start).toLocaleDateString(undefined, { month: "long", year: "numeric" });
-    tip.innerHTML = `<b>${monthLabel}</b><br>${fmtMoney(t.total_spend_usd)}/mo · ${fmtX(t.blended_value_per_dollar)} value · slop ${t.avg_slop_risk.toFixed(0)}`;
-    positionTooltip(tip, plot, clientX, clientY);
+    show(
+      plotRef.current,
+      <>
+        <b>{monthLabel}</b>
+        <br />
+        {fmtMoney(t.total_spend_usd)}/mo · {fmtX(t.blended_value_per_dollar)} value · slop {t.avg_slop_risk.toFixed(0)}
+      </>,
+      clientX,
+      clientY,
+    );
     crosshair.setAttribute("x1", xPix(i).toFixed(1));
     crosshair.setAttribute("x2", xPix(i).toFixed(1));
     crosshair.style.opacity = 1;
   };
   const hideTrendsTip = () => {
-    if (tipRef.current) tipRef.current.style.opacity = 0;
+    hide();
     if (crosshairRef.current) crosshairRef.current.style.opacity = 0;
   };
   // Crosshair + tooltip: a transparent overlay tracks mouse position across
@@ -123,7 +123,9 @@ export default function TrendChart({ trends }) {
           onMouseLeave={hideTrendsTip}
         />
       </svg>
-      <div className="tip" ref={tipRef} />
+      <div className="tip" style={{ left: tooltip.x, top: tooltip.y, opacity: tooltip.visible ? 1 : 0 }}>
+        {tooltip.content}
+      </div>
     </>
   );
 }

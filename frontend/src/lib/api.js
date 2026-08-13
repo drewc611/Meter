@@ -32,7 +32,7 @@ export function setStoredToken(t) {
 
 export class AuthError extends Error {}
 
-export async function fetchJSON(path, timeoutMs = 900) {
+async function fetchJSON(path, timeoutMs = 900) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {

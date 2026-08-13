@@ -31,6 +31,11 @@ export function AppDataProvider({ children }) {
   const [loaded, setLoaded] = useState(false);
   const [authGate, setAuthGate] = useState({ visible: false, error: "" });
   const [authMode, setAuthMode] = useState("login");
+  // Whether a session token is currently stored -- drives the Sidebar's
+  // "Log out" link. Not derived from `data.live` since demo-data fallback
+  // can be showing even while a real session is still stored (a brief API
+  // hiccup shouldn't make the logout link disappear).
+  const [hasSession, setHasSession] = useState(() => !!getStoredToken());
   // Google's OAuth callback redirects the whole page back here with either
   // ?token=... (success) or ?auth_error=... (failure) -- consumed once on
   // mount, before the first load, so it never re-fires on a later reload.
@@ -55,11 +60,18 @@ export function AppDataProvider({ children }) {
       // Demo data still renders underneath so the page isn't blank while
       // the visitor logs back in.
       setStoredToken("");
+      setHasSession(false);
       showAuthGate(hadToken ? "Your session expired -- sign in again." : "");
     }
     setData(live ? { ...live, live: true } : FALLBACK_STATE);
     setLoaded(true);
   }, [showAuthGate]);
+
+  const logout = useCallback(() => {
+    setStoredToken("");
+    setHasSession(false);
+    reload();
+  }, [reload]);
 
   useEffect(() => {
     if (redirectHandled.current) return;
@@ -68,7 +80,10 @@ export function AppDataProvider({ children }) {
     const token = params.get("token");
     const authError = params.get("auth_error");
     if (token || authError) {
-      if (token) setStoredToken(token);
+      if (token) {
+        setStoredToken(token);
+        setHasSession(true);
+      }
       history.replaceState({}, "", location.pathname);
       if (authError) showAuthGate(authError);
     }
@@ -90,6 +105,7 @@ export function AppDataProvider({ children }) {
           return { ok: false, error: responseData.detail || "Something went wrong -- try again." };
         }
         setStoredToken(responseData.access_token);
+        setHasSession(true);
         hideAuthGate();
         await reload();
         return { ok: true };
@@ -109,6 +125,8 @@ export function AppDataProvider({ children }) {
     setAuthMode,
     submitAuth,
     googleHref: API_BASE + "/auth/google/login",
+    hasSession,
+    logout,
   };
 
   return <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>;

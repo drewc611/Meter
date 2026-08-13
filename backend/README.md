@@ -163,6 +163,10 @@ GOOGLE_REDIRECT_URI=https://api.usemeritai.com/auth/google/callback
 MERIT_FRONTEND_URL=https://usemeritai.com   # where /auth/google/callback sends the browser back to
 MERIT_SIGNUP_CODE=...              # optional -- gates *new* account creation (password or Google) so
                                     # not anyone who finds the URL can sign up and see your spend data
+MERIT_ADMIN_EMAILS=...              # optional, comma-separated -- these emails get is_admin (required
+                                    # for /admin/*) on signup. The first-ever DashboardUser on a
+                                    # deployment always gets is_admin regardless of this var, so a
+                                    # fresh deploy isn't locked out of its own admin actions.
 ```
 
 See [`DEPLOY.md`](../DEPLOY.md) for how to create a Google OAuth client.

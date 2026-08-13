@@ -63,9 +63,13 @@ def decode_token(token: str) -> dict:
 
 def google_authorize_url(state: str) -> str:
     """The URL to send the browser to for Google's consent screen. `state`
-    round-trips through Google unmodified -- the callback checks it against
-    what was issued, both to block CSRF and (see routers/auth.py) to carry
-    an optional signup code through the redirect."""
+    round-trips through Google unmodified and is used by the callback (see
+    routers/auth.py) purely to carry an optional signup code through the
+    redirect -- it is NOT a CSRF nonce: nothing generates a per-request
+    value here or verifies one on the way back. Practical impact is low
+    (a forged callback logs the victim's browser into the attacker's own
+    Google account here, not an account takeover) but this is a known,
+    disclosed gap -- see SECURITY.md."""
     client_id = os.environ.get("GOOGLE_CLIENT_ID")
     if not client_id:
         raise AuthError("GOOGLE_CLIENT_ID is not set -- Google sign-in isn't configured")

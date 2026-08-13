@@ -23,7 +23,7 @@ export default function Teams({ active }) {
             </button>
           </div>
         </div>
-        <div style={{ overflowX: "auto" }}>
+        <div className="table-scroll">
           <table>
             <thead>
               <tr>

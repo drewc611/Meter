@@ -7,7 +7,7 @@ init_db() so it happens explicitly at app startup rather than as an import
 side effect (which is what lets the test suite point at a throwaway database).
 """
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from .config import settings
@@ -17,9 +17,35 @@ engine = create_engine(settings.database_url, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
+# There's no migration framework here (Base.metadata.create_all only creates
+# *missing* tables -- it's a no-op on a table that already exists, even if
+# the model gained a new column). Each entry is one column added to an
+# already-shipped table after it may have had real rows in it; applied via
+# a plain ALTER TABLE, idempotent, so this stays a no-op on a fresh DB
+# (create_all above already has the full schema) or a DB that's already
+# been through it.
+_COLUMN_BACKFILLS = [
+    ("dashboard_users", "is_admin", "BOOLEAN NOT NULL DEFAULT FALSE"),
+]
+
 
 def init_db() -> None:
-    """Create any missing tables. Import models first so they are registered."""
+    """Create any missing tables, then backfill any columns added to
+    existing tables since they first shipped. Import models first so they
+    are registered."""
     from . import models  # noqa: F401  (registers mappers on Base.metadata)
 
     Base.metadata.create_all(bind=engine)
+    _backfill_columns()
+
+
+def _backfill_columns() -> None:
+    inspector = inspect(engine)
+    table_names = set(inspector.get_table_names())
+    with engine.begin() as conn:
+        for table, column, ddl in _COLUMN_BACKFILLS:
+            if table not in table_names:
+                continue  # brand-new DB, create_all already has this column
+            existing = {c["name"] for c in inspector.get_columns(table)}
+            if column not in existing:
+                conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {column} {ddl}"))

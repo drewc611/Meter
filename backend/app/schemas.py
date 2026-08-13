@@ -101,6 +101,7 @@ class UserOut(BaseModel):
     name: str
     has_password: bool
     has_google: bool
+    is_admin: bool
 
 
 class TokenOut(BaseModel):

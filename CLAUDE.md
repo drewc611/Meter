@@ -14,7 +14,7 @@ prototype status. Two parts:
   with an embedded fallback dataset so it renders even when the API isn't
   running.
 
-Branches: `main` (stable), `develop` (active development).
+Branches: `main` (stable), `Develop` (active development).
 
 ## Commands
 

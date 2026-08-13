@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { useAppData } from "../context/AppDataContext.jsx";
+import Logo from "./Logo.jsx";
 
 // Shown only if the API returns 401 (MERIT_JWT_SECRET is set in production
 // and no/expired session is stored) -- real per-user login, not a shared
@@ -56,14 +57,7 @@ export default function AuthGate() {
     <div className="auth-page" id="authGate">
       <div className="auth-page-inner">
         <div className="auth-page-brand">
-          <div className="sb-logo" aria-hidden="true">
-            <i style={{ height: "10px", background: "#cad2fb" }} />
-            <i style={{ height: "15px", background: "#7c74f4" }} />
-            <i style={{ height: "20px", background: "#4f46e5" }} />
-          </div>
-          <b>
-            Merit<span style={{ fontSize: "11px", fontWeight: 400, verticalAlign: "super", marginLeft: "1px" }}>&trade;</span>
-          </b>
+          <Logo trademarkSize="11px" iconAriaHidden />
         </div>
 
         <div className="auth-page-card">

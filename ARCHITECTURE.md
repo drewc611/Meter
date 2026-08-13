@@ -35,7 +35,7 @@ flowchart LR
     SCORING --> PERSONSCORE[("PersonScore\none row per person, per period")]
 
     PERSONSCORE --> API["/api/* endpoints"]
-    API --> DASH["Dashboard\n(frontend/index.html)"]
+    API --> DASH["Dashboard\n(frontend/, Vite + React, built to dist/)"]
 ```
 
 **The load-bearing invariant:** the dashboard and every `/api/*` endpoint
@@ -86,11 +86,13 @@ any PR); Fly has no equivalent preview environment yet (see below).
 being demoed to prospects, not yet handling real customer data. The backend
 and frontend have genuinely different shapes, and the split matches that:
 
-- **The frontend is static** (`frontend/` has zero build step by design —
-  see `CLAUDE.md`), so a CDN-native static host is the right tool.
-  Cloudflare Workers with static assets gives that for free: global
-  distribution, automatic HTTPS, zero servers to run, and per-PR preview
-  URLs with no extra config.
+- **The frontend builds to static assets** (`frontend/` is a Vite + React
+  app — see `CLAUDE.md` — but `npm run build` produces a plain `dist/` of
+  HTML/JS/CSS with no server-side rendering), so a CDN-native static host
+  is still the right tool. Cloudflare Workers with static assets gives that
+  for free: global distribution, automatic HTTPS, zero servers to run, and
+  per-PR preview URLs with no extra config — the build step just runs as
+  part of that pipeline (see `DEPLOY.md`) rather than at request time.
 - **The backend is stateful** (SQLite file, in-process scoring job) and
   needs a place that keeps a process and a disk alive continuously — Fly.io
   is a reasonable, low-overhead choice for that at this scale, and

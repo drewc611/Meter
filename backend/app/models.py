@@ -14,7 +14,7 @@ is only as good as this table — see services/ingest.py for how it gets populat
 The outcome/quality weight tables that used to live here now live in constants.py.
 """
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -148,6 +148,9 @@ class DashboardUser(Base):
     name = Column(String, nullable=False)
     password_hash = Column(String, nullable=True)
     google_sub = Column(String, unique=True, nullable=True)  # Google's stable per-account id ("sub" claim)
+    # Gates /admin/* (routers/admin.py) via dependencies.require_admin -- see
+    # routers/auth.py's _should_be_admin for how this gets set on creation.
+    is_admin = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime, default=utcnow)
 
 
