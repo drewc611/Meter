@@ -1,0 +1,43 @@
+name: Backup snapshot verification
+
+# Checks the merit_data volume (see backend/fly.toml) has a snapshot newer
+# than 2 days -- the backup-coverage gap DEPLOY.md's Production status
+# section flags as still open. Best-effort: written against flyctl's --json
+# output as of 2026-08; if a flyctl upgrade changes that shape, this job
+# starts failing loudly rather than silently passing, which is the safer
+# failure mode for a check like this.
+
+on:
+  schedule:
+    - cron: "0 9 * * 1" # Monday 09:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Check the merit_data volume has a recent snapshot
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          volume_id=$(flyctl volumes list -a meter --json | jq -r '.[0].id // empty')
+          if [ -z "$volume_id" ]; then
+            echo "::error::No volume found for app 'meter' -- has the merit_data volume been created (see DEPLOY.md)?"
+            exit 1
+          fi
+
+          latest=$(flyctl volumes snapshots list "$volume_id" -a meter --json | jq -r 'map(.created_at) | sort | last // empty')
+          if [ -z "$latest" ]; then
+            echo "::error::Volume $volume_id has no snapshots -- see DEPLOY.md#production-status"
+            exit 1
+          fi
+
+          age_days=$(( ( $(date +%s) - $(date -d "$latest" +%s) ) / 86400 ))
+          echo "Most recent snapshot: $latest ($age_days day(s) old)"
+          if [ "$age_days" -gt 2 ]; then
+            echo "::error::Newest snapshot on volume $volume_id is $age_days days old (expected <= 2) -- check snapshot retention with 'fly volumes show $volume_id -a meter'"
+            exit 1
+          fi

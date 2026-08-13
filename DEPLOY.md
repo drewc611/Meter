@@ -214,3 +214,30 @@ Entirely optional — password login works without it. In
 log of who accessed what, or a forgot-password flow. See
 [`ARCHITECTURE.md`](ARCHITECTURE.md#3-does-this-hosting-choice-make-sense)
 for what to prioritize next.
+
+## Scheduled automation (GitHub Actions)
+
+`.github/workflows/` runs a few things on a cron against the live Fly
+deployment, in addition to `ci.yml`/`eslint.yml` on push/PR:
+
+| Workflow | Schedule | What it does |
+|---|---|---|
+| `nightly-recompute.yml` | daily | `flyctl ssh console` → `python recompute.py` — recomputes `PersonScore` for the current period |
+| `github-sync.yml` | every 6h | `flyctl ssh console` → `python github_sync.py` — pulls merged PRs/CI status |
+| `dependency-audit.yml` | weekly | `pip-audit` + `npm audit` — no secrets needed |
+| `backup-verification.yml` | weekly | checks the `merit_data` volume has a snapshot newer than 2 days |
+| `stale.yml` | daily | labels/closes inactive issues and PRs — no secrets needed |
+
+The two `flyctl ssh console` workflows need a **`FLY_API_TOKEN`** repo
+secret (**Settings → Secrets and variables → Actions**), generated with:
+
+```bash
+fly tokens create deploy -a meter
+```
+
+`github-sync.yml` also assumes `MERIT_GITHUB_OWNER`/`MERIT_GITHUB_REPO`/
+`MERIT_GITHUB_TOKEN` are already set as **Fly** secrets (`fly secrets set
+...`, not GitHub) — same requirement as running `make github-sync` by hand,
+see `backend/github_sync.py`'s docstring. Without `FLY_API_TOKEN`, those two
+workflows fail closed (red run in the Actions tab) rather than doing
+nothing silently.
