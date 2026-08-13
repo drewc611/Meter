@@ -133,14 +133,10 @@ class RubricGrade(Base):
 
 
 class DashboardUser(Base):
-    """
-    Someone who can log into the dashboard -- deliberately separate from
-    Identity (models.Identity is a person being *tracked*; a DashboardUser
-    is a person *viewing* the tracking). Password login, Google login, or
-    both can be set on the same row (password_hash/google_sub are each
-    nullable) -- e.g. a user who signs up with a password can later link
-    Google, or vice versa, without a second account. See services/auth.py.
-    """
+    """Someone who can log into the dashboard -- separate from Identity (a
+    person being tracked). password_hash/google_sub are both nullable so a
+    password account can later link Google, or vice versa, without a
+    second row. See services/auth.py."""
 
     __tablename__ = "dashboard_users"
     id = Column(Integer, primary_key=True)
@@ -155,13 +151,8 @@ class DashboardUser(Base):
 
 
 class WaitlistSignup(Base):
-    """
-    Pre-launch lead capture from the coming-soon page (frontend/index.html).
-    Deliberately outside the product data model above -- not tied to an
-    Identity, since a waitlist signup happens before anyone's a customer.
-    See routers/waitlist.py: this is the one router mounted without the
-    MERIT_API_KEY gate, since anonymous visitors have no token.
-    """
+    """Pre-launch lead capture from the coming-soon page -- not tied to an
+    Identity. See routers/waitlist.py."""
 
     __tablename__ = "waitlist_signups"
     id = Column(Integer, primary_key=True)

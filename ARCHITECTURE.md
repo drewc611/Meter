@@ -104,11 +104,10 @@ and frontend have genuinely different shapes, and the split matches that:
   dev default is — the one thing that would have made this an easy first
   mistake, done correctly.
 
-**Not yet for handling real customer data.** The architecture is sound for
-a demo; standard pre-production hardening work — access control in front of
-the API, backup coverage on the database volume, a staging environment,
-monitoring/alerting, and rate limiting — needs to land first. None of that
-is a reason to change the underlying split (Fly + Cloudflare Workers); it's
-ordinary engineering work on top of it. Current status on each item is
-tracked internally rather than detailed here — ask the maintainer before
-assuming any of it is further along than "in progress."
+**Not yet for handling real customer data.** Real per-user login and
+`/admin/*` role checks are in (see `SECURITY.md`), but standard
+pre-production hardening still needs to land: rate limiting, an audit log,
+backup coverage on the database volume, a staging environment, and
+monitoring/alerting. None of that is a reason to change the underlying
+split (Fly + Cloudflare Workers); it's ordinary engineering work on top
+of it.

@@ -49,10 +49,9 @@ export default function TrendChart({ trends }) {
     hide();
     if (crosshairRef.current) crosshairRef.current.style.opacity = 0;
   };
-  // Crosshair + tooltip: a transparent overlay tracks mouse position across
-  // the whole plot width so the tooltip follows continuously, not just when
-  // the cursor is exactly over a 4px dot (the dataviz interaction guidance
-  // for line charts). Per-dot focus/blur covers the same for keyboard users.
+  // A transparent overlay tracks mouse position across the whole plot width
+  // so the tooltip follows continuously, not just when hovering a 4px dot.
+  // Per-dot focus/blur covers the same for keyboard users.
   const handleOverlayMove = (e) => {
     const rect = plotRef.current.getBoundingClientRect();
     const mouseX = (e.clientX - rect.left) * (W / rect.width);

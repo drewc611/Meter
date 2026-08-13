@@ -17,13 +17,9 @@ engine = create_engine(settings.database_url, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# There's no migration framework here (Base.metadata.create_all only creates
-# *missing* tables -- it's a no-op on a table that already exists, even if
-# the model gained a new column). Each entry is one column added to an
-# already-shipped table after it may have had real rows in it; applied via
-# a plain ALTER TABLE, idempotent, so this stays a no-op on a fresh DB
-# (create_all above already has the full schema) or a DB that's already
-# been through it.
+# No migration framework -- create_all only creates missing tables, not
+# columns added to an existing one. Each entry here gets a plain, idempotent
+# ALTER TABLE instead.
 _COLUMN_BACKFILLS = [
     ("dashboard_users", "is_admin", "BOOLEAN NOT NULL DEFAULT FALSE"),
 ]

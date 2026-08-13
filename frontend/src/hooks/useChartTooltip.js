@@ -1,15 +1,11 @@
 import { useState } from "react";
 
-// Shared crosshair/dot tooltip positioning for the SVG charts (ScatterChart,
-// TrendChart) -- both float a `.tip` element inside a `.plotwrap`, anchored
-// to the cursor. Content is stored as JSX (not an HTML string), so it flows
-// through React's normal escaping instead of an innerHTML string built from
-// API-sourced text.
+// Shared tooltip for the SVG charts (ScatterChart, TrendChart) -- content
+// is JSX, not an HTML string, so API-sourced text goes through React's
+// normal escaping rather than innerHTML.
 export function useChartTooltip() {
-  // `visible` toggles independently of x/y/content, which stay at their
-  // last value while hidden -- matches the original imperative pattern
-  // (opacity toggled via CSS transition, position left in place) rather
-  // than mounting/unmounting the tip element on every hover.
+  // visible toggles independently so x/y/content hold their last value
+  // while hidden, keeping the CSS opacity-transition fade on show/hide.
   const [tooltip, setTooltip] = useState({ x: 0, y: 0, content: null, visible: false });
 
   function show(plotEl, content, clientX, clientY) {

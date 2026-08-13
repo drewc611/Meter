@@ -66,12 +66,12 @@ curl http://localhost:8000/api/overview | python3 -m json.tool
 
 Or use the Makefile: `make install`, `make seed`, `make run`, `make test`, `make lint`, `make fmt`.
 
-Then open `../frontend/index.html` in a browser — it tries `http://localhost:8000`
-first and falls back to an embedded snapshot if the API isn't reachable, so it
-works either way. The sidebar badge tells you which mode it's in. This is
-what's deployed at the production site root — see `../DEPLOY.md`.
-(`../frontend/coming-soon.html` is the old pre-launch placeholder, kept for
-its waitlist form and ROI calculator but no longer served at `/`.)
+Then, in `../frontend`: `npm install && npm run dev` (see
+[`frontend/README.md`](../frontend/README.md)). It tries
+`http://localhost:8000` first and falls back to an embedded snapshot if the
+API isn't reachable, so it works either way — the sidebar badge tells you
+which mode it's in. The built `dist/` output is what's deployed at the
+production site root — see `../DEPLOY.md`.
 
 Or run the whole stack in Docker instead — see [the root README](../README.md#running-with-docker)
 (`docker compose up --build` from the repo root). `Dockerfile` here builds this
@@ -130,13 +130,14 @@ Two independent auth layers, covering two different kinds of caller:
   a signed JWT. A no-op until `MERIT_JWT_SECRET` is set, at which point
   every request needs a valid `Authorization: Bearer <token>` from
   `/auth/login`, `/auth/signup`, or the Google callback, or it gets a
-  **401**.
+  **401**. `/admin/*` additionally requires `is_admin` on that user
+  (`dependencies.require_admin`) — a **403** for a logged-in non-admin.
 
 Both default to unset/open, so local dev, `docker compose`, and the test
-suite stay exactly as open as before; see [`DEPLOY.md`](../DEPLOY.md)'s
-go-live checklist for turning them on in production. `/healthz` and
-`/waitlist` are always open — Fly's health check and an anonymous visitor
-signing up both have no token by definition.
+suite stay exactly as open as before; see [`DEPLOY.md`](../DEPLOY.md#turning-on-dashboard-login)
+for turning them on in production. `/healthz` and `/waitlist` are always
+open — Fly's health check and an anonymous visitor signing up both have no
+token by definition.
 
 ## Login
 

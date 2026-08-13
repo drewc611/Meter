@@ -1,5 +1,3 @@
-// Merit's sidebar-bars mark + wordmark, shared between the dashboard
-// sidebar and the full-page auth gate (their only two call sites).
 export default function Logo({ trademarkSize = "10px", iconAriaHidden = false }) {
   return (
     <>

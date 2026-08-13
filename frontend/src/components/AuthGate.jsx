@@ -3,11 +3,7 @@ import { useEffect, useState } from "react";
 import { useAppData } from "../context/AppDataContext.jsx";
 import Logo from "./Logo.jsx";
 
-// Shown only if the API returns 401 (MERIT_JWT_SECRET is set in production
-// and no/expired session is stored) -- real per-user login, not a shared
-// secret. A full-page takeover, not a dialog over the dashboard -- an
-// unauthenticated visitor sees this and nothing else. Hidden by default --
-// local/dev/demo use never sees this.
+// Full-page takeover shown when the API returns 401 -- real per-user login.
 export default function AuthGate() {
   const { authGate, hideAuthGate, authMode, setAuthMode, submitAuth, googleHref } = useAppData();
   const [name, setName] = useState("");
@@ -21,7 +17,6 @@ export default function AuthGate() {
 
   useEffect(() => {
     if (!visible) return;
-    // Full-page takeover -- nothing behind it should scroll either.
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";

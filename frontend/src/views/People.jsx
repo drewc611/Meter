@@ -4,9 +4,7 @@ import { useAppData } from "../context/AppDataContext.jsx";
 import { AvatarCell, ConfPill, Pill, SlopBar, recClass } from "../components/Shared.jsx";
 import { fmtMoney, fmtX, valueColor } from "../lib/format.js";
 
-// Tier is a rank, not alphabetical text — Basic/Frontier/Standard sorted as
-// strings reads oddly given the app implies a hierarchy (matches the order
-// already used in the tier filter dropdown).
+// Tier sorts by rank, not alphabetically.
 const TIER_RANK = { Frontier: 3, Standard: 2, Basic: 1 };
 
 const COLUMNS = [
@@ -28,9 +26,8 @@ export default function People({ active, presetFilter, onFilterConsumed }) {
   const [sortKey, setSortKey] = useState("spend_usd");
   const [sortDir, setSortDir] = useState(-1);
 
-  // Alerts that reference a specific cohort cross-navigate here pre-filtered
-  // to them -- applied whenever a new preset arrives, then consumed so it
-  // doesn't stick on manual edits made afterward.
+  // Applied whenever a new preset arrives (from an Alerts cross-navigation),
+  // then consumed so it doesn't stick on manual edits made afterward.
   useEffect(() => {
     if (!presetFilter) return;
     setTeam(presetFilter.filterTeam || "");

@@ -13,9 +13,9 @@ invalidates every issued session at once if that's ever needed. Password
 signup can be gated behind an invite code (`MERIT_SIGNUP_CODE`) before
 sharing a deployment's URL widely.
 
-That said, this is still an early-stage prototype: no rate limiting on
-login attempts, no audit log of who accessed what, account recovery
-(forgot-password) isn't built, and the "Sign in with Google" `state`
+Known gaps: no rate limiting on login attempts, no audit log of who
+accessed what, account recovery (forgot-password) isn't built, and the
+"Sign in with Google" `state`
 parameter isn't a CSRF nonce (it only carries an optional signup code) --
 worst case there is an attacker tricking a victim's browser into logging
 into the attacker's own Google account on this site, not an account

@@ -1,7 +1,7 @@
 import { useAppData } from "../context/AppDataContext.jsx";
 import { SourceBadge } from "./Sidebar.jsx";
 
-export const VIEW_TITLES = {
+const VIEW_TITLES = {
   overview: ["Overview", "AI spend, value, and rework risk — by team, with person-level detail when you need it"],
   people: ["People", "Every AI-active person — search, filter, sort"],
   teams: ["Teams & Roles", "Spend and value rolled up above the individual"],

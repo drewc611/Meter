@@ -103,22 +103,23 @@ where you expected LIVE.
 ## 4. Verify
 
 - `https://api.usemeritai.com/healthz` — should return `{"status":"ok"}`.
-- `https://usemeritai.com` — shows the real dashboard (`frontend/index.html`)
-  as of the **go-live checklist** below. The old "coming soon" placeholder
-  is still around at `frontend/coming-soon.html` (its waitlist form and ROI
-  calculator), just no longer served at the site root.
+- `https://usemeritai.com` — shows the real dashboard. The old "coming
+  soon" placeholder is still around at `frontend/coming-soon.html`, just no
+  longer served at the site root.
 
-## Go-live checklist (cutting over from the placeholder to the real dashboard)
+## Production status
 
-Steps 1–3, 6, and 7 are done — `MERIT_API_KEY` (the ingestion service token)
-is live and enforced, `frontend/index.html` is the real dashboard, and real
-per-user login (password + Google) is on in production. What's left:
+Live: the ingestion token (`MERIT_API_KEY`) is generated, set, and enforced
+on `/ingest/*`; the real dashboard is at the site root
+(`frontend/coming-soon.html` is the old placeholder, no longer served
+there); per-user login (`MERIT_JWT_SECRET`, Google OAuth,
+`MERIT_SIGNUP_CODE`) is on, see "Turning on dashboard login" below; and
+[`TRADEMARK.md`](TRADEMARK.md)'s events table has its first-use-in-commerce
+date recorded.
 
-1. ~~Generate a strong ingestion token (`MERIT_API_KEY`).~~ Done.
-2. ~~Set it as a Fly secret.~~ Done.
-3. ~~Verify it's actually enforced on `/ingest/*`~~ (401 without a token,
-   200 with it, `/healthz` still open). Done.
-4. **Check backup coverage on the SQLite volume** — a single volume with no
+Still open:
+
+1. **Check backup coverage on the SQLite volume** — a single volume with no
    snapshot is a single point of failure for every customer's data:
    ```bash
    fly volumes list -a meter
@@ -128,17 +129,9 @@ per-user login (password + Google) is on in production. What's left:
    # headroom than the default:
    fly volumes update <volume-id> --snapshot-retention <days> -a meter
    ```
-5. **Add the `www` custom domain** (known gap — root domain works, `www`
+2. **Add the `www` custom domain** (known gap — root domain works, `www`
    currently 502s): Cloudflare dashboard → the `meter` Worker → **Settings →
    Domains & Routes** → add `www.usemeritai.com`.
-6. ~~Swap the files and push.~~ Done — `frontend/index.html` is now the
-   dashboard; the old placeholder lives at `frontend/coming-soon.html`.
-7. ~~Turn on real dashboard login.~~ Done — see "Turning on dashboard
-   login" below for how; `MERIT_JWT_SECRET`, Google OAuth, and
-   `MERIT_SIGNUP_CODE` are all live.
-8. Fill in the first row of [`TRADEMARK.md`](TRADEMARK.md)'s events table
-   with today's date — that's the "first use in commerce" evidence the file
-   exists to capture, and registering the domain alone doesn't count. Done.
 
 ## Turning on dashboard login
 

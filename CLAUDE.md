@@ -59,10 +59,8 @@ It tries `http://localhost:8000` first and falls back to
 (900ms timeout) — the sidebar badge shows which mode it's in. The built
 `dist/` output is what's deployed at the production site root (see
 DEPLOY.md — Cloudflare's Build command runs `npm run build`).
-`frontend/coming-soon.html` is the old pre-launch placeholder — a separate,
-unconverted static Vite entry (plain JS, no React), kept around for its
-waitlist form and ROI calculator, still reachable at that path, just no
-longer served at `/`.
+`frontend/coming-soon.html` is the old pre-launch placeholder, still
+reachable but no longer served at `/` — see `frontend/README.md`.
 
 `styles.css` is shared, unchanged, referenced via a plain `<link>` tag in
 both HTML entries — Vite processes `<link rel="stylesheet">` tags in any
@@ -135,21 +133,11 @@ something to silently drop (see product spec §5.5).
 
 ### The three tiers, and where each lives
 
-- **Tier 1 (usage × outcome)** — `services/scoring.py`
-  (`raw_value_from_totals` / `normalize_value_scores`). Correlates spend
-  against `OUTCOME_VALUE_WEIGHTS` in `constants.py` — `pr_merged` counts
-  positive, `pr_reverted` counts sharply negative. Normalized to the
-  company median so the dashboard shows "1.4x" instead of a raw ratio.
-- **Tier 2 (quality proxies)** — `services/scoring.py`
-  (`raw_slop_from_severities`), built from `QUALITY_SIGNAL_WEIGHTS` in
-  `constants.py` (reverts, heavy rewrites, regeneration loops, reopened
-  tickets). `services/ingest.ingest_outcome_event` shows the auto-derivation
-  path: a reverted PR is simultaneously a negative Tier-1 outcome *and* a
-  Tier-2 quality signal from the same webhook payload.
-- **Tier 3 (sampled grading)** — `models.RubricGrade` +
-  `services/scoring.calibrate_weights`. Stubbed on purpose (see "What's
-  stubbed" below); not run automatically, a human or LLM grader writes to
-  `RubricGrade` directly.
+Tier 1 (usage × outcome) and Tier 2 (quality proxies) are both computed in
+`services/scoring.py`, weighted by `OUTCOME_VALUE_WEIGHTS`/
+`QUALITY_SIGNAL_WEIGHTS` in `constants.py`. Tier 3 (sampled grading) is
+stubbed on purpose — see "What's stubbed" below. Full writeup, including
+which functions do what: [`backend/README.md`](backend/README.md#why-three-tiers-and-where-each-lives-in-the-code).
 
 ### Backend module map (`backend/app/`)
 
@@ -160,7 +148,8 @@ constants.py       tunable business constants: weight tables + segment/recovery 
 time_utils.py      single naive-UTC clock (utcnow), used everywhere instead of datetime.utcnow()
 database.py        engine, session factory, declarative Base, init_db()
 dependencies.py    FastAPI request-scoped session (get_db); require_api_key (/ingest/* service token);
-                   get_current_user (/api/* + /admin/* real per-user login, see services/auth.py)
+                   get_current_user (/api/* + /admin/* login, see services/auth.py); require_admin
+                   (/admin/* additionally needs is_admin)
 models.py          data model (§7 of the product spec) + DashboardUser (login, separate from Identity)
 schemas.py         Pydantic request/response contract
 periods.py         calendar-month [start, end) math + recent_periods() for trend windows, shared by API and seed.py
@@ -185,37 +174,17 @@ data team is most likely to actually read, keep it simple.
 
 ### Endpoints
 
-| Method | Path | Purpose |
-|---|---|---|
-| POST | `/ingest/usage` | Record one AI usage event (`schemas.UsageEventIn`) |
-| POST | `/ingest/outcome` | Record a PR merge, ticket close, deal advance, etc. |
-| POST | `/ingest/quality-signal` | Record a revert, rewrite, regeneration loop, etc. |
-| POST | `/admin/identity-mapping` | Wire a new external id to an existing person |
-| POST | `/admin/recompute-scores` | Trigger the nightly scoring job on demand |
-| GET | `/api/overview` | Everything the Overview page needs, one call |
-| GET | `/api/people` | Full person list with segment + recommendation |
-| GET | `/api/teams` / `/api/roles` | Spend/value/slop rolled up above the individual |
-| GET | `/api/trends?months=6` | Spend/value/slop across the trailing N months (default 6, max 24) |
-| GET | `/api/tool-breakdown` | Current-period spend by (tool, model) |
-| GET | `/api/tool-performance` | Current-period value/$ and slop risk per tool (spend-weighted, not causal) |
-| GET | `/api/spend-forecast?months=6` | Linear trend projection of next period's spend |
-| GET | `/api/adoption` | Active vs. provisioned seats, current period, overall and by tier |
-| POST | `/admin/notify-waitlist?dry_run=false` | One-off "the site is live" email to unnotified waitlist signups |
-| POST | `/auth/signup` / `/auth/login` | Real per-user dashboard login — email + bcrypt-hashed password |
-| GET | `/auth/google/login` / `/auth/google/callback` | "Sign in with Google" OAuth flow |
-| GET | `/auth/me` | The logged-in user, given a valid token |
-| POST | `/waitlist` | Pre-launch signup from the coming-soon page — ungated, same as `/auth/*` |
+`/ingest/*` (usage/outcome/quality-signal), `/admin/*` (identity-mapping,
+recompute-scores, notify-waitlist — `is_admin` required), `/api/*`
+(overview/people/teams/roles/trends/tool-breakdown/tool-performance/
+spend-forecast/adoption), `/auth/*` (signup/login/Google OAuth/me), and
+`/waitlist`. Full table with request/response shapes:
+[`backend/README.md`](backend/README.md#endpoints).
 
 ### What's stubbed, on purpose
 
-- **Tier 3 calibration** (`scoring.calibrate_weights`) — needs real
-  `RubricGrade` volume to be worth building.
-- **Shadow-AI detection** (§5.5 of the spec) — the recoverable-spend estimate
-  in `analytics.py` includes a placeholder line for it, clearly labeled as
-  an estimate; actual detection (reconciling sanctioned spend against
-  observed AI activity) isn't implemented.
-- **The scheduler** — `/admin/recompute-scores` is the job's entry point;
-  wiring it to cron/Airflow/a queue is left as a deployment decision.
-
-Don't try to "complete" these without checking with the user first — they're
-intentionally out of scope for the reference implementation.
+Tier 3 calibration, shadow-AI detection, and the nightly-job scheduler are
+all intentionally unbuilt — see
+[`backend/README.md`](backend/README.md#whats-stubbed-on-purpose) for what
+each one is and why. Don't try to "complete" these without checking with
+the user first.

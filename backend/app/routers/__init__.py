@@ -1,6 +1,5 @@
-"""HTTP routers, split by concern: ingestion, admin, dashboard (read API),
-and health. main.create_app() mounts all four."""
+"""HTTP routers, split by concern. main.create_app() mounts all six."""
 
-from . import admin, dashboard, health, ingestion
+from . import admin, auth, dashboard, health, ingestion, waitlist
 
-__all__ = ["admin", "dashboard", "health", "ingestion"]
+__all__ = ["admin", "auth", "dashboard", "health", "ingestion", "waitlist"]

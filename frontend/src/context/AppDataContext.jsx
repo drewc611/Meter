@@ -31,14 +31,10 @@ export function AppDataProvider({ children }) {
   const [loaded, setLoaded] = useState(false);
   const [authGate, setAuthGate] = useState({ visible: false, error: "" });
   const [authMode, setAuthMode] = useState("login");
-  // Whether a session token is currently stored -- drives the Sidebar's
-  // "Log out" link. Not derived from `data.live` since demo-data fallback
-  // can be showing even while a real session is still stored (a brief API
-  // hiccup shouldn't make the logout link disappear).
+  // Not derived from `data.live` -- a real session can still be stored
+  // during a brief API hiccup showing demo data.
   const [hasSession, setHasSession] = useState(() => !!getStoredToken());
-  // Google's OAuth callback redirects the whole page back here with either
-  // ?token=... (success) or ?auth_error=... (failure) -- consumed once on
-  // mount, before the first load, so it never re-fires on a later reload.
+  // Consumed once on mount so a later reload doesn't re-fire the OAuth redirect.
   const redirectHandled = useRef(false);
 
   const showAuthGate = useCallback((errorMsg) => {
@@ -55,10 +51,8 @@ export function AppDataProvider({ children }) {
       live = await fetchLive();
     } catch (e) {
       if (!(e instanceof AuthError)) throw e;
-      // Expired/invalid session -- clear it and ask again (with a hint if
-      // one was already stored) rather than silently retrying forever.
-      // Demo data still renders underneath so the page isn't blank while
-      // the visitor logs back in.
+      // Expired/invalid session -- clear it and show the gate; demo data
+      // still renders underneath so the page isn't blank in the meantime.
       setStoredToken("");
       setHasSession(false);
       showAuthGate(hadToken ? "Your session expired -- sign in again." : "");

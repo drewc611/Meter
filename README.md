@@ -62,9 +62,8 @@ frontend/   Sidebar dashboard (Overview, People, Teams & Roles, Alerts,
             and deployed at the production site root. Calls the backend
             API at localhost:8000 and falls back to embedded demo data if
             it's not running. See frontend/README.md.
-            coming-soon.html is the old pre-launch placeholder (plain
-            static HTML, not part of the React app), kept for its
-            waitlist form and ROI calculator but no longer served at `/`.
+            coming-soon.html is the old pre-launch placeholder, no longer
+            served at `/`.
 ```
 
 ## Quickstart

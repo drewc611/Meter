@@ -7,10 +7,6 @@ import { fmtMoney, fmtX } from "../lib/format.js";
 const CONF_ORDER = ["tier1+2+3", "tier1+2", "tier1"];
 
 function ForecastNote({ forecast }) {
-  // A plain linear trend projection (see backend/app/services/analytics.py
-  // forecast_next_period_spend) -- not a black-box prediction. Hidden
-  // entirely rather than shown with a fake number when there isn't enough
-  // history yet.
   if (!forecast || !forecast.available) return null;
   const arrow = forecast.trend_direction === "up" ? "▲" : forecast.trend_direction === "down" ? "▼" : "→";
   return (

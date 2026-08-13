@@ -229,16 +229,9 @@ def get_trends(db: Session, periods: list[tuple[datetime, datetime]]) -> list[di
 
 
 def get_tool_breakdown(db: Session, period_start: datetime, period_end: datetime) -> list[dict]:
-    """
-    Spend by (tool, model) for one period. Deliberately reads UsageEvent
-    directly rather than PersonScore, unlike everything above — PersonScore
-    doesn't retain tool/model, and there's nowhere else to get this. It's a
-    scoped exception to the "dashboard only reads PersonScore" rule (see
-    module docstring): a single period-bounded [start, end) group-by, the
-    same filter/group shape scoring._spend_by_identity already runs nightly,
-    not an unbounded scan — so it doesn't reintroduce the cost-scales-with-
-    history problem PersonScore exists to avoid.
-    """
+    """Spend by (tool, model) for one period -- the PersonScore-only
+    exception noted in the module docstring, since tool/model isn't an
+    attribute PersonScore carries."""
     rows = (
         db.query(
             UsageEvent.tool,
@@ -270,11 +263,6 @@ def get_tool_performance(db: Session, period_start: datetime, period_end: dateti
     This is a real, defensible rollup of data Merit already has -- it is not
     a claim that tool X caused outcome Y. Surface it in the UI with that
     caveat, not as a per-tool causal ranking.
-
-    Same deliberate, period-scoped exception to the PersonScore-only rule as
-    get_tool_breakdown()/get_adoption() -- reads UsageEvent directly because
-    per-tool spend isn't an attribute PersonScore carries, but stays bounded
-    to a single [start, end) group-by, not an unbounded scan.
     """
     tool_spend_by_identity = (
         db.query(UsageEvent.identity_id, UsageEvent.tool, func.sum(UsageEvent.cost_usd))
@@ -342,12 +330,10 @@ def forecast_next_period_spend(trend_points: list[dict]) -> dict | None:
 
 
 def get_adoption(db: Session, period_start: datetime, period_end: datetime) -> dict:
-    """
-    Active (had a UsageEvent this period) vs. provisioned Identity count,
-    overall and by seat tier. Same deliberate, period-scoped exception to the
-    PersonScore-only rule as get_tool_breakdown() above — active users aren't
-    on PersonScore either (a person with zero spend never gets a row there).
-    """
+    """Active (had a UsageEvent this period) vs. provisioned Identity count,
+    overall and by seat tier -- active users aren't on PersonScore either
+    (a person with zero spend never gets a row there), same exception as
+    get_tool_breakdown()."""
 
     def _pct(active: int, total: int) -> float:
         return round(active / total * 100, 1) if total else 0.0
