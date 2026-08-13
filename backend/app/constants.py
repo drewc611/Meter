@@ -35,6 +35,7 @@ QUALITY_SIGNAL_WEIGHTS: dict[str, float] = {
     "content_never_opened": 0.4,
     "regeneration_loop": 0.5,  # same prompt re-run 4+ times in a session
     "ticket_reopened": 0.8,
+    "ci_checks_failed": 0.5,  # merged PR whose CI was red at merge time
 }
 
 # Slop-risk volume dampener: raw_slop_risk = mean_severity * volume_factor,

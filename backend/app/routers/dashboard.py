@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from .. import schemas
 from ..dependencies import get_db
 from ..periods import current_period, prior_period, recent_periods
-from ..services import analytics
+from ..services import analytics, forecasting
 
 router = APIRouter(prefix="/api", tags=["dashboard"])
 
@@ -60,7 +60,7 @@ def tool_performance(db: Session = Depends(get_db)):
 def spend_forecast(months: int = 6, db: Session = Depends(get_db)):
     months = max(3, min(months, 24))
     trend_points = analytics.get_trends(db, recent_periods(months))
-    forecast = analytics.forecast_next_period_spend(trend_points)
+    forecast = forecasting.forecast_spend_ml(trend_points) or analytics.forecast_next_period_spend(trend_points)
     if forecast is None:
         return schemas.SpendForecastOut(available=False)
     return schemas.SpendForecastOut(available=True, **forecast)

@@ -9,10 +9,17 @@ const CONF_ORDER = ["tier1+2+3", "tier1+2", "tier1"];
 function ForecastNote({ forecast }) {
   if (!forecast || !forecast.available) return null;
   const arrow = forecast.trend_direction === "up" ? "▲" : forecast.trend_direction === "down" ? "▼" : "→";
+  const hasRange = forecast.confidence_low_usd != null && forecast.confidence_high_usd != null;
   return (
     <div className="forecast-note">
-      {arrow} Next period trend projection: <b>{fmtMoney(forecast.projected_spend_usd)}</b> — a straight-line
-      projection from the last {forecast.based_on_periods} scored periods, not a guarantee.
+      {arrow} Next period trend projection: <b>{fmtMoney(forecast.projected_spend_usd)}</b>
+      {hasRange && (
+        <>
+          {" "}
+          (likely {fmtMoney(forecast.confidence_low_usd)}–{fmtMoney(forecast.confidence_high_usd)})
+        </>
+      )}{" "}
+      — from the last {forecast.based_on_periods} scored periods, not a guarantee.
     </div>
   );
 }

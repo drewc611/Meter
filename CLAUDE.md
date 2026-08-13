@@ -23,6 +23,7 @@ Branches: `main` (stable), `Develop` (active development).
 ```bash
 make install   # pip install -r requirements.txt -r requirements-dev.txt
 make seed      # python seed.py — fabricates 6 months of sample data, scores it
+make github-sync  # python github_sync.py — pulls merged PRs/CI status from MERIT_GITHUB_OWNER/REPO
 make run       # uvicorn app.main:app --reload --port 8000
 make test      # pytest
 make lint      # ruff check .
@@ -157,6 +158,8 @@ services/
   ingest.py        identity resolution + the three ingestion functions
   scoring.py       Tier 1/2 formulas (pure math) + the nightly job (bulk queries)
   analytics.py     read-side aggregation, segmentation, recoverable-spend estimate, trends/tool/adoption metrics
+  forecasting.py   ML spend forecast (cross-validated ridge regression) behind /api/spend-forecast
+  github_ingest.py whole-repo GitHub PR/CI sync, called by github_sync.py (repo root)
   auth.py          password hashing (bcrypt), JWT issue/verify (pyjwt), Google OAuth flow
   email.py         plain-SMTP outbound mail (/admin/notify-waitlist)
 routers/

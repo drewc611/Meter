@@ -43,5 +43,6 @@ export const FALLBACK_TOOL_PERFORMANCE = [
 ];
 
 export const FALLBACK_SPEND_FORECAST = {
-  "available":true,"projected_spend_usd":24865.01,"trend_direction":"up","based_on_periods":6
+  "available":true,"projected_spend_usd":24865.01,"trend_direction":"up","based_on_periods":6,
+  "model":"ridge(alpha=1)","confidence_low_usd":23310.44,"confidence_high_usd":26419.58
 };

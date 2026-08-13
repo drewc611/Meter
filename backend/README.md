@@ -106,7 +106,7 @@ touches your `merit.db`. Ruff/pytest config lives in `pyproject.toml`.
 | GET | `/api/trends?months=6` | Spend/value/slop across the trailing N months (default 6, max 24) |
 | GET | `/api/tool-breakdown` | Current-period spend by (tool, model) |
 | GET | `/api/tool-performance` | Current-period value/$ and slop risk per tool (spend-weighted rollup, not causal attribution) |
-| GET | `/api/spend-forecast?months=6` | Linear trend projection of next period's spend from trailing history; `available:false` under 3 non-zero periods |
+| GET | `/api/spend-forecast?months=6` | Next period's spend, projected via `services.forecasting` (a cross-validated ridge regression, with a confidence range) once there are 4+ non-zero periods, falling back to a plain linear trend at 3; `available:false` below that |
 | GET | `/api/adoption` | Active vs. provisioned seats, current period, overall and by tier |
 | POST | `/auth/signup` | Create a dashboard account (email + password) |
 | POST | `/auth/login` | Password login, returns a JWT |
@@ -211,13 +211,16 @@ app/
     ingest.py        identity resolution + the three ingestion functions
     scoring.py       Tier 1/2 formulas (pure math) + the nightly job (bulk queries)
     analytics.py     read-side aggregation, segmentation, recoverable-spend estimate, trends/tool/adoption metrics
+    forecasting.py   ML spend forecast (cross-validated ridge regression), see /api/spend-forecast above
+    github_ingest.py whole-repo GitHub PR/CI sync, called by github_sync.py below
   routers/
     ingestion.py     /ingest/*      admin.py  /admin/*
     dashboard.py     /api/*         health.py /healthz
-tests/               pytest suite (periods, scoring, ingest, analytics, full API)
+tests/               pytest suite (periods, scoring, ingest, analytics, forecasting, github_ingest, full API)
 seed.py              fabricates a month of sample data (+ 5 lighter-weight backfill months) across four behavioral profiles
 proxy_example.py     reference-only usage-attributing LLM proxy (not wired into the demo)
 personal.py          optional: wire your own real usage/GitHub PRs into a local instance -- see its docstring
+github_sync.py       whole-repo GitHub PR/CI sync for a company's own deployment -- see its docstring
 ```
 
 - `constants.py` holds `OUTCOME_VALUE_WEIGHTS` / `QUALITY_SIGNAL_WEIGHTS` and the
