@@ -1,13 +1,17 @@
 """
-Two independent auth layers, tested separately:
+Three auth layers, tested separately:
 
 - MERIT_API_KEY (dependencies.require_api_key): a service token, gates
   /ingest/* only now -- machines (proxies, webhooks, personal.py), not a
   human login.
 - MERIT_JWT_SECRET (dependencies.get_current_user): real per-user login via
   /auth/signup, /auth/login, or Google, gates /api/* and /admin/*.
+- is_admin (dependencies.require_admin): a second gate layered on top of
+  get_current_user for /admin/* specifically -- being logged in isn't
+  enough, the DashboardUser also needs is_admin set (see
+  routers/auth.py's _should_be_admin for how that gets assigned).
 
-Both read their env var live, so these tests toggle with monkeypatch.setenv
+Both env vars are read live, so these tests toggle with monkeypatch.setenv
 rather than touching Settings.
 """
 
@@ -175,7 +179,14 @@ def test_me_returns_current_user(client, monkeypatch):
     ]
     r = client.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
     assert r.status_code == 200
-    assert r.json() == {"id": 1, "email": "a@example.com", "name": "Ada", "has_password": True, "has_google": False}
+    assert r.json() == {
+        "id": 1,
+        "email": "a@example.com",
+        "name": "Ada",
+        "has_password": True,
+        "has_google": False,
+        "is_admin": True,  # first-ever user in this test's DB -- bootstrap admin
+    }
 
 
 # --------------------------------------------------------------- Google OAuth
@@ -243,3 +254,53 @@ def test_google_callback_enforces_signup_code_for_new_accounts_only(client, monk
     # Correct code in state -> account created
     r2 = client.get("/auth/google/callback?code=fake-code&state=letmein", follow_redirects=False)
     assert "token=" in r2.headers["location"]
+
+
+# --------------------------------------------------------------- /admin/* RBAC (is_admin)
+
+_MAP_BODY = {"email": "a@example.com", "source_system": "x", "external_id": "y"}
+
+
+def _signup(client, email="a@example.com", name="Ada"):
+    r = client.post("/auth/signup", json={"email": email, "password": "hunter22", "name": name})
+    assert r.status_code == 201
+    return r.json()
+
+
+def test_first_signup_becomes_admin(client, monkeypatch):
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    user = _signup(client)["user"]
+    assert user["is_admin"] is True
+
+
+def test_second_signup_is_not_admin_by_default(client, monkeypatch):
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    _signup(client, "first@example.com", "First")
+    second = _signup(client, "second@example.com", "Second")["user"]
+    assert second["is_admin"] is False
+
+
+def test_merit_admin_emails_grants_admin_to_non_first_signup(client, monkeypatch):
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_ADMIN_EMAILS", "boss@example.com, other@example.com")
+    _signup(client, "first@example.com", "First")  # takes the bootstrap slot
+    boss = _signup(client, "boss@example.com", "Boss")["user"]
+    assert boss["is_admin"] is True
+
+
+def test_admin_endpoints_reject_non_admin_when_jwt_secret_set(client, monkeypatch):
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    _signup(client, "first@example.com", "First")  # bootstrap admin, not used here
+    token = _signup(client, "second@example.com", "Second")["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+    assert client.post("/admin/identity-mapping", json=_MAP_BODY, headers=headers).status_code == 403
+    assert client.post("/admin/recompute-scores", headers=headers).status_code == 403
+
+
+def test_admin_endpoints_accept_admin(client, monkeypatch):
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    token = _signup(client)["access_token"]  # first signup -> bootstrap admin
+    headers = {"Authorization": f"Bearer {token}"}
+    r = client.post("/admin/identity-mapping", json=_MAP_BODY, headers=headers)
+    assert r.status_code == 404  # reached the handler (no such Identity) -- not blocked by auth
+    assert client.post("/admin/recompute-scores", headers=headers).status_code == 200

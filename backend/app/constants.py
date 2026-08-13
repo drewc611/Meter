@@ -1,10 +1,10 @@
 """
 Tunable business constants — the numbers a real deployment would calibrate
 per company. Kept in one module (rather than scattered across models.py,
-scoring.py, and analytics.py) so there is a single place to look when a
-customer asks "where does this weight come from?" during a sales call.
+scoring.py, and analytics.py) so there's a single place to look for where a
+weight comes from.
 
-Two groups live here:
+Two groups:
 
   1. Scoring weights   — how each outcome/quality signal moves the score.
   2. Read-side knobs   — segment thresholds, recommendation cutoffs, and the
@@ -35,6 +35,7 @@ QUALITY_SIGNAL_WEIGHTS: dict[str, float] = {
     "content_never_opened": 0.4,
     "regeneration_loop": 0.5,  # same prompt re-run 4+ times in a session
     "ticket_reopened": 0.8,
+    "ci_checks_failed": 0.5,  # merged PR whose CI was red at merge time
 }
 
 # Slop-risk volume dampener: raw_slop_risk = mean_severity * volume_factor,
@@ -50,9 +51,9 @@ SLOP_VOLUME_STEP = 0.13
 VALUE_THRESHOLD = 1.6
 SPEND_THRESHOLD = 900.0
 
-# Slop cutoffs used by recommendations and the recoverable-spend estimate.
+# Slop cutoff used by recommendations (analytics.recommend_action) and the
+# recoverable-spend estimate.
 SLOP_HIGH = 60.0
-SLOP_REVIEW = 60.0
 
 # Recommendation cutoffs (see analytics.recommend_action).
 TOP_VALUE = 2.2

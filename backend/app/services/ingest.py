@@ -15,8 +15,7 @@ QualitySignal rows. Three independent paths feed this, matching §8 of the spec:
 The one thing every path shares: they identify the actor by an *external id*
 (an API key id, a GitHub login, an Okta subject) and resolve_identity() is
 what turns that into a canonical Identity row. Get this wrong and every
-number downstream is attributed to the wrong person — it is the load-bearing
-function in this file.
+number downstream is attributed to the wrong person.
 """
 
 from datetime import datetime

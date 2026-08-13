@@ -1,19 +1,23 @@
-.PHONY: help install seed run test lint fmt clean
+.PHONY: help install seed github-sync run test lint fmt clean
 
 help:
-	@echo "make install  - install runtime + dev dependencies"
-	@echo "make seed     - build merit.db with 6 months of sample data"
-	@echo "make run      - start the API on :8000 (uvicorn --reload)"
-	@echo "make test     - run the pytest suite"
-	@echo "make lint     - ruff check"
-	@echo "make fmt      - ruff format + import fixes"
-	@echo "make clean    - remove merit.db and caches"
+	@echo "make install      - install runtime + dev dependencies"
+	@echo "make seed         - build merit.db with 6 months of sample data"
+	@echo "make github-sync  - pull merged PRs/CI status from MERIT_GITHUB_OWNER/REPO"
+	@echo "make run          - start the API on :8000 (uvicorn --reload)"
+	@echo "make test         - run the pytest suite"
+	@echo "make lint         - ruff check"
+	@echo "make fmt          - ruff format + import fixes"
+	@echo "make clean        - remove merit.db and caches"
 
 install:
 	pip install -r requirements.txt -r requirements-dev.txt
 
 seed:
 	python seed.py
+
+github-sync:
+	python github_sync.py
 
 run:
 	uvicorn app.main:app --reload --port 8000

@@ -1,8 +1,7 @@
 """
-The scoring engine — this is the part of the product that has to be defended
-in a sales call, so every function here is deliberately simple and legible
-rather than clever. See §6 of the product spec for the methodology writeup;
-this module is the literal implementation of Tier 1 and Tier 2.
+The scoring engine — deliberately simple and legible rather than clever.
+See §6 of the product spec for the methodology writeup; this module is the
+literal implementation of Tier 1 and Tier 2.
 
 The math lives in pure functions (raw_value_from_totals, raw_slop_from_severities,
 normalize_value_scores) that take plain numbers and are trivially unit-testable
@@ -30,25 +29,18 @@ from ..models import Identity, OutcomeEvent, PersonScore, QualitySignal, UsageEv
 
 
 def raw_value_from_totals(spend: float, outcome_value: float) -> float:
-    """
-    Tier 1: outcome value produced per AI dollar spent, unnormalized.
-    This is a correlation, not causation — someone can have high raw value
-    and low AI usage (they'd just be a strong performer). It only becomes
-    a *signal about AI* once compared against the company baseline, which
-    normalize_value_scores() does across the whole population.
-    """
+    """Tier 1: outcome value produced per AI dollar spent, unnormalized --
+    a correlation, not causation, until normalize_value_scores() compares
+    it against the company baseline."""
     if spend <= 0:
         return 0.0
     return outcome_value / spend
 
 
 def raw_slop_from_severities(severities: list[float]) -> float:
-    """
-    Tier 2: 0-100 risk score built from the fate of AI-touched output.
-    Volume matters as well as severity, so this is (mean severity) x (a volume
-    dampener), not a raw sum — five reverts shouldn't read as 5x worse than one
-    revert once you're already well past "this is a problem".
-    """
+    """Tier 2: 0-100 risk score built from the fate of AI-touched output --
+    (mean severity) x (a volume dampener, see SLOP_VOLUME_BASE/STEP in
+    constants.py), not a raw sum."""
     if not severities:
         return 0.0
     mean_severity = sum(severities) / len(severities)

@@ -58,12 +58,12 @@ backend/    FastAPI service: usage/outcome/quality-signal ingestion,
             identity resolution, Tier-1/Tier-2 scoring, REST API.
             See backend/README.md for the full architecture writeup.
 frontend/   Sidebar dashboard (Overview, People, Teams & Roles, Alerts,
-            Integrations) lives at index.html + styles.css + app.js +
-            fallback-data.js -- what's deployed at the production site root.
-            Calls the backend API at localhost:8000 and falls back to
-            embedded demo data if it's not running.
-            coming-soon.html is the old pre-launch placeholder, kept for its
-            waitlist form and ROI calculator but no longer served at `/`.
+            Integrations), a Vite + React app under src/ -- what's built
+            and deployed at the production site root. Calls the backend
+            API at localhost:8000 and falls back to embedded demo data if
+            it's not running. See frontend/README.md.
+            coming-soon.html is the old pre-launch placeholder, no longer
+            served at `/`.
 ```
 
 ## Quickstart
@@ -75,8 +75,17 @@ python seed.py                        # fabricates 6 months of sample activity, 
 uvicorn app.main:app --reload --port 8000
 ```
 
-Then open `frontend/index.html` in a browser. The sidebar badge shows
-whether it's reading from the live API or the embedded fallback.
+Then, in a separate terminal:
+
+```bash
+cd frontend
+npm install
+npm run dev                           # http://localhost:5173
+```
+
+The sidebar badge shows whether it's reading from the live API or the
+embedded fallback. See [`frontend/README.md`](frontend/README.md) for the
+full frontend layout and commands.
 
 Run the backend test suite with `make test` (or `pytest`) from `backend/`.
 

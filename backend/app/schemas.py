@@ -101,6 +101,7 @@ class UserOut(BaseModel):
     name: str
     has_password: bool
     has_google: bool
+    is_admin: bool
 
 
 class TokenOut(BaseModel):
@@ -208,6 +209,9 @@ class SpendForecastOut(BaseModel):
     projected_spend_usd: float = 0.0
     trend_direction: str = "insufficient_data"
     based_on_periods: int = 0
+    model: str = "linear_trend"
+    confidence_low_usd: float | None = None
+    confidence_high_usd: float | None = None
 
 
 class AdoptionTierOut(BaseModel):

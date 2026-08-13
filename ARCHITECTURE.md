@@ -35,7 +35,7 @@ flowchart LR
     SCORING --> PERSONSCORE[("PersonScore\none row per person, per period")]
 
     PERSONSCORE --> API["/api/* endpoints"]
-    API --> DASH["Dashboard\n(frontend/index.html)"]
+    API --> DASH["Dashboard\n(frontend/, Vite + React, built to dist/)"]
 ```
 
 **The load-bearing invariant:** the dashboard and every `/api/*` endpoint
@@ -86,11 +86,13 @@ any PR); Fly has no equivalent preview environment yet (see below).
 being demoed to prospects, not yet handling real customer data. The backend
 and frontend have genuinely different shapes, and the split matches that:
 
-- **The frontend is static** (`frontend/` has zero build step by design —
-  see `CLAUDE.md`), so a CDN-native static host is the right tool.
-  Cloudflare Workers with static assets gives that for free: global
-  distribution, automatic HTTPS, zero servers to run, and per-PR preview
-  URLs with no extra config.
+- **The frontend builds to static assets** (`frontend/` is a Vite + React
+  app — see `CLAUDE.md` — but `npm run build` produces a plain `dist/` of
+  HTML/JS/CSS with no server-side rendering), so a CDN-native static host
+  is still the right tool. Cloudflare Workers with static assets gives that
+  for free: global distribution, automatic HTTPS, zero servers to run, and
+  per-PR preview URLs with no extra config — the build step just runs as
+  part of that pipeline (see `DEPLOY.md`) rather than at request time.
 - **The backend is stateful** (SQLite file, in-process scoring job) and
   needs a place that keeps a process and a disk alive continuously — Fly.io
   is a reasonable, low-overhead choice for that at this scale, and
@@ -102,11 +104,10 @@ and frontend have genuinely different shapes, and the split matches that:
   dev default is — the one thing that would have made this an easy first
   mistake, done correctly.
 
-**Not yet for handling real customer data.** The architecture is sound for
-a demo; standard pre-production hardening work — access control in front of
-the API, backup coverage on the database volume, a staging environment,
-monitoring/alerting, and rate limiting — needs to land first. None of that
-is a reason to change the underlying split (Fly + Cloudflare Workers); it's
-ordinary engineering work on top of it. Current status on each item is
-tracked internally rather than detailed here — ask the maintainer before
-assuming any of it is further along than "in progress."
+**Not yet for handling real customer data.** Real per-user login and
+`/admin/*` role checks are in (see `SECURITY.md`), but standard
+pre-production hardening still needs to land: rate limiting, an audit log,
+backup coverage on the database volume, a staging environment, and
+monitoring/alerting. None of that is a reason to change the underlying
+split (Fly + Cloudflare Workers); it's ordinary engineering work on top
+of it.

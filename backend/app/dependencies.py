@@ -23,15 +23,10 @@ def get_db() -> Iterator[Session]:
 
 def require_api_key(authorization: str | None = Header(default=None)) -> None:
     """Bearer-token gate for /ingest/* -- a service token for machines
-    (proxies, webhooks, personal.py), not a human login. See
-    get_current_user below for /api/* and /admin/*, which humans use.
-
-    Reads MERIT_API_KEY live from the environment rather than caching it on
-    Settings, so a rotated Fly secret takes effect on restart without a code
-    change, and tests can toggle it per-test with monkeypatch.setenv. Unset
-    (the local-dev/docker-compose/test default) means no auth is enforced --
-    the same wide-open behavior this app has always had locally; set it in
-    production to actually gate access.
+    (proxies, webhooks, personal.py). Reads MERIT_API_KEY live from the
+    environment, so a rotated Fly secret takes effect without a redeploy.
+    Unset means no auth is enforced -- fine for local dev, must be set
+    before this handles real data.
     """
     expected = os.environ.get("MERIT_API_KEY")
     if not expected:
@@ -43,14 +38,10 @@ def require_api_key(authorization: str | None = Header(default=None)) -> None:
 def get_current_user(
     authorization: str | None = Header(default=None), db: Session = Depends(get_db)
 ) -> models.DashboardUser | None:
-    """Per-user login gate for /api/* and /admin/* -- a JWT issued by
-    /auth/login, /auth/signup, or the Google OAuth callback (see
-    services/auth.py and routers/auth.py), not the old shared MERIT_API_KEY.
-
-    Unset MERIT_JWT_SECRET (local dev/docker-compose/test default) means
-    login is off and this returns None without checking anything -- the
-    same "unset = open" convention require_api_key already uses. Once it's
-    set, a missing/invalid/expired token is a 401.
+    """Per-user login gate for /api/* and /admin/* -- a JWT from
+    /auth/login, /auth/signup, or the Google callback. Same unset-secret
+    convention as require_api_key: MERIT_JWT_SECRET unset means login is
+    off and this returns None; once set, a bad/missing/expired token is 401.
     """
     if not os.environ.get("MERIT_JWT_SECRET"):
         return None
@@ -64,4 +55,18 @@ def get_current_user(
     user = db.query(models.DashboardUser).filter_by(id=int(claims["sub"])).one_or_none()
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User no longer exists")
+    return user
+
+
+def require_admin(
+    user: models.DashboardUser | None = Depends(get_current_user),
+) -> models.DashboardUser | None:
+    """Admin-only gate for /admin/*, layered on get_current_user. A None
+    user (login off) passes through unchanged; a logged-in non-admin gets
+    403 instead of silent access to identity-mapping/recompute-scores.
+    """
+    if user is None:
+        return None
+    if not user.is_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
     return user

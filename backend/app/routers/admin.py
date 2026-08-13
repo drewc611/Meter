@@ -85,15 +85,12 @@ def recompute(
 def notify_waitlist(dry_run: bool = False, db: Session = Depends(get_db)):
     """
     Emails every waitlist signup that hasn't been notified yet (see
-    WaitlistSignup.notified_at) with a single fixed announcement -- this is
-    a one-off "the site is live" send, not a recipient-targeted campaign
-    tool. Re-running it only reaches signups that joined since the last
-    run; nobody gets emailed twice.
+    WaitlistSignup.notified_at) with a single fixed announcement -- a
+    one-off "the site is live" send, not a campaign tool.
 
-    Requires MERIT_SMTP_HOST + MERIT_FROM_EMAIL (see services/email.py) --
-    a clean 503 if unset, rather than silently pretending the send happened.
-    dry_run=true skips that check and the actual sends, so you can see the
-    count of pending recipients without emailing anyone.
+    Requires MERIT_SMTP_HOST + MERIT_FROM_EMAIL (see services/email.py),
+    503 if unset. dry_run=true skips the actual sends, so you can see the
+    pending-recipient count without emailing anyone.
     """
     if not dry_run and not email.is_configured():
         raise HTTPException(

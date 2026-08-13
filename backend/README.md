@@ -66,12 +66,12 @@ curl http://localhost:8000/api/overview | python3 -m json.tool
 
 Or use the Makefile: `make install`, `make seed`, `make run`, `make test`, `make lint`, `make fmt`.
 
-Then open `../frontend/index.html` in a browser — it tries `http://localhost:8000`
-first and falls back to an embedded snapshot if the API isn't reachable, so it
-works either way. The sidebar badge tells you which mode it's in. This is
-what's deployed at the production site root — see `../DEPLOY.md`.
-(`../frontend/coming-soon.html` is the old pre-launch placeholder, kept for
-its waitlist form and ROI calculator but no longer served at `/`.)
+Then, in `../frontend`: `npm install && npm run dev` (see
+[`frontend/README.md`](../frontend/README.md)). It tries
+`http://localhost:8000` first and falls back to an embedded snapshot if the
+API isn't reachable, so it works either way — the sidebar badge tells you
+which mode it's in. The built `dist/` output is what's deployed at the
+production site root — see `../DEPLOY.md`.
 
 Or run the whole stack in Docker instead — see [the root README](../README.md#running-with-docker)
 (`docker compose up --build` from the repo root). `Dockerfile` here builds this
@@ -106,7 +106,7 @@ touches your `merit.db`. Ruff/pytest config lives in `pyproject.toml`.
 | GET | `/api/trends?months=6` | Spend/value/slop across the trailing N months (default 6, max 24) |
 | GET | `/api/tool-breakdown` | Current-period spend by (tool, model) |
 | GET | `/api/tool-performance` | Current-period value/$ and slop risk per tool (spend-weighted rollup, not causal attribution) |
-| GET | `/api/spend-forecast?months=6` | Linear trend projection of next period's spend from trailing history; `available:false` under 3 non-zero periods |
+| GET | `/api/spend-forecast?months=6` | Next period's spend, projected via `services.forecasting` (a cross-validated ridge regression, with a confidence range) once there are 4+ non-zero periods, falling back to a plain linear trend at 3; `available:false` below that |
 | GET | `/api/adoption` | Active vs. provisioned seats, current period, overall and by tier |
 | POST | `/auth/signup` | Create a dashboard account (email + password) |
 | POST | `/auth/login` | Password login, returns a JWT |
@@ -130,13 +130,14 @@ Two independent auth layers, covering two different kinds of caller:
   a signed JWT. A no-op until `MERIT_JWT_SECRET` is set, at which point
   every request needs a valid `Authorization: Bearer <token>` from
   `/auth/login`, `/auth/signup`, or the Google callback, or it gets a
-  **401**.
+  **401**. `/admin/*` additionally requires `is_admin` on that user
+  (`dependencies.require_admin`) — a **403** for a logged-in non-admin.
 
 Both default to unset/open, so local dev, `docker compose`, and the test
-suite stay exactly as open as before; see [`DEPLOY.md`](../DEPLOY.md)'s
-go-live checklist for turning them on in production. `/healthz` and
-`/waitlist` are always open — Fly's health check and an anonymous visitor
-signing up both have no token by definition.
+suite stay exactly as open as before; see [`DEPLOY.md`](../DEPLOY.md#turning-on-dashboard-login)
+for turning them on in production. `/healthz` and `/waitlist` are always
+open — Fly's health check and an anonymous visitor signing up both have no
+token by definition.
 
 ## Login
 
@@ -163,6 +164,10 @@ GOOGLE_REDIRECT_URI=https://api.usemeritai.com/auth/google/callback
 MERIT_FRONTEND_URL=https://usemeritai.com   # where /auth/google/callback sends the browser back to
 MERIT_SIGNUP_CODE=...              # optional -- gates *new* account creation (password or Google) so
                                     # not anyone who finds the URL can sign up and see your spend data
+MERIT_ADMIN_EMAILS=...              # optional, comma-separated -- these emails get is_admin (required
+                                    # for /admin/*) on signup. The first-ever DashboardUser on a
+                                    # deployment always gets is_admin regardless of this var, so a
+                                    # fresh deploy isn't locked out of its own admin actions.
 ```
 
 See [`DEPLOY.md`](../DEPLOY.md) for how to create a Google OAuth client.
@@ -206,13 +211,16 @@ app/
     ingest.py        identity resolution + the three ingestion functions
     scoring.py       Tier 1/2 formulas (pure math) + the nightly job (bulk queries)
     analytics.py     read-side aggregation, segmentation, recoverable-spend estimate, trends/tool/adoption metrics
+    forecasting.py   ML spend forecast (cross-validated ridge regression), see /api/spend-forecast above
+    github_ingest.py whole-repo GitHub PR/CI sync, called by github_sync.py below
   routers/
     ingestion.py     /ingest/*      admin.py  /admin/*
     dashboard.py     /api/*         health.py /healthz
-tests/               pytest suite (periods, scoring, ingest, analytics, full API)
+tests/               pytest suite (periods, scoring, ingest, analytics, forecasting, github_ingest, full API)
 seed.py              fabricates a month of sample data (+ 5 lighter-weight backfill months) across four behavioral profiles
 proxy_example.py     reference-only usage-attributing LLM proxy (not wired into the demo)
 personal.py          optional: wire your own real usage/GitHub PRs into a local instance -- see its docstring
+github_sync.py       whole-repo GitHub PR/CI sync for a company's own deployment -- see its docstring
 ```
 
 - `constants.py` holds `OUTCOME_VALUE_WEIGHTS` / `QUALITY_SIGNAL_WEIGHTS` and the

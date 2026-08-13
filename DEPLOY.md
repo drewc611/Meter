@@ -4,8 +4,8 @@ Two pieces, deployed separately, both from this repo — no separate repo
 needed:
 
 - **Backend** (FastAPI + SQLite) → Fly.io, serving `api.usemeritai.com`.
-- **Frontend** (static files) → a Cloudflare Worker with static assets,
-  serving `usemeritai.com`.
+- **Frontend** (Vite/React, built to static assets) → a Cloudflare Worker
+  with static assets, serving `usemeritai.com`.
 
 The steps below are account-bound (your Fly account, your Cloudflare
 account), so they're written as commands/clicks for you to run, not
@@ -70,14 +70,20 @@ repository** (this deploys as a Worker with static assets, not the older
 
 1. Select the `drewc611/Meter` repo, branch `main`.
 2. Root/working directory: `frontend`.
-3. `frontend/wrangler.jsonc` is committed in the repo and is load-bearing —
+3. **Build command:** `npm run build`. **Build output directory:** `dist`.
+   The dashboard is a Vite/React app (see `frontend/src/`) — this is what
+   actually compiles it; without it Cloudflare would deploy the repo's
+   source files as-is, not a built site.
+4. `frontend/wrangler.jsonc` is committed in the repo and is load-bearing —
    without it, Cloudflare's build for any non-`main` branch (every PR
    preview) fails outright with "Missing entry-point to Worker script or to
    assets directory". The production-branch deploy command (`wrangler
    deploy`) auto-detects a static site fine on its own; the non-production
-   command (`wrangler versions upload`) does not and needs this file.
-4. Deploy. Confirm the build succeeds and the given `*.workers.dev` URL loads.
-5. Worker's **Settings → Domains & Routes** → add `usemeritai.com` and
+   command (`wrangler versions upload`) does not and needs this file. Its
+   `assets.directory` points at `dist`, matching the build output directory
+   from step 3.
+5. Deploy. Confirm the build succeeds and the given `*.workers.dev` URL loads.
+6. Worker's **Settings → Domains & Routes** → add `usemeritai.com` and
    `www.usemeritai.com` as custom domains. Since the domain's already in
    this Cloudflare account, DNS gets configured automatically for the root
    domain; `www` may need its own explicit custom-domain entry if visiting
@@ -86,9 +92,10 @@ repository** (this deploys as a Worker with static assets, not the older
 ## 3. Wire them together
 
 `backend/fly.toml` sets `MERIT_CORS_ORIGINS` to
-`https://usemeritai.com,https://www.usemeritai.com`, and `frontend/app.js`
-points `API_BASE` at `https://api.usemeritai.com` for any non-local origin
-(see the comment right above `API_BASE` in that file). If either domain
+`https://usemeritai.com,https://www.usemeritai.com`, and
+`frontend/src/lib/api.js` points `API_BASE` at `https://api.usemeritai.com`
+for any non-local origin (see the comment right above `API_BASE` in that
+file). If either domain
 ever changes, both of those need updating together — a mismatch there is
 the most likely thing to silently produce "DEMO DATA" on a production visit
 where you expected LIVE.
@@ -96,22 +103,23 @@ where you expected LIVE.
 ## 4. Verify
 
 - `https://api.usemeritai.com/healthz` — should return `{"status":"ok"}`.
-- `https://usemeritai.com` — shows the real dashboard (`frontend/index.html`)
-  as of the **go-live checklist** below. The old "coming soon" placeholder
-  is still around at `frontend/coming-soon.html` (its waitlist form and ROI
-  calculator), just no longer served at the site root.
+- `https://usemeritai.com` — shows the real dashboard. The old "coming
+  soon" placeholder is still around at `frontend/coming-soon.html`, just no
+  longer served at the site root.
 
-## Go-live checklist (cutting over from the placeholder to the real dashboard)
+## Production status
 
-Steps 1–3 and 6 are done — `MERIT_API_KEY` (the ingestion service token) is
-live and enforced, and `frontend/index.html` is the real dashboard. What's
-left:
+Live: the ingestion token (`MERIT_API_KEY`) is generated, set, and enforced
+on `/ingest/*`; the real dashboard is at the site root
+(`frontend/coming-soon.html` is the old placeholder, no longer served
+there); per-user login (`MERIT_JWT_SECRET`, Google OAuth,
+`MERIT_SIGNUP_CODE`) is on, see "Turning on dashboard login" below; and
+[`TRADEMARK.md`](TRADEMARK.md)'s events table has its first-use-in-commerce
+date recorded.
 
-1. ~~Generate a strong ingestion token (`MERIT_API_KEY`).~~ Done.
-2. ~~Set it as a Fly secret.~~ Done.
-3. ~~Verify it's actually enforced on `/ingest/*`~~ (401 without a token,
-   200 with it, `/healthz` still open). Done.
-4. **Check backup coverage on the SQLite volume** — a single volume with no
+Still open:
+
+1. **Check backup coverage on the SQLite volume** — a single volume with no
    snapshot is a single point of failure for every customer's data:
    ```bash
    fly volumes list -a meter
@@ -121,15 +129,9 @@ left:
    # headroom than the default:
    fly volumes update <volume-id> --snapshot-retention <days> -a meter
    ```
-5. **Add the `www` custom domain** (known gap — root domain works, `www`
+2. **Add the `www` custom domain** (known gap — root domain works, `www`
    currently 502s): Cloudflare dashboard → the `meter` Worker → **Settings →
    Domains & Routes** → add `www.usemeritai.com`.
-6. ~~Swap the files and push.~~ Done — `frontend/index.html` is now the
-   dashboard; the old placeholder lives at `frontend/coming-soon.html`.
-7. **Turn on real dashboard login** — see the next section.
-8. Fill in the first row of [`TRADEMARK.md`](TRADEMARK.md)'s events table
-   with today's date — that's the "first use in commerce" evidence the file
-   exists to capture, and registering the domain alone doesn't count. Done.
 
 ## Turning on dashboard login
 
@@ -177,6 +179,16 @@ a real account (password or Google) to see live data.
    ```
 5. Sign up for your own account at `https://usemeritai.com` (or via the curl
    above) and confirm the dashboard loads with the `LIVE · Merit API` badge.
+   The first account ever created on a deployment automatically gets
+   `is_admin` (needed for `/admin/recompute-scores` and
+   `/admin/identity-mapping`) -- sign up before sharing the URL with anyone
+   else, or set `MERIT_ADMIN_EMAILS` (comma-separated) as a Fly secret
+   first so specific emails get admin on signup instead:
+   ```bash
+   fly secrets set MERIT_ADMIN_EMAILS=you@example.com,cofounder@example.com -a meter
+   ```
+   There's no UI to promote someone to admin later -- that's a direct
+   database edit (`UPDATE dashboard_users SET is_admin = 1 WHERE email = ...`).
 
 ## Setting up "Sign in with Google"
 
