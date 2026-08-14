@@ -91,11 +91,13 @@ by default) on the backend service.
 On push to `main`/`Develop` and on PRs: `ruff check .`, `ruff format --check .`,
 `pytest`, all run from `backend/` on Python 3.11.
 
-Separately, a handful of scheduled workflows run against the live Fly
-deployment (nightly score recompute, GitHub PR/CI sync, a weekly dependency
-audit, backup-snapshot verification, stale-PR cleanup) — see
-[DEPLOY.md](DEPLOY.md#scheduled-automation-github-actions) for the full list
-and the `FLY_API_TOKEN` secret they need.
+Separately, `.github/workflows/` runs several other things — scheduled jobs
+against the live Fly deployment (nightly score recompute, GitHub PR/CI sync,
+dependency audit, backup-snapshot verification, stale-PR cleanup) plus
+per-PR checks (Docker build validation, secret scanning, path-based
+labeling) and a post-merge dashboard-screenshot refresh — see
+[DEPLOY.md](DEPLOY.md#repository-automation-github-actions) for the full
+list and the `FLY_API_TOKEN` secret two of them need.
 
 ## Architecture
 

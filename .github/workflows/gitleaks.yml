@@ -1,0 +1,22 @@
+name: Secret scanning
+
+# Extra layer on top of GitHub's own push-protection/secret-scanning: catches
+# credentials in the PR diff itself before it merges. Free for public repos;
+# a private repo would need a GITLEAKS_LICENSE secret (see gitleaks-action's
+# README) or this job starts failing.
+
+on:
+  push:
+    branches: [main, Develop]
+  pull_request:
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

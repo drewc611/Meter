@@ -1,0 +1,24 @@
+backend:
+  - changed-files:
+      - any-glob-to-any-file: "backend/**"
+
+frontend:
+  - changed-files:
+      - any-glob-to-any-file: "frontend/**"
+
+infra:
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".github/**"
+          - "Dockerfile"
+          - "backend/Dockerfile"
+          - "frontend/Dockerfile"
+          - "docker-compose.yml"
+          - "backend/fly.toml"
+          - "frontend/wrangler.jsonc"
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "**/*.md"
+          - "docs/**"
