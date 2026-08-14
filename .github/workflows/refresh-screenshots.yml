@@ -1,0 +1,63 @@
+name: Refresh dashboard screenshots
+
+# README.md's screenshots are real captures of the dashboard, not mockups
+# (see its "What it looks like" section) -- this keeps them that way after
+# every merge to main instead of letting them silently drift stale. Uses
+# the embedded fallback dataset (frontend/src/lib/fallbackData.js), not a
+# live backend, so no seeding/API step is needed -- see
+# frontend/scripts/capture-screenshots.mjs.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/src/**"
+      - "frontend/styles.css"
+      - "frontend/scripts/capture-screenshots.mjs"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - working-directory: frontend
+        run: npm ci
+
+      - working-directory: frontend
+        run: npx playwright install --with-deps chromium
+
+      - working-directory: frontend
+        run: npm run build
+
+      - name: Start preview server
+        working-directory: frontend
+        run: |
+          npm run preview -- --port 4173 --strictPort &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:4173 >/dev/null && break
+            sleep 1
+          done
+
+      - working-directory: frontend
+        run: npm run screenshot
+
+      - name: Commit refreshed screenshots if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots
+          git diff --cached --quiet || git commit -m "Refresh dashboard screenshots [skip ci]"
+          git push

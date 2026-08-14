@@ -214,3 +214,41 @@ Entirely optional — password login works without it. In
 log of who accessed what, or a forgot-password flow. See
 [`ARCHITECTURE.md`](ARCHITECTURE.md#3-does-this-hosting-choice-make-sense)
 for what to prioritize next.
+
+## Repository automation (GitHub Actions)
+
+Beyond `ci.yml`/`eslint.yml`/`codeql.yml` on push/PR, `.github/workflows/`
+runs a handful of other things, some on a cron against the live Fly
+deployment, some on every PR:
+
+| Workflow | Trigger | What it does |
+|---|---|---|
+| `nightly-recompute.yml` | daily | `flyctl ssh console` → `python recompute.py` — recomputes `PersonScore` for the current period |
+| `github-sync.yml` | every 6h | `flyctl ssh console` → `python github_sync.py` — pulls merged PRs/CI status |
+| `dependency-audit.yml` | weekly | `pip-audit` + `npm audit` — no secrets needed |
+| `backup-verification.yml` | weekly | checks the `merit_data` volume has a snapshot newer than 2 days |
+| `stale.yml` | daily | labels/closes inactive issues and PRs — no secrets needed |
+| `refresh-screenshots.yml` | push to `main` (frontend changes) | recaptures `docs/screenshots/*.png` against the built dashboard and commits them if changed — no secrets needed, uses the built-in `GITHUB_TOKEN` |
+| `docker-build.yml` | PR/push touching `backend/`, `frontend/`, or `docker-compose.yml` | `docker compose build` — catches Dockerfile drift; doesn't run the containers |
+| `gitleaks.yml` | every PR/push | scans the diff for committed secrets |
+| `labeler.yml` | every PR | labels PRs `backend`/`frontend`/`infra`/`docs` by changed path (`.github/labeler.yml`) |
+
+Plus two things that aren't workflows: **`.github/dependabot.yml`** opens
+weekly PRs bumping outdated/vulnerable npm, pip, Docker base image, and
+GitHub Action dependencies — the thing that actually fixes what
+`dependency-audit.yml` only reports. **`.github/CODEOWNERS`** auto-requests
+review from the repo owner on every PR.
+
+The two `flyctl ssh console` workflows need a **`FLY_API_TOKEN`** repo
+secret (**Settings → Secrets and variables → Actions**), generated with:
+
+```bash
+fly tokens create deploy -a meter
+```
+
+`github-sync.yml` also assumes `MERIT_GITHUB_OWNER`/`MERIT_GITHUB_REPO`/
+`MERIT_GITHUB_TOKEN` are already set as **Fly** secrets (`fly secrets set
+...`, not GitHub) — same requirement as running `make github-sync` by hand,
+see `backend/github_sync.py`'s docstring. Without `FLY_API_TOKEN`, those two
+workflows fail closed (red run in the Actions tab) rather than doing
+nothing silently. Everything else in the table needs no secrets at all.

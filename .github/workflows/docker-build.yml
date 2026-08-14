@@ -1,0 +1,27 @@
+name: Docker build validation
+
+# Nothing else in CI actually builds the Dockerfiles/docker-compose.yml --
+# this catches Dockerfile drift (e.g. a new backend dependency that needs a
+# system package) before it's discovered the hard way. Build-only, doesn't
+# run `docker compose up` or hit a real port.
+
+on:
+  push:
+    branches: [main, Develop]
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - "docker-compose.yml"
+  pull_request:
+    branches: [main, Develop]
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - "docker-compose.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose build

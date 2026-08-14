@@ -1,0 +1,29 @@
+name: Close stale issues and PRs
+
+on:
+  schedule:
+    - cron: "30 1 * * *" # daily 01:30 UTC
+  workflow_dispatch: {}
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          days-before-stale: 30
+          days-before-close: 7
+          stale-issue-label: stale
+          stale-pr-label: stale
+          exempt-issue-labels: pinned
+          exempt-pr-labels: pinned
+          stale-issue-message: >
+            This issue has had no activity for 30 days and will close in 7
+            days if nothing changes. Comment to keep it open.
+          stale-pr-message: >
+            This PR has had no activity for 30 days and will close in 7 days
+            if nothing changes. Comment or push a commit to keep it open.

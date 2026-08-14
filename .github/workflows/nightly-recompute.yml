@@ -1,0 +1,23 @@
+name: Nightly score recompute
+
+# Recomputes PersonScore for the current period on the live Fly deployment --
+# the "nightly job" scoring.recompute_all() is written for, but nothing ran
+# on a schedule until this. Runs recompute.py over `flyctl ssh console`
+# rather than the /admin/recompute-scores HTTP endpoint so it needs only the
+# one Fly deploy token, not a stored dashboard login. See DEPLOY.md for the
+# FLY_API_TOKEN secret this depends on.
+
+on:
+  schedule:
+    - cron: "0 7 * * *" # 07:00 UTC daily
+  workflow_dispatch: {}
+
+jobs:
+  recompute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - name: Recompute PersonScore for the current period
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: flyctl ssh console -a meter -C "python recompute.py"
