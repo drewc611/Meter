@@ -4,7 +4,7 @@
 # Run:    docker run -p 8000:8000 -v merit-db:/data merit-backend
 # (see ../docker-compose.yml for the normal way to run this alongside the frontend)
 
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 WORKDIR /app
 
