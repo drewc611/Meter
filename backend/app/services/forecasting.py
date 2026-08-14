@@ -11,12 +11,14 @@ the two combine.
 import numpy as np
 from sklearn.linear_model import RidgeCV
 
+from .analytics import classify_trend_direction, nonzero_trend_points
+
 _ALPHAS = (0.01, 0.1, 1.0, 10.0, 100.0)
 _MIN_PERIODS = 4
 
 
 def forecast_spend_ml(trend_points: list[dict]) -> dict | None:
-    points = [(i, p["total_spend_usd"]) for i, p in enumerate(trend_points) if p["total_spend_usd"] > 0]
+    points = nonzero_trend_points(trend_points)
     if len(points) < _MIN_PERIODS:
         return None
 
@@ -33,11 +35,10 @@ def forecast_spend_ml(trend_points: list[dict]) -> dict | None:
     residual_std = float(residuals.std(ddof=1)) if len(residuals) > 2 else 0.0
 
     slope = float(model.coef_[0])
-    direction = "up" if slope > 0.01 else ("down" if slope < -0.01 else "flat")
 
     return {
         "projected_spend_usd": round(projected, 2),
-        "trend_direction": direction,
+        "trend_direction": classify_trend_direction(slope),
         "based_on_periods": len(points),
         "model": f"ridge(alpha={model.alpha_:g})",
         "confidence_low_usd": round(max(0.0, projected - residual_std), 2),

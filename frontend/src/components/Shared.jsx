@@ -1,5 +1,16 @@
 import { initials, slopColor, teamColor } from "../lib/format.js";
 
+// Enter/Space activates a div/th styled as a button -- shared by every
+// keyboard-accessible non-<button> element (Sidebar nav, sortable table
+// headers, clickable alert cards).
+export function onActivateKey(handler) {
+  return (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    e.preventDefault();
+    handler();
+  };
+}
+
 export function SlopBar({ risk }) {
   return (
     <div className="slopbar">
@@ -49,8 +60,12 @@ export function ConfPill({ confidence }) {
   );
 }
 
-export function recClass(rec) {
-  if (rec.startsWith("Keep")) return "keep";
-  if (rec.startsWith("Re-tier") || rec.startsWith("Review") || rec.startsWith("Over-tiered")) return "flag";
-  return "";
+const REC_CLASS = {
+  keep_top_performer: "keep",
+  retier_coach: "flag",
+  review_output_quality: "flag",
+  over_tiered: "flag",
+};
+export function recClass(code) {
+  return REC_CLASS[code] || "";
 }

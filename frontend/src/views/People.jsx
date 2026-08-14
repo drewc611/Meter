@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { useAppData } from "../context/AppDataContext.jsx";
-import { AvatarCell, ConfPill, Pill, SlopBar, recClass } from "../components/Shared.jsx";
+import { AvatarCell, ConfPill, Pill, SlopBar, onActivateKey, recClass } from "../components/Shared.jsx";
 import { fmtMoney, fmtX, valueColor } from "../lib/format.js";
 
 // Tier sorts by rank, not alphabetically.
@@ -117,15 +117,7 @@ export default function People({ active, presetFilter, onFilterConsumed }) {
                     role={col.sortable ? "button" : undefined}
                     aria-sort={col.sortable ? (col.key === sortKey ? (sortDir === 1 ? "ascending" : "descending") : "none") : undefined}
                     onClick={col.sortable ? () => sortByHeader(col.key) : undefined}
-                    onKeyDown={
-                      col.sortable
-                        ? (e) => {
-                            if (e.key !== "Enter" && e.key !== " ") return;
-                            e.preventDefault();
-                            sortByHeader(col.key);
-                          }
-                        : undefined
-                    }
+                    onKeyDown={col.sortable ? onActivateKey(() => sortByHeader(col.key)) : undefined}
                   >
                     {col.label}
                   </th>
@@ -140,7 +132,7 @@ export default function People({ active, presetFilter, onFilterConsumed }) {
                       <AvatarCell name={p.name} subtitle={`${p.team} · ${p.role}`} colorKey={p.team} />
                     </td>
                     <td className="num">{fmtMoney(p.spend_usd)}</td>
-                    <td className="num val-cell" style={{ color: valueColor(p.value_per_dollar) }}>
+                    <td className="num val-cell" style={{ color: valueColor(p.value_per_dollar, ov.value_threshold) }}>
                       {fmtX(p.value_per_dollar)}
                     </td>
                     <td className="num">
@@ -153,7 +145,7 @@ export default function People({ active, presetFilter, onFilterConsumed }) {
                       <Pill tier={p.tier} />
                     </td>
                     <td className="rec">
-                      <span className={recClass(p.recommendation)}>{p.recommendation}</span>
+                      <span className={recClass(p.recommendation_code)}>{p.recommendation}</span>
                     </td>
                   </tr>
                 ))

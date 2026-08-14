@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 
 import { useAppData } from "../context/AppDataContext.jsx";
+import { onActivateKey } from "../components/Shared.jsx";
 import { fmtMoney } from "../lib/format.js";
 
 const SEV_COLOR = { high: "var(--bad)", med: "var(--warn)", good: "var(--good)" };
@@ -16,7 +17,7 @@ function computeAlerts(ov, teams) {
       filterTeam: worstTeam.name,
     });
   }
-  const coachPeople = ov.people.filter((p) => p.recommendation === "Re-tier + coach");
+  const coachPeople = ov.people.filter((p) => p.recommendation_code === "retier_coach");
   if (coachPeople.length) {
     const spend = coachPeople.reduce((a, p) => a + p.spend_usd, 0);
     alerts.push({
@@ -33,7 +34,7 @@ function computeAlerts(ov, teams) {
       body: `Total spend reached ${fmtMoney(ov.total_spend_usd)} this period. No anomalous single spender identified — growth looks broad-based.`,
     });
   }
-  const stars = ov.people.filter((p) => p.recommendation.startsWith("Keep"));
+  const stars = ov.people.filter((p) => p.recommendation_code === "keep_top_performer");
   if (stars.length) {
     alerts.push({
       sev: "good",
@@ -69,15 +70,7 @@ export default function Alerts({ active, onNavigateToPeople }) {
                   role={clickable ? "button" : undefined}
                   tabIndex={clickable ? 0 : undefined}
                   onClick={clickable ? () => activate(a) : undefined}
-                  onKeyDown={
-                    clickable
-                      ? (e) => {
-                          if (e.key !== "Enter" && e.key !== " ") return;
-                          e.preventDefault();
-                          activate(a);
-                        }
-                      : undefined
-                  }
+                  onKeyDown={clickable ? onActivateKey(() => activate(a)) : undefined}
                 >
                   <div className="dot2" style={{ background: SEV_COLOR[a.sev] }} />
                   <div>

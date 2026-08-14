@@ -70,7 +70,7 @@ const INTEGRATIONS = [
 ];
 
 export default function Integrations({ active }) {
-  const { toolBreakdown, toolPerformance } = useAppData();
+  const { overview: ov, toolBreakdown, toolPerformance } = useAppData();
 
   return (
     <section className={`view${active ? " active" : ""}`} id="view-integrations">
@@ -164,7 +164,7 @@ export default function Integrations({ active }) {
                   <tr key={i}>
                     <td>{toolLabel(r.tool)}</td>
                     <td className="num">{fmtMoney(r.spend_usd)}</td>
-                    <td className="num val-cell" style={{ color: valueColor(r.value_per_dollar) }}>
+                    <td className="num val-cell" style={{ color: valueColor(r.value_per_dollar, ov.value_threshold) }}>
                       {fmtX(r.value_per_dollar)}
                     </td>
                     <td className="num">

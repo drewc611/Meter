@@ -1,7 +1,7 @@
 import { useRef } from "react";
 
 import { useChartTooltip } from "../hooks/useChartTooltip.js";
-import { VALUE_GOOD_THRESHOLD, fmtMoney, fmtX, slopColor } from "../lib/format.js";
+import { fmtMoney, fmtX, slopColor } from "../lib/format.js";
 
 const W = 560,
   H = 340,
@@ -10,7 +10,7 @@ const W = 560,
   padT = 16,
   padB = 38;
 
-export default function ScatterChart({ people }) {
+export default function ScatterChart({ people, valueThreshold }) {
   const plotRef = useRef(null);
   const { tooltip, show, hide } = useChartTooltip();
 
@@ -23,7 +23,7 @@ export default function ScatterChart({ people }) {
   const yPix = (v) => H - padB - ((v - yMin) / (yMax - yMin)) * (H - padT - padB);
   const SPEND_T = people.length ? spends.reduce((a, b) => a + b, 0) / people.length : 900;
   const vx = xPix(SPEND_T),
-    vy = yPix(VALUE_GOOD_THRESHOLD),
+    vy = yPix(valueThreshold),
     zeroY = yPix(0);
 
   const showTip = (p, clientX, clientY) => {

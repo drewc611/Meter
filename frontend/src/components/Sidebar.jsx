@@ -1,5 +1,6 @@
 import { useAppData } from "../context/AppDataContext.jsx";
 import Logo from "./Logo.jsx";
+import { onActivateKey } from "./Shared.jsx";
 
 const NAV_ITEMS = [
   {
@@ -95,11 +96,7 @@ export default function Sidebar({ view, onSelect }) {
               role="button"
               aria-current={active ? "page" : undefined}
               onClick={() => onSelect(item.view)}
-              onKeyDown={(e) => {
-                if (e.key !== "Enter" && e.key !== " ") return;
-                e.preventDefault();
-                onSelect(item.view);
-              }}
+              onKeyDown={onActivateKey(() => onSelect(item.view))}
             >
               {item.icon}
               {item.label}

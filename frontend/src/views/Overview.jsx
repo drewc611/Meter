@@ -101,7 +101,7 @@ export default function Overview({ active }) {
             Each dot is a person, drawn from live PersonScore rows. Right = spends more. Up = more value per dollar.
             Color = slop risk.
           </p>
-          <ScatterChart people={ov.people} />
+          <ScatterChart people={ov.people} valueThreshold={ov.value_threshold} />
           <div className="legend">
             <span>
               <i className="swatch" style={{ background: "var(--good)" }} /> Low slop

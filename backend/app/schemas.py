@@ -148,6 +148,7 @@ class PersonOut(BaseModel):
     confidence: str
     segment: str
     recommendation: str
+    recommendation_code: str
 
 
 class AggOut(BaseModel):
@@ -177,6 +178,7 @@ class OverviewOut(BaseModel):
     coach_count: int
     learn_count: int
     confidence_breakdown: dict[str, int]
+    value_threshold: float
     people: list[PersonOut]
 
 

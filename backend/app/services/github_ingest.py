@@ -107,7 +107,7 @@ def sync_repo(
 
     ingested = 0
     skipped = 0
-    unmapped: list[str] = []
+    unmapped: set[str] = set()
     ci_flagged = 0
 
     for pr in fetch_merged_pulls(client, owner, repo, since=since):
@@ -133,7 +133,7 @@ def sync_repo(
                 external_ref=url,
             )
         except ingest.UnresolvedIdentityError:
-            unmapped.append(blamed_login)
+            unmapped.add(blamed_login)
             continue
         ingested += 1
 
@@ -153,6 +153,6 @@ def sync_repo(
     return {
         "ingested": ingested,
         "skipped_already_ingested": skipped,
-        "unmapped_logins": sorted(set(unmapped)),
+        "unmapped_logins": sorted(unmapped),
         "ci_flagged": ci_flagged,
     }

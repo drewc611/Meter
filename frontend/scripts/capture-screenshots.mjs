@@ -21,18 +21,21 @@ const VIEWS = [
   { label: "Alerts", file: "alerts.png" },
   { label: "Integrations", file: "integrations.png" },
 ];
+const CHART_SETTLE_MS = 300;
 
 await mkdir(OUT_DIR, { recursive: true });
 
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
-await page.goto(BASE_URL, { waitUntil: "networkidle" });
+try {
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
+  await page.goto(BASE_URL, { waitUntil: "networkidle" });
 
-for (const { label, file } of VIEWS) {
-  await page.locator(".sb-item").filter({ hasText: label }).click();
-  await page.waitForTimeout(300); // let chart transitions settle
-  await page.screenshot({ path: path.join(OUT_DIR, file), fullPage: true });
-  console.log(`captured ${file}`);
+  for (const { label, file } of VIEWS) {
+    await page.locator(".sb-item").filter({ hasText: label }).click();
+    await page.waitForTimeout(CHART_SETTLE_MS);
+    await page.screenshot({ path: path.join(OUT_DIR, file), fullPage: true });
+    console.log(`captured ${file}`);
+  }
+} finally {
+  await browser.close();
 }
-
-await browser.close();

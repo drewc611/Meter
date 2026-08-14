@@ -34,11 +34,12 @@ export function fmtX(n) {
 // dots), where they're contrast-safe; --good-text/--warn-text are the same
 // hues darkened for the small bold table text this feeds (WCAG AA needs
 // 4.5:1 there vs. the 3:1 large-text minimum the KPI numbers get away with).
-// Same number the scatter plot's quadrant line (ScatterChart) is drawn at --
-// both mark "good" value/$ at the same place, so they share this constant.
-export const VALUE_GOOD_THRESHOLD = 1.6;
-export function valueColor(v) {
-  return v >= VALUE_GOOD_THRESHOLD ? "var(--good-text)" : v < 0 ? "var(--bad)" : "var(--warn-text)";
+// `threshold` comes from the API (overview.value_threshold, backend
+// constants.VALUE_THRESHOLD) rather than a hardcoded copy here, so it can't
+// drift out of sync with the scatter plot's quadrant line (ScatterChart),
+// which marks "good" value/$ at the same number.
+export function valueColor(v, threshold) {
+  return v >= threshold ? "var(--good-text)" : v < 0 ? "var(--bad)" : "var(--warn-text)";
 }
 const TOOL_LABELS = {
   anthropic_api: "Anthropic API",
