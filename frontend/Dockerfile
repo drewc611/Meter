@@ -13,7 +13,7 @@
 # http://localhost:8000 — nginx here just serves files, it does not proxy
 # API calls. See src/lib/api.js's API_BASE if that origin needs to change.
 
-FROM node:22-alpine AS build
+FROM node:26-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
