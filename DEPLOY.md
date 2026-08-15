@@ -117,6 +117,20 @@ there); per-user login (`MERIT_JWT_SECRET`, Google OAuth,
 [`TRADEMARK.md`](TRADEMARK.md)'s events table has its first-use-in-commerce
 date recorded.
 
+**Multi-tenant migration**: the first boot after this deploy runs
+`database._migrate_to_multi_tenant()` automatically (inside `init_db()`) —
+it rewrites `teams`/`identities`/`identity_mappings` in place to add the new
+`Organization` (tenant) scoping, backfilling every existing row onto one
+`Default Organization` whose `ingest_token` is seeded from the current
+`MERIT_API_KEY`, so the live integration keeps authenticating unchanged.
+This is a one-time, one-way schema rewrite on the production SQLite volume
+(not just an additive column) — take a manual snapshot immediately before
+this deploy regardless of the routine coverage below:
+```bash
+fly volumes list -a meter
+fly volumes snapshot create <volume-id> -a meter
+```
+
 Still open:
 
 1. **Check backup coverage on the SQLite volume** — a single volume with no

@@ -43,6 +43,15 @@ jobs:
       fail-fast: false
       matrix:
         include:
+        # This repo is backend/ (Python) + frontend/ (JS/JSX, no TypeScript
+        # but the 'javascript-typescript' extractor covers both) -- neither
+        # needs a build step, so build-mode: none for both. This list was
+        # left empty by the template generator, which is why every run of
+        # this workflow failed instantly with zero jobs scheduled until now.
+        - language: python
+          build-mode: none
+        - language: javascript-typescript
+          build-mode: none
         # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'rust', 'swift'
         # Use `c-cpp` to analyze code written in C, C++ or both
         # Use 'java-kotlin' to analyze code written in Java, Kotlin or both

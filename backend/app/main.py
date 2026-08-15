@@ -30,8 +30,11 @@ def create_app() -> FastAPI:
     # "Unset = open" is deliberate (see dependencies.py), but nothing else
     # would catch a Fly secret getting silently removed in production -- log
     # it loudly so it shows up in `fly logs` instead of failing silently.
+    # /ingest/* auth is per-Organization now (see require_api_key), but
+    # MERIT_API_KEY still controls whether an unauthenticated call is ever
+    # accepted at all -- unset means it is, as long as at most one org exists.
     if not os.environ.get("MERIT_API_KEY"):
-        logger.warning("MERIT_API_KEY is unset -- /ingest/* has no auth enforced, anyone can post events.")
+        logger.warning("MERIT_API_KEY is unset -- /ingest/* has no auth enforced while at most one org exists.")
     if not os.environ.get("MERIT_JWT_SECRET"):
         logger.warning("MERIT_JWT_SECRET is unset -- /api/* and /admin/* have no login enforced, anyone can read data.")
 

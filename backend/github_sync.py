@@ -24,6 +24,7 @@ import sys
 import httpx
 
 from app.database import SessionLocal
+from app.models import Organization
 from app.periods import current_period
 from app.services import github_ingest, scoring
 
@@ -44,15 +45,22 @@ def main() -> None:
         sys.exit("--owner/--repo (or MERIT_GITHUB_OWNER/MERIT_GITHUB_REPO) are required")
 
     db = SessionLocal()
+    # This script is a whole-company, single-repo tool (see module docstring),
+    # so it targets that one Organization directly rather than taking an
+    # --org flag -- same single-tenant assumption as before multi-tenancy.
+    org = db.query(Organization).order_by(Organization.id).first()
+    if org is None:
+        sys.exit("No Organization exists yet -- run seed.py or sign up a dashboard user first.")
+
     headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"}
     with httpx.Client(headers=headers, timeout=30) as client:
-        result = github_ingest.sync_repo(db, client, owner=args.owner, repo=args.repo)
+        result = github_ingest.sync_repo(db, client, org_id=org.id, owner=args.owner, repo=args.repo)
 
     print(result)
 
     if args.recompute:
         start, end = current_period()
-        n = scoring.recompute_all(db, start, end)
+        n = scoring.recompute_all(db, org.id, start, end)
         print(f"recomputed scores for {n} people")
 
 

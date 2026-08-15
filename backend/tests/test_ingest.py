@@ -7,21 +7,22 @@ from app.services import ingest
 from app.services.ingest import UnresolvedIdentityError
 
 
-def test_resolve_identity_maps_external_id(db, person):
+def test_resolve_identity_maps_external_id(db, org, person):
     p = person(name="Grace Hopper")
-    resolved = ingest.resolve_identity(db, "anthropic_api", f"key_{p.id}")
+    resolved = ingest.resolve_identity(db, org.id, "anthropic_api", f"key_{p.id}")
     assert resolved.id == p.id
 
 
-def test_unresolved_external_id_raises(db):
+def test_unresolved_external_id_raises(db, org):
     with pytest.raises(UnresolvedIdentityError):
-        ingest.resolve_identity(db, "anthropic_api", "key_does_not_exist")
+        ingest.resolve_identity(db, org.id, "anthropic_api", "key_does_not_exist")
 
 
-def test_ingest_usage_attributes_to_person(db, person):
+def test_ingest_usage_attributes_to_person(db, org, person):
     p = person()
     ingest.ingest_usage_event(
         db,
+        org.id,
         source_system="anthropic_api",
         external_id=f"key_{p.id}",
         tool="anthropic_api",
@@ -33,10 +34,11 @@ def test_ingest_usage_attributes_to_person(db, person):
     assert row.cost_usd == 12.5
 
 
-def test_ingest_usage_unresolved_raises(db):
+def test_ingest_usage_unresolved_raises(db, org):
     with pytest.raises(UnresolvedIdentityError):
         ingest.ingest_usage_event(
             db,
+            org.id,
             source_system="anthropic_api",
             external_id="nope",
             tool="anthropic_api",
@@ -44,10 +46,11 @@ def test_ingest_usage_unresolved_raises(db):
         )
 
 
-def test_outcome_uses_default_weight_from_constants(db, person):
+def test_outcome_uses_default_weight_from_constants(db, org, person):
     p = person()
     ingest.ingest_outcome_event(
         db,
+        org.id,
         source_system="github",
         external_id=f"gh_{p.id}",
         source="github",
@@ -57,10 +60,11 @@ def test_outcome_uses_default_weight_from_constants(db, person):
     assert row.value_weight == 3.0  # constants.OUTCOME_VALUE_WEIGHTS["pr_merged"]
 
 
-def test_outcome_explicit_weight_overrides_default(db, person):
+def test_outcome_explicit_weight_overrides_default(db, org, person):
     p = person()
     ingest.ingest_outcome_event(
         db,
+        org.id,
         source_system="github",
         external_id=f"gh_{p.id}",
         source="github",
@@ -71,10 +75,11 @@ def test_outcome_explicit_weight_overrides_default(db, person):
     assert row.value_weight == 9.0
 
 
-def test_reverted_pr_auto_derives_quality_signal(db, person):
+def test_reverted_pr_auto_derives_quality_signal(db, org, person):
     p = person()
     ingest.ingest_outcome_event(
         db,
+        org.id,
         source_system="github",
         external_id=f"gh_{p.id}",
         source="github",
@@ -89,10 +94,11 @@ def test_reverted_pr_auto_derives_quality_signal(db, person):
     assert signal.occurred_at == datetime(2026, 8, 4)
 
 
-def test_non_reverted_outcome_does_not_create_quality_signal(db, person):
+def test_non_reverted_outcome_does_not_create_quality_signal(db, org, person):
     p = person()
     ingest.ingest_outcome_event(
         db,
+        org.id,
         source_system="github",
         external_id=f"gh_{p.id}",
         source="github",
@@ -101,10 +107,11 @@ def test_non_reverted_outcome_does_not_create_quality_signal(db, person):
     assert db.query(QualitySignal).count() == 0
 
 
-def test_quality_signal_defaults_severity_from_constants(db, person):
+def test_quality_signal_defaults_severity_from_constants(db, org, person):
     p = person()
     ingest.ingest_quality_signal(
         db,
+        org.id,
         source_system="github",
         external_id=f"gh_{p.id}",
         signal_type="draft_heavily_rewritten",
@@ -113,10 +120,11 @@ def test_quality_signal_defaults_severity_from_constants(db, person):
     assert row.severity == 0.7  # constants.QUALITY_SIGNAL_WEIGHTS["draft_heavily_rewritten"]
 
 
-def test_quality_signal_unknown_type_falls_back(db, person):
+def test_quality_signal_unknown_type_falls_back(db, org, person):
     p = person()
     ingest.ingest_quality_signal(
         db,
+        org.id,
         source_system="github",
         external_id=f"gh_{p.id}",
         signal_type="mystery",

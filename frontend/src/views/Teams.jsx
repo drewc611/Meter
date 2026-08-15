@@ -5,7 +5,7 @@ import { AvatarCell, SlopBar } from "../components/Shared.jsx";
 import { fmtMoney, fmtX, valueColor } from "../lib/format.js";
 
 export default function Teams({ active }) {
-  const { teams, roles } = useAppData();
+  const { overview: ov, teams, roles } = useAppData();
   const [aggView, setAggView] = useState("teams");
 
   const rows = aggView === "teams" ? teams : roles;
@@ -43,7 +43,7 @@ export default function Teams({ active }) {
                     </td>
                     <td className="num">{r.people_count}</td>
                     <td className="num">{fmtMoney(r.spend_usd)}</td>
-                    <td className="num val-cell" style={{ color: valueColor(r.value_per_dollar) }}>
+                    <td className="num val-cell" style={{ color: valueColor(r.value_per_dollar, ov.value_threshold) }}>
                       {fmtX(r.value_per_dollar)}
                     </td>
                     <td className="num">

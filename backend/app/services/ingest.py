@@ -37,8 +37,12 @@ class UnresolvedIdentityError(Exception):
     (§5.5 of the spec) rather than dropping the event."""
 
 
-def resolve_identity(db: Session, source_system: str, external_id: str) -> Identity:
-    mapping = db.query(IdentityMapping).filter_by(source_system=source_system, external_id=external_id).one_or_none()
+def resolve_identity(db: Session, org_id: int | None, source_system: str, external_id: str) -> Identity:
+    mapping = (
+        db.query(IdentityMapping)
+        .filter_by(org_id=org_id, source_system=source_system, external_id=external_id)
+        .one_or_none()
+    )
     if mapping is None:
         raise UnresolvedIdentityError(
             f"No identity mapped for {source_system}:{external_id}. "
@@ -49,6 +53,7 @@ def resolve_identity(db: Session, source_system: str, external_id: str) -> Ident
 
 def ingest_usage_event(
     db: Session,
+    org_id: int | None,
     *,
     source_system: str,
     external_id: str,
@@ -59,7 +64,7 @@ def ingest_usage_event(
     tokens_out: int = 0,
     occurred_at: datetime | None = None,
 ) -> UsageEvent:
-    identity = resolve_identity(db, source_system, external_id)
+    identity = resolve_identity(db, org_id, source_system, external_id)
     event = UsageEvent(
         identity_id=identity.id,
         tool=tool,
@@ -77,6 +82,7 @@ def ingest_usage_event(
 
 def ingest_outcome_event(
     db: Session,
+    org_id: int | None,
     *,
     source_system: str,
     external_id: str,
@@ -86,7 +92,7 @@ def ingest_outcome_event(
     external_ref: str | None = None,
     value_weight: float | None = None,
 ) -> OutcomeEvent:
-    identity = resolve_identity(db, source_system, external_id)
+    identity = resolve_identity(db, org_id, source_system, external_id)
     weight = value_weight if value_weight is not None else OUTCOME_VALUE_WEIGHTS.get(outcome_type, 0.0)
     event = OutcomeEvent(
         identity_id=identity.id,
@@ -120,6 +126,7 @@ def ingest_outcome_event(
 
 def ingest_quality_signal(
     db: Session,
+    org_id: int | None,
     *,
     source_system: str,
     external_id: str,
@@ -128,7 +135,7 @@ def ingest_quality_signal(
     external_ref: str | None = None,
     severity: float | None = None,
 ) -> QualitySignal:
-    identity = resolve_identity(db, source_system, external_id)
+    identity = resolve_identity(db, org_id, source_system, external_id)
     sev = severity if severity is not None else QUALITY_SIGNAL_WEIGHTS.get(signal_type, 0.5)
     signal = QualitySignal(
         identity_id=identity.id,

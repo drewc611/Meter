@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Merit — AI Spend &amp; Value</title>
+<script>
+  // Applies a stored explicit theme choice before the stylesheet paints,
+  // so a returning dark-mode user never sees a light flash first. No
+  // stored choice = leave data-theme unset and let the CSS media query
+  // follow the OS preference instead (see styles.css).
+  (function () {
+    var stored = localStorage.getItem("merit_theme");
+    if (stored === "dark" || stored === "light") {
+      document.documentElement.setAttribute("data-theme", stored);
+    }
+  })();
+</script>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>

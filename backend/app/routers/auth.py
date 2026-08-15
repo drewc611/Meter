@@ -27,6 +27,8 @@ def _user_out(user: models.DashboardUser) -> schemas.UserOut:
         has_password=bool(user.password_hash),
         has_google=bool(user.google_sub),
         is_admin=user.is_admin,
+        org_id=user.org_id,
+        org_name=user.org.name,
     )
 
 
@@ -40,16 +42,62 @@ def _check_signup_code(provided: str | None) -> None:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid or missing signup code")
 
 
-def _should_be_admin(db: Session, email: str) -> bool:
-    """The first-ever DashboardUser is always admin, so a fresh deployment
-    isn't locked out of its own /admin/* actions before MERIT_ADMIN_EMAILS
-    is set. After that, only emails in MERIT_ADMIN_EMAILS (comma-separated,
-    read live like MERIT_SIGNUP_CODE above) get admin at creation -- there's
-    no UI to promote someone later, that's a direct DB edit for now."""
-    if db.query(models.DashboardUser).count() == 0:
+def _provision_org_for_signup(db: Session, name: str, email: str) -> tuple[models.Organization, bool]:
+    """Resolves which Organization a brand-new signup lands in. Returns
+    (org, is_personal) -- is_personal says whether this signup should also
+    get a default Team+Identity of their own (right for an individual
+    self-signing up with nothing else provisioned yet; wrong for a company
+    account, where Identity rows come from SCIM/admin mapping instead and
+    auto-creating one here would just be a stray row).
+
+    MERIT_SIGNUP_CODE set -> this deployment is gated to one company
+    (checked in _check_signup_code before this is ever called), so every
+    signup joins the single existing org for it, creating it on the very
+    first one -- the same "first signup is admin, MERIT_ADMIN_EMAILS after
+    that" bootstrap this always had, just now scoped to that org's own
+    user count instead of the whole dashboard_users table.
+    MERIT_SIGNUP_CODE unset -> the public, free-personal-use posture: every
+    signup gets a brand-new isolated Organization of their own.
+    """
+    if os.environ.get("MERIT_SIGNUP_CODE"):
+        org = db.query(models.Organization).order_by(models.Organization.id).first()
+        if org is None:
+            org = models.Organization(name="Shared Organization", plan="company")
+            db.add(org)
+            db.flush()
+        return org, False
+    org = models.Organization(name=f"{name}'s Merit", plan="personal")
+    db.add(org)
+    db.flush()
+    return org, True
+
+
+def _should_be_admin(db: Session, org: models.Organization, email: str) -> bool:
+    """The first DashboardUser in an org is always its admin -- an
+    individual always lands in a brand-new org, so this is always True for
+    them. For a MERIT_SIGNUP_CODE-gated shared org, only that first signup
+    (or an email in MERIT_ADMIN_EMAILS after that, read live like
+    MERIT_SIGNUP_CODE above) gets it -- there's no UI to promote someone
+    later, that's a direct DB edit for now."""
+    if db.query(models.DashboardUser).filter_by(org_id=org.id).count() == 0:
         return True
     admin_emails = {e.strip().lower() for e in os.environ.get("MERIT_ADMIN_EMAILS", "").split(",") if e.strip()}
     return email.strip().lower() in admin_emails
+
+
+def _provision_default_identity(db: Session, org: models.Organization, name: str, email: str) -> None:
+    """Gives a fresh individual signup an Identity AND a "manual" source
+    mapping keyed on their own email, so POST /ingest/usage with
+    source_system="manual", external_id=<their email> works immediately --
+    no separate /admin/identity-mapping step, same convention personal.py's
+    log-usage command already uses."""
+    team = models.Team(org_id=org.id, name="Personal")
+    db.add(team)
+    db.flush()
+    ident = models.Identity(org_id=org.id, full_name=name, email=email, role="Individual", team_id=team.id)
+    db.add(ident)
+    db.flush()
+    db.add(models.IdentityMapping(org_id=org.id, identity_id=ident.id, source_system="manual", external_id=email))
 
 
 @router.post("/signup", status_code=201, response_model=schemas.TokenOut)
@@ -57,13 +105,17 @@ def signup(body: schemas.SignupIn, db: Session = Depends(get_db)):
     _check_signup_code(body.signup_code)
     if db.query(models.DashboardUser).filter_by(email=body.email).one_or_none():
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="An account with that email already exists")
+    org, is_personal = _provision_org_for_signup(db, body.name, body.email)
     user = models.DashboardUser(
+        org_id=org.id,
         email=body.email,
         name=body.name,
         password_hash=auth_service.hash_password(body.password),
-        is_admin=_should_be_admin(db, body.email),
+        is_admin=_should_be_admin(db, org, body.email),
     )
     db.add(user)
+    if is_personal:
+        _provision_default_identity(db, org, body.name, body.email)
     db.commit()
     db.refresh(user)
     try:
@@ -113,12 +165,17 @@ def google_callback(code: str, state: str = "-", db: Session = Depends(get_db)):
             user = db.query(models.DashboardUser).filter_by(email=claims["email"]).one_or_none()
             if user is None:
                 _check_signup_code(None if state == "-" else state)
+                name = claims.get("name", claims["email"])
+                org, is_personal = _provision_org_for_signup(db, name, claims["email"])
                 user = models.DashboardUser(
+                    org_id=org.id,
                     email=claims["email"],
-                    name=claims.get("name", claims["email"]),
-                    is_admin=_should_be_admin(db, claims["email"]),
+                    name=name,
+                    is_admin=_should_be_admin(db, org, claims["email"]),
                 )
                 db.add(user)
+                if is_personal:
+                    _provision_default_identity(db, org, name, claims["email"])
             user.google_sub = claims["sub"]  # link (new account) or backfill (existing password account)
             db.commit()
             db.refresh(user)

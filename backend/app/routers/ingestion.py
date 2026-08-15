@@ -10,9 +10,9 @@ from typing import TypeVar
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from .. import schemas
+from .. import models, schemas
 from ..constants import OUTCOME_VALUE_WEIGHTS
-from ..dependencies import get_db
+from ..dependencies import get_db, require_api_key
 from ..services import ingest
 
 router = APIRouter(tags=["ingestion"])
@@ -30,10 +30,15 @@ def _or_422(fn: Callable[[], T]) -> T:
 
 
 @router.post("/ingest/usage", status_code=201, response_model=schemas.IngestAccepted)
-def post_usage(evt: schemas.UsageEventIn, db: Session = Depends(get_db)):
+def post_usage(
+    evt: schemas.UsageEventIn,
+    db: Session = Depends(get_db),
+    org: models.Organization | None = Depends(require_api_key),
+):
     row = _or_422(
         lambda: ingest.ingest_usage_event(
             db,
+            org.id if org else None,
             source_system=evt.source_system,
             external_id=evt.external_id,
             tool=evt.tool,
@@ -48,7 +53,11 @@ def post_usage(evt: schemas.UsageEventIn, db: Session = Depends(get_db)):
 
 
 @router.post("/ingest/outcome", status_code=201, response_model=schemas.IngestAccepted)
-def post_outcome(evt: schemas.OutcomeEventIn, db: Session = Depends(get_db)):
+def post_outcome(
+    evt: schemas.OutcomeEventIn,
+    db: Session = Depends(get_db),
+    org: models.Organization | None = Depends(require_api_key),
+):
     if evt.outcome_type not in OUTCOME_VALUE_WEIGHTS and evt.value_weight is None:
         raise HTTPException(
             status_code=400,
@@ -57,6 +66,7 @@ def post_outcome(evt: schemas.OutcomeEventIn, db: Session = Depends(get_db)):
     row = _or_422(
         lambda: ingest.ingest_outcome_event(
             db,
+            org.id if org else None,
             source_system=evt.source_system,
             external_id=evt.external_id,
             source=evt.source,
@@ -70,10 +80,15 @@ def post_outcome(evt: schemas.OutcomeEventIn, db: Session = Depends(get_db)):
 
 
 @router.post("/ingest/quality-signal", status_code=201, response_model=schemas.IngestAccepted)
-def post_quality_signal(evt: schemas.QualitySignalIn, db: Session = Depends(get_db)):
+def post_quality_signal(
+    evt: schemas.QualitySignalIn,
+    db: Session = Depends(get_db),
+    org: models.Organization | None = Depends(require_api_key),
+):
     row = _or_422(
         lambda: ingest.ingest_quality_signal(
             db,
+            org.id if org else None,
             source_system=evt.source_system,
             external_id=evt.external_id,
             signal_type=evt.signal_type,

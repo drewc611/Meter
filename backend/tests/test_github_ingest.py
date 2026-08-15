@@ -49,13 +49,13 @@ def test_fetch_merged_pulls_filters_unmerged_and_stops_on_empty_page():
     assert [pr["html_url"] for pr in prs] == ["https://github.com/acme/widget/pull/1"]
 
 
-def test_sync_repo_ingests_merged_pr(db, person):
+def test_sync_repo_ingests_merged_pr(db, org, person):
     p = person()
     login = f"gh_{p.id}"
     pulls_by_page = {1: [_pr(1, login, merge_sha="deadbeef")], 2: []}
     client = httpx.Client(transport=_transport(pulls_by_page, check_runs_by_sha={"deadbeef": "success"}))
 
-    result = github_ingest.sync_repo(db, client, owner="acme", repo="widget")
+    result = github_ingest.sync_repo(db, client, org_id=org.id, owner="acme", repo="widget")
 
     assert result == {"ingested": 1, "skipped_already_ingested": 0, "unmapped_logins": [], "ci_flagged": 0}
     row = db.query(OutcomeEvent).one()
@@ -64,20 +64,20 @@ def test_sync_repo_ingests_merged_pr(db, person):
     assert row.source == "github"
 
 
-def test_sync_repo_flags_failing_ci_as_quality_signal(db, person):
+def test_sync_repo_flags_failing_ci_as_quality_signal(db, org, person):
     p = person()
     login = f"gh_{p.id}"
     pulls_by_page = {1: [_pr(1, login, merge_sha="deadbeef")], 2: []}
     client = httpx.Client(transport=_transport(pulls_by_page, check_runs_by_sha={"deadbeef": "failure"}))
 
-    result = github_ingest.sync_repo(db, client, owner="acme", repo="widget")
+    result = github_ingest.sync_repo(db, client, org_id=org.id, owner="acme", repo="widget")
 
     assert result["ci_flagged"] == 1
     signal = db.query(QualitySignal).filter_by(signal_type="ci_checks_failed").one()
     assert signal.identity_id == p.id
 
 
-def test_sync_repo_revert_blames_original_commit_author(db, person):
+def test_sync_repo_revert_blames_original_commit_author(db, org, person):
     original_author = person(name="Grace Hopper")
     reverter = person(name="Ada Lovelace")
     original_login = f"gh_{original_author.id}"
@@ -94,7 +94,7 @@ def test_sync_repo_revert_blames_original_commit_author(db, person):
         transport=_transport(pulls_by_page, commit_author_by_sha={"deadbeefcafe1234": original_login})
     )
 
-    result = github_ingest.sync_repo(db, client, owner="acme", repo="widget")
+    result = github_ingest.sync_repo(db, client, org_id=org.id, owner="acme", repo="widget")
 
     assert result["ingested"] == 1
     row = db.query(OutcomeEvent).one()
@@ -102,25 +102,25 @@ def test_sync_repo_revert_blames_original_commit_author(db, person):
     assert row.identity_id == original_author.id
 
 
-def test_sync_repo_tracks_unmapped_logins_without_raising(db):
+def test_sync_repo_tracks_unmapped_logins_without_raising(db, org):
     pulls_by_page = {1: [_pr(1, "ghost-user")], 2: []}
     client = httpx.Client(transport=_transport(pulls_by_page))
 
-    result = github_ingest.sync_repo(db, client, owner="acme", repo="widget")
+    result = github_ingest.sync_repo(db, client, org_id=org.id, owner="acme", repo="widget")
 
     assert result["ingested"] == 0
     assert result["unmapped_logins"] == ["ghost-user"]
     assert db.query(OutcomeEvent).count() == 0
 
 
-def test_sync_repo_is_idempotent_on_rerun(db, person):
+def test_sync_repo_is_idempotent_on_rerun(db, org, person):
     p = person()
     login = f"gh_{p.id}"
     pulls_by_page = {1: [_pr(1, login, merge_sha="deadbeef")], 2: []}
     client = httpx.Client(transport=_transport(pulls_by_page, check_runs_by_sha={"deadbeef": "success"}))
 
-    first = github_ingest.sync_repo(db, client, owner="acme", repo="widget")
-    second = github_ingest.sync_repo(db, client, owner="acme", repo="widget")
+    first = github_ingest.sync_repo(db, client, org_id=org.id, owner="acme", repo="widget")
+    second = github_ingest.sync_repo(db, client, org_id=org.id, owner="acme", repo="widget")
 
     assert first["ingested"] == 1
     assert second == {"ingested": 0, "skipped_already_ingested": 1, "unmapped_logins": [], "ci_flagged": 0}

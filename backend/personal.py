@@ -39,7 +39,7 @@ from datetime import datetime, timedelta
 import httpx
 
 from app.database import Base, SessionLocal, engine
-from app.models import Identity, IdentityMapping, Team
+from app.models import Identity, IdentityMapping, Organization, Team
 
 MERIT_BASE_URL = os.environ.get("MERIT_BASE_URL", "http://localhost:8000")
 GITHUB_SOURCE = "github"
@@ -56,27 +56,48 @@ def _db():
     return SessionLocal()
 
 
-def _ensure_mapping(db, ident, source_system, external_id):
-    existing = db.query(IdentityMapping).filter_by(source_system=source_system, external_id=external_id).one_or_none()
+def _ensure_org(db):
+    """A personal Merit instance has exactly one Organization -- created on
+    first `setup` run, reused after that."""
+    org = db.query(Organization).order_by(Organization.id).first()
+    if org is None:
+        org = Organization(name="Personal", plan="personal")
+        db.add(org)
+        db.commit()
+        db.refresh(org)
+        print(f"Created Organization #{org.id}, ingest token: {org.ingest_token}")
+    return org
+
+
+def _ensure_mapping(db, org, ident, source_system, external_id):
+    existing = (
+        db.query(IdentityMapping)
+        .filter_by(org_id=org.id, source_system=source_system, external_id=external_id)
+        .one_or_none()
+    )
     if existing:
         print(f"  mapping already exists: {source_system}:{external_id}")
         return
-    db.add(IdentityMapping(identity_id=ident.id, source_system=source_system, external_id=external_id))
+    db.add(IdentityMapping(org_id=org.id, identity_id=ident.id, source_system=source_system, external_id=external_id))
     db.commit()
     print(f"  mapped {source_system}:{external_id} -> Identity #{ident.id}")
 
 
 def cmd_setup(args):
     db = _db()
-    team = db.query(Team).filter_by(name=args.team).one_or_none()
+    org = _ensure_org(db)
+
+    team = db.query(Team).filter_by(org_id=org.id, name=args.team).one_or_none()
     if team is None:
-        team = Team(name=args.team)
+        team = Team(org_id=org.id, name=args.team)
         db.add(team)
         db.commit()
 
-    ident = db.query(Identity).filter_by(email=args.email).one_or_none()
+    ident = db.query(Identity).filter_by(org_id=org.id, email=args.email).one_or_none()
     if ident is None:
-        ident = Identity(full_name=args.name, email=args.email, role=args.role, team_id=team.id, tier=args.tier)
+        ident = Identity(
+            org_id=org.id, full_name=args.name, email=args.email, role=args.role, team_id=team.id, tier=args.tier
+        )
         db.add(ident)
         db.commit()
         db.refresh(ident)
@@ -84,10 +105,11 @@ def cmd_setup(args):
     else:
         print(f"Identity already exists: #{ident.id} {ident.full_name} <{ident.email}>")
 
-    _ensure_mapping(db, ident, MANUAL_SOURCE, args.email)
+    _ensure_mapping(db, org, ident, MANUAL_SOURCE, args.email)
     if args.github_username:
-        _ensure_mapping(db, ident, GITHUB_SOURCE, args.github_username)
+        _ensure_mapping(db, org, ident, GITHUB_SOURCE, args.github_username)
 
+    print(f"\nExport this before log-usage/sync-github:\n  export MERIT_API_KEY={org.ingest_token}")
     print(f"\nReady. Try:\n  python personal.py log-usage --email {args.email} --tool cursor --cost 20")
 
 

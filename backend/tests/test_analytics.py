@@ -88,7 +88,7 @@ def test_aggregate_sorts_by_spend_desc():
 # ---------------------------------------------------------- get_overview: confidence_breakdown
 
 
-def test_get_overview_confidence_breakdown(db, person, ingest_helpers):
+def test_get_overview_confidence_breakdown(db, org, person, ingest_helpers):
     tier1_only = person(name="Tier1 Only")
     tier1_and_2 = person(name="Tier1And2")
 
@@ -106,13 +106,13 @@ def test_get_overview_confidence_breakdown(db, person, ingest_helpers):
         signal_type="regeneration_loop",
         occurred_at=START + timedelta(days=6),
     )
-    scoring.recompute_all(db, START, END)
+    scoring.recompute_all(db, org.id, START, END)
 
-    overview = get_overview(db, START, END)
+    overview = get_overview(db, org.id, START, END)
     assert overview["confidence_breakdown"] == {"tier1": 1, "tier1+2": 1}
 
 
-def test_rework_tax_pct_is_share_of_spend_in_high_slop_bucket(db, person, ingest_helpers):
+def test_rework_tax_pct_is_share_of_spend_in_high_slop_bucket(db, org, person, ingest_helpers):
     """rework_tax_pct = spend belonging to slop_risk>=SLOP_HIGH people / total spend."""
     risky = person(name="Risky")
     clean = person(name="Clean")
@@ -139,17 +139,17 @@ def test_rework_tax_pct_is_share_of_spend_in_high_slop_bucket(db, person, ingest
             signal_type="code_reverted",
             occurred_at=START + timedelta(days=6),
         )
-    scoring.recompute_all(db, START, END)
+    scoring.recompute_all(db, org.id, START, END)
 
-    overview = get_overview(db, START, END)
+    overview = get_overview(db, org.id, START, END)
     risky_row = next(p for p in overview["people"] if p["name"] == "Risky")
     assert risky_row["slop_risk"] >= 60.0
     # risky's $100 out of $200 total spend is in the high-slop bucket
     assert overview["rework_tax_pct"] == 50.0
 
 
-def test_rework_tax_pct_zero_when_no_activity(db):
-    overview = get_overview(db, START, END)
+def test_rework_tax_pct_zero_when_no_activity(db, org):
+    overview = get_overview(db, org.id, START, END)
     assert overview["total_spend_usd"] == 0.0
     assert overview["rework_tax_pct"] == 0.0
 
@@ -157,7 +157,7 @@ def test_rework_tax_pct_zero_when_no_activity(db):
 # -------------------------------------------------------------------- get_trends
 
 
-def test_get_trends_reads_each_given_period(db, person, ingest_helpers):
+def test_get_trends_reads_each_given_period(db, org, person, ingest_helpers):
     p = person(name="Trendy")
     ingest_helpers.usage(
         source_system="anthropic_api",
@@ -166,10 +166,10 @@ def test_get_trends_reads_each_given_period(db, person, ingest_helpers):
         cost_usd=100.0,
         occurred_at=START + timedelta(days=5),
     )
-    scoring.recompute_all(db, START, END)
+    scoring.recompute_all(db, org.id, START, END)
 
     prior_start = datetime(2026, 7, 1)
-    trends = get_trends(db, [(prior_start, START), (START, END)])
+    trends = get_trends(db, org.id, [(prior_start, START), (START, END)])
 
     assert len(trends) == 2
     # earlier period has no PersonScore rows yet — zeros, not an error
@@ -183,7 +183,7 @@ def test_get_trends_reads_each_given_period(db, person, ingest_helpers):
 # ------------------------------------------------------------- get_tool_breakdown
 
 
-def test_get_tool_breakdown_groups_by_tool_and_model(db, person, ingest_helpers):
+def test_get_tool_breakdown_groups_by_tool_and_model(db, org, person, ingest_helpers):
     p = person(name="Toolie")
     ingest_helpers.usage(
         source_system="anthropic_api",
@@ -209,12 +209,12 @@ def test_get_tool_breakdown_groups_by_tool_and_model(db, person, ingest_helpers)
         occurred_at=START + timedelta(days=4),
     )
 
-    rows = get_tool_breakdown(db, START, END)
+    rows = get_tool_breakdown(db, org.id, START, END)
     assert rows[0] == {"tool": "anthropic_api", "model": "claude-opus-4", "spend_usd": 50.0, "event_count": 2}
     assert rows[1] == {"tool": "github_copilot", "model": None, "spend_usd": 5.0, "event_count": 1}
 
 
-def test_get_tool_breakdown_excludes_events_outside_period(db, person, ingest_helpers):
+def test_get_tool_breakdown_excludes_events_outside_period(db, org, person, ingest_helpers):
     p = person(name="Outsider")
     ingest_helpers.usage(
         source_system="anthropic_api",
@@ -223,13 +223,13 @@ def test_get_tool_breakdown_excludes_events_outside_period(db, person, ingest_he
         cost_usd=999.0,
         occurred_at=datetime(2026, 7, 15),  # before START
     )
-    assert get_tool_breakdown(db, START, END) == []
+    assert get_tool_breakdown(db, org.id, START, END) == []
 
 
 # --------------------------------------------------------------- get_tool_performance
 
 
-def test_tool_performance_weights_by_spend_per_tool(db, person, ingest_helpers):
+def test_tool_performance_weights_by_spend_per_tool(db, org, person, ingest_helpers):
     # One person, entirely on one tool: that tool's numbers equal the person's.
     solo = person(name="Solo")
     ingest_helpers.usage(
@@ -246,16 +246,16 @@ def test_tool_performance_weights_by_spend_per_tool(db, person, ingest_helpers):
         outcome_type="pr_merged",
         occurred_at=START + timedelta(days=3),
     )
-    scoring.recompute_all(db, START, END)
+    scoring.recompute_all(db, org.id, START, END)
 
-    rows = get_tool_performance(db, START, END)
+    rows = get_tool_performance(db, org.id, START, END)
     assert len(rows) == 1
     assert rows[0]["tool"] == "anthropic_api"
     assert rows[0]["spend_usd"] == 200.0
     assert rows[0]["people_count"] == 1
 
 
-def test_tool_performance_splits_one_persons_score_across_their_tools(db, person, ingest_helpers):
+def test_tool_performance_splits_one_persons_score_across_their_tools(db, org, person, ingest_helpers):
     # A person spending 75% on tool A / 25% on tool B contributes their one
     # overall score to both buckets, weighted 3:1 -- not the same score twice.
     p = person(name="Splitter")
@@ -273,9 +273,9 @@ def test_tool_performance_splits_one_persons_score_across_their_tools(db, person
         cost_usd=50.0,
         occurred_at=START + timedelta(days=2),
     )
-    scoring.recompute_all(db, START, END)
+    scoring.recompute_all(db, org.id, START, END)
 
-    rows = {r["tool"]: r for r in get_tool_performance(db, START, END)}
+    rows = {r["tool"]: r for r in get_tool_performance(db, org.id, START, END)}
     assert rows["anthropic_api"]["spend_usd"] == 150.0
     assert rows["github_copilot"]["spend_usd"] == 50.0
     # same person -> same underlying value/slop numbers in both buckets
@@ -283,7 +283,7 @@ def test_tool_performance_splits_one_persons_score_across_their_tools(db, person
     assert rows["anthropic_api"]["slop_risk"] == rows["github_copilot"]["slop_risk"]
 
 
-def test_tool_performance_excludes_people_with_no_scored_period(db, person, ingest_helpers):
+def test_tool_performance_excludes_people_with_no_scored_period(db, org, person, ingest_helpers):
     # Usage exists but recompute_all() was never run for this period -- no
     # PersonScore row yet, so this person contributes nothing (not a crash).
     p = person(name="Unscored")
@@ -294,7 +294,7 @@ def test_tool_performance_excludes_people_with_no_scored_period(db, person, inge
         cost_usd=75.0,
         occurred_at=START + timedelta(days=2),
     )
-    assert get_tool_performance(db, START, END) == []
+    assert get_tool_performance(db, org.id, START, END) == []
 
 
 # -------------------------------------------------------------- forecast_next_period_spend
@@ -332,7 +332,7 @@ def test_forecast_ignores_leading_zero_periods():
 # ------------------------------------------------------------------ get_adoption
 
 
-def test_get_adoption_counts_active_vs_total_by_tier(db, person, ingest_helpers):
+def test_get_adoption_counts_active_vs_total_by_tier(db, org, person, ingest_helpers):
     active = person(name="Active", tier="Frontier")
     person(name="Idle", tier="Frontier")  # provisioned, never spends
     person(name="Basic Idle", tier="Basic")
@@ -345,7 +345,7 @@ def test_get_adoption_counts_active_vs_total_by_tier(db, person, ingest_helpers)
         occurred_at=START + timedelta(days=1),
     )
 
-    result = get_adoption(db, START, END)
+    result = get_adoption(db, org.id, START, END)
     assert result["total_seats"] == 3
     assert result["active_users"] == 1
     assert result["utilization_pct"] == 33.3

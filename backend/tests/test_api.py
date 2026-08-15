@@ -17,13 +17,20 @@ def _map(client, email, source_system, external_id):
 
 
 def _bootstrap_person(db):
-    """Create one team + identity directly, return (identity, email)."""
+    """Create one org + team + identity directly, return the identity.
+    Exactly one Organization, so every endpoint under test resolves to it
+    via the "unambiguous with at most one org" fallback (see
+    dependencies.require_api_key / resolve_org_id) without needing a login."""
     from app import models
 
-    team = models.Team(name="Engineering")
+    org = models.Organization(name="Test Org", plan="company")
+    db.add(org)
+    db.commit()
+    team = models.Team(org_id=org.id, name="Engineering")
     db.add(team)
     db.commit()
     ident = models.Identity(
+        org_id=org.id,
         full_name="Live Person",
         email="live@example.com",
         role="Engineer",
@@ -33,8 +40,12 @@ def _bootstrap_person(db):
     db.add(ident)
     db.commit()
     db.refresh(ident)
-    db.add(models.IdentityMapping(identity_id=ident.id, source_system="anthropic_api", external_id="key_live"))
-    db.add(models.IdentityMapping(identity_id=ident.id, source_system="github", external_id="gh_live"))
+    db.add(
+        models.IdentityMapping(
+            org_id=org.id, identity_id=ident.id, source_system="anthropic_api", external_id="key_live"
+        )
+    )
+    db.add(models.IdentityMapping(org_id=org.id, identity_id=ident.id, source_system="github", external_id="gh_live"))
     db.commit()
     return ident
 
@@ -127,6 +138,37 @@ def test_full_pipeline_overview(client, db):
 
     roles = client.get("/api/roles").json()
     assert roles[0]["name"] == "Engineer"
+
+
+def test_people_months_ago_reads_a_prior_period(client, db):
+    from app.periods import prior_period
+
+    _bootstrap_person(db)
+    cur_start, cur_end = current_period()
+    prior_start, _ = prior_period(cur_start)
+    prior_day = datetime(prior_start.year, prior_start.month, 10)
+
+    assert (
+        client.post(
+            "/ingest/usage",
+            json={
+                "source_system": "anthropic_api",
+                "external_id": "key_live",
+                "tool": "anthropic_api",
+                "cost_usd": 150.0,
+                "occurred_at": prior_day.isoformat(),
+            },
+        ).status_code
+        == 201
+    )
+    rc = client.post("/admin/recompute-scores", params={"start": prior_start.isoformat(), "end": cur_start.isoformat()})
+    assert rc.status_code == 200
+    assert rc.json()["people_scored"] == 1
+
+    assert client.get("/api/people").json() == []
+    people = client.get("/api/people", params={"months_ago": 1}).json()
+    assert len(people) == 1
+    assert people[0]["spend_usd"] == 150.0
 
 
 def test_overview_includes_confidence_breakdown(client, db):

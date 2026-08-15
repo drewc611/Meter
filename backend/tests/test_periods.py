@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from app.periods import current_period, prior_period, recent_periods
+from app.periods import current_period, period_n_months_ago, prior_period, recent_periods
 
 
 def test_current_period_is_calendar_month():
@@ -58,3 +58,21 @@ def test_recent_periods_rolls_back_across_year():
 def test_recent_periods_defaults_to_current_period():
     start, end = current_period()
     assert recent_periods(1) == [(start, end)]
+
+
+# ------------------------------------------------------------ period_n_months_ago
+
+
+def test_period_n_months_ago_zero_is_current_period():
+    now = datetime(2026, 8, 14)
+    assert period_n_months_ago(0, now) == current_period(now)
+
+
+def test_period_n_months_ago_rolls_back_several_months():
+    start, end = period_n_months_ago(3, datetime(2026, 8, 14))
+    assert (start, end) == (datetime(2026, 5, 1), datetime(2026, 6, 1))
+
+
+def test_period_n_months_ago_rolls_back_across_year():
+    start, end = period_n_months_ago(2, datetime(2026, 1, 15))
+    assert (start, end) == (datetime(2025, 11, 1), datetime(2025, 12, 1))

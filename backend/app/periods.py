@@ -25,6 +25,14 @@ def prior_period(period_start: datetime) -> tuple[datetime, datetime]:
     return prior_start, period_start
 
 
+def period_n_months_ago(n: int, now: datetime | None = None) -> tuple[datetime, datetime]:
+    """The [start, end) of the calendar month `n` months before the current one (n=0 is this month)."""
+    start = current_period(now)[0]
+    for _ in range(n):
+        start, _ = prior_period(start)
+    return start, _month_after(start)
+
+
 def recent_periods(n: int, end_period_start: datetime | None = None) -> list[tuple[datetime, datetime]]:
     """The last `n` calendar-month periods, oldest first, ending with (and
     including) the period starting at `end_period_start` (default: the

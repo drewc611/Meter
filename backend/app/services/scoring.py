@@ -117,9 +117,11 @@ def raw_slop_risk(db: Session, identity_id: int, start: datetime, end: datetime)
 # ------------------------------------------------------- population queries
 
 
-def _spend_by_identity(db: Session, start: datetime, end: datetime) -> dict[int, float]:
+def _spend_by_identity(db: Session, org_id: int, start: datetime, end: datetime) -> dict[int, float]:
     rows = (
         db.query(UsageEvent.identity_id, func.sum(UsageEvent.cost_usd))
+        .join(Identity, Identity.id == UsageEvent.identity_id)
+        .filter(Identity.org_id == org_id)
         .filter(UsageEvent.occurred_at >= start, UsageEvent.occurred_at < end)
         .group_by(UsageEvent.identity_id)
         .all()
@@ -127,9 +129,11 @@ def _spend_by_identity(db: Session, start: datetime, end: datetime) -> dict[int,
     return {identity_id: float(total or 0.0) for identity_id, total in rows}
 
 
-def _outcome_value_by_identity(db: Session, start: datetime, end: datetime) -> dict[int, float]:
+def _outcome_value_by_identity(db: Session, org_id: int, start: datetime, end: datetime) -> dict[int, float]:
     rows = (
         db.query(OutcomeEvent.identity_id, func.sum(OutcomeEvent.value_weight))
+        .join(Identity, Identity.id == OutcomeEvent.identity_id)
+        .filter(Identity.org_id == org_id)
         .filter(OutcomeEvent.occurred_at >= start, OutcomeEvent.occurred_at < end)
         .group_by(OutcomeEvent.identity_id)
         .all()
@@ -137,9 +141,11 @@ def _outcome_value_by_identity(db: Session, start: datetime, end: datetime) -> d
     return {identity_id: float(total or 0.0) for identity_id, total in rows}
 
 
-def _severities_by_identity(db: Session, start: datetime, end: datetime) -> dict[int, list[float]]:
+def _severities_by_identity(db: Session, org_id: int, start: datetime, end: datetime) -> dict[int, list[float]]:
     rows = (
         db.query(QualitySignal.identity_id, QualitySignal.severity)
+        .join(Identity, Identity.id == QualitySignal.identity_id)
+        .filter(Identity.org_id == org_id)
         .filter(QualitySignal.occurred_at >= start, QualitySignal.occurred_at < end)
         .all()
     )
@@ -149,20 +155,25 @@ def _severities_by_identity(db: Session, start: datetime, end: datetime) -> dict
     return out
 
 
-def recompute_all(db: Session, start: datetime, end: datetime) -> int:
+def recompute_all(db: Session, org_id: int, start: datetime, end: datetime) -> int:
     """
-    The nightly job. Recomputes PersonScore for every Identity over [start, end).
-    Idempotent — re-running for the same period upserts rather than duplicating.
-    Returns the number of people scored.
+    The nightly job. Recomputes PersonScore for every Identity in one
+    Organization over [start, end). Idempotent — re-running for the same
+    org+period upserts rather than duplicating. Returns the number of
+    people scored.
 
-    Reads each event table exactly once (three aggregate queries total), rather
-    than querying per person, so cost is independent of headcount.
+    Reads each event table exactly once (three aggregate queries total,
+    each joined to Identity to stay within this org), rather than querying
+    per person, so cost is independent of headcount. Scoping by org_id here
+    is also what keeps normalize_value_scores()'s median from mixing
+    unrelated organizations' numbers together -- it only ever sees this
+    org's raw_values.
     """
-    spends = _spend_by_identity(db, start, end)
-    outcome_values = _outcome_value_by_identity(db, start, end)
-    severities = _severities_by_identity(db, start, end)
+    spends = _spend_by_identity(db, org_id, start, end)
+    outcome_values = _outcome_value_by_identity(db, org_id, start, end)
+    severities = _severities_by_identity(db, org_id, start, end)
 
-    identity_ids = [row.id for row in db.query(Identity.id).all()]
+    identity_ids = [row.id for row in db.query(Identity.id).filter(Identity.org_id == org_id).all()]
     raw_values = {
         identity_id: raw_value_from_totals(spends.get(identity_id, 0.0), outcome_values.get(identity_id, 0.0))
         for identity_id in identity_ids
@@ -197,6 +208,7 @@ def recompute_all(db: Session, start: datetime, end: datetime) -> int:
         else:
             db.add(
                 PersonScore(
+                    org_id=org_id,
                     identity_id=identity_id,
                     period_start=start,
                     period_end=end,

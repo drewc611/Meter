@@ -1,7 +1,8 @@
 import { useRef } from "react";
 
 import { useChartTooltip } from "../hooks/useChartTooltip.js";
-import { VALUE_GOOD_THRESHOLD, fmtMoney, fmtX, slopColor } from "../lib/format.js";
+import { fmtMoney, fmtX, slopColor } from "../lib/format.js";
+import { onActivateKey } from "./Shared.jsx";
 
 const W = 560,
   H = 340,
@@ -10,7 +11,7 @@ const W = 560,
   padT = 16,
   padB = 38;
 
-export default function ScatterChart({ people }) {
+export default function ScatterChart({ people, valueThreshold, onSelectPerson }) {
   const plotRef = useRef(null);
   const { tooltip, show, hide } = useChartTooltip();
 
@@ -23,7 +24,7 @@ export default function ScatterChart({ people }) {
   const yPix = (v) => H - padB - ((v - yMin) / (yMax - yMin)) * (H - padT - padB);
   const SPEND_T = people.length ? spends.reduce((a, b) => a + b, 0) / people.length : 900;
   const vx = xPix(SPEND_T),
-    vy = yPix(VALUE_GOOD_THRESHOLD),
+    vy = yPix(valueThreshold),
     zeroY = yPix(0);
 
   const showTip = (p, clientX, clientY) => {
@@ -65,7 +66,7 @@ export default function ScatterChart({ people }) {
         </text>
         {people.map((p) => {
           const r = 5 + Math.sqrt(Math.max(p.spend_usd, 1)) / 9;
-          const label = `${p.name}, ${p.team}: ${fmtMoney(p.spend_usd)} per month, ${fmtX(p.value_per_dollar)} value per dollar, slop risk ${p.slop_risk.toFixed(0)} of 100`;
+          const label = `${p.name}, ${p.team}: ${fmtMoney(p.spend_usd)} per month, ${fmtX(p.value_per_dollar)} value per dollar, slop risk ${p.slop_risk.toFixed(0)} of 100. Activate for details.`;
           return (
             <circle
               key={p.id}
@@ -78,7 +79,7 @@ export default function ScatterChart({ people }) {
               r={r}
               fill={slopColor(p.slop_risk)}
               fillOpacity=".82"
-              stroke="#fff"
+              stroke="var(--panel)"
               strokeWidth="1.2"
               onMouseMove={(e) => showTip(p, e.clientX, e.clientY)}
               onMouseLeave={hide}
@@ -87,6 +88,8 @@ export default function ScatterChart({ people }) {
                 showTip(p, rect.left + rect.width / 2, rect.top);
               }}
               onBlur={hide}
+              onClick={() => onSelectPerson(p)}
+              onKeyDown={onActivateKey(() => onSelectPerson(p))}
             >
               <title>{label}</title>
             </circle>

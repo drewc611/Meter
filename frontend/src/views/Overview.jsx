@@ -1,8 +1,12 @@
+import { useState } from "react";
+
 import { useAppData } from "../context/AppDataContext.jsx";
 import ScatterChart from "../components/ScatterChart.jsx";
 import TrendChart from "../components/TrendChart.jsx";
-import { ConfPill } from "../components/Shared.jsx";
-import { fmtMoney, fmtX } from "../lib/format.js";
+import Modal from "../components/Modal.jsx";
+import { AvatarCell, ConfPill, Pill, SlopBar, recClass } from "../components/Shared.jsx";
+import { fetchPeopleForPeriod } from "../lib/api.js";
+import { fmtMoney, fmtX, valueColor } from "../lib/format.js";
 
 const CONF_ORDER = ["tier1+2+3", "tier1+2", "tier1"];
 
@@ -24,9 +28,103 @@ function ForecastNote({ forecast }) {
   );
 }
 
+function PersonDetail({ person, valueThreshold }) {
+  return (
+    <div className="modal-person">
+      <AvatarCell name={person.name} subtitle={`${person.team} · ${person.role}`} colorKey={person.team} />
+      <div className="modal-stat-grid">
+        <div className="modal-stat">
+          <div className="lab">Spend / mo</div>
+          <div className="val">{fmtMoney(person.spend_usd)}</div>
+        </div>
+        <div className="modal-stat">
+          <div className="lab">Value / $</div>
+          <div className="val" style={{ color: valueColor(person.value_per_dollar, valueThreshold) }}>
+            {fmtX(person.value_per_dollar)}
+          </div>
+        </div>
+        <div className="modal-stat">
+          <div className="lab">Slop risk</div>
+          <SlopBar risk={person.slop_risk} />
+        </div>
+        <div className="modal-stat">
+          <div className="lab">Tier</div>
+          <Pill tier={person.tier} />
+        </div>
+        <div className="modal-stat">
+          <div className="lab">Confidence</div>
+          <ConfPill confidence={person.confidence} />
+        </div>
+      </div>
+      <div className="modal-rec">
+        <span className="lab">Merit says</span>
+        <span className={recClass(person.recommendation_code)}>{person.recommendation}</span>
+      </div>
+    </div>
+  );
+}
+
+function PeriodDrill({ drill, valueThreshold }) {
+  if (drill.loading) return <p className="desc">Loading {drill.label}…</p>;
+  if (drill.error) {
+    return (
+      <p className="desc">
+        Historical drill-down needs a live connection to the Merit API — not available on demo data.
+      </p>
+    );
+  }
+  if (!drill.people.length) return <p className="desc">No scored people in {drill.label}.</p>;
+  return (
+    <div className="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Person</th>
+            <th className="num">Spend / mo</th>
+            <th className="num">Value / $</th>
+            <th className="num">Slop risk</th>
+            <th>Merit says</th>
+          </tr>
+        </thead>
+        <tbody>
+          {drill.people.map((p) => (
+            <tr key={p.id}>
+              <td>
+                <AvatarCell name={p.name} subtitle={p.team} colorKey={p.team} />
+              </td>
+              <td className="num">{fmtMoney(p.spend_usd)}</td>
+              <td className="num val-cell" style={{ color: valueColor(p.value_per_dollar, valueThreshold) }}>
+                {fmtX(p.value_per_dollar)}
+              </td>
+              <td className="num">
+                <SlopBar risk={p.slop_risk} />
+              </td>
+              <td className="rec">
+                <span className={recClass(p.recommendation_code)}>{p.recommendation}</span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default function Overview({ active }) {
   const { overview: ov, adoption: ad, trends, spendForecast } = useAppData();
   const className = `view${active ? " active" : ""}`;
+  const [selectedPerson, setSelectedPerson] = useState(null);
+  const [trendDrill, setTrendDrill] = useState(null);
+
+  async function handleTrendPointSelect(t, i) {
+    const monthsAgo = trends.length - 1 - i;
+    const label = new Date(t.period_start).toLocaleDateString(undefined, { month: "long", year: "numeric" });
+    setTrendDrill({ label, monthsAgo, loading: true, people: null, error: false });
+    const people = await fetchPeopleForPeriod(monthsAgo);
+    setTrendDrill((prev) =>
+      prev && prev.monthsAgo === monthsAgo ? { ...prev, loading: false, people: people || [], error: people === null } : prev,
+    );
+  }
 
   const cb = ov.confidence_breakdown || {};
   const confItems = CONF_ORDER.filter((k) => cb[k]);
@@ -101,7 +199,7 @@ export default function Overview({ active }) {
             Each dot is a person, drawn from live PersonScore rows. Right = spends more. Up = more value per dollar.
             Color = slop risk.
           </p>
-          <ScatterChart people={ov.people} />
+          <ScatterChart people={ov.people} valueThreshold={ov.value_threshold} onSelectPerson={setSelectedPerson} />
           <div className="legend">
             <span>
               <i className="swatch" style={{ background: "var(--good)" }} /> Low slop
@@ -168,7 +266,7 @@ export default function Overview({ active }) {
         <p className="desc">
           Total AI spend across the trailing months, read from PersonScore history — one point per scored period.
         </p>
-        <TrendChart trends={trends} />
+        <TrendChart trends={trends} onSelectPoint={handleTrendPointSelect} />
         <ForecastNote forecast={spendForecast} />
       </div>
 
@@ -176,6 +274,17 @@ export default function Overview({ active }) {
         Values are confidence-tiered signals (see the Confidence column on the People view), not exact measures.
         Illustrative sample data.
       </footer>
+
+      {selectedPerson && (
+        <Modal title={selectedPerson.name} onClose={() => setSelectedPerson(null)}>
+          <PersonDetail person={selectedPerson} valueThreshold={ov.value_threshold} />
+        </Modal>
+      )}
+      {trendDrill && (
+        <Modal title={trendDrill.label} onClose={() => setTrendDrill(null)}>
+          <PeriodDrill drill={trendDrill} valueThreshold={ov.value_threshold} />
+        </Modal>
+      )}
     </section>
   );
 }

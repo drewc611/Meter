@@ -1,5 +1,8 @@
+import { useEffect, useState } from "react";
+
 import { useAppData } from "../context/AppDataContext.jsx";
 import { SlopBar } from "../components/Shared.jsx";
+import { fetchOrg } from "../lib/api.js";
 import { fmtMoney, fmtX, toolLabel, valueColor } from "../lib/format.js";
 
 const INTEGRATIONS = [
@@ -69,11 +72,49 @@ const INTEGRATIONS = [
   },
 ];
 
+function IngestTokenCard() {
+  const { hasSession } = useAppData();
+  const [org, setOrg] = useState(null);
+  const [revealed, setRevealed] = useState(false);
+
+  useEffect(() => {
+    if (!hasSession) return;
+    let cancelled = false;
+    fetchOrg().then((o) => {
+      if (!cancelled) setOrg(o);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [hasSession]);
+
+  // No session, not an admin (403 -> null), or demo mode -- nothing to show.
+  if (!org) return null;
+
+  return (
+    <div className="card" style={{ marginBottom: "14px" }}>
+      <h2>Your ingest token</h2>
+      <p className="desc">
+        Authenticates <code className="tag">/ingest/*</code> as <b>{org.org_name || org.name}</b> -- paste it into{" "}
+        <code className="tag">personal.py</code> or a proxy's <code className="tag">MERIT_API_KEY</code> to start
+        tracking your own usage.
+      </p>
+      <div className="ingest-token-row">
+        <code className="ingest-token-value">{revealed ? org.ingest_token : "•".repeat(24)}</code>
+        <button type="button" className="ingest-token-toggle" onClick={() => setRevealed((r) => !r)}>
+          {revealed ? "Hide" : "Reveal"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Integrations({ active }) {
-  const { toolBreakdown, toolPerformance } = useAppData();
+  const { overview: ov, toolBreakdown, toolPerformance } = useAppData();
 
   return (
     <section className={`view${active ? " active" : ""}`} id="view-integrations">
+      <IngestTokenCard />
       <div className="card">
         <h2>How tracking actually works</h2>
         <p className="desc">
@@ -164,7 +205,7 @@ export default function Integrations({ active }) {
                   <tr key={i}>
                     <td>{toolLabel(r.tool)}</td>
                     <td className="num">{fmtMoney(r.spend_usd)}</td>
-                    <td className="num val-cell" style={{ color: valueColor(r.value_per_dollar) }}>
+                    <td className="num val-cell" style={{ color: valueColor(r.value_per_dollar, ov.value_threshold) }}>
                       {fmtX(r.value_per_dollar)}
                     </td>
                     <td className="num">

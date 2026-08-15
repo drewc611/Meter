@@ -102,12 +102,22 @@ class UserOut(BaseModel):
     has_password: bool
     has_google: bool
     is_admin: bool
+    org_id: int
+    org_name: str
 
 
 class TokenOut(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserOut
+
+
+class OrgOut(BaseModel):
+    id: int
+    name: str
+    plan: str
+    ingest_token: str
+    created_at: datetime
 
 
 class IngestAccepted(BaseModel):
@@ -148,6 +158,7 @@ class PersonOut(BaseModel):
     confidence: str
     segment: str
     recommendation: str
+    recommendation_code: str
 
 
 class AggOut(BaseModel):
@@ -177,6 +188,7 @@ class OverviewOut(BaseModel):
     coach_count: int
     learn_count: int
     confidence_breakdown: dict[str, int]
+    value_threshold: float
     people: list[PersonOut]
 
 
