@@ -167,9 +167,12 @@ main{flex:1;min-width:0;padding:28px 34px 60px;max-width:1280px}
 
 .plotwrap{position:relative}
 svg.plot{width:100%;height:auto;display:block;overflow:visible}
-.dot{cursor:pointer;transition:stroke-width .1s,r .1s}
-.dot:hover,.dot:focus-visible{stroke:var(--ink);stroke-width:1.8;outline:none}
+.dot{cursor:pointer;transition:stroke-width .1s,r .1s,transform .12s var(--ease-out);transform-box:fill-box;transform-origin:center}
+.dot:hover,.dot:focus-visible{stroke:var(--ink);stroke-width:1.8;outline:none;transform:scale(1.15)}
+.dot:active{transform:scale(1.05)}
+@media(prefers-reduced-motion:reduce){.dot{transition:stroke-width .1s;transform:none!important}}
 .crosshair{pointer-events:none;stroke:var(--line-strong);stroke-width:1}
+.trend-overlay{cursor:pointer}
 .tip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;font-size:11.5px;
   padding:9px 11px;border-radius:var(--r-sm);opacity:0;transition:opacity .1s;white-space:nowrap;
   z-index:5;box-shadow:var(--shadow-lg);line-height:1.5}
@@ -345,3 +348,42 @@ footer{margin-top:24px;font-size:11px;color:var(--faint);line-height:1.6}
 .auth-skip-link{background:none;border:none;color:var(--muted);font-size:12.5px;margin-top:24px;
   cursor:pointer;padding:4px;text-decoration:underline;text-underline-offset:2px}
 .auth-skip-link:hover{color:var(--ink)}
+
+/* ---------- chart drill-down modal ---------- */
+.modal-backdrop{position:fixed;inset:0;z-index:60;background:rgba(10,12,20,.5);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center;padding:24px;
+  animation:modal-backdrop-in .16s var(--ease-out)}
+.modal-panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--shadow-lg);width:100%;max-width:520px;max-height:min(600px,80vh);
+  display:flex;flex-direction:column;overflow:hidden;
+  animation:modal-panel-in .2s var(--ease-out)}
+@keyframes modal-backdrop-in{from{opacity:0}to{opacity:1}}
+@keyframes modal-panel-in{from{opacity:0;transform:scale(.95) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@media(prefers-reduced-motion:reduce){.modal-backdrop,.modal-panel,.modal-stat{animation:none}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:16px 18px;border-bottom:1px solid var(--line);flex:none}
+.modal-head h2{font-size:15px;margin:0;font-weight:700;letter-spacing:-.1px}
+.modal-close{background:none;border:none;padding:5px;margin:-5px;border-radius:var(--r-sm);
+  color:var(--muted);cursor:pointer;display:flex;line-height:0;flex:none;
+  transition:background .12s,color .12s,transform .1s var(--ease-out)}
+.modal-close svg{width:16px;height:16px}
+.modal-close:hover{background:var(--chip);color:var(--ink)}
+.modal-close:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+.modal-close:active{transform:scale(var(--press))}
+.modal-body{padding:18px;overflow-y:auto}
+.modal-body .desc{margin:0;font-size:12.5px;color:var(--muted);line-height:1.55}
+.modal-person .who{margin-bottom:16px}
+.modal-stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;
+  padding:14px;background:var(--panel-alt);border-radius:var(--r-md)}
+.modal-stat{animation:modal-stat-in .22s var(--ease-out) backwards}
+.modal-stat:nth-child(1){animation-delay:.02s} .modal-stat:nth-child(2){animation-delay:.05s}
+.modal-stat:nth-child(3){animation-delay:.08s} .modal-stat:nth-child(4){animation-delay:.11s}
+.modal-stat:nth-child(5){animation-delay:.14s}
+@keyframes modal-stat-in{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.modal-stat .lab{font-size:10.5px;color:var(--faint);font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;margin-bottom:5px}
+.modal-stat .val{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.modal-rec{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px;
+  padding-top:14px;border-top:1px dashed var(--line);font-size:12.5px}
+.modal-rec .lab{color:var(--faint);font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:10.5px}

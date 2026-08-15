@@ -129,6 +129,37 @@ def test_full_pipeline_overview(client, db):
     assert roles[0]["name"] == "Engineer"
 
 
+def test_people_months_ago_reads_a_prior_period(client, db):
+    from app.periods import prior_period
+
+    _bootstrap_person(db)
+    cur_start, cur_end = current_period()
+    prior_start, _ = prior_period(cur_start)
+    prior_day = datetime(prior_start.year, prior_start.month, 10)
+
+    assert (
+        client.post(
+            "/ingest/usage",
+            json={
+                "source_system": "anthropic_api",
+                "external_id": "key_live",
+                "tool": "anthropic_api",
+                "cost_usd": 150.0,
+                "occurred_at": prior_day.isoformat(),
+            },
+        ).status_code
+        == 201
+    )
+    rc = client.post("/admin/recompute-scores", params={"start": prior_start.isoformat(), "end": cur_start.isoformat()})
+    assert rc.status_code == 200
+    assert rc.json()["people_scored"] == 1
+
+    assert client.get("/api/people").json() == []
+    people = client.get("/api/people", params={"months_ago": 1}).json()
+    assert len(people) == 1
+    assert people[0]["spend_usd"] == 150.0
+
+
 def test_overview_includes_confidence_breakdown(client, db):
     _bootstrap_person(db)
     now = datetime(*current_period()[0].timetuple()[:3], 10)

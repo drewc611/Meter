@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from .. import schemas
 from ..dependencies import get_db
-from ..periods import current_period, prior_period, recent_periods
+from ..periods import current_period, period_n_months_ago, prior_period, recent_periods
 from ..services import analytics, forecasting
 
 router = APIRouter(prefix="/api", tags=["dashboard"])
@@ -21,8 +21,8 @@ def overview(db: Session = Depends(get_db)):
 
 
 @router.get("/people", response_model=list[schemas.PersonOut])
-def people(db: Session = Depends(get_db)):
-    start, end = current_period()
+def people(months_ago: int = 0, db: Session = Depends(get_db)):
+    start, end = period_n_months_ago(max(0, min(months_ago, 23)))
     return analytics.get_people(db, start, end)
 
 

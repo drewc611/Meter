@@ -43,6 +43,13 @@ async function fetchJSON(path, timeoutMs = 900) {
   }
 }
 
+// On-demand drill-down fetch for a specific past month's people, used by the
+// TrendChart click-through. Returns null (not a fallback) when the live API
+// isn't reachable, since there's no historical snapshot in fallbackData.js.
+export async function fetchPeopleForPeriod(monthsAgo) {
+  return fetchJSON(`/api/people?months_ago=${monthsAgo}`, 4000);
+}
+
 export async function fetchLive() {
   const [ov, tm, rl, tr, tb, ad, tp, sf] = await Promise.all([
     fetchJSON("/api/overview"),

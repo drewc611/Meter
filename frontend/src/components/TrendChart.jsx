@@ -2,6 +2,7 @@ import { useRef } from "react";
 
 import { useChartTooltip } from "../hooks/useChartTooltip.js";
 import { fmtMoney, fmtX } from "../lib/format.js";
+import { onActivateKey } from "./Shared.jsx";
 
 const W = 900,
   H = 190,
@@ -10,7 +11,7 @@ const W = 900,
   padT = 14,
   padB = 26;
 
-export default function TrendChart({ trends }) {
+export default function TrendChart({ trends, onSelectPoint }) {
   const plotRef = useRef(null);
   const crosshairRef = useRef(null);
   const { tooltip, show, hide } = useChartTooltip();
@@ -51,12 +52,9 @@ export default function TrendChart({ trends }) {
     hide();
     if (crosshairRef.current) crosshairRef.current.style.opacity = 0;
   };
-  // A transparent overlay tracks mouse position across the whole plot width
-  // so the tooltip follows continuously, not just when hovering a 4px dot.
-  // Per-dot focus/blur covers the same for keyboard users.
-  const handleOverlayMove = (e) => {
+  const nearestIndex = (clientX) => {
     const rect = plotRef.current.getBoundingClientRect();
-    const mouseX = (e.clientX - rect.left) * (W / rect.width);
+    const mouseX = (clientX - rect.left) * (W / rect.width);
     let idx = 0,
       minD = Infinity;
     trends.forEach((t, i) => {
@@ -66,7 +64,17 @@ export default function TrendChart({ trends }) {
         idx = i;
       }
     });
-    showTrendsTip(idx, e.clientX, e.clientY);
+    return idx;
+  };
+  // A transparent overlay tracks mouse position across the whole plot width
+  // so the tooltip follows continuously, not just when hovering a 4px dot.
+  // Per-dot focus/blur covers the same for keyboard users. The overlay also
+  // sits above the dots in paint order, so it -- not the dots -- has to own
+  // the click too, or clicks on a dot never reach it.
+  const handleOverlayMove = (e) => showTrendsTip(nearestIndex(e.clientX), e.clientX, e.clientY);
+  const handleOverlayClick = (e) => {
+    const i = nearestIndex(e.clientX);
+    onSelectPoint(trends[i], i);
   };
 
   return (
@@ -92,7 +100,7 @@ export default function TrendChart({ trends }) {
         <path d={path} fill="none" stroke="var(--brand)" strokeWidth="2" />
         {trends.map((t, i) => {
           const monthLabel = new Date(t.period_start).toLocaleDateString(undefined, { month: "short", year: "2-digit" });
-          const label = `${new Date(t.period_start).toLocaleDateString(undefined, { month: "long", year: "numeric" })}: ${fmtMoney(t.total_spend_usd)}/mo, ${fmtX(t.blended_value_per_dollar)} value, slop ${t.avg_slop_risk.toFixed(0)}`;
+          const label = `${new Date(t.period_start).toLocaleDateString(undefined, { month: "long", year: "numeric" })}: ${fmtMoney(t.total_spend_usd)}/mo, ${fmtX(t.blended_value_per_dollar)} value, slop ${t.avg_slop_risk.toFixed(0)}. Activate to see that month's people.`;
           return (
             <g key={t.period_start}>
               <circle
@@ -111,6 +119,7 @@ export default function TrendChart({ trends }) {
                   showTrendsTip(i, rect.left + rect.width / 2, rect.top);
                 }}
                 onBlur={hideTrendsTip}
+                onKeyDown={onActivateKey(() => onSelectPoint(t, i))}
               >
                 <title>{label}</title>
               </circle>
@@ -122,6 +131,7 @@ export default function TrendChart({ trends }) {
         })}
         <line className="crosshair" ref={crosshairRef} x1="0" y1={padT} x2="0" y2={H - padB} style={{ opacity: 0 }} />
         <rect
+          className="trend-overlay"
           x={padL}
           y={padT}
           width={Math.max(0, W - padL - padR)}
@@ -129,6 +139,7 @@ export default function TrendChart({ trends }) {
           fill="transparent"
           onMouseMove={handleOverlayMove}
           onMouseLeave={hideTrendsTip}
+          onClick={handleOverlayClick}
         />
       </svg>
       <div className="tip" style={{ left: tooltip.x, top: tooltip.y, opacity: tooltip.visible ? 1 : 0 }}>
