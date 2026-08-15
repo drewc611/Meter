@@ -56,8 +56,17 @@ export default function AuthGate() {
         </div>
 
         <div className="auth-page-card">
+          {isSignup && (
+            <span className="pill auth-page-pill" style={{ background: "var(--good-soft)", color: "var(--good-text)" }}>
+              Free for personal use
+            </span>
+          )}
           <h2>{isSignup ? "Create your account" : "Sign in to Merit"}</h2>
-          <p>This deployment requires an account to view live data.</p>
+          <p>
+            {isSignup
+              ? "Sign up solo and get your own private space -- your usage, your dashboard, nobody else's data mixed in."
+              : "This deployment requires an account to view live data."}
+          </p>
 
           <a className="auth-google-btn" href={googleHref}>
             <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true">
@@ -97,7 +106,7 @@ export default function AuthGate() {
             )}
             <input
               type="email"
-              placeholder="Work email"
+              placeholder="Email"
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
