@@ -15,11 +15,17 @@ instead of the vendor directly, and every call is attributed for free —
 no code changes in the calling application.
 """
 
+import os
+
 import httpx
 from fastapi import FastAPI, Header, HTTPException, Request
 
 ANTHROPIC_UPSTREAM = "https://api.anthropic.com"
 MERIT_INGEST_URL = "http://localhost:8000/ingest/usage"
+
+# Each Organization has its own ingest token now (see GET /admin/org) --
+# this proxy authenticates as whichever org this deployment belongs to.
+MERIT_INGEST_TOKEN = os.environ.get("MERIT_INGEST_TOKEN", "")
 
 # Per-model $ / 1M tokens (in, out) — keep this table in sync with provider pricing.
 PRICING = {
@@ -76,6 +82,7 @@ async def proxy_anthropic_messages(request: Request, x_merit_proxy_key: str = He
                 "tokens_in": tokens_in,
                 "tokens_out": tokens_out,
             },
+            headers={"Authorization": f"Bearer {MERIT_INGEST_TOKEN}"} if MERIT_INGEST_TOKEN else {},
         )
 
     return payload

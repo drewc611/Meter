@@ -17,13 +17,20 @@ def _map(client, email, source_system, external_id):
 
 
 def _bootstrap_person(db):
-    """Create one team + identity directly, return (identity, email)."""
+    """Create one org + team + identity directly, return the identity.
+    Exactly one Organization, so every endpoint under test resolves to it
+    via the "unambiguous with at most one org" fallback (see
+    dependencies.require_api_key / resolve_org_id) without needing a login."""
     from app import models
 
-    team = models.Team(name="Engineering")
+    org = models.Organization(name="Test Org", plan="company")
+    db.add(org)
+    db.commit()
+    team = models.Team(org_id=org.id, name="Engineering")
     db.add(team)
     db.commit()
     ident = models.Identity(
+        org_id=org.id,
         full_name="Live Person",
         email="live@example.com",
         role="Engineer",
@@ -33,8 +40,12 @@ def _bootstrap_person(db):
     db.add(ident)
     db.commit()
     db.refresh(ident)
-    db.add(models.IdentityMapping(identity_id=ident.id, source_system="anthropic_api", external_id="key_live"))
-    db.add(models.IdentityMapping(identity_id=ident.id, source_system="github", external_id="gh_live"))
+    db.add(
+        models.IdentityMapping(
+            org_id=org.id, identity_id=ident.id, source_system="anthropic_api", external_id="key_live"
+        )
+    )
+    db.add(models.IdentityMapping(org_id=org.id, identity_id=ident.id, source_system="github", external_id="gh_live"))
     db.commit()
     return ident
 

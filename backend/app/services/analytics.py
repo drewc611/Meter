@@ -71,22 +71,23 @@ def segment(spend: float, value: float) -> str:
     return "coach" if spend >= SPEND_THRESHOLD else "watch"
 
 
-def _latest_scores(db: Session, period_start: datetime, period_end: datetime) -> list[PersonScore]:
+def _latest_scores(db: Session, org_id: int | None, period_start: datetime, period_end: datetime) -> list[PersonScore]:
     return (
         db.query(PersonScore)
+        .filter(PersonScore.org_id == org_id)
         .filter(PersonScore.period_start == period_start, PersonScore.period_end == period_end)
         .all()
     )
 
 
-def get_total_spend(db: Session, period_start: datetime, period_end: datetime) -> float:
+def get_total_spend(db: Session, org_id: int | None, period_start: datetime, period_end: datetime) -> float:
     """Total spend for a period, straight off PersonScore -- no per-row assembly needed."""
-    return sum(s.spend_usd for s in _latest_scores(db, period_start, period_end))
+    return sum(s.spend_usd for s in _latest_scores(db, org_id, period_start, period_end))
 
 
-def get_people(db: Session, period_start: datetime, period_end: datetime) -> list[dict]:
+def get_people(db: Session, org_id: int | None, period_start: datetime, period_end: datetime) -> list[dict]:
     out = []
-    for s in _latest_scores(db, period_start, period_end):
+    for s in _latest_scores(db, org_id, period_start, period_end):
         ident = s.identity
         rec_code = recommend_action_code(s.spend_usd, s.value_per_dollar, s.slop_risk)
         out.append(
@@ -141,21 +142,22 @@ def _aggregate(people: list[dict], key: str) -> list[dict]:
     return sorted(out, key=lambda r: -r["spend_usd"])
 
 
-def get_teams(db: Session, period_start: datetime, period_end: datetime) -> list[dict]:
-    return _aggregate(get_people(db, period_start, period_end), "team")
+def get_teams(db: Session, org_id: int | None, period_start: datetime, period_end: datetime) -> list[dict]:
+    return _aggregate(get_people(db, org_id, period_start, period_end), "team")
 
 
-def get_roles(db: Session, period_start: datetime, period_end: datetime) -> list[dict]:
-    return _aggregate(get_people(db, period_start, period_end), "role")
+def get_roles(db: Session, org_id: int | None, period_start: datetime, period_end: datetime) -> list[dict]:
+    return _aggregate(get_people(db, org_id, period_start, period_end), "role")
 
 
 def get_overview(
     db: Session,
+    org_id: int | None,
     period_start: datetime,
     period_end: datetime,
     prior_total_spend: float | None = None,
 ) -> dict:
-    people = get_people(db, period_start, period_end)
+    people = get_people(db, org_id, period_start, period_end)
     total_spend, blended_value, avg_slop = _weighted_totals(people)
 
     segment_counts = defaultdict(int)
@@ -218,7 +220,7 @@ def get_overview(
     }
 
 
-def get_trends(db: Session, periods: list[tuple[datetime, datetime]]) -> list[dict]:
+def get_trends(db: Session, org_id: int | None, periods: list[tuple[datetime, datetime]]) -> list[dict]:
     """
     Spend/value/slop across the given periods (oldest first — the caller
     passes e.g. periods.recent_periods(), same as every other function here
@@ -229,7 +231,7 @@ def get_trends(db: Session, periods: list[tuple[datetime, datetime]]) -> list[di
     """
     out = []
     for start, end in periods:
-        people = get_people(db, start, end)
+        people = get_people(db, org_id, start, end)
         total_spend, blended_value, avg_slop = _weighted_totals(people)
         out.append(
             {
@@ -244,7 +246,7 @@ def get_trends(db: Session, periods: list[tuple[datetime, datetime]]) -> list[di
     return out
 
 
-def get_tool_breakdown(db: Session, period_start: datetime, period_end: datetime) -> list[dict]:
+def get_tool_breakdown(db: Session, org_id: int | None, period_start: datetime, period_end: datetime) -> list[dict]:
     """Spend by (tool, model) for one period -- the PersonScore-only
     exception noted in the module docstring, since tool/model isn't an
     attribute PersonScore carries."""
@@ -255,6 +257,8 @@ def get_tool_breakdown(db: Session, period_start: datetime, period_end: datetime
             func.sum(UsageEvent.cost_usd),
             func.count(UsageEvent.id),
         )
+        .join(Identity, Identity.id == UsageEvent.identity_id)
+        .filter(Identity.org_id == org_id)
         .filter(UsageEvent.occurred_at >= period_start, UsageEvent.occurred_at < period_end)
         .group_by(UsageEvent.tool, UsageEvent.model)
         .all()
@@ -266,7 +270,7 @@ def get_tool_breakdown(db: Session, period_start: datetime, period_end: datetime
     return sorted(out, key=lambda r: -r["spend_usd"])
 
 
-def get_tool_performance(db: Session, period_start: datetime, period_end: datetime) -> list[dict]:
+def get_tool_performance(db: Session, org_id: int | None, period_start: datetime, period_end: datetime) -> list[dict]:
     """
     Spend-weighted value/$ and slop risk per tool, for one period.
 
@@ -282,11 +286,13 @@ def get_tool_performance(db: Session, period_start: datetime, period_end: dateti
     """
     tool_spend_by_identity = (
         db.query(UsageEvent.identity_id, UsageEvent.tool, func.sum(UsageEvent.cost_usd))
+        .join(Identity, Identity.id == UsageEvent.identity_id)
+        .filter(Identity.org_id == org_id)
         .filter(UsageEvent.occurred_at >= period_start, UsageEvent.occurred_at < period_end)
         .group_by(UsageEvent.identity_id, UsageEvent.tool)
         .all()
     )
-    scores_by_identity = {s.identity_id: s for s in _latest_scores(db, period_start, period_end)}
+    scores_by_identity = {s.identity_id: s for s in _latest_scores(db, org_id, period_start, period_end)}
 
     buckets = defaultdict(lambda: {"spend_usd": 0.0, "vw": 0.0, "sw": 0.0, "people": set()})
     for identity_id, tool, spend in tool_spend_by_identity:
@@ -359,7 +365,7 @@ def forecast_next_period_spend(trend_points: list[dict]) -> dict | None:
     }
 
 
-def get_adoption(db: Session, period_start: datetime, period_end: datetime) -> dict:
+def get_adoption(db: Session, org_id: int | None, period_start: datetime, period_end: datetime) -> dict:
     """Active (had a UsageEvent this period) vs. provisioned Identity count,
     overall and by seat tier -- active users aren't on PersonScore either
     (a person with zero spend never gets a row there), same exception as
@@ -368,10 +374,13 @@ def get_adoption(db: Session, period_start: datetime, period_end: datetime) -> d
     def _pct(active: int, total: int) -> float:
         return round(active / total * 100, 1) if total else 0.0
 
-    total_by_tier = dict(db.query(Identity.tier, func.count(Identity.id)).group_by(Identity.tier).all())
+    total_by_tier = dict(
+        db.query(Identity.tier, func.count(Identity.id)).filter(Identity.org_id == org_id).group_by(Identity.tier).all()
+    )
     active_by_tier = dict(
         db.query(Identity.tier, func.count(func.distinct(UsageEvent.identity_id)))
         .join(UsageEvent, UsageEvent.identity_id == Identity.id)
+        .filter(Identity.org_id == org_id)
         .filter(UsageEvent.occurred_at >= period_start, UsageEvent.occurred_at < period_end)
         .group_by(Identity.tier)
         .all()

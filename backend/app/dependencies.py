@@ -21,18 +21,44 @@ def get_db() -> Iterator[Session]:
         db.close()
 
 
-def require_api_key(authorization: str | None = Header(default=None)) -> None:
-    """Bearer-token gate for /ingest/* -- a service token for machines
-    (proxies, webhooks, personal.py). Reads MERIT_API_KEY live from the
-    environment, so a rotated Fly secret takes effect without a redeploy.
-    Unset means no auth is enforced -- fine for local dev, must be set
-    before this handles real data.
+def require_api_key(
+    authorization: str | None = Header(default=None), db: Session = Depends(get_db)
+) -> models.Organization | None:
+    """Bearer-token gate for /ingest/* -- resolves which Organization a
+    caller is writing into. Each Organization has its own ingest_token
+    (see GET /admin/org), replacing the single global MERIT_API_KEY secret
+    every caller used to share.
+
+    A token that matches an org's ingest_token resolves to that org. No
+    header at all still works, but only when it's unambiguous:
+      - MERIT_API_KEY is set (the deployment has explicitly opted into
+        requiring ingest auth, same as before) -> a missing header is 401,
+        exactly like today. The migrated default org's ingest_token equals
+        this value, so existing integrations keep authenticating unchanged.
+      - MERIT_API_KEY is unset AND at most one Organization exists -> falls
+        through as that org (or None if literally none exist yet) -- the
+        same local-dev/test convenience as before, since there's nothing to
+        isolate from with zero or one tenant.
+      - MERIT_API_KEY is unset AND two or more Organizations exist -> 401.
+        This is what actually makes multi-tenancy safe by default: the
+        instant a second tenant exists, an unauthenticated write becomes
+        ambiguous and is rejected with no operator action required.
     """
-    expected = os.environ.get("MERIT_API_KEY")
-    if not expected:
-        return
-    if authorization != f"Bearer {expected}":
+    if authorization:
+        if not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or missing API key")
+        token = authorization.removeprefix("Bearer ")
+        org = db.query(models.Organization).filter_by(ingest_token=token).one_or_none()
+        if org is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or missing API key")
+        return org
+
+    if os.environ.get("MERIT_API_KEY"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or missing API key")
+    orgs = db.query(models.Organization).limit(2).all()
+    if len(orgs) > 1:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or missing API key")
+    return orgs[0] if orgs else None
 
 
 def get_current_user(
@@ -70,3 +96,22 @@ def require_admin(
     if not user.is_admin:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
     return user
+
+
+def resolve_org_id(db: Session, user: models.DashboardUser | None) -> int | None:
+    """Which Organization a /api/* or /admin/* request is scoped to. A
+    logged-in user's own org_id, always. With login off (get_current_user
+    returned None -- MERIT_JWT_SECRET unset, the existing dev convention),
+    there's no session to read an org from, so this falls back to the same
+    rule require_api_key uses for its no-header case: unambiguous with zero
+    or one Organization in the database, a 401 the instant a second one
+    exists, since there's no longer a single obvious answer.
+    """
+    if user is not None:
+        return user.org_id
+    orgs = db.query(models.Organization).limit(2).all()
+    if len(orgs) > 1:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Multiple organizations exist -- log in to continue"
+        )
+    return orgs[0].id if orgs else None

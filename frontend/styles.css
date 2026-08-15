@@ -276,6 +276,17 @@ tr:last-child td{border-bottom:none}
 code.tag{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;background:var(--chip);
   padding:1px 6px;border-radius:5px}
 
+.ingest-token-row{display:flex;align-items:center;gap:10px;background:var(--panel-alt);
+  border:1px solid var(--line);border-radius:var(--r-sm);padding:9px 12px}
+.ingest-token-value{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
+  color:var(--ink);overflow-x:auto;white-space:nowrap;user-select:all}
+.ingest-token-toggle{flex:none;background:none;border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:5px 11px;font-size:11.5px;font-weight:600;color:var(--muted);cursor:pointer;
+  transition:background .12s,color .12s,transform .1s var(--ease-out)}
+.ingest-token-toggle:hover{background:var(--chip);color:var(--ink)}
+.ingest-token-toggle:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
+.ingest-token-toggle:active{transform:scale(var(--press))}
+
 footer{margin-top:24px;font-size:11px;color:var(--faint);line-height:1.6}
 
 /* KPI cards wrap awkwardly (e.g. "VALUE PER $ (BLENDED)" onto 2 lines) a bit

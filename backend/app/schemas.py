@@ -102,12 +102,22 @@ class UserOut(BaseModel):
     has_password: bool
     has_google: bool
     is_admin: bool
+    org_id: int
+    org_name: str
 
 
 class TokenOut(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserOut
+
+
+class OrgOut(BaseModel):
+    id: int
+    name: str
+    plan: str
+    ingest_token: str
+    created_at: datetime
 
 
 class IngestAccepted(BaseModel):

@@ -16,7 +16,7 @@ from datetime import datetime
 
 import httpx
 
-from ..models import OutcomeEvent
+from ..models import Identity, OutcomeEvent
 from . import ingest
 
 GITHUB_API = "https://api.github.com"
@@ -91,6 +91,7 @@ def sync_repo(
     db,
     client: httpx.Client,
     *,
+    org_id: int,
     owner: str,
     repo: str,
     since: datetime | None = None,
@@ -99,10 +100,16 @@ def sync_repo(
     """Ingest every merged PR since `since` as a Tier 1 outcome, plus a Tier 2
     quality signal for reverts (auto-derived by ingest_outcome_event) and,
     if check_ci, for red CI at merge time. Idempotent by PR url -- matched
-    against OutcomeEvent.external_ref -- so this is safe to run on a
-    schedule against the same repo."""
+    against OutcomeEvent.external_ref, scoped to this org so two tenants
+    syncing the same repo (or reusing a PR URL) never mark each other's
+    events as already ingested -- so this is safe to run on a schedule
+    against the same repo."""
     already_ingested = {
-        ref for (ref,) in db.query(OutcomeEvent.external_ref).filter(OutcomeEvent.source == "github").all()
+        ref
+        for (ref,) in db.query(OutcomeEvent.external_ref)
+        .join(Identity, Identity.id == OutcomeEvent.identity_id)
+        .filter(OutcomeEvent.source == "github", Identity.org_id == org_id)
+        .all()
     }
 
     ingested = 0
@@ -125,6 +132,7 @@ def sync_repo(
         try:
             ingest.ingest_outcome_event(
                 db,
+                org_id,
                 source_system="github",
                 external_id=blamed_login,
                 source="github",
@@ -142,6 +150,7 @@ def sync_repo(
             if conclusion == "failure":
                 ingest.ingest_quality_signal(
                     db,
+                    org_id,
                     source_system="github",
                     external_id=login,
                     signal_type="ci_checks_failed",

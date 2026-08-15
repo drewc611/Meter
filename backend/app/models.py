@@ -14,6 +14,8 @@ is only as good as this table — see services/ingest.py for how it gets populat
 The outcome/quality weight tables that used to live here now live in constants.py.
 """
 
+import secrets
+
 from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 
@@ -21,10 +23,33 @@ from .database import Base
 from .time_utils import utcnow
 
 
+class Organization(Base):
+    """The tenant boundary -- every Team/Identity/DashboardUser/PersonScore
+    row belongs to exactly one Organization, and no query ever crosses that
+    line. A company deployment has one Organization shared by everyone who
+    signs up with the right MERIT_SIGNUP_CODE; an individual signing up on
+    a public deployment (no code set) gets a brand-new one of their own.
+    See routers/auth.py for which case applies on signup.
+
+    ingest_token authenticates /ingest/* for this org (see
+    dependencies.require_api_key) -- the multi-tenant replacement for the
+    old single shared MERIT_API_KEY secret."""
+
+    __tablename__ = "organizations"
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    plan = Column(String, nullable=False, default="personal")
+    ingest_token = Column(String, unique=True, nullable=False, default=lambda: secrets.token_urlsafe(32))
+    created_at = Column(DateTime, default=utcnow)
+
+
 class Team(Base):
     __tablename__ = "teams"
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, nullable=False)
+    org_id = Column(Integer, ForeignKey("organizations.id"), nullable=False)
+    name = Column(String, nullable=False)
+
+    __table_args__ = (UniqueConstraint("org_id", "name", name="uq_team_org_name"),)
 
 
 class Identity(Base):
@@ -32,8 +57,9 @@ class Identity(Base):
 
     __tablename__ = "identities"
     id = Column(Integer, primary_key=True)
+    org_id = Column(Integer, ForeignKey("organizations.id"), nullable=False)
     full_name = Column(String, nullable=False)
-    email = Column(String, unique=True, nullable=False)
+    email = Column(String, nullable=False)
     role = Column(String, nullable=False)  # e.g. "Senior Engineer"
     team_id = Column(Integer, ForeignKey("teams.id"), nullable=False)
     tier = Column(String, default="Standard")  # AI seat tier: Basic / Standard / Frontier
@@ -42,22 +68,30 @@ class Identity(Base):
     team = relationship("Team")
     mappings = relationship("IdentityMapping", back_populates="identity")
 
+    __table_args__ = (UniqueConstraint("org_id", "email", name="uq_identity_org_email"),)
+
 
 class IdentityMapping(Base):
     """
     Resolves an external-system identifier to a canonical Identity.
     Populated from SSO/SCIM on employee provisioning, plus a per-tool
     mapping step when a new API key / bot account is issued.
+
+    org_id is duplicated from the target Identity rather than joined,
+    because resolve_identity() has to disambiguate by org *before* it
+    knows which Identity it's resolving to -- it's set once, from the
+    same request that already knows the org, alongside identity_id.
     """
 
     __tablename__ = "identity_mappings"
     id = Column(Integer, primary_key=True)
+    org_id = Column(Integer, ForeignKey("organizations.id"), nullable=False)
     identity_id = Column(Integer, ForeignKey("identities.id"), nullable=False)
     source_system = Column(String, nullable=False)  # "anthropic_api", "github", "zendesk", "okta"
     external_id = Column(String, nullable=False)  # api key id, github login, agent id, sso subject
     identity = relationship("Identity", back_populates="mappings")
 
-    __table_args__ = (UniqueConstraint("source_system", "external_id", name="uq_source_external"),)
+    __table_args__ = (UniqueConstraint("org_id", "source_system", "external_id", name="uq_source_external"),)
 
 
 class UsageEvent(Base):
@@ -136,18 +170,25 @@ class DashboardUser(Base):
     """Someone who can log into the dashboard -- separate from Identity (a
     person being tracked). password_hash/google_sub are both nullable so a
     password account can later link Google, or vice versa, without a
-    second row. See services/auth.py."""
+    second row. See services/auth.py.
+
+    email stays globally unique (not scoped to org_id) -- it's the login
+    identifier, one flat namespace across the whole product regardless of
+    which org the account belongs to."""
 
     __tablename__ = "dashboard_users"
     id = Column(Integer, primary_key=True)
+    org_id = Column(Integer, ForeignKey("organizations.id"), nullable=False)
     email = Column(String, unique=True, nullable=False, index=True)
     name = Column(String, nullable=False)
     password_hash = Column(String, nullable=True)
     google_sub = Column(String, unique=True, nullable=True)  # Google's stable per-account id ("sub" claim)
     # Gates /admin/* (routers/admin.py) via dependencies.require_admin -- see
-    # routers/auth.py's _should_be_admin for how this gets set on creation.
+    # routers/auth.py for how this gets set on creation.
     is_admin = Column(Boolean, nullable=False, default=False)
     created_at = Column(DateTime, default=utcnow)
+
+    org = relationship("Organization")
 
 
 class WaitlistSignup(Base):
@@ -168,10 +209,15 @@ class PersonScore(Base):
     This is the table the dashboard API actually reads — computing value/$ and
     slop risk live on every page load doesn't scale past a few hundred people.
     One row per (identity, period).
+
+    org_id is duplicated from the owning Identity rather than joined, since
+    this is the hottest read path in the app (every /api/* call filters on
+    it) and it's rewritten from scratch on every recompute -- no drift risk.
     """
 
     __tablename__ = "person_scores"
     id = Column(Integer, primary_key=True)
+    org_id = Column(Integer, ForeignKey("organizations.id"), nullable=False, index=True)
     identity_id = Column(Integer, ForeignKey("identities.id"), nullable=False)
     period_start = Column(DateTime, nullable=False)
     period_end = Column(DateTime, nullable=False)

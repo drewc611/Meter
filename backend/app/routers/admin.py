@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from .. import models, schemas
-from ..dependencies import get_db
+from ..dependencies import get_current_user, get_db, resolve_org_id
 from ..periods import current_period
 from ..services import email, scoring
 from ..time_utils import utcnow
@@ -52,13 +52,18 @@ to the full dashboard.</p>
 
 
 @router.post("/identity-mapping", status_code=201, response_model=schemas.IdentityMapped)
-def map_identity(body: schemas.IdentityMappingIn, db: Session = Depends(get_db)):
+def map_identity(
+    body: schemas.IdentityMappingIn,
+    db: Session = Depends(get_db),
+    user: models.DashboardUser | None = Depends(get_current_user),
+):
     """Wire a new external id (a fresh API key, a bot account) to an existing person."""
-    ident = db.query(models.Identity).filter_by(email=body.email).one_or_none()
+    org_id = resolve_org_id(db, user)
+    ident = db.query(models.Identity).filter_by(org_id=org_id, email=body.email).one_or_none()
     if not ident:
         raise HTTPException(status_code=404, detail=f"No Identity with email {body.email}. Provision via SCIM first.")
     mapping = models.IdentityMapping(
-        identity_id=ident.id, source_system=body.source_system, external_id=body.external_id
+        org_id=org_id, identity_id=ident.id, source_system=body.source_system, external_id=body.external_id
     )
     db.add(mapping)
     db.commit()
@@ -70,15 +75,30 @@ def recompute(
     start: datetime | None = None,
     end: datetime | None = None,
     db: Session = Depends(get_db),
+    user: models.DashboardUser | None = Depends(get_current_user),
 ):
     """
-    Nightly job entry point — wire this to a scheduler (cron, Airflow, a
-    simple `while True: sleep(86400)` worker, whatever the deployment uses).
+    Self-service recompute for the calling admin's own org. The real
+    nightly batch job is backend/recompute.py, which loops over every
+    Organization -- this endpoint only ever touches one.
     """
     if start is None or end is None:
         start, end = current_period()
-    n = scoring.recompute_all(db, start, end)
+    org_id = resolve_org_id(db, user)
+    n = scoring.recompute_all(db, org_id, start, end)
     return schemas.RecomputeResult(period_start=start, period_end=end, people_scored=n)
+
+
+@router.get("/org", response_model=schemas.OrgOut)
+def get_org(db: Session = Depends(get_db), user: models.DashboardUser | None = Depends(get_current_user)):
+    """The calling admin's own Organization, including its ingest_token --
+    how a self-signed-up individual discovers the credential to wire up
+    personal.py or a proxy against their own account."""
+    org_id = resolve_org_id(db, user)
+    org = db.query(models.Organization).filter_by(id=org_id).one_or_none() if org_id else None
+    if org is None:
+        raise HTTPException(status_code=404, detail="No organization found")
+    return org
 
 
 @router.post("/notify-waitlist", response_model=schemas.NotifyWaitlistResult)

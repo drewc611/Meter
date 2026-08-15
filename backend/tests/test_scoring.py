@@ -95,11 +95,11 @@ def _seed_person_with_activity(db, ingest, ident, *, spend, merges, reverts, sig
         )
 
 
-def test_recompute_writes_one_score_per_active_person(db, person, ingest_helpers):
+def test_recompute_writes_one_score_per_active_person(db, org, person, ingest_helpers):
     star = person(name="Star Dev")
     _seed_person_with_activity(db, ingest_helpers, star, spend=300, merges=10, reverts=0, signals=0)
 
-    n = scoring.recompute_all(db, START, END)
+    n = scoring.recompute_all(db, org.id, START, END)
     assert n == 1
 
     from app.models import PersonScore
@@ -111,32 +111,32 @@ def test_recompute_writes_one_score_per_active_person(db, person, ingest_helpers
     assert scores[0].confidence == "tier1"  # no quality signals → tier1 only
 
 
-def test_recompute_skips_people_with_no_spend(db, person, ingest_helpers):
+def test_recompute_skips_people_with_no_spend(db, org, person, ingest_helpers):
     active = person(name="Active")
     person(name="Idle")  # created, but never spends
     _seed_person_with_activity(db, ingest_helpers, active, spend=100, merges=3, reverts=0, signals=0)
 
-    n = scoring.recompute_all(db, START, END)
+    n = scoring.recompute_all(db, org.id, START, END)
     assert n == 1  # only the active person is scored
 
 
-def test_recompute_is_idempotent(db, person, ingest_helpers):
+def test_recompute_is_idempotent(db, org, person, ingest_helpers):
     p = person(name="Repeat")
     _seed_person_with_activity(db, ingest_helpers, p, spend=200, merges=5, reverts=0, signals=2)
 
-    scoring.recompute_all(db, START, END)
-    scoring.recompute_all(db, START, END)  # second run must upsert, not duplicate
+    scoring.recompute_all(db, org.id, START, END)
+    scoring.recompute_all(db, org.id, START, END)  # second run must upsert, not duplicate
 
     from app.models import PersonScore
 
     assert db.query(PersonScore).count() == 1
 
 
-def test_recompute_flags_tier2_when_quality_signals_present(db, person, ingest_helpers):
+def test_recompute_flags_tier2_when_quality_signals_present(db, org, person, ingest_helpers):
     p = person(name="Reworker")
     _seed_person_with_activity(db, ingest_helpers, p, spend=200, merges=2, reverts=0, signals=4)
 
-    scoring.recompute_all(db, START, END)
+    scoring.recompute_all(db, org.id, START, END)
     from app.models import PersonScore
 
     score = db.query(PersonScore).one()
@@ -144,7 +144,7 @@ def test_recompute_flags_tier2_when_quality_signals_present(db, person, ingest_h
     assert score.slop_risk > 0
 
 
-def test_bulk_and_single_person_paths_agree(db, person, ingest_helpers):
+def test_bulk_and_single_person_paths_agree(db, org, person, ingest_helpers):
     """recompute_all's bulk aggregation must match the single-person helpers."""
     p = person(name="Cross Check")
     _seed_person_with_activity(db, ingest_helpers, p, spend=180, merges=6, reverts=1, signals=3)
@@ -153,9 +153,9 @@ def test_bulk_and_single_person_paths_agree(db, person, ingest_helpers):
     single_value = scoring.raw_value_score(db, p.id, START, END)
     single_slop = scoring.raw_slop_risk(db, p.id, START, END)
 
-    bulk_spend = scoring._spend_by_identity(db, START, END)[p.id]
-    bulk_value = raw_value_from_totals(bulk_spend, scoring._outcome_value_by_identity(db, START, END)[p.id])
-    bulk_slop = raw_slop_from_severities(scoring._severities_by_identity(db, START, END)[p.id])
+    bulk_spend = scoring._spend_by_identity(db, org.id, START, END)[p.id]
+    bulk_value = raw_value_from_totals(bulk_spend, scoring._outcome_value_by_identity(db, org.id, START, END)[p.id])
+    bulk_slop = raw_slop_from_severities(scoring._severities_by_identity(db, org.id, START, END)[p.id])
 
     assert single_spend == pytest.approx(bulk_spend)
     assert single_value == pytest.approx(bulk_value)

@@ -34,7 +34,14 @@ def test_ingest_rejects_missing_or_wrong_key_when_set(client, monkeypatch):
     assert client.post("/ingest/usage", json=payload, headers={"Authorization": "Bearer wrong"}).status_code == 401
 
 
-def test_ingest_accepts_correct_key(client, monkeypatch):
+def test_ingest_accepts_correct_key(client, monkeypatch, db):
+    """The bearer token has to match some Organization's ingest_token now,
+    not just a literal env-var string -- create one with that token first
+    (this is what the multi-tenant migration does for MERIT_API_KEY)."""
+    from app import models
+
+    db.add(models.Organization(name="Test Org", plan="company", ingest_token="s3cret"))
+    db.commit()
     monkeypatch.setenv("MERIT_API_KEY", "s3cret")
     r = client.post(
         "/ingest/usage",
@@ -42,6 +49,23 @@ def test_ingest_accepts_correct_key(client, monkeypatch):
         headers={"Authorization": "Bearer s3cret"},
     )
     assert r.status_code == 422  # reached the handler; failed on the unmapped id, not auth
+
+
+def test_ingest_rejects_no_header_once_two_orgs_exist(client, db):
+    """The safety property that makes multi-tenancy safe by default: with
+    MERIT_API_KEY unset, an unauthenticated write is fine while there's at
+    most one Organization, but the instant a second one exists it's
+    ambiguous which org the write belongs to, and is rejected."""
+    from app import models
+
+    db.add(models.Organization(name="Org A", plan="personal"))
+    db.add(models.Organization(name="Org B", plan="personal"))
+    db.commit()
+    r = client.post(
+        "/ingest/usage",
+        json={"source_system": "anthropic_api", "external_id": "nope", "tool": "anthropic_api", "cost_usd": 1.0},
+    )
+    assert r.status_code == 401
 
 
 def test_api_key_no_longer_gates_dashboard_or_admin(client, monkeypatch):
@@ -185,7 +209,9 @@ def test_me_returns_current_user(client, monkeypatch):
         "name": "Ada",
         "has_password": True,
         "has_google": False,
-        "is_admin": True,  # first-ever user in this test's DB -- bootstrap admin
+        "is_admin": True,  # signup with no MERIT_SIGNUP_CODE always admins its own new org
+        "org_id": 1,
+        "org_name": "Ada's Merit",
     }
 
 
@@ -258,11 +284,15 @@ def test_google_callback_enforces_signup_code_for_new_accounts_only(client, monk
 
 # --------------------------------------------------------------- /admin/* RBAC (is_admin)
 
-_MAP_BODY = {"email": "a@example.com", "source_system": "x", "external_id": "y"}
+_MAP_BODY = {"email": "nobody@example.com", "source_system": "x", "external_id": "y"}
 
 
 def _signup(client, email="a@example.com", name="Ada"):
-    r = client.post("/auth/signup", json={"email": email, "password": "hunter22", "name": name})
+    return _signup_with(client, email, name)
+
+
+def _signup_with(client, email, name, **extra):
+    r = client.post("/auth/signup", json={"email": email, "password": "hunter22", "name": name, **extra})
     assert r.status_code == 201
     return r.json()
 
@@ -273,25 +303,51 @@ def test_first_signup_becomes_admin(client, monkeypatch):
     assert user["is_admin"] is True
 
 
-def test_second_signup_is_not_admin_by_default(client, monkeypatch):
+def test_every_signup_admins_its_own_org_when_no_signup_code(client, monkeypatch):
+    """With MERIT_SIGNUP_CODE unset (the public, free-personal-use posture),
+    every signup gets a brand-new isolated Organization and is its sole
+    admin -- there's no "second user" of someone else's org to not-admin."""
     monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
-    _signup(client, "first@example.com", "First")
+    first = _signup(client, "first@example.com", "First")["user"]
     second = _signup(client, "second@example.com", "Second")["user"]
+    assert first["is_admin"] is True
+    assert second["is_admin"] is True
+    assert first["org_id"] != second["org_id"]
+
+
+def test_second_signup_is_not_admin_when_signup_code_shares_one_org(client, monkeypatch):
+    """With MERIT_SIGNUP_CODE set (a company deployment gated to one org),
+    signups join the single shared org instead -- the original bootstrap
+    behavior this test used to cover, preserved for that case."""
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_SIGNUP_CODE", "letmein")
+    body = {"signup_code": "letmein"}
+    first = _signup_with(client, "first@example.com", "First", **body)["user"]
+    second = _signup_with(client, "second@example.com", "Second", **body)["user"]
+    assert first["is_admin"] is True
     assert second["is_admin"] is False
+    assert first["org_id"] == second["org_id"]
 
 
 def test_merit_admin_emails_grants_admin_to_non_first_signup(client, monkeypatch):
+    """MERIT_ADMIN_EMAILS only makes sense within one shared org, so this
+    also needs MERIT_SIGNUP_CODE set -- otherwise boss@example.com would
+    just land in its own brand-new org and be admin of that regardless."""
     monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_SIGNUP_CODE", "letmein")
     monkeypatch.setenv("MERIT_ADMIN_EMAILS", "boss@example.com, other@example.com")
-    _signup(client, "first@example.com", "First")  # takes the bootstrap slot
-    boss = _signup(client, "boss@example.com", "Boss")["user"]
+    body = {"signup_code": "letmein"}
+    _signup_with(client, "first@example.com", "First", **body)  # takes the bootstrap slot
+    boss = _signup_with(client, "boss@example.com", "Boss", **body)["user"]
     assert boss["is_admin"] is True
 
 
 def test_admin_endpoints_reject_non_admin_when_jwt_secret_set(client, monkeypatch):
     monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
-    _signup(client, "first@example.com", "First")  # bootstrap admin, not used here
-    token = _signup(client, "second@example.com", "Second")["access_token"]
+    monkeypatch.setenv("MERIT_SIGNUP_CODE", "letmein")
+    body = {"signup_code": "letmein"}
+    _signup_with(client, "first@example.com", "First", **body)  # bootstrap admin, not used here
+    token = _signup_with(client, "second@example.com", "Second", **body)["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
     assert client.post("/admin/identity-mapping", json=_MAP_BODY, headers=headers).status_code == 403
     assert client.post("/admin/recompute-scores", headers=headers).status_code == 403
@@ -299,7 +355,7 @@ def test_admin_endpoints_reject_non_admin_when_jwt_secret_set(client, monkeypatc
 
 def test_admin_endpoints_accept_admin(client, monkeypatch):
     monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
-    token = _signup(client)["access_token"]  # first signup -> bootstrap admin
+    token = _signup(client)["access_token"]  # first signup -> admin of its own org
     headers = {"Authorization": f"Bearer {token}"}
     r = client.post("/admin/identity-mapping", json=_MAP_BODY, headers=headers)
     assert r.status_code == 404  # reached the handler (no such Identity) -- not blocked by auth

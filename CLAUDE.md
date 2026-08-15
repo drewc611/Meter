@@ -135,10 +135,19 @@ purpose (cost independent of history size) still holds.
 
 `IdentityMapping` is the load-bearing table: every external system id (an
 LLM-proxy API key, a GitHub login, a Zendesk agent id) resolves to exactly
-one canonical `Identity`. If this mapping is wrong, every number downstream
-is wrong. All ingestion endpoints return **422** if the external id has no
-mapping yet — deliberate, since an unmapped id is a shadow-AI candidate, not
-something to silently drop (see product spec §5.5).
+one canonical `Identity`, scoped to the caller's `Organization`. If this
+mapping is wrong, every number downstream is wrong. All ingestion endpoints
+return **422** if the external id has no mapping yet — deliberate, since an
+unmapped id is a shadow-AI candidate, not something to silently drop (see
+product spec §5.5).
+
+Every `Team`/`Identity`/`DashboardUser`/`PersonScore` row belongs to exactly
+one `Organization` — the tenant boundary that keeps a company deployment's
+data (or one individual's free-personal-use data) fully isolated from every
+other's, including the per-org `ingest_token` `/ingest/*` authenticates
+with. See [`backend/README.md`](backend/README.md#signup-and-organization-creation)
+for how a signup lands in a new vs. shared org, and the auth section above
+it for the token/session model.
 
 ### The three tiers, and where each lives
 

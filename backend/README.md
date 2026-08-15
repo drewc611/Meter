@@ -7,19 +7,26 @@ dashboard reads. It's built to be run, not just read — see **Quickstart**.
 
 ## Architecture in one paragraph
 
-Three independent ingestion paths write into three separate tables — spend
-(`UsageEvent`, from an LLM proxy or provider billing), outcomes (`OutcomeEvent`,
-from GitHub/Jira/HubSpot webhooks — PRs merged, tickets closed, deals moved),
-and quality proxies (`QualitySignal` — reverts, heavy rewrites, regeneration
-loops). Every event is attributed to a canonical `Identity` through
-`IdentityMapping`, which resolves an external id (an API key, a GitHub login)
-to a real person — this is populated from SSO/SCIM and is the one table that,
-if wrong, makes every number downstream wrong. A nightly job
-(`scoring.recompute_all`) reads all three tables for a period and writes one
-`PersonScore` row per person: spend, a value-per-dollar multiplier normalized
-to the company median, and a 0–100 slop risk score. The dashboard and the
-`/api/*` endpoints only ever read `PersonScore` — never raw events — so page
-loads stay fast regardless of how much history is underneath.
+Every `Team`, `Identity`, `DashboardUser`, and `PersonScore` row belongs to
+exactly one `Organization` — the tenant boundary. A company deployment has one
+`Organization` shared by everyone who signs up with the right
+`MERIT_SIGNUP_CODE`; an individual signing up on a public deployment (no code
+set) gets a brand-new one of their own, fully isolated from every other
+tenant's data. Within an org, three independent ingestion paths write into
+three separate tables — spend (`UsageEvent`, from an LLM proxy or provider
+billing), outcomes (`OutcomeEvent`, from GitHub/Jira/HubSpot webhooks — PRs
+merged, tickets closed, deals moved), and quality proxies (`QualitySignal` —
+reverts, heavy rewrites, regeneration loops). Every event is attributed to a
+canonical `Identity` through `IdentityMapping`, which resolves an external id
+(an API key, a GitHub login) — scoped to the calling org — to a real person;
+this is populated from SSO/SCIM and is the one table that, if wrong, makes
+every number downstream wrong. A nightly job (`scoring.recompute_all`) reads
+all three tables for one org's period and writes one `PersonScore` row per
+person: spend, a value-per-dollar multiplier normalized to that org's own
+median, and a 0–100 slop risk score. The dashboard and the `/api/*` endpoints
+only ever read `PersonScore` — never raw events — so page loads stay fast
+regardless of how much history is underneath, and every query is scoped to
+the caller's own `org_id`.
 
 ```
   LLM proxy / billing ──┐
@@ -97,8 +104,9 @@ touches your `merit.db`. Ruff/pytest config lives in `pyproject.toml`.
 | POST | `/ingest/usage` | Record one AI usage event (see `schemas.UsageEventIn`) |
 | POST | `/ingest/outcome` | Record a PR merge, ticket close, deal advance, etc. |
 | POST | `/ingest/quality-signal` | Record a revert, rewrite, regeneration loop, etc. |
-| POST | `/admin/identity-mapping` | Wire a new external id to an existing person |
-| POST | `/admin/recompute-scores` | Trigger the nightly scoring job on demand |
+| POST | `/admin/identity-mapping` | Wire a new external id to an existing person (scoped to the caller's org) |
+| POST | `/admin/recompute-scores` | Trigger the nightly scoring job for the caller's own org on demand |
+| GET | `/admin/org` | The caller's own `Organization`, including its `ingest_token` — how a self-signed-up individual discovers the credential for `personal.py` or a proxy |
 | POST | `/admin/notify-waitlist?dry_run=false` | One-off "the site is live" email to every unnotified waitlist signup — see [Outbound email](#outbound-email) below |
 | GET | `/api/overview` | Everything the Overview page needs, one call |
 | GET | `/api/people` | Full person list with segment + recommendation |
@@ -121,10 +129,16 @@ a shadow-AI candidate, not a silently dropped event).
 
 Two independent auth layers, covering two different kinds of caller:
 
-- **`/ingest/*`** sits behind `dependencies.require_api_key` — a service
-  token for machines (a proxy, a webhook, `personal.py`), not a human login.
-  A no-op until `MERIT_API_KEY` is set, at which point every request needs
-  `Authorization: Bearer <key>` or gets a **401**.
+- **`/ingest/*`** sits behind `dependencies.require_api_key`, which resolves
+  *which Organization* a request writes into — a service token for machines
+  (a proxy, a webhook, `personal.py`), not a human login. Each org has its
+  own `ingest_token` (see `GET /admin/org`), replacing the single global
+  secret every caller used to share. A bearer token that matches an org's
+  `ingest_token` resolves to it; no token at all still works, but only while
+  it's unambiguous — `MERIT_API_KEY` unset and at most one `Organization` in
+  the whole database. The moment a second org exists, an unauthenticated
+  write becomes ambiguous and gets a **401** with no operator action
+  required — that's what actually makes multi-tenancy safe by default.
 - **`/api/*` and `/admin/*`** sit behind `dependencies.get_current_user` — a
   real per-user login (password or Google, via `/auth/*` above), backed by
   a signed JWT. A no-op until `MERIT_JWT_SECRET` is set, at which point
@@ -132,12 +146,31 @@ Two independent auth layers, covering two different kinds of caller:
   `/auth/login`, `/auth/signup`, or the Google callback, or it gets a
   **401**. `/admin/*` additionally requires `is_admin` on that user
   (`dependencies.require_admin`) — a **403** for a logged-in non-admin.
+  Every `/api/*`/`/admin/*` handler scopes its query to `user.org_id`
+  (`dependencies.resolve_org_id`, with the same "unambiguous below two
+  orgs" fallback as above when login is off).
 
 Both default to unset/open, so local dev, `docker compose`, and the test
 suite stay exactly as open as before; see [`DEPLOY.md`](../DEPLOY.md#turning-on-dashboard-login)
 for turning them on in production. `/healthz` and `/waitlist` are always
 open — Fly's health check and an anonymous visitor signing up both have no
 token by definition.
+
+### Signup and Organization creation
+
+`POST /auth/signup` (and the Google-callback new-account path) decide which
+`Organization` a signup lands in based on `MERIT_SIGNUP_CODE`:
+
+- **Unset** — the public, free-personal-use posture. Every signup gets a
+  brand-new isolated `Organization` and is its sole admin, plus a default
+  `Team`("Personal") and `Identity` mapped under `source_system="manual",
+  external_id=<their email>` — so `POST /ingest/usage` works immediately,
+  no separate `/admin/identity-mapping` step.
+- **Set** — a company deployment gated to one shared org. Signups with the
+  matching code join that one org; the first signup is its admin, and
+  `MERIT_ADMIN_EMAILS` (comma-separated) grants it to specific emails after
+  that — the same bootstrap this had before multi-tenancy, just scoped to
+  the org's own user count instead of the whole deployment.
 
 ## Login
 

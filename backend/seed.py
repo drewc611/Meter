@@ -13,7 +13,7 @@ from datetime import timedelta
 
 from app.constants import QUALITY_SIGNAL_WEIGHTS
 from app.database import Base, SessionLocal, engine
-from app.models import Identity, IdentityMapping, Team
+from app.models import Identity, IdentityMapping, Organization, Team
 from app.periods import current_period, recent_periods
 from app.services import ingest, scoring
 
@@ -31,8 +31,13 @@ db = SessionLocal()
 PERIOD_START, PERIOD_END = current_period()
 HISTORY_MONTHS = 6  # trailing months of lightweight backfill, for /api/trends demo data
 
+org = Organization(name="Northwind Labs (seed)", plan="company")
+db.add(org)
+db.commit()
+db.refresh(org)
+
 TEAMS = ["Engineering", "Design", "Support", "Sales", "Marketing", "Data"]
-team_rows = {name: Team(name=name) for name in TEAMS}
+team_rows = {name: Team(org_id=org.id, name=name) for name in TEAMS}
 db.add_all(team_rows.values())
 db.commit()
 
@@ -65,14 +70,22 @@ PEOPLE = [
 identities = {}
 for name, team, role, tier, profile in PEOPLE:
     email = name.lower().replace(" ", ".") + "@northwindlabs.example"
-    ident = Identity(full_name=name, email=email, role=role, team_id=team_rows[team].id, tier=tier)
+    ident = Identity(org_id=org.id, full_name=name, email=email, role=role, team_id=team_rows[team].id, tier=tier)
     db.add(ident)
     db.commit()
     db.refresh(ident)
     identities[name] = (ident, profile)
     # every person gets a proxy-key mapping (usage) and a github mapping (outcomes/quality)
-    db.add(IdentityMapping(identity_id=ident.id, source_system="anthropic_api", external_id=f"key_{ident.id}"))
-    db.add(IdentityMapping(identity_id=ident.id, source_system="github", external_id=name.lower().replace(" ", "-")))
+    db.add(
+        IdentityMapping(
+            org_id=org.id, identity_id=ident.id, source_system="anthropic_api", external_id=f"key_{ident.id}"
+        )
+    )
+    db.add(
+        IdentityMapping(
+            org_id=org.id, identity_id=ident.id, source_system="github", external_id=name.lower().replace(" ", "-")
+        )
+    )
     db.commit()
 
 TOOLS = ["anthropic_api", "github_copilot", "chatgpt_enterprise"]
@@ -132,6 +145,7 @@ for name, (ident, profile) in identities.items():
         remaining -= share
         ingest.ingest_usage_event(
             db,
+            org.id,
             source_system="anthropic_api",
             external_id=f"key_{ident.id}",
             tool=random.choice(TOOLS),
@@ -146,6 +160,7 @@ for name, (ident, profile) in identities.items():
         for _ in range(jitter_count(base_count)):
             ingest.ingest_outcome_event(
                 db,
+                org.id,
                 source_system="github",
                 external_id=name.lower().replace(" ", "-"),
                 source="github",
@@ -159,6 +174,7 @@ for name, (ident, profile) in identities.items():
         for _ in range(jitter_count(base_count)):
             ingest.ingest_quality_signal(
                 db,
+                org.id,
                 source_system="github",
                 external_id=name.lower().replace(" ", "-"),
                 signal_type=signal_type,
@@ -167,7 +183,7 @@ for name, (ident, profile) in identities.items():
             )
 
 # score the current period, plus a lighter-weight backfill of preceding months below
-n = scoring.recompute_all(db, PERIOD_START, PERIOD_END)
+n = scoring.recompute_all(db, org.id, PERIOD_START, PERIOD_END)
 print(f"Scored {n} people for {PERIOD_START.date()}")
 
 # a rough baseline for the preceding months — lighter-weight than the current
@@ -181,13 +197,14 @@ for i, (h_start, h_end) in enumerate(historical_periods):
         for _ in range(random.randint(10, 25)):
             ingest.ingest_usage_event(
                 db,
+                org.id,
                 source_system="anthropic_api",
                 external_id=f"key_{ident.id}",
                 tool=random.choice(TOOLS),
                 cost_usd=round(random.uniform(20, 90) * ratio, 2),
                 occurred_at=h_start + timedelta(days=random.randint(0, 26)),
             )
-    n_h = scoring.recompute_all(db, h_start, h_end)
+    n_h = scoring.recompute_all(db, org.id, h_start, h_end)
     print(f"Scored {n_h} people for {h_start.date()}")
 
 db.close()
