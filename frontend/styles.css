@@ -1,4 +1,5 @@
 :root{
+  color-scheme:light;
   /* ---- neutrals ---- */
   --bg:#f5f6fa; --panel:#ffffff; --panel-alt:#fafbfd;
   --ink:#10121f; --muted:#5b5f74; --faint:#8b8fa3;
@@ -33,10 +34,61 @@
   --ease-out:cubic-bezier(.16,1,.3,1);
   --press:.97;
 }
+
+/* ---- dark theme: an explicit choice (data-theme="dark") always wins;
+   with no explicit choice, prefers-color-scheme decides. Same token names,
+   values re-picked for the dark surface rather than inverted -- status
+   colors in particular need to get brighter, not just less dark, to keep
+   the same contrast job against a near-black panel instead of white. ---- */
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0d0f1e; --panel:#161933; --panel-alt:#1c2040;
+    --ink:#f0f1f8; --muted:#9b9fc0; --faint:#6b6f92;
+    --line:#262a4a; --line-strong:#343a63;
+    --chip:#20244a;
+
+    --brand:#7c74f4; --brand-dark:#6a61e8; --brand-soft:rgba(124,116,244,.16);
+    --brand-ring:rgba(124,116,244,.28);
+
+    --good:#4ade9c; --good-soft:rgba(74,222,156,.14); --good-text:#4ade9c;
+    --warn:#f0b429; --warn-soft:rgba(240,180,41,.14); --warn-text:#f0b429;
+    --bad:#f87171;  --bad-soft:rgba(248,113,113,.14);  --bad-text:#f87171;
+
+    --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+    --shadow-md:0 2px 4px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.45);
+    --shadow-lg:0 8px 16px rgba(0,0,0,.4),0 24px 48px rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0d0f1e; --panel:#161933; --panel-alt:#1c2040;
+  --ink:#f0f1f8; --muted:#9b9fc0; --faint:#6b6f92;
+  --line:#262a4a; --line-strong:#343a63;
+  --chip:#20244a;
+
+  --brand:#7c74f4; --brand-dark:#6a61e8; --brand-soft:rgba(124,116,244,.16);
+  --brand-ring:rgba(124,116,244,.28);
+
+  --good:#4ade9c; --good-soft:rgba(74,222,156,.14); --good-text:#4ade9c;
+  --warn:#f0b429; --warn-soft:rgba(240,180,41,.14); --warn-text:#f0b429;
+  --bad:#f87171;  --bad-soft:rgba(248,113,113,.14);  --bad-text:#f87171;
+
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+  --shadow-md:0 2px 4px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.45);
+  --shadow-lg:0 8px 16px rgba(0,0,0,.4),0 24px 48px rgba(0,0,0,.55);
+}
+
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   -webkit-font-smoothing:antialiased;line-height:1.45;display:flex;min-height:100vh;overflow-x:hidden}
+/* Toggling theme is rare (once per session at most), so a color
+   transition on the surfaces it visibly repaints is worth the cost that
+   would be wrong to pay on something frequent -- the alternative is every
+   card instantly snapping color, which reads as a flash, not a switch. */
+body,.card,.kpi,.int-card,.alert,.sidebar,.auth-page,.auth-page-card{
+  transition:background-color .18s var(--ease-out),border-color .18s var(--ease-out),color .18s var(--ease-out)}
 /* The React app's root container (#root) sits between body and .sidebar/main
    -- display:contents drops it out of the box tree so .sidebar and main are
    still direct flex children of body, same layout as before React owned
@@ -64,11 +116,19 @@ body{margin:0;background:var(--bg);color:var(--ink);
 .sb-logout{background:none;border:none;padding:0;margin-top:4px;font:inherit;color:inherit;
   text-decoration:underline;cursor:pointer}
 .sb-logout:hover,.sb-logout:focus-visible{color:#fff}
+.sb-foot-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
 .sb-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:4px 9px;
-  border-radius:20px;margin-bottom:10px;letter-spacing:.02em}
+  border-radius:20px;letter-spacing:.02em}
 .sb-badge.live{background:#0e3324;color:#4ade9c}
 .sb-badge.demo{background:#3a2e12;color:#f0b429}
 .sb-badge i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.sb-theme-toggle{background:none;border:none;padding:4px;margin:0;border-radius:var(--r-sm);
+  color:#aab0d6;cursor:pointer;display:flex;line-height:0;flex:none;
+  transition:background .12s,color .12s,transform .1s var(--ease-out)}
+.sb-theme-toggle svg{width:15px;height:15px}
+.sb-theme-toggle:hover{background:rgba(255,255,255,.08);color:#fff}
+.sb-theme-toggle:focus-visible{outline:2px solid #8b93f5;outline-offset:1px}
+.sb-theme-toggle:active{transform:scale(var(--press))}
 
 /* ---------- main ---------- */
 main{flex:1;min-width:0;padding:28px 34px 60px;max-width:1280px}

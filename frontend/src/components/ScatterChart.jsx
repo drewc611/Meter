@@ -78,7 +78,7 @@ export default function ScatterChart({ people, valueThreshold }) {
               r={r}
               fill={slopColor(p.slop_risk)}
               fillOpacity=".82"
-              stroke="#fff"
+              stroke="var(--panel)"
               strokeWidth="1.2"
               onMouseMove={(e) => showTip(p, e.clientX, e.clientY)}
               onMouseLeave={hide}
