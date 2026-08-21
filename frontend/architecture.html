@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Architecture — Merit</title>
+<meta name="description" content="How Merit is built and hosted: three ingestion paths, one nightly scoring job, and the actual reasoning behind the Fly.io + Cloudflare split.">
+<link rel="stylesheet" href="/content.css">
+</head>
+<body>
+<header class="site">
+  <div class="site-inner">
+    <a class="brand-mark" href="/">
+      <span class="bars" aria-hidden="true"><i style="height:10px;background:var(--brand-pale)"></i><i style="height:15px;background:var(--brand-soft)"></i><i style="height:18px;background:var(--brand)"></i></span>
+      Merit<sup>&trade;</sup>
+    </a>
+    <nav class="site-nav">
+      <a href="/architecture">Architecture</a>
+      <a href="/setup/react">Setup</a>
+      <a href="/guides">Guides</a>
+      <a href="/prompts">Prompts</a>
+      <a href="/challenge">Challenge</a>
+    </nav>
+  </div>
+</header>
+<main class="content">
+  <span class="badge"><i></i> Reflects the live deployment</span>
+  <h1>How Merit is built</h1>
+  <p class="lead">
+    This is the same architecture documented in the repo's own
+    <code>ARCHITECTURE.md</code> — reality as deployed today, not an
+    aspirational future state.
+  </p>
+
+  <h2>1. What the code does</h2>
+  <p>
+    Three independent ingestion paths write into three separate tables, all
+    attributed to a person through an identity-mapping table, and a nightly
+    job compresses everything into one scored row per person that the API
+    and dashboard read.
+  </p>
+  <div class="card">
+    <ol>
+      <li><b>LLM proxy / provider billing</b> → <code>POST /ingest/usage</code> → <code>UsageEvent</code></li>
+      <li><b>GitHub / Jira / HubSpot webhooks</b> → <code>POST /ingest/outcome</code> → <code>OutcomeEvent</code>, and <code>POST /ingest/quality-signal</code> → <code>QualitySignal</code></li>
+      <li><b>Okta / Entra SCIM</b> → <code>IdentityMapping</code> → <code>Identity</code></li>
+    </ol>
+    <p>
+      <code>UsageEvent</code>, <code>OutcomeEvent</code>, <code>QualitySignal</code>, and
+      <code>Identity</code> all feed <code>scoring.recompute_all()</code>, which runs nightly
+      and writes one row per person per period into <code>PersonScore</code> — the
+      single table every <code>/api/*</code> endpoint and the dashboard actually read.
+    </p>
+  </div>
+  <p>
+    <b>The load-bearing invariant:</b> the dashboard and every <code>/api/*</code>
+    endpoint read only <code>PersonScore</code>, never raw events — page loads stay
+    fast regardless of how much event history accumulates. <code>IdentityMapping</code>
+    is the other load-bearing piece: if an external id resolves to the wrong
+    (or no) person, every number downstream is wrong, which is why an
+    unmapped id gets a <b>422</b> instead of being silently dropped.
+  </p>
+
+  <h2>2. Where it runs</h2>
+  <div class="card">
+    <p><b>Cloudflare</b> — Worker + static assets serving the frontend (a Vite + React app built to a plain <code>dist/</code>, no server-side rendering) at <code>usemeritai.com</code>.</p>
+    <p><b>Fly.io</b> (app <code>meter</code>, region <code>iad</code>) — the FastAPI backend at <code>api.usemeritai.com</code>, backed by a SQLite file on a persistent volume.</p>
+    <p>Both deploy paths trigger off the same push to <code>main</code> in one repo — no second repo, no manual deploy step in the common case.</p>
+  </div>
+
+  <h2>3. Does this hosting choice make sense?</h2>
+  <p>
+    Yes, for what this actually is right now — an early-stage prototype being
+    demoed to prospects, not yet handling real customer data.
+  </p>
+  <ul>
+    <li>The frontend builds to static assets, so a CDN-native static host is the right tool — Cloudflare Workers gives global distribution, automatic HTTPS, and per-PR preview URLs for free.</li>
+    <li>The backend is stateful (a SQLite file, an in-process nightly scoring job) and needs a place that keeps a process and a disk alive continuously — Fly.io is a reasonable, low-overhead choice at this scale.</li>
+    <li>CORS is locked down to the real production origins, not left wide open the way the local-dev default is.</li>
+  </ul>
+  <p>
+    <b>Not yet for handling real customer data.</b> Per-user login and
+    role-gated admin endpoints are in, but standard pre-production hardening
+    still needs to land: rate limiting, an audit log, backup coverage on the
+    database volume, a staging environment, and monitoring/alerting. None of
+    that is a reason to change the underlying split; it's ordinary
+    engineering work on top of it.
+  </p>
+</main>
+<footer class="site">
+  <div class="footer-inner">
+    Merit is a labeled prototype — the app runs on illustrative demo data until you connect your own. <a href="/">Back to the app</a>
+  </div>
+</footer>
+</body>
+</html>
