@@ -1,0 +1,13 @@
+{
+  "name": "merit-ai-team",
+  "description": "Internal agent-team skills for running Merit's product/growth/eng/infra loop — not part of the shipped product, this governs how the AI team operating Merit works.",
+  "version": "0.1.0",
+  "skills": [
+    "skills/merit-context",
+    "skills/merit-goal",
+    "skills/merit-growth",
+    "skills/merit-eng-review",
+    "skills/merit-infra-check",
+    "skills/merit-ceo-brief"
+  ]
+}
