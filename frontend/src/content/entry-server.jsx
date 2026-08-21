@@ -12,6 +12,11 @@ import SetupTensorflowPyro, { meta as setupTensorflowPyroMeta } from "./pages/Se
 import GuidesIndex, { meta as guidesMeta } from "./pages/GuidesIndex.jsx";
 import PromptsIndex, { meta as promptsMeta } from "./pages/PromptsIndex.jsx";
 import Challenge, { meta as challengeMeta } from "./pages/Challenge.jsx";
+import TenDisciplines, { meta as tenDisciplinesMeta } from "./pages/guides/TenDisciplines.jsx";
+import FourteenDomains, { meta as fourteenDomainsMeta } from "./pages/guides/FourteenDomains.jsx";
+import FourControlBoundaries, { meta as fourControlBoundariesMeta } from "./pages/guides/FourControlBoundaries.jsx";
+import PromptDay, { promptMeta } from "./pages/PromptDay.jsx";
+import { PROMPTS } from "./data/prompts.js";
 
 const PAGES = [
   [Home, homeMeta],
@@ -21,13 +26,21 @@ const PAGES = [
   [SetupNode, setupNodeMeta],
   [SetupTensorflowPyro, setupTensorflowPyroMeta],
   [GuidesIndex, guidesMeta],
+  [TenDisciplines, tenDisciplinesMeta],
+  [FourteenDomains, fourteenDomainsMeta],
+  [FourControlBoundaries, fourControlBoundariesMeta],
   [PromptsIndex, promptsMeta],
   [Challenge, challengeMeta],
 ];
 
 export function renderAll() {
-  return PAGES.map(([Component, meta]) => ({
+  const staticPages = PAGES.map(([Component, meta]) => ({
     meta,
     html: renderToStaticMarkup(<Component />),
   }));
+  const promptPages = PROMPTS.map((entry) => ({
+    meta: promptMeta(entry),
+    html: renderToStaticMarkup(<PromptDay entry={entry} />),
+  }));
+  return [...staticPages, ...promptPages];
 }

@@ -1,31 +1,47 @@
 import ContentLayout from "../components/ContentLayout.jsx";
+import { PROMPTS } from "../data/prompts.js";
 
 export const meta = {
   outFile: "prompts/index.html",
   title: "Prompts — Merit",
-  description: "A 30-day detailed AI prompt archive, tagged by stack. First entries in progress.",
+  description: "A 30-day detailed AI prompt archive on governed agentic DevSecOps, adapted from Andrew Clark's handbook.",
 };
+
+const SECTIONS = [
+  { label: "Days 1–10 · The ten control disciplines", days: [1, 10] },
+  { label: "Days 11–24 · The fourteen domains", days: [11, 24] },
+  { label: "Days 25–30 · Build the capstone project", days: [25, 30] },
+];
 
 export default function PromptsIndex() {
   return (
     <ContentLayout active="prompts">
       <span className="kicker">Content</span>
-      <span className="badge pending">
-        <i /> First entries in progress
+      <span className="badge">
+        <i /> 30 days, all real
       </span>
       <h1>Prompts</h1>
       <p className="lead">
-        A daily prompt archive — one detailed entry per day, tagged by stack (react, python, node,
-        tensorflow-pyro): the prompt itself, why it's built that way, and what to do with the
-        answer. Nothing is published yet; this index exists so the archive has a real home before
-        day one ships, rather than a placeholder page with fake entries linked from it.
+        A daily prompt archive on governed agentic DevSecOps — the prompt itself, why it's built
+        that way, and what to do with the answer. Adapted from Andrew Clark's{" "}
+        <em>Enterprise Agentic DevSecOps Handbook</em>: ten recurring control disciplines, a tour of
+        fourteen platform domains, then six days building the capstone project behind{" "}
+        <a href="/challenge">the challenge</a>.
       </p>
-      <div className="card">
-        <p>
-          Once live, this becomes the free 30-day run behind the <a href="/challenge">challenge</a>{" "}
-          — see that page for what changes at the end of the run.
-        </p>
-      </div>
+
+      {SECTIONS.map((section) => (
+        <div key={section.label}>
+          <h2>{section.label}</h2>
+          <div className="grid">
+            {PROMPTS.filter((p) => p.day >= section.days[0] && p.day <= section.days[1]).map((p) => (
+              <a key={p.day} className="tile" href={`/prompts/day-${p.day}-${p.slug}`}>
+                <span className="tile-title">Day {p.day}: {p.title}</span>
+                <span className="tile-meta">{p.track}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
     </ContentLayout>
   );
 }
