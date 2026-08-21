@@ -17,11 +17,9 @@ dashboard UI.
 ## What it looks like
 
 Every screenshot below is the real dashboard, running against the live
-backend on seeded demo data (`python seed.py`) — nothing mocked up. Note:
-the public production site currently shows a "coming soon" placeholder
-instead of this dashboard (see [Quickstart](#quickstart) and
-[DEPLOY.md](DEPLOY.md)) — the dashboard itself is fully built and exactly
-what's pictured here, just not what's deployed to visitors yet.
+backend on seeded demo data (`python seed.py`) — nothing mocked up, and it's
+what's actually deployed at the production site root today (see
+[Quickstart](#quickstart) and [DEPLOY.md](DEPLOY.md)).
 
 **Overview** — spend, blended value/$, slop risk, seat utilization, and
 score coverage at a glance, plus the spend-vs-value scatter, the four-segment
@@ -54,17 +52,38 @@ plus a live spend-by-tool-and-model breakdown.
 ## What's here
 
 ```
-backend/    FastAPI service: usage/outcome/quality-signal ingestion,
-            identity resolution, Tier-1/Tier-2 scoring, REST API.
-            See backend/README.md for the full architecture writeup.
-frontend/   Sidebar dashboard (Overview, People, Teams & Roles, Alerts,
-            Integrations), a Vite + React app under src/ -- what's built
-            and deployed at the production site root. Calls the backend
-            API at localhost:8000 and falls back to embedded demo data if
-            it's not running. See frontend/README.md.
-            coming-soon.html is the old pre-launch placeholder, no longer
-            served at `/`.
+backend/       FastAPI service: usage/outcome/quality-signal ingestion,
+               identity resolution, Tier-1/Tier-2 scoring, REST API.
+               See backend/README.md for the full architecture writeup.
+frontend/      Sidebar dashboard (Overview, People, Teams & Roles, Alerts,
+               Integrations), a Vite + React app under src/ -- what's built
+               and deployed at the production site root. Calls the backend
+               API at localhost:8000 and falls back to embedded demo data if
+               it's not running. Also carries the static content-site pages
+               (architecture, setup guides, guides, prompts, challenge --
+               see "Site content" below). See frontend/README.md.
+               coming-soon.html is the old pre-launch placeholder, no longer
+               served at `/`.
+merit-ai-team/ Skills for the internal AI team that runs Merit's own
+               product/growth/eng/infra loop -- not part of the shipped
+               product. See merit-ai-team/skills/merit-context/SKILL.md.
 ```
+
+## Site content
+
+Alongside the dashboard, the production site carries a small content arm --
+static pages, not part of the React app, built as their own Vite entries so
+each is a real crawlable file rather than a client-side route (see
+`frontend/README.md`):
+
+- `/architecture` -- the same system/deployment writeup as
+  [`ARCHITECTURE.md`](ARCHITECTURE.md), reformatted for the public site
+- `/setup/react`, `/setup/python`, `/setup/node`, `/setup/tensorflow-pyro` --
+  how to wire your own AI usage into Merit's `/ingest/usage` endpoint
+- `/guides`, `/prompts`, `/challenge` -- an AI-education content arm and a
+  30-day prompt challenge, both still in progress; each ships as an honest
+  "nothing published/decided yet" page rather than placeholder or invented
+  content until real material exists
 
 ## Quickstart
 
