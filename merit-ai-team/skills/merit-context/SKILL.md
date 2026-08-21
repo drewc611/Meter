@@ -120,6 +120,23 @@ Carry these forward; re-check rather than re-discover them.
    worth a stated position before the first paying customer.
 6. **No pricing page, no docs, no changelog** on the public site.
 
+## Missing pieces (as of 2026-08-21)
+
+The five `merit-*` skills in this plugin were originally written to reference
+three more: `merit-executor` (Fetch/Work/Judge tier routing and dispatch),
+`merit-probe` (Fetch-tier fact collection), and `merit-analyst` (Work-tier
+first-pass review) — plus two skills from other plugins,
+`andrew-agent:write-as-andrew` and `design:accessibility-review`. None of
+those five are part of this plugin or confirmed present in any environment it
+runs in. Every skill here has been adapted to do its own fact-collection and
+judgment directly instead of routing to them, and to check for the two
+external skills before relying on them rather than assuming they're there.
+
+If Andrew wants the tiered-routing model for real (cheaper fact-collection
+runs on a smaller/cheaper pass, judgment calls reserved for a stronger one),
+`merit-executor`/`merit-probe`/`merit-analyst` would need to be written from
+scratch — nothing to adapt them from exists yet.
+
 ## Working rules for every merit-* skill
 
 - **Verify, don't assume.** Re-fetch headers, `/healthz`, and `/openapi.json`

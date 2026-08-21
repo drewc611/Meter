@@ -1,71 +1,145 @@
 ---
 name: merit-growth
 description: >
-  Positioning, outreach, SEO, and content drafting (daily prompts, guide
-  articles) for Merit. Use this whenever writing anything external-facing —
-  landing copy, outreach messages, SEO content, a guide article, or a daily
-  prompt-challenge entry. Depends on merit-context; logs to
-  merit-ai-team/docs/merit-growth-log.md and merit-content-log.md.
+  Runs Merit's marketing and growth work — positioning, landing page copy, SEO
+  and AI-answer-engine visibility, content calendar, and design-partner
+  outreach. Use when Andrew says "marketing", "growth", "write the landing
+  page", "content plan", "SEO", "how do we get design partners", "who are our
+  competitors", or when the weekly growth scheduled task fires.
 metadata:
   version: "0.1.0"
-  last_verified: "2026-08-21"
 ---
 
 # Merit growth
 
-Scope: positioning and messaging for the ROI product, outreach to prospective
-design partners, SEO, and the `/guides` + `/prompts` content arm — daily
-challenge prompts and launch guide articles.
+Read `merit-context` and `merit-goal` first. Rank everything against the goal.
+(This version routes nothing to `merit-executor`/`merit-probe`/`merit-analyst`
+— those skills aren't part of this plugin; see the note in `merit-context`.
+Do the fact-collection and drafting work directly instead of dispatching it.)
 
-## Standing rails (same as every skill in this plugin — see `merit-context`)
+Merit is pre-launch with a waitlist, so unless the goal says otherwise, growth
+means one thing: get the first design partners.
 
-- No invented stats, no fake testimonials, no plausible-sounding numbers
-  standing in for real ones. If a claim needs a number and there isn't a
-  verified one, cut the claim or mark it unverified — don't soften it into
-  vague-but-still-false. Merit's own product copy holds itself to "spend-
-  weighted estimate, not a causal claim"; marketing copy about Merit gets the
-  same discipline.
-- One quote per source, checked against the primary material it claims to
-  come from, before it ships.
-- A Judge-tier adversarial pass — a second, skeptical read whose job is to
-  find the weakest claim on the page and either fix or cut it — runs on
-  anything external-facing before it goes out.
-- Nothing publishes without Andrew's sign-off. Never `POST` to `/waitlist` or
-  anywhere else without asking first.
-- Andrew's voice: direct, opinionated, specific. No "in today's landscape," no
-  "it's worth noting," no bold-term-colon-explanation lists.
+## Who Merit sells to
 
-## Content drafting scope
+The buyer is whoever owns the AI budget line and has to defend it — a CFO, a
+VP Engineering, or a Head of Platform at a company past the "we bought
+everyone Copilot" stage and now facing a renewal they cannot justify. The
+trigger is a renewal date or a board question, not curiosity.
 
-**Daily prompts** (`/prompts/day-N-*`) — one stack-tagged post per day (react,
-python, node, tensorflow-pyro), matching whatever template the first shipped
-prompt establishes: the prompt itself, why it's built that way, what to do
-with the answer. Each prompt should stand alone — someone landing on day 17
-without having seen days 1–16 should still get something usable.
+The user is different from the buyer. The user is an engineering manager who
+wants to know which of their people are getting real leverage. Copy has to work
+for both without turning into surveillance software, which is the objection
+that kills this category.
 
-**Guide articles** (`/guides`) — the "how to do AI better" content arm,
-broader audience than the ROI product's buyer. These don't need to mention
-Merit at all, and shouldn't be forced to. Don't write a CTA into any of them
-toward `/setup/*` until the funnel-direction question in `merit-context` is
-answered — writing one now means rewriting every guide later if the answer is
-"separate audience."
+## The objection to answer before all others
 
-**`/challenge` landing page copy** — don't write pricing/checkout copy until
-the fee mechanism (Stripe vs. manual) is confirmed; the page can describe the
-challenge's format and value without committing to a specific payment flow.
+"This is a productivity surveillance tool and my engineers will hate it."
 
-## Tracking what's been drafted
+Merit's existing answer is good and should stay consistent everywhere: scores
+are confidence-tiered signals, not measures; the recommendation for a
+high-spend, high-slop person is *coach and re-tier*, not fire; and the headline
+outcome is recovering budget without cutting a high-value user. Lead with the
+budget recovery, let the person-level detail be the proof, never the pitch.
 
-Log each piece to `merit-ai-team/docs/merit-content-log.md` as it's produced:
+## Standing priorities
 
+### 1. The site is invisible to crawlers
+
+The SPA ships an empty root div and there is no sitemap. Search engines and AI
+answer engines see a title and nothing else. Until that changes, no content
+strategy can work. The fix is prerendering or static generation for the
+marketing surface — the app itself can stay client-rendered. This is the single
+highest-leverage growth item and it is an engineering task; route it through
+`merit-eng-review` and keep raising it until it ships.
+
+### 2. There is nothing to link to
+
+No pricing page, no docs, no changelog, no methodology page. The methodology
+page matters most: Merit is asking companies to trust a score. A public page
+explaining Tier 1/2/3 confidence, how value per dollar is computed, and what
+Merit explicitly does *not* claim would do more for credibility than any blog
+post. Write that first.
+
+### 3. Category naming
+
+"AI spend and value" is accurate but not a search term. Decide what Andrew
+wants to be found for — AI cost management, AI ROI measurement, AI FinOps, AI
+spend governance — and use it consistently. Bring evidence on search volume and
+who already owns each term rather than picking on instinct.
+
+## Weekly run
+
+1. Re-check what has shipped on the marketing surface since last run.
+2. Competitive scan — search for AI spend management, AI ROI, LLM cost
+   attribution, and FinOps-for-AI tools. Log new entrants, funding, and
+   positioning shifts. Note when a competitor takes a term Merit wanted.
+3. One concrete deliverable. Not a plan — a written thing: a page of copy, a
+   post, an outreach sequence, a methodology explainer. One finished artifact
+   beats five recommendations.
+4. Outreach status: waitlist volume if Andrew has shared it, and a short list
+   of named companies fitting the profile with a reason each.
+
+## Content arm (added 2026-08-21)
+
+Growth now also owns drafting for `/guides` (general "how to do AI better"
+articles) and `/prompts` (one detailed daily prompt per entry, tagged by stack
+— react, python, node, tensorflow-pyro). This is a **separate goal from the
+design-partner one** — read `merit-ai-team/docs/merit-content-goal.md` and
+rank this work against it, not against the 10-partner measure.
+
+Every prompt post follows the shape already established: the prompt itself,
+why it's built that way (what it deliberately asks for and why), and what to
+do with the answer. Same standing rules as everything else external-facing —
+no invented stats, one Judge-tier adversarial pass before anything publishes,
+sources verified against primary material.
+
+Whether `/guides` and `/prompts` should funnel into `/setup/*` (product
+signups) or serve a separate audience is still undecided as of 2026-08-21.
+Don't default either way in copy — flag it as open if it affects a specific
+CTA decision.
+
+The `/challenge` fee mechanism (Stripe vs. manual) is also undecided. Don't
+draft checkout copy that implies a working payment flow until that's answered.
+
+## Writing rules
+
+Use the `andrew-agent:write-as-andrew` skill for anything going out under
+Andrew's name, if that plugin is available in the current environment — it
+isn't part of this plugin, so check before relying on it. Otherwise follow
+Andrew's stated preferences directly: direct, opinionated, specific names and
+numbers, no "in today's landscape," no "it's worth noting," no
+bold-term-colon-explanation lists, one em dash maximum.
+
+Never invent a customer, a metric, a testimonial, or a case study. The demo
+tenant "Northwind Labs" is illustrative sample data and must never appear in
+external copy as though it were a real customer.
+
+## Output
+
+Append to `merit-ai-team/docs/merit-growth-log.md` (plain file, not a project
+tool — see `merit-context`):
+
+```markdown
+## 2026-08-15
+
+**Shipped since last run:**
+**Competitive movement:**
+**Deliverable this week:** <link or inline>
+**Recommended next:** <one thing>
+
+**Goal:** <outcome> · <days left> · <on track | slipping | off>
 ```
-## [date] — [title]
-Path: [target site path]
-Status: drafted / judge-passed / shipped
-Notes: [anything the reviewer or Andrew should know]
-```
 
-A "shipped" count in that log is the only legitimate source for the content
-goal's progress number (see `merit-goal`) once that goal is confirmed active
-— never estimate it from memory. Log positioning/outreach/SEO work separately
-in `merit-ai-team/docs/merit-growth-log.md`.
+If this run touched the content arm, also append to
+`merit-ai-team/docs/merit-content-log.md`:
+
+```markdown
+## 2026-08-21
+
+**Published this run:** <guides/prompts, with links>
+**Drafted, awaiting deploy:** <count and titles>
+**Stack coverage so far:** react <n> · python <n> · node <n> · tensorflow-pyro <n>
+
+**Goal:** <content outcome — or "PROPOSED, awaiting Andrew"> · <days left | n/a> · <status>
+```

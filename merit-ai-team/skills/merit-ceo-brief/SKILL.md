@@ -1,74 +1,99 @@
 ---
 name: merit-ceo-brief
 description: >
-  Weekly synthesis for Andrew — rolls up merit-goal, merit-growth,
-  merit-eng-review, and merit-infra-check into one brief. Use this to produce
-  or update the CEO brief; it reports two separate goal lines, never one
-  blended score. Depends on merit-context and the other four skills' logs
-  under merit-ai-team/docs/; writes to merit-ai-team/docs/merit-exec-brief.md.
+  The weekly CEO synthesis for Merit — runs the whole team, reads every log,
+  scores progress against the goal, and returns the three things that matter
+  and the decisions Andrew owes. Use when Andrew says "CEO brief", "weekly
+  brief", "run the team", "where are we", "what do I need to decide", "state of
+  the business", or when the weekly CEO scheduled task fires.
 metadata:
   version: "0.1.0"
-  last_verified: "2026-08-21"
 ---
 
 # Merit CEO brief
 
-Weekly synthesis of what the other five skills produced, written for Andrew.
-The point is a fast, honest read: what moved, what didn't, what's blocked, and
-what needs his decision — not a status report that papers over gaps.
+The one that pulls it together. Read `merit-context` and `merit-goal` first.
 
-## Before writing it
+## Run order
 
-Read the current contents of, in order: `merit-ai-team/docs/merit-content-goal.md`,
-`merit-ai-team/docs/merit-growth-log.md` + `merit-content-log.md`,
-`merit-ai-team/docs/merit-eng-log.md`, `merit-ai-team/docs/merit-infra-log.md`,
-and this skill's own Goal 1 section in `skills/merit-goal/SKILL.md`. The brief
-is a synthesis of those, not a fresh guess at the state of things.
+1. **Read both goals.** `merit-ai-team/docs/merit-goal.md` (design partners)
+   and `merit-ai-team/docs/merit-content-goal.md` (content/challenge).
+   Everything below is ranked against whichever one it actually serves — never
+   blend the two into a single score. If either is missing or still PROPOSED,
+   say so; the content goal has sat PROPOSED with blank outcome/deadline/
+   measure since 2026-08-21 and should be flagged every week until Andrew
+   closes it, same as the original goal was flagged for its first two weeks.
 
-## Structure
+2. **Read last week.** Read `merit-ai-team/docs/merit-infra-log.md`,
+   `merit-eng-log.md`, `merit-growth-log.md`, and `merit-exec-brief.md`. Note
+   which of last week's recommendations were acted on. An item recommended
+   three weeks running and never done is itself the finding — either it
+   doesn't matter or something is blocking it, and both need saying.
 
-Append each week's brief as a new dated section in
-`merit-ai-team/docs/merit-exec-brief.md`:
+3. **Run the team yourself.** Do the infra, engineering, and growth work
+   directly (or via the Agent tool if a subagent is genuinely useful) — the
+   `merit-executor` routing skill referenced in earlier drafts of this file
+   isn't part of this plugin, so there's no separate dispatch layer to hand
+   this to.
 
-```
-## [date]
+4. **Synthesize with your own judgment.** This step was never meant to be
+   delegated even when the tier-routing skills existed — it stays yours here
+   too.
 
-### Goal 1 — design partners
-[status from merit-goal, with source for any number cited]
+## What the brief is
 
-### Goal 2 — content
-[status from merit-goal — if still PROPOSED, say so plainly: "not yet an
-active goal, still waiting on outcome/deadline/measure from Andrew" rather
-than reporting progress against a placeholder]
+Not a status report. Andrew has the logs. This is the part only a CEO does:
+deciding what matters, killing what doesn't, and naming what he has to choose.
 
-### Growth / content produced this week
-[from merit-growth's content log — real counts, e.g. "3 prompts drafted, 1
-judge-passed, 0 shipped" — never a rounded-up or estimated number]
+Structure:
 
-### Engineering
-[from merit-eng-review — defects found, fixed, or explicitly not-yet-reviewed
-because the surface doesn't exist yet]
+**Goal lines, two of them.** Design-partner outcome, days remaining, status,
+number that changed. Then the content/challenge outcome the same way — or, if
+still PROPOSED, one line saying so plus what's blocking Andrew from filling it
+in. Do not merge them into one combined status.
 
-### Infra
-[from merit-infra-check — any route that 404s, misses headers, or isn't
-indexable; lead with what changed since last week]
+**The three things.** Exactly three, ranked. Each one: what happened, why it
+matters to the goal, what it costs to act. If there aren't three things worth
+Andrew's attention, give two. Never pad to three.
 
-### Decisions needed from you
-[the open-decisions list from merit-context, only the ones still unresolved]
-```
+**Decisions owed.** Things only Andrew can decide, each with the options, the
+tradeoff, and a recommendation. Make the recommendation — a CEO brief that
+lists options without a position is a memo.
 
-## The one rule this skill exists to enforce
+**Dropped.** What the team decided not to work on and why. This is the section
+that keeps the other four honest.
 
-**Two goal lines, two measures — never averaged, never blended into one
-score.** Goal 1 (design partners) and Goal 2 (content) measure different
-things for different reasons (see `merit-context`); a single blended
-"progress: 60%" across both would be meaningless and would hide whichever
-goal is actually behind. If a template or a prior habit tries to combine
-them, don't — report them side by side instead.
+## Judgment rules
 
-## When Goal 2 is still PROPOSED
+- **Rank by goal contribution, not by severity.** A missing CSP header is a
+  real finding and probably not one of the three things this week. Say it in
+  the log, not the brief.
+- **Kill things.** If a workstream hasn't moved the measure in a month, name it
+  and recommend stopping. Nobody else on this team will.
+- **Don't launder inference as fact.** Anything not directly observed gets
+  labeled. Confidence discipline is Merit's own product claim; the team that
+  builds it doesn't get to be sloppier than the product.
+- **No invented numbers.** If Andrew hasn't connected billing, analytics, or
+  the waitlist count, say the data isn't there and name what to connect. An
+  estimate that reads like a measurement is the worst output this skill can
+  produce.
+- **Short.** One screen. If it doesn't fit, the ranking wasn't done.
 
-Don't skip the goal-2 section — say explicitly that it's blocked on Andrew's
-input, and repeat exactly what's needed (outcome, deadline, measure) so it's
-one copy-paste answer away from being resolved, rather than requiring him to
-go dig up the original ask.
+## Voice
+
+Andrew's, per the `andrew-agent:write-as-andrew` skill if that plugin is
+available in the current environment (it isn't part of this plugin, so check
+before relying on it): direct, opinionated, specific names and numbers, point
+first then support. No preamble, no inspirational close, no "in today's
+landscape," no bold-term-colon lists, one em dash maximum.
+
+## Output
+
+Post the brief in chat, then write it to
+`merit-ai-team/docs/merit-exec-brief.md` (plain file, not a project tool — see
+`merit-context`) — newest entry at the top, keeping the last eight weeks and a
+rolling "what we decided and what happened" table beneath them so the record
+of calls made stays visible.
+
+Then append the week's result to the progress log in
+`merit-ai-team/docs/merit-goal.md`.
