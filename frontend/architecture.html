@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Architecture — Merit</title>
-<meta name="description" content="How Merit is built and hosted: three ingestion paths, one nightly scoring job, and the actual reasoning behind the Fly.io + Cloudflare split.">
+<meta name="description" content="How Merit is built and hosted: the data model, the scoring pipeline, the deployment split, and what's deliberately not built yet.">
 <link rel="stylesheet" href="/content.css">
 </head>
 <body>
@@ -15,7 +15,7 @@
       Merit<sup>&trade;</sup>
     </a>
     <nav class="site-nav">
-      <a href="/architecture">Architecture</a>
+      <a href="/architecture" aria-current="page">Architecture</a>
       <a href="/setup/react">Setup</a>
       <a href="/guides">Guides</a>
       <a href="/prompts">Prompts</a>
@@ -23,16 +23,28 @@
     </nav>
   </div>
 </header>
-<main class="content">
+<main class="content wide">
+  <span class="kicker">Reference</span>
   <span class="badge"><i></i> Reflects the live deployment</span>
   <h1>How Merit is built</h1>
   <p class="lead">
-    This is the same architecture documented in the repo's own
-    <code>ARCHITECTURE.md</code> — reality as deployed today, not an
-    aspirational future state.
+    The same architecture documented in the repo's own <code>ARCHITECTURE.md</code>
+    and <code>backend/README.md</code> — reality as deployed today, expanded here
+    with the data model and the parts deliberately left unbuilt.
   </p>
 
-  <h2>1. What the code does</h2>
+  <nav class="toc" aria-label="On this page">
+    <span class="toc-label">On this page</span>
+    <ol>
+      <li><a href="#pipeline">1. The ingestion &amp; scoring pipeline</a></li>
+      <li><a href="#data-model">2. Data model</a></li>
+      <li><a href="#deployment">3. Where it runs</a></li>
+      <li><a href="#verdict">4. Does this hosting choice make sense?</a></li>
+      <li><a href="#stubbed">5. What's deliberately not built yet</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="pipeline">1. The ingestion &amp; scoring pipeline</h2>
   <p>
     Three independent ingestion paths write into three separate tables, all
     attributed to a person through an identity-mapping table, and a nightly
@@ -58,17 +70,45 @@
     fast regardless of how much event history accumulates. <code>IdentityMapping</code>
     is the other load-bearing piece: if an external id resolves to the wrong
     (or no) person, every number downstream is wrong, which is why an
-    unmapped id gets a <b>422</b> instead of being silently dropped.
+    unmapped id gets a <b>422</b> instead of being silently dropped — an
+    unmapped id is a shadow-AI candidate, not something to drop quietly.
+  </p>
+  <p>
+    Scoring runs in two tiers today, both pure functions over a handful of
+    bulk queries rather than per-row work, so the nightly job stays flat as
+    event tables grow: <b>Tier 1</b> correlates spend against outcomes (PRs
+    merged, tickets closed, deals advanced) into a value-per-dollar number;
+    <b>Tier 2</b> layers a slop-risk score from quality proxies (reverts,
+    heavy rewrites, regeneration loops). See <a href="#stubbed">§5</a> for
+    Tier 3.
   </p>
 
-  <h2>2. Where it runs</h2>
+  <h2 id="data-model">2. Data model</h2>
+  <p>Every row below belongs to exactly one <code>Organization</code> (the tenant boundary) — see the multi-tenant isolation work referenced in the repo's own commit history.</p>
+  <table>
+    <thead><tr><th>Table</th><th>What it holds</th></tr></thead>
+    <tbody>
+      <tr><td><code>Organization</code></td><td>The tenant — its own <code>ingest_token</code>, plan, name</td></tr>
+      <tr><td><code>Team</code></td><td>A grouping of identities, scoped per org</td></tr>
+      <tr><td><code>Identity</code></td><td>A real person, scoped per org (unique by org+email)</td></tr>
+      <tr><td><code>IdentityMapping</code></td><td>External system id (proxy key, GitHub login, …) → <code>Identity</code></td></tr>
+      <tr><td><code>UsageEvent</code></td><td>One AI-spend event: tool, model, cost, tokens</td></tr>
+      <tr><td><code>OutcomeEvent</code></td><td>A PR merge, ticket close, deal advance, etc.</td></tr>
+      <tr><td><code>QualitySignal</code></td><td>A revert, rewrite, regeneration loop, etc.</td></tr>
+      <tr><td><code>RubricGrade</code></td><td>Sampled human/LLM grading — Tier 3, not yet populated automatically</td></tr>
+      <tr><td><code>PersonScore</code></td><td>One row per (identity, period) — the only table <code>/api/*</code> reads</td></tr>
+      <tr><td><code>DashboardUser</code></td><td>A real login (password or Google), separate from <code>Identity</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="deployment">3. Where it runs</h2>
   <div class="card">
-    <p><b>Cloudflare</b> — Worker + static assets serving the frontend (a Vite + React app built to a plain <code>dist/</code>, no server-side rendering) at <code>usemeritai.com</code>.</p>
+    <p><b>Cloudflare</b> — Worker + static assets serving the frontend (a Vite + React app built to a plain <code>dist/</code>, no server-side rendering) at <code>usemeritai.com</code>. This page and the rest of the <code>/architecture</code>, <code>/setup/*</code>, <code>/guides</code>, <code>/prompts</code>, <code>/challenge</code> content is also plain static HTML from that same build — not the React app — so it stays a real, crawlable file instead of a client-only route.</p>
     <p><b>Fly.io</b> (app <code>meter</code>, region <code>iad</code>) — the FastAPI backend at <code>api.usemeritai.com</code>, backed by a SQLite file on a persistent volume.</p>
     <p>Both deploy paths trigger off the same push to <code>main</code> in one repo — no second repo, no manual deploy step in the common case.</p>
   </div>
 
-  <h2>3. Does this hosting choice make sense?</h2>
+  <h2 id="verdict">4. Does this hosting choice make sense?</h2>
   <p>
     Yes, for what this actually is right now — an early-stage prototype being
     demoed to prospects, not yet handling real customer data.
@@ -86,10 +126,19 @@
     that is a reason to change the underlying split; it's ordinary
     engineering work on top of it.
   </p>
+
+  <h2 id="stubbed">5. What's deliberately not built yet</h2>
+  <p>Named here on purpose, not hidden — these are decisions, not gaps someone forgot about.</p>
+  <div class="card">
+    <p><b>Tier 3 calibration</b> — sampled grading needs real <code>RubricGrade</code> volume to be worth building against; not faked with synthetic grades.</p>
+    <p><b>Shadow-AI detection</b> — the recoverable-spend estimate includes a placeholder line for it, clearly labeled as an estimate, but reconciling sanctioned spend against observed AI activity isn't implemented yet.</p>
+    <p><b>A job scheduler</b> — <code>/admin/recompute-scores</code> is the nightly job's entry point; wiring it to cron/Airflow/a queue is a deployment decision for whoever runs this in production, not something the code assumes for you.</p>
+  </div>
 </main>
 <footer class="site">
   <div class="footer-inner">
-    Merit is a labeled prototype — the app runs on illustrative demo data until you connect your own. <a href="/">Back to the app</a>
+    <span>Merit is a labeled prototype — the app runs on illustrative demo data until you connect your own.</span>
+    <a href="/">Back to the app</a>
   </div>
 </footer>
 </body>

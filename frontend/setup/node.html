@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Node setup — Merit</title>
-<meta name="description" content="Wire a Node backend's LLM calls into Merit's /ingest/usage endpoint, using the same proxy pattern as the Python reference.">
+<meta name="description" content="Wire a Node backend's LLM calls into Merit's /ingest/usage endpoint, using the same proxy pattern as the Python reference — plus outcomes, quality signals, and verification.">
 <link rel="stylesheet" href="/content.css">
 </head>
 <body>
@@ -16,14 +16,15 @@
     </a>
     <nav class="site-nav">
       <a href="/architecture">Architecture</a>
-      <a href="/setup/react">Setup</a>
+      <a href="/setup/react" aria-current="page">Setup</a>
       <a href="/guides">Guides</a>
       <a href="/prompts">Prompts</a>
       <a href="/challenge">Challenge</a>
     </nav>
   </div>
 </header>
-<main class="content">
+<main class="content wide">
+  <span class="kicker">Setup guide</span>
   <span class="badge"><i></i> Same contract as the Python example</span>
   <h1>Node setup</h1>
   <p class="lead">
@@ -34,9 +35,19 @@
     fire a usage event at Merit before returning.
   </p>
 
-  <h2>The request that matters</h2>
+  <nav class="toc" aria-label="On this page">
+    <span class="toc-label">On this page</span>
+    <ol>
+      <li><a href="#usage">The request that matters</a></li>
+      <li><a href="#fields">Fields Merit expects</a></li>
+      <li><a href="#outcomes">Outcomes and quality signals</a></li>
+      <li><a href="#verify">Verifying it worked</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="usage">The request that matters</h2>
   <div class="card">
-<pre style="white-space:pre-wrap;font-size:13px;line-height:1.5;overflow-x:auto"><code>const usage = upstreamResponse.usage;
+<pre><code>const usage = upstreamResponse.usage;
 const costUsd = price(model, usage.input_tokens, usage.output_tokens);
 
 await fetch(`${MERIT_API_BASE}/ingest/usage`, {
@@ -62,20 +73,90 @@ await fetch(`${MERIT_API_BASE}/ingest/usage`, {
     same note as the Python reference in <code>backend/proxy_example.py</code>.
   </p>
 
-  <h2>Fields Merit expects</h2>
+  <h2 id="fields">Fields Merit expects</h2>
   <p>
     <code>source_system</code>, <code>external_id</code>, <code>tool</code>,
     and <code>cost_usd</code> are required; <code>model</code>,
     <code>tokens_in</code>, <code>tokens_out</code>, and
     <code>occurred_at</code> are optional. <code>external_id</code> must
     already exist in an <code>IdentityMapping</code> for your organization —
-    map it once via <code>POST /admin/identity-mapping</code>, using the
-    <code>ingest_token</code> from <code>GET /admin/org</code>.
+    map it once:
+  </p>
+  <div class="card">
+<pre><code>await fetch(`${MERIT_API_BASE}/admin/identity-mapping`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${dashboardJwt}`,
+  },
+  body: JSON.stringify({
+    email: "priya@yourcompany.com",
+    source_system: "anthropic_api",
+    external_id: "proxy-key-priya-abc123",
+  }),
+});</code></pre>
+  </div>
+  <p>
+    using the <code>ingest_token</code> from <code>GET /admin/org</code>. An
+    unmapped <code>external_id</code> gets a <b>422</b> on purpose — that's a
+    shadow-AI candidate, not something to silently drop.
+  </p>
+
+  <h2 id="outcomes">Outcomes and quality signals</h2>
+  <p>
+    These don't flow through the proxy — they come from webhooks on the
+    systems where the work actually lands:
+  </p>
+  <div class="card">
+<pre><code>// PR merged
+await fetch(`${MERIT_API_BASE}/ingest/outcome`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json", Authorization: `Bearer ${MERIT_INGEST_TOKEN}` },
+  body: JSON.stringify({
+    source_system: "anthropic_api",
+    external_id: "proxy-key-priya-abc123",
+    source: "github",
+    outcome_type: "pr_merged",
+    external_ref: pullRequest.html_url,
+  }),
+});
+
+// PR reverted -- a quality signal, not an outcome
+await fetch(`${MERIT_API_BASE}/ingest/quality-signal`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json", Authorization: `Bearer ${MERIT_INGEST_TOKEN}` },
+  body: JSON.stringify({
+    source_system: "anthropic_api",
+    external_id: "proxy-key-priya-abc123",
+    signal_type: "pr_reverted",
+    external_ref: pullRequest.html_url,
+  }),
+});</code></pre>
+  </div>
+
+  <h2 id="verify">Verifying it worked</h2>
+  <p>
+    Usage events land immediately, but the dashboard reads
+    <code>PersonScore</code>, written by the nightly scoring job. Trigger it
+    on demand to see today's events reflected without waiting:
+  </p>
+  <div class="card">
+<pre><code>await fetch(`${MERIT_API_BASE}/admin/recompute-scores`, {
+  method: "POST",
+  headers: { Authorization: `Bearer ${dashboardJwt}` },
+});
+const breakdown = await fetch(`${MERIT_API_BASE}/api/tool-breakdown`, {
+  headers: { Authorization: `Bearer ${dashboardJwt}` },
+}).then((r) => r.json());</code></pre>
+  </div>
+  <p>
+    If your tool shows up with the right spend, the wiring is correct.
   </p>
 </main>
 <footer class="site">
   <div class="footer-inner">
-    Merit is a labeled prototype — the app runs on illustrative demo data until you connect your own. <a href="/">Back to the app</a>
+    <span>Merit is a labeled prototype — the app runs on illustrative demo data until you connect your own.</span>
+    <a href="/">Back to the app</a>
   </div>
 </footer>
 </body>

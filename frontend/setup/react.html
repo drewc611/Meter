@@ -16,14 +16,15 @@
     </a>
     <nav class="site-nav">
       <a href="/architecture">Architecture</a>
-      <a href="/setup/react">Setup</a>
+      <a href="/setup/react" aria-current="page">Setup</a>
       <a href="/guides">Guides</a>
       <a href="/prompts">Prompts</a>
       <a href="/challenge">Challenge</a>
     </nav>
   </div>
 </header>
-<main class="content">
+<main class="content wide">
+  <span class="kicker">Setup guide</span>
   <span class="badge"><i></i> One honest constraint, up front</span>
   <h1>React setup</h1>
   <p class="lead">
@@ -34,7 +35,17 @@
     in the client.
   </p>
 
-  <h2>If your React app calls an LLM through your own backend</h2>
+  <nav class="toc" aria-label="On this page">
+    <span class="toc-label">On this page</span>
+    <ol>
+      <li><a href="#own-backend">If your app calls an LLM through your own backend</a></li>
+      <li><a href="#browser">If your app calls an LLM API directly from the browser</a></li>
+      <li><a href="#example">A minimal working shape</a></li>
+      <li><a href="#dashboard">What Merit can tell you about frontend spend</a></li>
+    </ol>
+  </nav>
+
+  <h2 id="own-backend">If your React app calls an LLM through your own backend</h2>
   <p>
     That's the common case — a Node or Python service that your React
     frontend calls, which in turn calls Anthropic/OpenAI/etc. Instrument
@@ -43,7 +54,7 @@
     guide. Nothing in the React app itself changes.
   </p>
 
-  <h2>If your React app calls an LLM API directly from the browser</h2>
+  <h2 id="browser">If your React app calls an LLM API directly from the browser</h2>
   <p>
     This is the case worth pausing on: a client-held provider key is a
     security problem independent of Merit, and it also means there's no safe
@@ -54,7 +65,29 @@
     usage to Merit.
   </p>
 
-  <h2>What Merit can tell you about frontend spend</h2>
+  <h2 id="example">A minimal working shape</h2>
+  <p>
+    What the React app itself actually does — call your own API route, never
+    the provider or Merit directly:
+  </p>
+  <div class="card">
+<pre><code>// inside your React component -- no provider key, no Merit token, ever
+async function ask(prompt) {
+  const res = await fetch("/api/assistant", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt }),
+  });
+  return res.json();
+}
+
+// /api/assistant on YOUR OWN server (Node or Python) -- this is the file
+// that follows the setup/node or setup/python guide, holding the real
+// provider key and the Merit ingest token, neither of which the browser
+// ever sees.</code></pre>
+  </div>
+
+  <h2 id="dashboard">What Merit can tell you about frontend spend</h2>
   <p>
     Once usage is flowing from the backend, per-person and per-tool
     breakdowns show up the same way regardless of what your frontend is
@@ -64,7 +97,8 @@
 </main>
 <footer class="site">
   <div class="footer-inner">
-    Merit is a labeled prototype — the app runs on illustrative demo data until you connect your own. <a href="/">Back to the app</a>
+    <span>Merit is a labeled prototype — the app runs on illustrative demo data until you connect your own.</span>
+    <a href="/">Back to the app</a>
   </div>
 </footer>
 </body>
