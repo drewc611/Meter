@@ -12,10 +12,11 @@ prototype status. Three parts:
   tracking/scoring pipeline. This is where almost all the logic lives.
 - `frontend/` — a Vite + React dashboard that reads from the backend API,
   with an embedded fallback dataset so it renders even when the API isn't
-  running. Also carries a small static content arm (`/architecture`,
-  `/setup/*`, `/guides`, `/prompts`, `/challenge`) — plain HTML Vite entries,
-  not part of the React app, so they stay crawlable rather than 404ing as
-  client-only SPA routes. See `frontend/README.md`.
+  running. Also carries a small content arm (`/architecture`, `/setup/*`,
+  `/guides`, `/prompts`, `/challenge`) — React components under
+  `src/content/` that prerender to plain static HTML at build time, so they
+  stay crawlable rather than 404ing as client-only SPA routes. See
+  `frontend/README.md`.
 - `merit-ai-team/` — skills for the internal AI team that runs Merit's own
   product/growth/eng/infra loop (not part of the shipped product). Its own
   context and working rules live in
