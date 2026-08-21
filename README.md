@@ -18,8 +18,10 @@ dashboard UI.
 
 Every screenshot below is the real dashboard, running against the live
 backend on seeded demo data (`python seed.py`) — nothing mocked up, and it's
-what's actually deployed at the production site root today (see
-[Quickstart](#quickstart) and [DEPLOY.md](DEPLOY.md)).
+what's actually deployed at `/app` in production today (see
+[Quickstart](#quickstart) and [DEPLOY.md](DEPLOY.md)). The site root itself
+is a marketing/content landing page, not the dashboard — see
+[Site content](#site-content) below.
 
 **Overview** — spend, blended value/$, slop risk, seat utilization, and
 score coverage at a glance, plus the spend-vs-value scatter, the four-segment
@@ -56,14 +58,15 @@ backend/       FastAPI service: usage/outcome/quality-signal ingestion,
                identity resolution, Tier-1/Tier-2 scoring, REST API.
                See backend/README.md for the full architecture writeup.
 frontend/      Sidebar dashboard (Overview, People, Teams & Roles, Alerts,
-               Integrations), a Vite + React app under src/ -- what's built
-               and deployed at the production site root. Calls the backend
+               Integrations), a Vite + React app under src/ -- deployed at
+               `/app` in production, not the site root. Calls the backend
                API at localhost:8000 and falls back to embedded demo data if
-               it's not running. Also carries the static content-site pages
-               (architecture, setup guides, guides, prompts, challenge --
-               see "Site content" below). See frontend/README.md.
+               it's not running. The site root and the rest of the content
+               arm (architecture, setup guides, guides, prompts, challenge --
+               see "Site content" below) are separate prerendered pages, not
+               part of the dashboard. See frontend/README.md.
                coming-soon.html is the old pre-launch placeholder, no longer
-               served at `/`.
+               served anywhere.
 merit-ai-team/ Skills for the internal AI team that runs Merit's own
                product/growth/eng/infra loop -- not part of the shipped
                product. See merit-ai-team/skills/merit-context/SKILL.md.
@@ -71,10 +74,12 @@ merit-ai-team/ Skills for the internal AI team that runs Merit's own
 
 ## Site content
 
-Alongside the dashboard, the production site carries a small content arm --
-static pages, not part of the React app, built as their own Vite entries so
-each is a real crawlable file rather than a client-side route (see
-`frontend/README.md`):
+The site root (`/`) is a marketing/content landing page, not the dashboard
+— it's a real React component (`frontend/src/content/pages/Home.jsx`) that
+prerenders to plain static HTML at build time, same as the rest of the
+content arm below, so it's a real crawlable file rather than a client-side
+route (see `frontend/README.md`). The dashboard itself lives at `/app`,
+linked from the "Sign in" button in the header.
 
 - `/architecture` -- the same system/deployment writeup as
   [`ARCHITECTURE.md`](ARCHITECTURE.md), reformatted for the public site

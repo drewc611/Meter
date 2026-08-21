@@ -12,10 +12,12 @@ prototype status. Three parts:
   tracking/scoring pipeline. This is where almost all the logic lives.
 - `frontend/` — a Vite + React dashboard that reads from the backend API,
   with an embedded fallback dataset so it renders even when the API isn't
-  running. Also carries a small content arm (`/architecture`, `/setup/*`,
-  `/guides`, `/prompts`, `/challenge`) — React components under
-  `src/content/` that prerender to plain static HTML at build time, so they
-  stay crawlable rather than 404ing as client-only SPA routes. See
+  running. It's deployed at `/app`, not the site root — the root (`/`) and
+  the rest of the content arm (`/architecture`, `/setup/*`, `/guides`,
+  `/prompts`, `/challenge`) are React components under `src/content/` that
+  prerender to plain static HTML at build time, so they stay crawlable
+  rather than 404ing as client-only SPA routes, and so an anonymous visitor
+  lands on a real landing page instead of an auth-gated dashboard. See
   `frontend/README.md`.
 - `merit-ai-team/` — skills for the internal AI team that runs Merit's own
   product/growth/eng/infra loop (not part of the shipped product). Its own
@@ -65,11 +67,13 @@ npm run preview   # serve the dist/ build locally
 
 It tries `http://localhost:8000` first and falls back to
 `src/lib/fallbackData.js`'s embedded snapshot if the API is unreachable
-(900ms timeout) — the sidebar badge shows which mode it's in. The built
-`dist/` output is what's deployed at the production site root (see
-DEPLOY.md — Cloudflare's Build command runs `npm run build`).
+(900ms timeout) — the sidebar badge shows which mode it's in. The dashboard
+itself is deployed at `/app`, not the site root — see "Site content" in
+CLAUDE.md's own product description above and `frontend/README.md`; the
+built `dist/` output (Cloudflare's Build command runs `npm run build`)
+covers the whole domain, dashboard and content pages alike.
 `frontend/coming-soon.html` is the old pre-launch placeholder, still
-reachable but no longer served at `/` — see `frontend/README.md`.
+present in the repo but not served anywhere — see `frontend/README.md`.
 
 `styles.css` is shared, unchanged, referenced via a plain `<link>` tag in
 both HTML entries — Vite processes `<link rel="stylesheet">` tags in any

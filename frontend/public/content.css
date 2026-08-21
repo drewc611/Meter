@@ -135,6 +135,21 @@ nav.site-nav a[aria-current="page"] {
   color: var(--ink);
   border-bottom-color: var(--brand-soft);
 }
+nav.site-nav a.nav-cta {
+  color: var(--ink);
+  background: var(--brand);
+  padding: 6px 16px;
+  border-radius: 999px;
+  border-bottom: none;
+  font-weight: 600;
+  transition: background 0.15s var(--ease-out), transform 0.15s var(--ease-out);
+}
+nav.site-nav a.nav-cta:hover,
+nav.site-nav a.nav-cta:focus-visible {
+  color: var(--ink);
+  background: var(--brand-soft);
+  transform: translateY(-1px);
+}
 
 /* ---------- layout ---------- */
 main.content {
@@ -247,6 +262,47 @@ pre code {
   padding: 0;
   font-size: 13px;
   line-height: 1.6;
+}
+
+/* ---------- buttons (home hero) ---------- */
+.cta-row {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  margin: var(--sp-6) 0 var(--sp-2);
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 650;
+  font-size: 15px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  text-decoration: none;
+  transition: background 0.15s var(--ease-out), border-color 0.15s var(--ease-out), transform 0.15s var(--ease-out);
+}
+.btn:hover,
+.btn:focus-visible {
+  transform: translateY(-1px);
+}
+.btn-primary {
+  background: var(--brand);
+  color: var(--ink);
+}
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background: var(--brand-soft);
+  color: var(--ink);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+}
+.btn-secondary:hover,
+.btn-secondary:focus-visible {
+  border-color: var(--brand-soft);
+  color: var(--ink);
 }
 
 /* ---------- toc ---------- */

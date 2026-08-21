@@ -1,5 +1,5 @@
-// Shared shell for the prerendered content-site pages (architecture, setup
-// guides, guides, prompts, challenge). These render at build time via
+// Shared shell for the prerendered content-site pages (home, architecture,
+// setup guides, guides, prompts, challenge). These render at build time via
 // entry-server.jsx + scripts/prerender-content.mjs into plain static HTML --
 // this component itself never ships any client-side JS, so there's nothing
 // to hydrate and no risk of a blank-until-JS-runs page.
@@ -30,14 +30,17 @@ export default function ContentLayout({ active, wide, children }) {
                 {item.label}
               </a>
             ))}
+            <a href="/app" className="nav-cta">
+              Sign in
+            </a>
           </nav>
         </div>
       </header>
       <main className={wide ? "content wide" : "content"}>{children}</main>
       <footer className="site">
         <div className="footer-inner">
-          <span>Merit is a labeled prototype — the app runs on illustrative demo data until you connect your own.</span>
-          <a href="/">Back to the app</a>
+          <span>Merit is a labeled prototype — the dashboard runs on illustrative demo data until you connect your own.</span>
+          <a href="/app">Open the app</a>
         </div>
       </footer>
     </>

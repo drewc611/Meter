@@ -182,8 +182,8 @@ def google_callback(code: str, state: str = "-", db: Session = Depends(get_db)):
         token = auth_service.issue_token(user)
     except (auth_service.AuthError, HTTPException) as e:
         detail = e.detail if isinstance(e, HTTPException) else str(e)
-        return RedirectResponse(f"{_frontend_url()}/?auth_error={detail}")
-    return RedirectResponse(f"{_frontend_url()}/?token={token}")
+        return RedirectResponse(f"{_frontend_url()}/app?auth_error={detail}")
+    return RedirectResponse(f"{_frontend_url()}/app?token={token}")
 
 
 @router.get("/me", response_model=schemas.UserOut)

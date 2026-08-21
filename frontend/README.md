@@ -2,14 +2,17 @@
 
 The dashboard (Overview, People, Teams & Roles, Alerts, Integrations) is a
 Vite + React app under `src/` — no TypeScript, plain `.jsx`, functional
-components + hooks, no state library beyond React context. `coming-soon.html`
-is a separate, unrelated static HTML page (the old pre-launch placeholder —
-waitlist form + ROI calculator, plain JS, no React) built as its own Vite
-entry so it still ships with a hashed `styles.css` reference without being
-pulled into the React bundle.
+components + hooks, no state library beyond React context. Its HTML entry is
+`app.html`, deployed at `/app`, **not the site root** — see below for what
+lives at `/` instead. `coming-soon.html` is a separate, unrelated static
+HTML page (the old pre-launch placeholder — waitlist form + ROI calculator,
+plain JS, no React) built as its own Vite entry so it still ships with a
+hashed `styles.css` reference without being pulled into the React bundle;
+it isn't linked from anywhere live, just still present in the repo.
 
-The content-site pages (`/architecture`, `/setup/*`, `/guides`, `/prompts`,
-`/challenge`) are real React components under `src/content/` — but they
+The content-site pages (`/`, `/architecture`, `/setup/*`, `/guides`,
+`/prompts`, `/challenge`) are real React components under `src/content/` —
+but they
 **prerender to plain static HTML at build time**, not client-rendered SPA
 routes, so each one ships as a real, crawlable file at its clean path
 instead of an empty shell that would 404 on a direct request (the
@@ -45,7 +48,7 @@ without it, the dashboard falls back to the embedded demo snapshot in
 ## Layout
 
 ```
-index.html             Vite entry — React root + <link> to styles.css
+app.html                Vite entry for the dashboard — React root + <link> to styles.css, deployed at /app
 coming-soon.html        Separate static Vite entry, untouched by the React app
 styles.css              Shared stylesheet, referenced by both HTML entries
 public/
@@ -67,7 +70,8 @@ src/
   content/                Prerendered content-site pages (see above)
     entry-server.jsx      SSR entry — renderAll(), consumed by the prerender script
     components/           ContentLayout, Toc, Code
-    pages/                Architecture, SetupReact/Python/Node/TensorflowPyro,
+    pages/                Home (site root), Architecture,
+                           SetupReact/Python/Node/TensorflowPyro,
                            GuidesIndex, PromptsIndex, Challenge
 ```
 

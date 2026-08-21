@@ -242,7 +242,7 @@ def test_google_callback_creates_new_user_and_redirects_with_token(client, monke
     )
     r = client.get("/auth/google/callback?code=fake-code", follow_redirects=False)
     assert r.status_code in (302, 307)
-    assert r.headers["location"].startswith("https://usemeritai.com/?token=")
+    assert r.headers["location"].startswith("https://usemeritai.com/app?token=")
 
 
 def test_google_callback_links_existing_password_account_by_email(client, monkeypatch, db):

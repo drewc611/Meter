@@ -103,16 +103,17 @@ where you expected LIVE.
 ## 4. Verify
 
 - `https://api.usemeritai.com/healthz` — should return `{"status":"ok"}`.
-- `https://usemeritai.com` — shows the real dashboard. The old "coming
-  soon" placeholder is still around at `frontend/coming-soon.html`, just no
-  longer served at the site root.
+- `https://usemeritai.com` — shows the marketing/content landing page (see
+  README.md's "Site content"). The dashboard is at `https://usemeritai.com/app`.
+  The old "coming soon" placeholder is still around at
+  `frontend/coming-soon.html`, just not served anywhere.
 
 ## Production status
 
 Live: the ingestion token (`MERIT_API_KEY`) is generated, set, and enforced
-on `/ingest/*`; the real dashboard is at the site root
+on `/ingest/*`; the real dashboard is at `/app`
 (`frontend/coming-soon.html` is the old placeholder, no longer served
-there); per-user login (`MERIT_JWT_SECRET`, Google OAuth,
+anywhere); per-user login (`MERIT_JWT_SECRET`, Google OAuth,
 `MERIT_SIGNUP_CODE`) is on, see "Turning on dashboard login" below; and
 [`TRADEMARK.md`](TRADEMARK.md)'s events table has its first-use-in-commerce
 date recorded.
@@ -191,8 +192,8 @@ a real account (password or Google) to see live data.
    # -> {"status":"ok"} -- must stay open with no token, or Fly's own health
    #    check starts failing and the machine gets marked unhealthy.
    ```
-5. Sign up for your own account at `https://usemeritai.com` (or via the curl
-   above) and confirm the dashboard loads with the `LIVE · Merit API` badge.
+5. Sign up for your own account at `https://usemeritai.com/app` (or via the
+   curl above) and confirm the dashboard loads with the `LIVE · Merit API` badge.
    The first account ever created on a deployment automatically gets
    `is_admin` (needed for `/admin/recompute-scores` and
    `/admin/identity-mapping`) -- sign up before sharing the URL with anyone
