@@ -1,72 +1,139 @@
 ---
 name: merit-goal
 description: >
-  Tracks Merit's active goals — currently two, kept fully separate and never
-  averaged into one score. Use this whenever checking what the team is
-  actually working toward, updating progress against a goal, or proposing a
-  new one. Depends on merit-context for the three-site-arm background.
+  Sets, reads, and scores Merit's standing goal — the one objective every agent
+  run is measured against. Use when Andrew says "goal", "/goal", "set the
+  goal", "what's the goal", "are we on track", "how are we doing against the
+  goal", "change the goal", or when any weekly merit run needs to know what it
+  is working toward. Every other merit-* skill reads this before deciding what
+  to work on.
 metadata:
-  version: "0.1.0"
-  last_verified: "2026-08-21"
+  version: "0.2.0"
 ---
 
-# Merit goals
+# Merit goal
 
-Two goals, tracked independently in `merit-ai-team/docs/merit-content-goal.md`
-(the content goal's log) and inline below (the design-partner goal, since it
-predates this file's log). Do not average them, do not roll one into the
-other's progress number, and do not report a single blended "on track"
-verdict across both — `merit-ceo-brief` reports them as two separate lines for
-exactly this reason.
+**Two goals now, tracked separately, never averaged into one score (added
+2026-08-21).** The design-partner goal (`merit-ai-team/docs/merit-goal.md`)
+and the content/challenge goal (`merit-ai-team/docs/merit-content-goal.md`)
+measure different things and can move in opposite directions in the same
+week. Report both, rank work against whichever one it actually serves, and
+never blend them into a single verdict — "content is up but partners are
+flat" is the honest sentence, not a combined average.
 
-## Goal 1 — design partners (existing)
+Everything the team does gets ranked against the goal it's actually meant to
+move. Work that doesn't move either gets named as such rather than quietly
+done anyway.
 
+Read both files (plain Read, not a project tool — this plugin runs against
+files in `drewc611/Meter`, not a claude.ai Project; see `merit-context`) at
+the start of every merit run, even if this run's task only concerns one of
+them — the CEO brief needs both.
+
+## Modes
+
+Pick from what Andrew said.
+
+### Set — "set the goal", "/goal <text>", "new goal"
+
+If a goal already exists, show it and confirm before replacing. Never
+silently overwrite; move the old one to the history section.
+
+A goal needs four things. Ask for anything missing, in one round:
+
+- **Outcome** — a specific end state, not an activity. "Ten design partners
+  signed" is a goal. "Do more marketing" is not.
+- **Deadline** — a date.
+- **Measure** — how you'll know, and where the number comes from.
+- **Constraint** — what Andrew won't trade to get it. Usually budget, or "no
+  surveillance-tool positioning," or "don't break the prototype."
+
+Then write the file:
+
+```markdown
+# Merit goal
+
+**Outcome:** <end state>
+**Deadline:** <date>
+**Measure:** <metric, source>
+**Constraint:** <what won't be traded>
+**Set:** <date>
+
+## Sub-goals
+| Sub-goal | Owner skill | Status |
+| --- | --- | --- |
+
+## Progress log
+### <date>
+- <what moved, with the number>
 ```
-Outcome: 10 design partners
-Deadline: [not confirmed in this session — the number "10" is the one fact
-           carried forward reliably; verify the deadline and the exact
-           counting rule with Andrew before reporting a percentage against it]
-Measure:  [same caveat — confirm what counts: signed agreement? active usage?
-           a call booked? don't assume]
-Status:   ACTIVE
-```
 
-## Goal 2 — content (new, PROPOSED)
+### Read — "what's the goal", "/goal" with no argument
 
-```
-Outcome: [needs Andrew's input — e.g. "X challenge signups" or
-          "Y published prompts + Z challenge conversions"]
-Deadline: [needs Andrew's input]
-Measure:  [needs Andrew's input — post count? paid conversions? traffic?]
-Status:   PROPOSED — do not treat as active, do not report progress against
-          it, until Andrew confirms outcome/deadline/measure.
-```
+Print the goal, days remaining, latest measured value, and the two open
+sub-goals closest to the critical path. Four lines, not a report.
 
-This goal exists because the site now has a content/education arm (`/guides`,
-`/prompts`, `/challenge`) that is not a sub-goal of the design-partner goal —
-see `merit-context`. Do not fill in the blanks above with a plausible-sounding
-number; leaving them blank and flagged PROPOSED is the correct state until
-Andrew answers.
+### Score — "are we on track", or at the end of any weekly run
 
-## When updating this file or the content-goal log
+Judge honestly. Compare the current measure against where it should be given
+elapsed time, and give a plain verdict: on track, slipping, or off. If off, say
+what specifically has to change — the plan, the deadline, or the effort. Do not
+soften it, and do not manufacture a green status out of activity. Shipped work
+that didn't move the measure counts as not moving the measure.
 
-- A goal moves from PROPOSED to ACTIVE only when Andrew has explicitly given
-  outcome, deadline, and measure — not when a skill infers reasonable-sounding
-  defaults.
-- Progress updates for Goal 2 go in
-  `merit-ai-team/docs/merit-content-goal.md`, dated, one entry per update:
+Append the result to the progress log.
 
-```
-## [date]
-Status: [number/state]
-Source: [where this number came from — a specific file, count, or dashboard,
-         never "estimated"]
-```
+### Amend — "change the goal", "push the deadline"
 
-- If a progress number can't be traced to a real source (an actual count in
-  `merit-content-log.md`, a dashboard figure, a signed agreement), don't
-  record it — that's an invented number, against `merit-context`'s standing
-  rails.
-- Goal 1's progress is whatever Andrew reports directly (design-partner
-  conversations aren't something this team can observe on its own); don't
-  infer it from site traffic or waitlist signups.
+Allowed, but log the old value, the new one, and the reason. A goal quietly
+moved twice is a goal that isn't real.
+
+## How other skills use this
+
+Every merit-* skill reads the goal before choosing what to work on, and orders
+its recommendations by contribution to it. Each weekly output ends with one
+line:
+
+> **Goal:** <outcome> · <days left> · <on track | slipping | off> — <what moved this week>
+
+When a run produces work that does not advance the goal, say so explicitly
+rather than padding the report with it. "Nothing this week moved the goal" is a
+legitimate and useful finding.
+
+## Default goal
+
+If no goal file exists and Andrew hasn't set one, propose this and ask him to
+confirm or replace it — do not adopt it silently:
+
+> **Outcome:** Ten design partners using Merit on their own AI spend data.
+> **Deadline:** 2026-12-31.
+> **Measure:** Count of companies with live ingestion and at least one scored
+> period, from `/api/adoption` across tenants.
+> **Constraint:** No surveillance-tool positioning, and no claim Merit's own
+> copy doesn't already make.
+
+It follows from where Merit actually is: a labeled prototype on demo data with
+a waitlist endpoint and no crawlable content. Everything else — security
+headers, SEO, the methodology page — is downstream of getting real tenants.
+
+## Second goal — content and challenge (added 2026-08-21)
+
+Lives at `merit-ai-team/docs/merit-content-goal.md`, same file shape as above,
+same Set / Read / Score / Amend modes. **Do not invent the outcome, deadline,
+or measure** — none of the three have been given by Andrew as of 2026-08-21.
+Propose this shell, marked PROPOSED, and ask him to fill the blanks rather
+than guessing a number to make the file look complete:
+
+> **Outcome:** <needs Andrew: e.g. "N challenge signups converted to paid" or
+> "N guides + prompts published and indexed">
+> **Deadline:** <needs Andrew>
+> **Measure:** <needs Andrew: published post count? paid conversions? traffic
+> to `/guides` or `/prompts`?>
+> **Constraint:** No invented statistics in guides/prompts, same sourcing
+> discipline as the design-partner goal's copy. Fee mechanism (Stripe vs.
+> manual) must be confirmed before `/challenge` describes a working checkout.
+
+A goal file with three blanks in it is more honest than one with three guessed
+numbers. Flag the blanks in every weekly output on this goal until Andrew
+closes them, the same way the design-partner goal sat PROPOSED for its first
+two weeks.

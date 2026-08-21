@@ -147,7 +147,8 @@ file tools (Read/Write/Edit), same as any other file in this repo.
 | `merit-ai-team/docs/merit-eng-log.md` | merit-eng-review | Code and API review findings |
 | `merit-ai-team/docs/merit-growth-log.md` | merit-growth | Positioning, content, SEO |
 | `merit-ai-team/docs/merit-exec-brief.md` | merit-ceo-brief | Weekly synthesis, decisions owed |
-| `merit-ai-team/docs/merit-content-goal.md` | merit-goal | Content/challenge goal — separate from the design-partner goal |
+| `merit-ai-team/docs/merit-goal.md` | merit-goal | The design-partner goal — outcome, deadline, measure, sub-goals, progress log |
+| `merit-ai-team/docs/merit-content-goal.md` | merit-goal | Content/challenge goal — same shape, separate from the design-partner goal |
 | `merit-ai-team/docs/merit-content-log.md` | merit-growth | Prompts and guides drafted, published, and their status |
 
 Read the relevant log before starting a run, and write the updated full
