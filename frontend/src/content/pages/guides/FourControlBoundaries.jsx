@@ -3,7 +3,7 @@ import Toc from "../../components/Toc.jsx";
 
 export const meta = {
   outFile: "guides/four-control-boundaries.html",
-  title: "Four Control Boundaries for Agentic DevSecOps — Merit Guides",
+  title: "Four Control Boundaries for Agentic DevSecOps — Merit AC Guides",
   description:
     "Code generation is the easy part. The enterprise problem is controlling what happens after the model decides what it wants to do — adapted from Andrew Clark's Agentic DevSecOps carousel.",
 };

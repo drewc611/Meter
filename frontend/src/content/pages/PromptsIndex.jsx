@@ -3,7 +3,7 @@ import { PROMPTS } from "../data/prompts.js";
 
 export const meta = {
   outFile: "prompts/index.html",
-  title: "Prompts — Merit",
+  title: "Prompts — Merit AC",
   description: "A 30-day detailed AI prompt archive on governed agentic DevSecOps, adapted from Andrew Clark's handbook.",
 };
 

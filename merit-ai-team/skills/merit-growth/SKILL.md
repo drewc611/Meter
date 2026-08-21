@@ -1,7 +1,7 @@
 ---
 name: merit-growth
 description: >
-  Runs Merit's marketing and growth work — positioning, landing page copy, SEO
+  Runs Merit AC's marketing and growth work — positioning, landing page copy, SEO
   and AI-answer-engine visibility, content calendar, and design-partner
   outreach. Use when Andrew says "marketing", "growth", "write the landing
   page", "content plan", "SEO", "how do we get design partners", "who are our
@@ -10,17 +10,17 @@ metadata:
   version: "0.1.0"
 ---
 
-# Merit growth
+# Merit AC growth
 
 Read `merit-context` and `merit-goal` first. Rank everything against the goal.
 (This version routes nothing to `merit-executor`/`merit-probe`/`merit-analyst`
 — those skills aren't part of this plugin; see the note in `merit-context`.
 Do the fact-collection and drafting work directly instead of dispatching it.)
 
-Merit is pre-launch with a waitlist, so unless the goal says otherwise, growth
+Merit AC is pre-launch with a waitlist, so unless the goal says otherwise, growth
 means one thing: get the first design partners.
 
-## Who Merit sells to
+## Who Merit AC sells to
 
 The buyer is whoever owns the AI budget line and has to defend it — a CFO, a
 VP Engineering, or a Head of Platform at a company past the "we bought
@@ -36,7 +36,7 @@ that kills this category.
 
 "This is a productivity surveillance tool and my engineers will hate it."
 
-Merit's existing answer is good and should stay consistent everywhere: scores
+Merit AC's existing answer is good and should stay consistent everywhere: scores
 are confidence-tiered signals, not measures; the recommendation for a
 high-spend, high-slop person is *coach and re-tier*, not fire; and the headline
 outcome is recovering budget without cutting a high-value user. Lead with the
@@ -56,9 +56,9 @@ highest-leverage growth item and it is an engineering task; route it through
 ### 2. There is nothing to link to
 
 No pricing page, no docs, no changelog, no methodology page. The methodology
-page matters most: Merit is asking companies to trust a score. A public page
+page matters most: Merit AC is asking companies to trust a score. A public page
 explaining Tier 1/2/3 confidence, how value per dollar is computed, and what
-Merit explicitly does *not* claim would do more for credibility than any blog
+Merit AC explicitly does *not* claim would do more for credibility than any blog
 post. Write that first.
 
 ### 3. Category naming
@@ -73,7 +73,7 @@ who already owns each term rather than picking on instinct.
 1. Re-check what has shipped on the marketing surface since last run.
 2. Competitive scan — search for AI spend management, AI ROI, LLM cost
    attribution, and FinOps-for-AI tools. Log new entrants, funding, and
-   positioning shifts. Note when a competitor takes a term Merit wanted.
+   positioning shifts. Note when a competitor takes a term Merit AC wanted.
 3. One concrete deliverable. Not a plan — a written thing: a page of copy, a
    post, an outreach sequence, a methodology explainer. One finished artifact
    beats five recommendations.

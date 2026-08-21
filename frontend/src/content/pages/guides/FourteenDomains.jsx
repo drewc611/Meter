@@ -3,7 +3,7 @@ import Toc from "../../components/Toc.jsx";
 
 export const meta = {
   outFile: "guides/fourteen-domains-of-the-governed-agentic-platform.html",
-  title: "Fourteen Domains of the Governed Agentic Platform — Merit Guides",
+  title: "Fourteen Domains of the Governed Agentic Platform — Merit AC Guides",
   description:
     "A map of the fourteen domains that make up an enterprise agentic DevSecOps platform, from platform operating model to GovCloud, adapted from Andrew Clark's handbook.",
 };

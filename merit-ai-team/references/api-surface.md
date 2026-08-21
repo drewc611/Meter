@@ -1,4 +1,4 @@
-# Merit API surface
+# Merit AC API surface
 
 Grounded in `backend/README.md` and `backend/app/routers/*.py` in
 `drewc611/Meter` as of this plugin's creation. Cross-check against the live

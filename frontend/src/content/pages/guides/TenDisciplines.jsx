@@ -4,7 +4,7 @@ import Code from "../../components/Code.jsx";
 
 export const meta = {
   outFile: "guides/ten-disciplines-of-governed-agentic-devsecops.html",
-  title: "The Ten Disciplines of Governed Agentic DevSecOps — Merit Guides",
+  title: "The Ten Disciplines of Governed Agentic DevSecOps — Merit AC Guides",
   description:
     "Ten recurring control disciplines for running a coding agent like Claude Code safely at enterprise scale, adapted from Andrew Clark's Enterprise Agentic DevSecOps Handbook.",
 };

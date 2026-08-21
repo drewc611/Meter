@@ -1,6 +1,6 @@
 # Trademark notice
 
-"Merit" and the Merit wordmark, as used in this repository and any live
+"Merit AC" and the Merit AC wordmark, as used in this repository and any live
 deployment of this software, are claimed as an unregistered (common-law)
 trademark of [Your Company/Legal Name] in connection with AI spend, value,
 and quality-risk tracking software and related services.
@@ -31,9 +31,9 @@ prominent use per page; it doesn't need to be repeated on every mention.
 
 **Spend360** (`spend360.ai`) is a live, currently-operating AI cost
 platform whose own tagline — "Attribute every AI dollar to a business
-unit, a member, and an outcome" — is close enough to Merit's original
+unit, a member, and an outcome" — is close enough to Merit AC's original
 pitch to be a real differentiation problem, not just a naming one. There
-is no name collision with "Merit" itself, so this isn't a trademark
+is no name collision with "Merit AC" itself, so this isn't a trademark
 conflict on the mark — it's a positioning conflict: two products
 describing the same core capability in nearly the same words. Note also
 that "Spend360" has been used by an *unrelated* earlier company (a
@@ -43,11 +43,11 @@ companies have carried this name in adjacent spend-analytics markets,
 which is useful context for how crowded generic "spend" naming is in
 this space generally, separate from the live spend360.ai product.
 
-In response, Merit's public copy (`README.md`, `frontend/coming-soon.html`)
+In response, Merit AC's public copy (`README.md`, `frontend/coming-soon.html`)
 was rewritten to lead with the one capability spend360.ai doesn't claim:
 quality-risk / slop scoring (reverts, heavy rewrites, regeneration
 loops). Spend attribution and outcome-correlation are still described
-accurately as real capabilities Merit has — just framed as necessary
+accurately as real capabilities Merit AC has — just framed as necessary
 infrastructure rather than the differentiator, since that framing is now
 occupied by a competitor's tagline.
 

@@ -1,16 +1,16 @@
 """
 Optional, personal-only helper -- not part of the demo, not run by tests.
-Wires YOUR real AI-tool usage into a LOCAL Merit instance (defaults to
+Wires YOUR real AI-tool usage into a LOCAL Merit AC instance (defaults to
 http://localhost:8000) so you're looking at your own numbers instead of
 seed.py's fabricated company.
 
-No leak by construction, not just by promise: Merit's schema has nowhere to
+No leak by construction, not just by promise: Merit AC's schema has nowhere to
 put source code, diffs, or prompt/conversation content (see models.py) --
 a UsageEvent is cost/tokens/tool/model, an OutcomeEvent is a URL reference.
 This script doesn't change that; it's just a convenient way to feed your
 own metadata into it instead of typing curl by hand. `sync-github` talks
 only to api.github.com with a token *you* supply via GITHUB_TOKEN -- it
-never goes anywhere near an LLM or any Merit-hosted server.
+never goes anywhere near an LLM or any Merit AC-hosted server.
 
 This is exactly the "personal use" case ../LICENSE grants free of charge --
 an individual tracking their own usage, not business/commercial use.
@@ -57,7 +57,7 @@ def _db():
 
 
 def _ensure_org(db):
-    """A personal Merit instance has exactly one Organization -- created on
+    """A personal Merit AC instance has exactly one Organization -- created on
     first `setup` run, reused after that."""
     org = db.query(Organization).order_by(Organization.id).first()
     if org is None:

@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Merit — AI Spend &amp; Value (coming soon)</title>
-<meta name="description" content="Merit tells a company what it spends on AI, what that spend is actually producing, and how much of it is rework risk instead of real work. Coming soon.">
+<title>Merit AC — AI Spend &amp; Value (coming soon)</title>
+<meta name="description" content="Merit AC tells a company what it spends on AI, what that spend is actually producing, and how much of it is rework risk instead of real work. Coming soon.">
 <style>
   :root{
     /* Same navy/brand family as the dashboard sidebar (styles.css --navy/--navy2/--brand)
@@ -121,13 +121,13 @@
     <i style="height:22px;background:var(--brand-soft)"></i>
     <i style="height:30px;background:var(--brand)"></i>
   </div>
-  <div class="brand">Merit<sup>&trade;</sup></div>
+  <div class="brand">Merit AC<sup>&trade;</sup></div>
 
   <div class="badge"><i></i> Under development</div>
 
   <h1>AI spend isn't the risk. Slop wearing a good ROI number is.</h1>
   <p class="sub">
-    Most tools stop at "who spent what." Merit checks if the work was
+    Most tools stop at "who spent what." Merit AC checks if the work was
     <b>any good</b> — reverts, rewrites, regeneration loops — before it
     counts as value.
   </p>
@@ -183,7 +183,7 @@
     </div>
     <div class="calc-result" id="calcResult">Fill in the fields above to see an estimate</div>
     <div class="calc-breakdown" id="calcBreakdown" hidden></div>
-    <p class="calc-note">Illustrative, not a personalized audit — "time saved" and "rework overhead" are numbers <em>you</em> supply here. Connect Merit to replace these guesses with measured numbers from your own GitHub, Jira, and AI usage history.</p>
+    <p class="calc-note">Illustrative, not a personalized audit — "time saved" and "rework overhead" are numbers <em>you</em> supply here. Connect Merit AC to replace these guesses with measured numbers from your own GitHub, Jira, and AI usage history.</p>
   </div>
 
   <div class="features">
@@ -206,7 +206,7 @@
   </div>
 
   <footer>
-    &copy; 2026 Merit&trade;. All rights reserved.
+    &copy; 2026 Merit AC&trade;. All rights reserved.
   </footer>
 </main>
 
@@ -291,7 +291,7 @@
     var netValue = grossValue - totalCost;
     var meritScore = totalCost > 0 ? grossValue / totalCost : 0;
 
-    calcResult.innerHTML = "<b>" + meritScore.toFixed(2) + "&times;</b> Merit Score &mdash; " +
+    calcResult.innerHTML = "<b>" + meritScore.toFixed(2) + "&times;</b> Merit AC Score &mdash; " +
       fmtCalcMoney(netValue) + "/year net AI value";
     calcResult.classList.add("has-value");
 

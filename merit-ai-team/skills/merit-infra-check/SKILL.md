@@ -4,14 +4,14 @@ description: >
   Runs the weekly infrastructure and security check on usemeritai.com and
   api.usemeritai.com — uptime, response headers, TLS, API surface diff, bundle
   changes, dependency and CVE watch, and hosting cost posture. Use when Andrew
-  says "infra check", "is the site up", "security check", "check Merit's
+  says "infra check", "is the site up", "security check", "check Merit AC's
   infrastructure", "what changed on the API", or when the weekly infrastructure
   scheduled task fires.
 metadata:
   version: "0.1.0"
 ---
 
-# Merit infra check
+# Merit AC infra check
 
 Read `merit-context` and `merit-goal` first. Run steps 1–5 yourself directly —
 the `merit-executor`/`merit-probe`/`merit-analyst` tier-routing referenced in
@@ -84,7 +84,7 @@ Check nameservers, A/CNAME records, MX, and SPF/DMARC TXT records. `dig` may
 not be installed — `python3 -c "import socket; print(socket.gethostbyname('usemeritai.com'))"`
 or an HTTPS DNS resolver both work.
 
-Missing SPF and DMARC matter more than usual here: Merit has a
+Missing SPF and DMARC matter more than usual here: Merit AC has a
 `notify-waitlist` action that sends mail, and unauthenticated sending domains
 land in spam.
 
@@ -109,7 +109,7 @@ spreading to pages that had no reason to inherit it.
 Search for newly disclosed vulnerabilities affecting the known stack: FastAPI,
 Starlette, Uvicorn, Pydantic, React, Vite, and the Fly.io platform. Only report
 advisories published since the last run, and only ones plausibly reachable
-given how Merit uses the dependency. Do not paste CVE lists.
+given how Merit AC uses the dependency. Do not paste CVE lists.
 
 ## 8. Cost and capacity posture
 

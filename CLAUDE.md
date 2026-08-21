@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Merit is an AI spend tracker: it tells a company what it spends on AI, who's
+Merit AC is an AI spend tracker: it tells a company what it spends on AI, who's
 spending it, and whether that spend is producing real work or slop. Early
 prototype status. Three parts:
 
@@ -19,7 +19,7 @@ prototype status. Three parts:
   rather than 404ing as client-only SPA routes, and so an anonymous visitor
   lands on a real landing page instead of an auth-gated dashboard. See
   `frontend/README.md`.
-- `merit-ai-team/` — skills for the internal AI team that runs Merit's own
+- `merit-ai-team/` — skills for the internal AI team that runs Merit AC's own
   product/growth/eng/infra loop (not part of the shipped product). Its own
   context and working rules live in
   `merit-ai-team/skills/merit-context/SKILL.md`; don't duplicate that here.

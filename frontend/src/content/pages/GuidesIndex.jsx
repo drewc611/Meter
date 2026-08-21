@@ -2,8 +2,8 @@ import ContentLayout from "../components/ContentLayout.jsx";
 
 export const meta = {
   outFile: "guides/index.html",
-  title: "Guides — Merit",
-  description: "General guides on doing AI work well, from the team building Merit — starting with governed agentic DevSecOps.",
+  title: "Guides — Merit AC",
+  description: "General guides on doing AI work well, from the team building Merit AC — starting with governed agentic DevSecOps.",
 };
 
 const GUIDES = [

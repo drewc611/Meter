@@ -3,9 +3,9 @@ import Toc from "../components/Toc.jsx";
 
 export const meta = {
   outFile: "architecture.html",
-  title: "Architecture — Merit",
+  title: "Architecture — Merit AC",
   description:
-    "How Merit is built and hosted: the data model, the scoring pipeline, the deployment split, and what's deliberately not built yet.",
+    "How Merit AC is built and hosted: the data model, the scoring pipeline, the deployment split, and what's deliberately not built yet.",
 };
 
 export default function Architecture() {
@@ -15,7 +15,7 @@ export default function Architecture() {
       <span className="badge">
         <i /> Reflects the live deployment
       </span>
-      <h1>How Merit is built</h1>
+      <h1>How Merit AC is built</h1>
       <p className="lead">
         The same architecture documented in the repo's own <code>ARCHITECTURE.md</code> and{" "}
         <code>backend/README.md</code> — reality as deployed today, expanded here with the data

@@ -1,24 +1,24 @@
 ---
 name: merit-context
 description: >
-  Loads what is known about Merit (usemeritai.com) — the product, the public
+  Loads what is known about Merit AC (usemeritai.com) — the product, the public
   API surface, the hosting stack, the scoring model, and the current stage of
   the business. Read this before any other merit-* skill runs, and whenever the
-  user says "Merit", "usemeritai", "the site", "the API", "our product", or asks
-  anything about Merit's infrastructure, code, marketing, or strategy. Every
+  user says "Merit AC", "usemeritai", "the site", "the API", "our product", or asks
+  anything about Merit AC's infrastructure, code, marketing, or strategy. Every
   other skill in the merit-ai-team plugin depends on this one.
 metadata:
   version: "0.1.0"
   last_verified: "2026-08-15"
 ---
 
-# Merit — shared context
+# Merit AC — shared context
 
 Load this first. Do not restate it back to Andrew; use it.
 
-## What Merit is
+## What Merit AC is
 
-Merit measures whether a company's AI spend is producing value. It ingests
+Merit AC measures whether a company's AI spend is producing value. It ingests
 per-person AI spend, business outcomes, and quality signals from three
 independent systems, then scores each person on value per dollar and "slop
 risk."
@@ -49,10 +49,10 @@ proxies), Tier 3 (opt-in sampled rubric grading, not yet shipped).
 
 ### Positioning discipline
 
-Merit's own copy is careful, and Merit's agents must be too. The UI says value
+Merit AC's own copy is careful, and Merit AC's agents must be too. The UI says value
 is a "spend-weighted estimate, not a causal claim" and that scores are
 "confidence-tiered signals, not exact measures." Never write marketing copy
-that claims Merit proves tool X caused outcome Y. That precision is the brand.
+that claims Merit AC proves tool X caused outcome Y. That precision is the brand.
 
 ## Stack (verified 2026-08-15)
 
@@ -60,7 +60,7 @@ that claims Merit proves tool X caused outcome Y. That precision is the brand.
 | --- | --- | --- |
 | Frontend | React SPA built with Vite, single hashed bundle at `/assets/main-*.js` | HTML source |
 | Frontend host | Cloudflare (`server: cloudflare`, `cf-cache-status: HIT`) | response headers |
-| API | `api.usemeritai.com`, FastAPI, OpenAPI 3.1.0, title "Merit API" v0.1.0 | `/openapi.json` |
+| API | `api.usemeritai.com`, FastAPI, OpenAPI 3.1.0, title "Merit AC API" v0.1.0 | `/openapi.json` |
 | API host | Fly.io, `ord` region | `server: Fly/…`, `fly-request-id: …-ord` |
 | Health | `GET /healthz` → `{"status":"ok"}` | direct fetch |
 | Auth | email/password + Google OAuth, JWT (`TokenOut`) | OpenAPI schema |
@@ -70,7 +70,7 @@ Full endpoint list and schema field names: `references/api-surface.md`.
 
 ## The site now has three arms (added 2026-08-21)
 
-Merit is no longer just the ROI product. Three surfaces, three audiences:
+Merit AC is no longer just the ROI product. Three surfaces, three audiences:
 
 1. **The ROI product** — `/`, `/architecture`, `/setup/react`, `/setup/python`,
    `/setup/node`, `/setup/tensorflow-pyro`, `/methodology`. Sells to the CFO/VP
@@ -96,7 +96,7 @@ the sample tenant is "Northwind Labs," and there is a `POST /waitlist` endpoint
 plus an `admin/notify-waitlist` action. Pricing is mentioned only inside the
 product copy: a Growth plan at roughly **$18–25/user/mo**.
 
-Treat every recommendation through that lens. Merit does not have production
+Treat every recommendation through that lens. Merit AC does not have production
 customers to break, but it also has no traffic, no backlinks, and no content.
 Priorities are: don't ship something embarrassing, and get the first design
 partners.

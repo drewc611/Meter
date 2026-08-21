@@ -4,7 +4,7 @@ import Code from "../components/Code.jsx";
 
 export const meta = {
   outFile: "challenge.html",
-  title: "The 30-Day Challenge: Build a Governed Agentic Delivery Platform — Merit",
+  title: "The 30-Day Challenge: Build a Governed Agentic Delivery Platform — Merit AC",
   description:
     "A free 30-day run through governed agentic DevSecOps, ending in a real capstone project: build a Governed Agentic Delivery Platform, adapted from Andrew Clark's handbook.",
 };

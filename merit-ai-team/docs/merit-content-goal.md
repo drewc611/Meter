@@ -1,4 +1,4 @@
-# Merit goal
+# Merit AC goal
 
 **Outcome:** PROPOSED — needs Andrew: e.g. "N challenge signups converted to
 paid" or "N guides + prompts published and indexed."

@@ -1,4 +1,4 @@
-# Deploying Merit to usemeritai.com
+# Deploying Merit AC to usemeritai.com
 
 Two pieces, deployed separately, both from this repo — no separate repo
 needed:
@@ -193,7 +193,7 @@ a real account (password or Google) to see live data.
    #    check starts failing and the machine gets marked unhealthy.
    ```
 5. Sign up for your own account at `https://usemeritai.com/app` (or via the
-   curl above) and confirm the dashboard loads with the `LIVE · Merit API` badge.
+   curl above) and confirm the dashboard loads with the `LIVE · Merit AC API` badge.
    The first account ever created on a deployment automatically gets
    `is_admin` (needed for `/admin/recompute-scores` and
    `/admin/identity-mapping`) -- sign up before sharing the URL with anyone

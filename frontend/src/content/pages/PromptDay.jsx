@@ -5,7 +5,7 @@ import { PROMPTS } from "../data/prompts.js";
 export function promptMeta(entry) {
   return {
     outFile: `prompts/day-${entry.day}-${entry.slug}.html`,
-    title: `Day ${entry.day}: ${entry.title} — Merit Prompts`,
+    title: `Day ${entry.day}: ${entry.title} — Merit AC Prompts`,
     description: entry.prompt.slice(0, 155),
   };
 }

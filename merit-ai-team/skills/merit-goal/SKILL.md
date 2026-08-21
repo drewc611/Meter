@@ -1,7 +1,7 @@
 ---
 name: merit-goal
 description: >
-  Sets, reads, and scores Merit's standing goal — the one objective every agent
+  Sets, reads, and scores Merit AC's standing goal — the one objective every agent
   run is measured against. Use when Andrew says "goal", "/goal", "set the
   goal", "what's the goal", "are we on track", "how are we doing against the
   goal", "change the goal", or when any weekly merit run needs to know what it
@@ -11,7 +11,7 @@ metadata:
   version: "0.2.0"
 ---
 
-# Merit goal
+# Merit AC goal
 
 **Two goals now, tracked separately, never averaged into one score (added
 2026-08-21).** The design-partner goal (`merit-ai-team/docs/merit-goal.md`)
@@ -51,7 +51,7 @@ A goal needs four things. Ask for anything missing, in one round:
 Then write the file:
 
 ```markdown
-# Merit goal
+# Merit AC goal
 
 **Outcome:** <end state>
 **Deadline:** <date>
@@ -105,14 +105,14 @@ legitimate and useful finding.
 If no goal file exists and Andrew hasn't set one, propose this and ask him to
 confirm or replace it — do not adopt it silently:
 
-> **Outcome:** Ten design partners using Merit on their own AI spend data.
+> **Outcome:** Ten design partners using Merit AC on their own AI spend data.
 > **Deadline:** 2026-12-31.
 > **Measure:** Count of companies with live ingestion and at least one scored
 > period, from `/api/adoption` across tenants.
-> **Constraint:** No surveillance-tool positioning, and no claim Merit's own
+> **Constraint:** No surveillance-tool positioning, and no claim Merit AC's own
 > copy doesn't already make.
 
-It follows from where Merit actually is: a labeled prototype on demo data with
+It follows from where Merit AC actually is: a labeled prototype on demo data with
 a waitlist endpoint and no crawlable content. Everything else — security
 headers, SEO, the methodology page — is downstream of getting real tenants.
 

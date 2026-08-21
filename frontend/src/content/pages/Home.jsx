@@ -2,13 +2,13 @@ import ContentLayout from "../components/ContentLayout.jsx";
 
 export const meta = {
   outFile: "index.html",
-  title: "Merit — AI Spend & Value",
+  title: "Merit AC — AI Spend & Value",
   description:
-    "Merit tells a company what it spends on AI, what that spend is actually producing, and how much of it is rework risk instead of real work.",
+    "Merit AC tells a company what it spends on AI, what that spend is actually producing, and how much of it is rework risk instead of real work.",
 };
 
 const EXPLORE = [
-  { href: "/architecture", title: "Architecture", meta: "How Merit is built and hosted" },
+  { href: "/architecture", title: "Architecture", meta: "How Merit AC is built and hosted" },
   { href: "/setup/react", title: "Setup guides", meta: "Wire your AI usage in — React, Python, Node, TensorFlow/Pyro" },
   { href: "/guides", title: "Guides", meta: "General writing on doing AI work well" },
   { href: "/prompts", title: "Prompts", meta: "A daily AI prompt archive" },
@@ -23,7 +23,7 @@ export default function Home() {
       </span>
       <h1>AI spend isn&apos;t the risk. Slop wearing a good ROI number is.</h1>
       <p className="lead">
-        Most tools stop at &quot;who spent what.&quot; Merit checks if the work was <b>any good</b> —
+        Most tools stop at &quot;who spent what.&quot; Merit AC checks if the work was <b>any good</b> —
         reverts, rewrites, regeneration loops — before it counts as value.
       </p>
       <div className="cta-row">

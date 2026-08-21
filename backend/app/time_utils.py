@@ -1,7 +1,7 @@
 """
 Single source of truth for "now".
 
-Everything Merit stores and compares is naive UTC. We deliberately keep the
+Everything Merit AC stores and compares is naive UTC. We deliberately keep the
 whole system on naive-UTC datetimes rather than timezone-aware ones for two
 reasons: the SQLite `DateTime` columns store naive values, and the dashboard
 parses `period_start`/`period_end` as local-time ISO strings (a trailing

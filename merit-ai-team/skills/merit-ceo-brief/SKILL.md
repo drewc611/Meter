@@ -1,7 +1,7 @@
 ---
 name: merit-ceo-brief
 description: >
-  The weekly CEO synthesis for Merit — runs the whole team, reads every log,
+  The weekly CEO synthesis for Merit AC — runs the whole team, reads every log,
   scores progress against the goal, and returns the three things that matter
   and the decisions Andrew owes. Use when Andrew says "CEO brief", "weekly
   brief", "run the team", "where are we", "what do I need to decide", "state of
@@ -10,7 +10,7 @@ metadata:
   version: "0.1.0"
 ---
 
-# Merit CEO brief
+# Merit AC CEO brief
 
 The one that pulls it together. Read `merit-context` and `merit-goal` first.
 
@@ -71,7 +71,7 @@ that keeps the other four honest.
 - **Kill things.** If a workstream hasn't moved the measure in a month, name it
   and recommend stopping. Nobody else on this team will.
 - **Don't launder inference as fact.** Anything not directly observed gets
-  labeled. Confidence discipline is Merit's own product claim; the team that
+  labeled. Confidence discipline is Merit AC's own product claim; the team that
   builds it doesn't get to be sloppier than the product.
 - **No invented numbers.** If Andrew hasn't connected billing, analytics, or
   the waitlist count, say the data isn't there and name what to connect. An

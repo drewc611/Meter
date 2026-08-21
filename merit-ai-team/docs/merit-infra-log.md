@@ -1,4 +1,4 @@
-# Merit infra log
+# Merit AC infra log
 
 Maintained by `merit-infra-check`. Dated findings only — each run appends a
 new section below, oldest at the bottom flipped to newest-first is fine as
