@@ -1,62 +1,156 @@
 ---
 name: merit-context
-description: Shared background knowledge for every Merit agent-team skill — what Merit is, its three site arms, and the standing rails that apply regardless of which skill is running. Load this first, or whenever a skill needs to check what's in scope, what's off-limits, or what's still an open decision.
+description: >
+  Loads what is known about Merit (usemeritai.com) — the product, the public
+  API surface, the hosting stack, the scoring model, and the current stage of
+  the business. Read this before any other merit-* skill runs, and whenever the
+  user says "Merit", "usemeritai", "the site", "the API", "our product", or asks
+  anything about Merit's infrastructure, code, marketing, or strategy. Every
+  other skill in the merit-ai-team plugin depends on this one.
+metadata:
+  version: "0.1.0"
+  last_verified: "2026-08-15"
 ---
 
-# Merit context
+# Merit — shared context
 
-Merit is an AI spend tracker: it tells a company what it spends on AI, who's spending
-it, and whether that spend is producing real work or slop. Early prototype status. See
-the main repo's `CLAUDE.md` (`drewc611/Meter`) for the technical architecture — this
-skill covers the business/site context the AI team operates against, which the repo's
-own docs don't carry.
+Load this first. Do not restate it back to Andrew; use it.
 
-## The three site arms
+## What Merit is
 
-1. **The ROI product** — `/`, `/architecture`, `/setup/*` (react, python, node,
-   tensorflow-pyro). The core pitch: track AI spend, see who's actually producing
-   value vs. slop.
-2. **General AI-education content** — `/guides`, `/prompts`. Not gated, not tied to
-   the product pitch directly. A 30-day prompt challenge lives at `/prompts/day-N-*`.
-3. **The 30-day paid challenge** — `/challenge`. Landing page + gated daily content.
-   **The fee mechanism is undecided as of this handoff** (Stripe vs. manual gating) —
-   do not build a payment flow until Andrew confirms which.
+Merit measures whether a company's AI spend is producing value. It ingests
+per-person AI spend, business outcomes, and quality signals from three
+independent systems, then scores each person on value per dollar and "slop
+risk."
 
-These are two separate goals, not one funneling into the other by default — see
-`merit-goal` for why they're tracked as independent outcomes, and the open question
-below about whether content is meant to funnel traffic into the ROI product at all.
+Verbatim from the product UI:
 
-## Standing rails (apply to every skill in this plugin)
+> AI spend, value, and rework risk — by team, with person-level detail when you
+> need it.
 
-- Read-only public probes against the live ROI product. Never `POST` to `/admin/*`,
-  `/ingest/*`, or `/waitlist` without asking first.
-- Never push to `main` directly. Never deploy, change DNS, send mail, or publish
-  anything without Andrew's sign-off.
-- No invented numbers, stats, or testimonials, anywhere, for any purpose. Missing
-  data gets named as missing — a blank or a "TBD" — never filled with a plausible
-  guess.
-- Anything external-facing (guides, prompts, landing copy) gets a Judge-tier
-  adversarial pass before it ships, and at most one quote per source, checked against
-  the primary material it claims to quote.
+The pitch that carries the money: a company spending ~$274k/yr on AI can
+recover roughly 24% of it without cutting a single high-value user.
 
-## Open decisions (owed by Andrew — carry these into every `merit-ceo-brief` run
-until resolved)
+### The scoring model
 
-1. Content goal — actual metric, number, deadline. Blocks `merit-goal`'s second goal
-   from being anything but a placeholder.
-2. Challenge fee mechanism — Stripe vs. manual gating.
-3. Whether `/guides` and `/prompts` content should funnel traffic toward `/setup/*`
-   (the ROI product) or serve a separate audience entirely. This changes every CTA on
-   every guide/prompt page, so don't write those CTAs until it's answered.
-4. Repo/push access for whichever repos a given task touches — confirm scope before
-   using anything broader than the task needs.
+| Concept | Meaning |
+| --- | --- |
+| Value per $ | Outcome-weighted return on a person's AI spend (e.g. `2.51×`). Can go negative. |
+| Slop risk | 0–100 quality-proxy score. High = rework, reverts, reopens. |
+| AI rework tax | % of spend sitting in high-slop-risk usage. |
+| Recoverable / yr | Over-tiered seats + high-slop spend re-tiered + shadow-AI consolidation. |
 
-## Provenance note
+Four segments people land in: **Fund** (high value, high spend), **Coach**
+(high spend, high slop), **Learn** (low spend, high value), **Monitor** (low
+spend, low signal).
 
-This plugin was reconstructed from a handoff spec (2026-08-21) describing updates to
-six pre-existing skills; the prior versions of those skills were not available in the
-session that wrote this one. Where the handoff described existing state (e.g. "the
-10-design-partner goal"), that fact is carried over as given. Where it didn't specify
-something (exact wording, prior file structure), this version is a fresh draft against
-the spec, not a byte-for-byte continuation of an original. Treat the first real run of
-each skill as a chance to correct drift from whatever was actually running before.
+Three confidence tiers: Tier 1 (spend + outcome correlation), Tier 2 (quality
+proxies), Tier 3 (opt-in sampled rubric grading, not yet shipped).
+
+### Positioning discipline
+
+Merit's own copy is careful, and Merit's agents must be too. The UI says value
+is a "spend-weighted estimate, not a causal claim" and that scores are
+"confidence-tiered signals, not exact measures." Never write marketing copy
+that claims Merit proves tool X caused outcome Y. That precision is the brand.
+
+## Stack (verified 2026-08-15)
+
+| Layer | What it is | How it was verified |
+| --- | --- | --- |
+| Frontend | React SPA built with Vite, single hashed bundle at `/assets/main-*.js` | HTML source |
+| Frontend host | Cloudflare (`server: cloudflare`, `cf-cache-status: HIT`) | response headers |
+| API | `api.usemeritai.com`, FastAPI, OpenAPI 3.1.0, title "Merit API" v0.1.0 | `/openapi.json` |
+| API host | Fly.io, `ord` region | `server: Fly/…`, `fly-request-id: …-ord` |
+| Health | `GET /healthz` → `{"status":"ok"}` | direct fetch |
+| Auth | email/password + Google OAuth, JWT (`TokenOut`) | OpenAPI schema |
+| Dev fallback | bundle contains `http://localhost:8000` | bundle string |
+
+Full endpoint list and schema field names: `references/api-surface.md`.
+
+## The site now has three arms (added 2026-08-21)
+
+Merit is no longer just the ROI product. Three surfaces, three audiences:
+
+1. **The ROI product** — `/`, `/architecture`, `/setup/react`, `/setup/python`,
+   `/setup/node`, `/setup/tensorflow-pyro`, `/methodology`. Sells to the CFO/VP
+   Eng buyer. Tracked against the original design-partner goal.
+2. **AI-education content** — `/guides`, `/prompts`. General "how to do AI
+   better" articles and a daily detailed prompt archive, one stack-tagged post
+   per day (react, python, node, tensorflow-pyro). Broader audience than the
+   product buyer — this is top-of-funnel, not the pitch itself.
+3. **The 30-day challenge** — `/challenge`. A free run of daily prompts with a
+   paid unlock at the end. **Fee mechanism (Stripe vs. manual) is undecided as
+   of 2026-08-21 — do not describe a working checkout until Andrew confirms.**
+
+**Content tracking is a separate goal from the design-partner goal**, not a
+sub-goal of it. See `merit-goal` for both. Whether content is meant to funnel
+into `/setup/*` signups or serve a separate audience is still an open question
+— don't assume either direction in copy until it's answered.
+
+## Stage of the business
+
+Pre-launch. The live app runs on demo data and labels itself so — every page
+carries a `DEMO DATA · API offline` badge and an "illustrative prototype" mark,
+the sample tenant is "Northwind Labs," and there is a `POST /waitlist` endpoint
+plus an `admin/notify-waitlist` action. Pricing is mentioned only inside the
+product copy: a Growth plan at roughly **$18–25/user/mo**.
+
+Treat every recommendation through that lens. Merit does not have production
+customers to break, but it also has no traffic, no backlinks, and no content.
+Priorities are: don't ship something embarrassing, and get the first design
+partners.
+
+## Known open issues as of 2026-08-15
+
+Carry these forward; re-check rather than re-discover them.
+
+1. **No security headers on the frontend.** No HSTS, CSP, X-Frame-Options,
+   X-Content-Type-Options, or Referrer-Policy. Cheap fix via a Cloudflare
+   `_headers` file or Transform Rule.
+2. **`/openapi.json` and `/docs` are publicly readable** on the production API.
+   That publishes the full admin and ingest surface to anyone. Gate them or
+   disable in prod.
+3. **Admin endpoints exist with unknown auth.** `/admin/identity-mapping`,
+   `/admin/recompute-scores`, `/admin/notify-waitlist`. Confirm they require an
+   authenticated admin role — the last one can email the whole waitlist.
+4. **Zero crawlable content.** The SPA ships an empty `<div id="root">`. No
+   sitemap.xml. Search engines and AI answer engines see nothing but a title.
+5. **Single API region (`ord`) and unknown backup posture.** Fine for now,
+   worth a stated position before the first paying customer.
+6. **No pricing page, no docs, no changelog** on the public site.
+
+## Working rules for every merit-* skill
+
+- **Verify, don't assume.** Re-fetch headers, `/healthz`, and `/openapi.json`
+  each run. Stack details change; this file is a starting point, not truth.
+- **Never send authenticated or destructive requests.** Read-only probes on
+  public endpoints only. Never call `/admin/*`, `/ingest/*`, or `/waitlist`.
+- **Separate finding from inference.** Label anything not directly observed.
+- **Report the delta.** Andrew has read this before. Lead with what changed
+  since the last run, not with a re-description of the system.
+- **Write findings back to the docs.** Every run appends to the relevant file
+  under `merit-ai-team/docs/` (see the table below) so the next run has memory.
+- **Andrew's voice.** Direct, opinionated, specific. No "in today's landscape,"
+  no "it's worth noting," no bold-term-colon-explanation lists.
+
+## Project docs this team maintains
+
+These are plain markdown files in this plugin's own repo (`drewc611/Meter`,
+`merit-ai-team/docs/`) — not a claude.ai Project. Read/write them with normal
+file tools (Read/Write/Edit), same as any other file in this repo.
+
+| Path | Owner skill | Contents |
+| --- | --- | --- |
+| `merit-ai-team/docs/merit-site-profile.md` | merit-context | Stack, product, scoring model |
+| `merit-ai-team/docs/merit-infra-log.md` | merit-infra-check | Weekly infra findings, dated |
+| `merit-ai-team/docs/merit-eng-log.md` | merit-eng-review | Code and API review findings |
+| `merit-ai-team/docs/merit-growth-log.md` | merit-growth | Positioning, content, SEO |
+| `merit-ai-team/docs/merit-exec-brief.md` | merit-ceo-brief | Weekly synthesis, decisions owed |
+| `merit-ai-team/docs/merit-content-goal.md` | merit-goal | Content/challenge goal — separate from the design-partner goal |
+| `merit-ai-team/docs/merit-content-log.md` | merit-growth | Prompts and guides drafted, published, and their status |
+
+Read the relevant log before starting a run, and write the updated full
+contents back (append a new dated section, don't overwrite prior entries) when
+done, so the next run has memory. If a doc doesn't exist yet, create it with a
+one-line header and start appending — don't wait for a "first run" ceremony.
