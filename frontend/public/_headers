@@ -1,0 +1,11 @@
+# Cloudflare Workers static-assets header rules. The hashed JS/CSS bundles
+# already have unique filenames per build (content-addressed), so they're
+# safe to cache forever -- but the top-level HTML pages (/, /app,
+# /architecture, etc.) share the same URL across deploys, so without an
+# explicit rule an edge cache or a visitor's browser can keep serving an
+# old build's HTML after a new one ships.
+/*
+  Cache-Control: no-cache, must-revalidate
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
