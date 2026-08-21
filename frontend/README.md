@@ -8,6 +8,17 @@ waitlist form + ROI calculator, plain JS, no React) built as its own Vite
 entry so it still ships with a hashed `styles.css` reference without being
 pulled into the React bundle.
 
+The content-site pages (`architecture.html`, `setup/*.html`, `guides/`,
+`prompts/`, `challenge.html`) are the same pattern: plain static HTML, no
+React, sharing `content.css`. Each is its own Vite build entry (see
+`vite.config.js`) so it ships as a real file at a clean path
+(`/architecture`, `/setup/react`, `/guides`, …) instead of a client-only SPA
+route — the latter would 404 on a direct request, per the SPA-fallback gap
+tracked in `merit-ai-team`'s infra-check skill. `guides/` and `prompts/` ship
+as honest "nothing published yet" index pages until real content exists;
+don't add fabricated articles/prompts to make them look more finished than
+they are.
+
 ## Commands
 
 ```bash
