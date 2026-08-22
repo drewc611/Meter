@@ -28,6 +28,11 @@ export default function PromptsIndex() {
         fourteen platform domains, then six days building the capstone project behind{" "}
         <a href="/challenge">the challenge</a>.
       </p>
+      <p>
+        Every prompt is a full role, context, numbered-steps, constraints, and output-format brief —
+        copy it as-is into ChatGPT, Claude, or any other assistant. Where a step needs your repo or
+        pipeline config, the prompt tells you what to paste in first.
+      </p>
 
       {SECTIONS.map((section) => (
         <div key={section.label}>

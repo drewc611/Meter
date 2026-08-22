@@ -29,6 +29,7 @@ average the two into a single status.
 | Fee mechanism decided (Stripe vs. manual) | Andrew | **decided 2026-08-22: Stripe Payment Link, $299 one-time**, for a paid capstone-build review from Andrew — see `/challenge#paid-track` |
 | Stripe Payment Link actually created | Andrew | **open** — `frontend/src/content/data/paidTrack.js`'s `PAID_TRACK_PAYMENT_LINK` is still a placeholder; until it's set, `/challenge#paid-track` shows a "coming soon" badge plus a real email-capture form (`source=challenge-paid-track` in `waitlist_signups`, viewable via `GET /admin/waitlist?source=challenge-paid-track`) so interest isn't lost while Stripe isn't wired up |
 | Funnel direction decided (content → `/setup/*` vs. separate audience) | Andrew | open |
+| `/community` page | merit-growth | done — interest-capture only (`source=community-interest`); platform and price both open, same as the paid track |
 
 ## Progress log
 
@@ -66,3 +67,17 @@ average the two into a single status.
   `/admin/notify-waitlist` (the "site is live" announcement) is now scoped
   to `source="coming-soon"` only, so it can never accidentally email this
   list the wrong message.
+
+### 2026-08-22 (later still) — /community page added, interest-capture only
+- Andrew asked for a `/community` page modeled loosely on a competitor's
+  paid-membership community page. That page has real pricing, a real
+  platform (Circle), and real member/founder claims -- none of which exist
+  for Merit AC yet, and inventing them would violate this project's own
+  no-fabrication rule. Andrew confirmed: build an honest interest-capture
+  page instead, same pattern as the paid track, platform and price left
+  fully open. Reuses `waitlist_signups` again with `source=
+  "community-interest"` -- no new backend work needed, `GET /admin/waitlist`
+  already supports arbitrary sources.
+- Added to site nav and the homepage Explore grid. While in Home.jsx, also
+  fixed a stale "Format set, more coming soon" line on the challenge tile
+  that predated the challenge page actually shipping real content.

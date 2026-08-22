@@ -12,6 +12,7 @@ import SetupTensorflowPyro, { meta as setupTensorflowPyroMeta } from "./pages/Se
 import GuidesIndex, { meta as guidesMeta } from "./pages/GuidesIndex.jsx";
 import PromptsIndex, { meta as promptsMeta } from "./pages/PromptsIndex.jsx";
 import Challenge, { meta as challengeMeta } from "./pages/Challenge.jsx";
+import Community, { meta as communityMeta } from "./pages/Community.jsx";
 import TenDisciplines, { meta as tenDisciplinesMeta } from "./pages/guides/TenDisciplines.jsx";
 import FourteenDomains, { meta as fourteenDomainsMeta } from "./pages/guides/FourteenDomains.jsx";
 import FourControlBoundaries, { meta as fourControlBoundariesMeta } from "./pages/guides/FourControlBoundaries.jsx";
@@ -31,6 +32,7 @@ const PAGES = [
   [FourControlBoundaries, fourControlBoundariesMeta],
   [PromptsIndex, promptsMeta],
   [Challenge, challengeMeta],
+  [Community, communityMeta],
 ];
 
 export function renderAll() {

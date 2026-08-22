@@ -11,8 +11,9 @@ const EXPLORE = [
   { href: "/architecture", title: "Architecture", meta: "How Merit AC is built and hosted" },
   { href: "/setup/react", title: "Setup guides", meta: "Wire your AI usage in — React, Python, Node, TensorFlow/Pyro" },
   { href: "/guides", title: "Guides", meta: "General writing on doing AI work well" },
-  { href: "/prompts", title: "Prompts", meta: "A daily AI prompt archive" },
-  { href: "/challenge", title: "The 30-day challenge", meta: "Format set, more coming soon" },
+  { href: "/prompts", title: "Prompts", meta: "A 30-day AI prompt archive" },
+  { href: "/challenge", title: "The 30-day challenge", meta: "Build a governed agentic delivery platform, free" },
+  { href: "/community", title: "Community", meta: "Not open yet — join the interest list" },
 ];
 
 export default function Home() {
