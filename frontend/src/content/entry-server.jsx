@@ -18,6 +18,9 @@ import FourteenDomains, { meta as fourteenDomainsMeta } from "./pages/guides/Fou
 import FourControlBoundaries, { meta as fourControlBoundariesMeta } from "./pages/guides/FourControlBoundaries.jsx";
 import PromptDay, { promptMeta } from "./pages/PromptDay.jsx";
 import { PROMPTS } from "./data/prompts.js";
+import NewsIndex, { meta as newsIndexMeta } from "./pages/NewsIndex.jsx";
+import NewsArticle, { newsMeta } from "./pages/NewsArticle.jsx";
+import { NEWS_ARTICLES } from "./data/news.js";
 
 const PAGES = [
   [Home, homeMeta],
@@ -33,6 +36,7 @@ const PAGES = [
   [PromptsIndex, promptsMeta],
   [Challenge, challengeMeta],
   [Community, communityMeta],
+  [NewsIndex, newsIndexMeta],
 ];
 
 export function renderAll() {
@@ -44,5 +48,9 @@ export function renderAll() {
     meta: promptMeta(entry),
     html: renderToStaticMarkup(<PromptDay entry={entry} />),
   }));
-  return [...staticPages, ...promptPages];
+  const newsPages = NEWS_ARTICLES.map((entry) => ({
+    meta: newsMeta(entry),
+    html: renderToStaticMarkup(<NewsArticle entry={entry} />),
+  }));
+  return [...staticPages, ...promptPages, ...newsPages];
 }

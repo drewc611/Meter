@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { key: "architecture", href: "/architecture", label: "Architecture" },
   { key: "setup", href: "/setup/react", label: "Setup" },
   { key: "guides", href: "/guides", label: "Guides" },
+  { key: "news", href: "/news", label: "News" },
   { key: "prompts", href: "/prompts", label: "Prompts" },
   { key: "challenge", href: "/challenge", label: "Challenge" },
   { key: "community", href: "/community", label: "Community" },
