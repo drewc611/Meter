@@ -1,29 +1,56 @@
-# Merit AC goal
+# Merit AC content goal
 
-**Outcome:** PROPOSED — needs Andrew: e.g. "N challenge signups converted to
-paid" or "N guides + prompts published and indexed."
-**Deadline:** PROPOSED — needs Andrew.
-**Measure:** PROPOSED — needs Andrew: published post count? paid conversions?
-traffic to `/guides` or `/prompts`?
+**Status: ACTIVE as of 2026-08-22.** Content shipped and fee mechanism
+decided — see below. Deadline is still provisional, now anchored to a real
+date instead of a placeholder.
+
+**Outcome:** 30-day challenge run with paid conversions at the end.
+**Deadline:** 60 days from 2026-08-22 (the actual first-publish date —
+`/guides`, `/prompts`, and `/challenge` all went live in production this
+day, see `merit-infra-log.md`).
+**Measure:** challenge signups × paid-conversion rate (paid track purchases
+via the Stripe Payment Link on `/challenge`).
 **Constraint:** No invented statistics in guides/prompts — same sourcing
-discipline as the design-partner goal's copy. Fee mechanism (Stripe vs.
-manual) must be confirmed before `/challenge` describes a working checkout.
-**Set:** not yet — shell proposed 2026-08-21, status PROPOSED until Andrew
-fills the three blanks above. Do not treat as ACTIVE and do not score
-progress against it until then.
+discipline as the design-partner goal's copy.
+**Set:** 2026-08-22
+
+Separate from the design-partner goal (`merit-goal.md`). Rank `merit-growth`
+content work against this one, not against the 10-partner measure. Never
+average the two into a single status.
 
 ## Sub-goals
 
 | Sub-goal | Owner skill | Status |
 | --- | --- | --- |
-| 7 site-content pages placed | merit-growth | drafted, not yet placed — see `merit-content-log.md` |
-| 29 remaining daily prompts | merit-growth | not started |
-| `/guides` index + 3 launch articles | merit-growth | not started |
-| `/challenge` landing page copy | merit-growth | blocked on fee-mechanism decision |
+| 7 site-content pages placed | merit-growth | done — live in production |
+| 30 daily prompts | merit-growth | done — all 30 days live at `/prompts/day-N-*` |
+| `/guides` index + 3 launch articles | merit-growth | done — Ten Disciplines, Fourteen Domains, Four Control Boundaries |
+| `/challenge` landing page copy | merit-growth | done, fee mechanism now wired in |
+| Fee mechanism decided (Stripe vs. manual) | Andrew | **decided 2026-08-22: Stripe Payment Link, $299 one-time**, for a paid capstone-build review from Andrew — see `/challenge#paid-track` |
+| Stripe Payment Link actually created | Andrew | **open** — `frontend/src/content/data/paidTrack.js`'s `PAID_TRACK_PAYMENT_LINK` is still a placeholder; the CTA shows "coming soon" until a real Payment Link is created in Andrew's Stripe Dashboard and pasted in |
+| Funnel direction decided (content → `/setup/*` vs. separate audience) | Andrew | open |
 
 ## Progress log
 
-### 2026-08-21
-- Shell proposed, PROPOSED status. Waiting on Andrew for outcome, deadline,
-  and measure — see `merit-goal`'s Second Goal section for what's being
-  asked.
+### 2026-08-21 — goal confirmed (see also merit-context's note below)
+- Andrew confirmed the outcome/measure/deadline shape. Deadline flagged as
+  provisional pending an actual publish date — see 2026-08-22 entry, that
+  date has now arrived.
+- 0 of 30 prompts published (1 drafted as template, not live). Nothing
+  deployed to production yet.
+
+### 2026-08-22 — content shipped, fee mechanism decided
+- All 7 site-content pages, all 30 prompts, the 3 launch guides, and the
+  rewritten `/challenge` page shipped to production (PR #49, merged as
+  `bd291e2`) under the new "Merit AC" brand.
+- Andrew decided the fee mechanism: a Stripe Payment Link for a $299
+  one-time paid review of a finished capstone build, not a separate paid
+  content tier. Wired into `/challenge#paid-track` and linked from the end
+  of day 30's prompt page. The Payment Link itself is still a placeholder —
+  no Stripe API access exists from this session, so creating the real link
+  is a manual step only Andrew can do (2 minutes in the Stripe Dashboard;
+  see the comment at the top of `paidTrack.js`). Until that's done the CTA
+  shows an honest "coming soon" badge instead of a dead link.
+- Remaining opens: the actual Payment Link URL, and the funnel-direction
+  question (does this content drive toward `/setup/*` or a separate
+  audience?).
