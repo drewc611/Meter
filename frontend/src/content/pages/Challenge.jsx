@@ -257,9 +257,69 @@ export default function Challenge() {
             Get your build reviewed — {PAID_TRACK_PRICE_LABEL}
           </a>
         ) : (
-          <span className="badge pending" style={{ marginBottom: 0 }}>
-            <i /> Payment link coming soon
-          </span>
+          <>
+            <span className="badge pending">
+              <i /> Payment link coming soon
+            </span>
+            <p style={{ marginBottom: "8px" }}>
+              Leave your email and I'll let you know the moment it's open for booking:
+            </p>
+            <form className="signup-form" id="paidTrackForm" noValidate>
+              <label htmlFor="paidTrackEmail" className="sr-only">
+                Work email
+              </label>
+              <input
+                type="email"
+                id="paidTrackEmail"
+                name="email"
+                placeholder="you@company.com"
+                required
+                autoComplete="email"
+              />
+              <button type="submit">Notify me</button>
+            </form>
+            <p className="signup-msg" id="paidTrackMsg" role="status" aria-live="polite" />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `(function(){
+  var API_BASE = ["localhost", "127.0.0.1", ""].indexOf(location.hostname) !== -1
+    ? "http://localhost:8000"
+    : "https://api.usemeritai.com";
+  var form = document.getElementById("paidTrackForm");
+  var input = document.getElementById("paidTrackEmail");
+  var msg = document.getElementById("paidTrackMsg");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var emailValue = input.value.trim();
+    if (!emailValue) return;
+    var btn = form.querySelector("button");
+    var label = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "Joining…";
+    fetch(API_BASE + "/waitlist", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: emailValue, source: "challenge-paid-track" }),
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error("bad status");
+        msg.textContent = "You're on the list — I'll email you when it opens for booking.";
+        msg.className = "signup-msg ok";
+        form.reset();
+      })
+      .catch(function () {
+        msg.textContent = "Couldn't reach the server — try again in a moment.";
+        msg.className = "signup-msg err";
+      })
+      .finally(function () {
+        btn.disabled = false;
+        btn.textContent = label;
+      });
+  });
+})();`,
+              }}
+            />
+          </>
         )}
       </div>
 

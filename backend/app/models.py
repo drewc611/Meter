@@ -192,13 +192,17 @@ class DashboardUser(Base):
 
 
 class WaitlistSignup(Base):
-    """Pre-launch lead capture from the coming-soon page -- not tied to an
-    Identity. See routers/waitlist.py."""
+    """Lead capture with no Identity attached -- the pre-launch coming-soon
+    page, and any other "notify me" form on the site (e.g. the /challenge
+    paid-track interest list). `source` distinguishes which; re-submitting
+    the same email under a different source updates it in place rather than
+    tracking multiple rows per email. See routers/waitlist.py."""
 
     __tablename__ = "waitlist_signups"
     id = Column(Integer, primary_key=True)
     email = Column(String, unique=True, nullable=False, index=True)
     company = Column(String, nullable=True)
+    source = Column(String, nullable=False, server_default="coming-soon")
     created_at = Column(DateTime, default=utcnow)
     notified_at = Column(DateTime, nullable=True)  # set by /admin/notify-waitlist, so a re-run doesn't double-email
 
