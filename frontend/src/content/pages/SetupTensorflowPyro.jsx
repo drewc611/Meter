@@ -4,9 +4,9 @@ import Code from "../components/Code.jsx";
 
 export const meta = {
   outFile: "setup/tensorflow-pyro.html",
-  title: "TensorFlow / Pyro setup — Merit",
+  title: "TensorFlow / Pyro setup — Merit AC",
   description:
-    "Merit's ingestion schema isn't limited to hosted LLM APIs. Here's how to report spend from a custom TensorFlow or Pyro training pipeline.",
+    "Merit AC's ingestion schema isn't limited to hosted LLM APIs. Here's how to report spend from a custom TensorFlow or Pyro training pipeline.",
 };
 
 export default function SetupTensorflowPyro() {
@@ -18,7 +18,7 @@ export default function SetupTensorflowPyro() {
       </span>
       <h1>TensorFlow / Pyro setup</h1>
       <p className="lead">
-        There's no dedicated TensorFlow or Pyro integration shipping today — Merit's built-in
+        There's no dedicated TensorFlow or Pyro integration shipping today — Merit AC's built-in
         reference proxies target hosted LLM APIs (see <a href="/setup/python">Python</a>). What
         follows is the honest pattern for reporting spend from a custom model-training or
         probabilistic-modeling pipeline, using the same generic <code>/ingest/usage</code> contract.
@@ -50,7 +50,7 @@ requests.post(f"{MERIT_API_BASE}/ingest/usage", json={
 }, headers={"Authorization": f"Bearer {MERIT_INGEST_TOKEN}"})`}</Code>
       <p>
         Where <code>gpu_hours * hourly_rate</code> is whatever your actual cloud or on-prem
-        accounting gives you for that job — Merit doesn't compute compute cost itself, it just
+        accounting gives you for that job — Merit AC doesn't compute compute cost itself, it just
         needs the number and who to attribute it to.
       </p>
 
@@ -76,7 +76,7 @@ requests.post(f"{MERIT_API_BASE}/ingest/usage", json={
 
       <h2 id="value">What &quot;value&quot; and &quot;slop&quot; mean here</h2>
       <p>
-        Outcome and quality signals still have to come from somewhere real — Merit doesn't infer
+        Outcome and quality signals still have to come from somewhere real — Merit AC doesn't infer
         whether a training run was worthwhile. If your team tracks experiment outcomes (a model
         that shipped vs. one that was scrapped, a Pyro inference that got trusted vs. one that was
         thrown out), those map to <code>POST /ingest/outcome</code> and{" "}

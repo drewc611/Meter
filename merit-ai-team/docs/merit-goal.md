@@ -1,10 +1,10 @@
-# Merit goal
+# Merit AC goal
 
-**Outcome:** Ten design partners using Merit on their own AI spend data.
+**Outcome:** Ten design partners using Merit AC on their own AI spend data.
 **Deadline:** 2026-12-31.
 **Measure:** Count of companies with live ingestion and at least one scored
 period, from `/api/adoption` across tenants.
-**Constraint:** No surveillance-tool positioning, and no claim Merit's own
+**Constraint:** No surveillance-tool positioning, and no claim Merit AC's own
 copy doesn't already make.
 **Set:** 2026-08-21 — this is `merit-goal`'s proposed default, written here
 because no goal file existed yet in this repo. Earlier handoff notes referred

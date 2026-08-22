@@ -211,7 +211,7 @@ def test_me_returns_current_user(client, monkeypatch):
         "has_google": False,
         "is_admin": True,  # signup with no MERIT_SIGNUP_CODE always admins its own new org
         "org_id": 1,
-        "org_name": "Ada's Merit",
+        "org_name": "Ada's Merit AC",
     }
 
 

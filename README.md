@@ -1,7 +1,7 @@
-# Merit&trade;
+# Merit AC&trade;
 
 AI spend tracker built around the question spend-attribution tools don't
-ask: is the work behind that spend any good? Merit attributes AI spend to
+ask: is the work behind that spend any good? Merit AC attributes AI spend to
 the person who generated it and correlates it against outcomes — table
 stakes now — then layers a quality-risk score on top (reverts, heavy
 rewrites, regeneration loops) so a clean "value per dollar" number can't
@@ -31,7 +31,7 @@ a multi-month spend trend.
 ![Overview](docs/screenshots/overview.png)
 
 **People** — every AI-active person, searchable/filterable/sortable by
-spend, value/$, slop risk, confidence tier, and seat tier, each with Merit's
+spend, value/$, slop risk, confidence tier, and seat tier, each with Merit AC's
 recommendation.
 
 ![People](docs/screenshots/people.png)
@@ -41,7 +41,7 @@ individual.
 
 ![Teams & Roles](docs/screenshots/teams-roles.png)
 
-**Alerts** — what Merit thinks needs a look this period, each one linking
+**Alerts** — what Merit AC thinks needs a look this period, each one linking
 back into a pre-filtered People view.
 
 ![Alerts](docs/screenshots/alerts.png)
@@ -67,7 +67,7 @@ frontend/      Sidebar dashboard (Overview, People, Teams & Roles, Alerts,
                part of the dashboard. See frontend/README.md.
                coming-soon.html is the old pre-launch placeholder, no longer
                served anywhere.
-merit-ai-team/ Skills for the internal AI team that runs Merit's own
+merit-ai-team/ Skills for the internal AI team that runs Merit AC's own
                product/growth/eng/infra loop -- not part of the shipped
                product. See merit-ai-team/skills/merit-context/SKILL.md.
 ```
@@ -84,7 +84,7 @@ linked from the "Sign in" button in the header.
 - `/architecture` -- the same system/deployment writeup as
   [`ARCHITECTURE.md`](ARCHITECTURE.md), reformatted for the public site
 - `/setup/react`, `/setup/python`, `/setup/node`, `/setup/tensorflow-pyro` --
-  how to wire your own AI usage into Merit's `/ingest/usage` endpoint
+  how to wire your own AI usage into Merit AC's `/ingest/usage` endpoint
 - `/guides`, `/prompts`, `/challenge` -- an AI-education content arm and a
   30-day prompt challenge, both still in progress; each ships as an honest
   "nothing published/decided yet" page rather than placeholder or invented

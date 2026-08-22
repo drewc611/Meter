@@ -1,4 +1,4 @@
-# Merit frontend
+# Merit AC frontend
 
 The dashboard (Overview, People, Teams & Roles, Alerts, Integrations) is a
 Vite + React app under `src/` — no TypeScript, plain `.jsx`, functional

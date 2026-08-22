@@ -66,7 +66,7 @@ def _provision_org_for_signup(db: Session, name: str, email: str) -> tuple[model
             db.add(org)
             db.flush()
         return org, False
-    org = models.Organization(name=f"{name}'s Merit", plan="personal")
+    org = models.Organization(name=f"{name}'s Merit AC", plan="personal")
     db.add(org)
     db.flush()
     return org, True

@@ -15,16 +15,16 @@ from ..time_utils import utcnow
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
-_NOTIFY_SUBJECT = "Merit is live — see what your AI spend is actually producing"
+_NOTIFY_SUBJECT = "Merit AC is live — see what your AI spend is actually producing"
 
 _NOTIFY_TEXT = """\
 Hi,
 
-Thanks for joining the Merit waitlist. The site's live at https://usemeritai.com \
+Thanks for joining the Merit AC waitlist. The site's live at https://usemeritai.com \
 -- including a free calculator that estimates your AI ROI (licensing cost, \
-estimated rework, net value, Merit Score) in about 30 seconds.
+estimated rework, net value, Merit AC Score) in about 30 seconds.
 
-Merit measures whether AI coding tools are actually producing value, not just \
+Merit AC measures whether AI coding tools are actually producing value, not just \
 tracking what they cost -- spend, outcomes, and rework, rolled into one score.
 
 Take a look: https://usemeritai.com
@@ -32,22 +32,22 @@ Take a look: https://usemeritai.com
 Reply to this email any time with questions, or if you'd like early access to \
 the full dashboard.
 
--- Merit
+-- Merit AC
 """
 
 _NOTIFY_HTML = """\
 <p>Hi,</p>
-<p>Thanks for joining the Merit waitlist. The site's live at
+<p>Thanks for joining the Merit AC waitlist. The site's live at
 <a href="https://usemeritai.com">usemeritai.com</a> &mdash; including a free
 calculator that estimates your AI ROI (licensing cost, estimated rework, net
-value, Merit Score) in about 30 seconds.</p>
-<p>Merit measures whether AI coding tools are actually producing value, not
+value, Merit AC Score) in about 30 seconds.</p>
+<p>Merit AC measures whether AI coding tools are actually producing value, not
 just tracking what they cost &mdash; spend, outcomes, and rework, rolled into
 one score.</p>
 <p><a href="https://usemeritai.com">Take a look</a></p>
 <p>Reply to this email any time with questions, or if you'd like early access
 to the full dashboard.</p>
-<p>&mdash; Merit</p>
+<p>&mdash; Merit AC</p>
 """
 
 

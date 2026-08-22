@@ -1,5 +1,5 @@
 """
-Merit API — the FastAPI application factory. Wires the six routers
+Merit AC API — the FastAPI application factory. Wires the six routers
 (auth, ingestion, admin, dashboard, health, waitlist) onto an app, with CORS
 from config. Run with:
 
@@ -38,7 +38,7 @@ def create_app() -> FastAPI:
     if not os.environ.get("MERIT_JWT_SECRET"):
         logger.warning("MERIT_JWT_SECRET is unset -- /api/* and /admin/* have no login enforced, anyone can read data.")
 
-    app = FastAPI(title="Merit API", version="0.1.0")
+    app = FastAPI(title="Merit AC API", version="0.1.0")
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,

@@ -57,7 +57,7 @@ function PersonDetail({ person, valueThreshold }) {
         </div>
       </div>
       <div className="modal-rec">
-        <span className="lab">Merit says</span>
+        <span className="lab">Merit AC says</span>
         <span className={recClass(person.recommendation_code)}>{person.recommendation}</span>
       </div>
     </div>
@@ -69,7 +69,7 @@ function PeriodDrill({ drill, valueThreshold }) {
   if (drill.error) {
     return (
       <p className="desc">
-        Historical drill-down needs a live connection to the Merit API — not available on demo data.
+        Historical drill-down needs a live connection to the Merit AC API — not available on demo data.
       </p>
     );
   }
@@ -83,7 +83,7 @@ function PeriodDrill({ drill, valueThreshold }) {
             <th className="num">Spend / mo</th>
             <th className="num">Value / $</th>
             <th className="num">Slop risk</th>
-            <th>Merit says</th>
+            <th>Merit AC says</th>
           </tr>
         </thead>
         <tbody>
@@ -238,7 +238,7 @@ export default function Overview({ active }) {
 
         <div className="card">
           <h2>Recoverable spend</h2>
-          <p className="desc">What Merit estimates recoverable this year without cutting a high-value user.</p>
+          <p className="desc">What Merit AC estimates recoverable this year without cutting a high-value user.</p>
           <div className="roi-big">{fmtMoney(ov.recoverable_annual_usd)}</div>
           <div className="roi-sub">{`≈ ${pctOfBill}% of the ${fmtMoney(ov.total_spend_usd * 12)} annual AI bill`}</div>
           <div>

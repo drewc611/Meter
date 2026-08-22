@@ -7,7 +7,7 @@ export default function Logo({ trademarkSize = "10px", iconAriaHidden = false })
         <i style={{ height: "20px", background: "#4f46e5" }} />
       </div>
       <b>
-        Merit
+        Merit AC
         <span style={{ fontSize: trademarkSize, fontWeight: 400, verticalAlign: "super", marginLeft: "1px" }}>
           &trade;
         </span>

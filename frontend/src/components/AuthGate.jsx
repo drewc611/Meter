@@ -61,7 +61,7 @@ export default function AuthGate() {
               Free for personal use
             </span>
           )}
-          <h2>{isSignup ? "Create your account" : "Sign in to Merit"}</h2>
+          <h2>{isSignup ? "Create your account" : "Sign in to Merit AC"}</h2>
           <p>
             {isSignup
               ? "Sign up solo and get your own private space -- your usage, your dashboard, nobody else's data mixed in."

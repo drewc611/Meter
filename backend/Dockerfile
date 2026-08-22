@@ -1,4 +1,4 @@
-# Merit backend — FastAPI + SQLite (or Postgres via MERIT_DATABASE_URL).
+# Merit AC backend — FastAPI + SQLite (or Postgres via MERIT_DATABASE_URL).
 #
 # Build:  docker build -t merit-backend ./backend
 # Run:    docker run -p 8000:8000 -v merit-db:/data merit-backend

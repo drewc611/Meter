@@ -1,7 +1,7 @@
 ---
 name: merit-eng-review
 description: >
-  Reviews Merit's code and API design — the public API contract, the frontend
+  Reviews Merit AC's code and API design — the public API contract, the frontend
   bundle, scoring-logic correctness, and accumulating tech debt. Use when Andrew
   says "code review", "review the API", "eng review", "what's the tech debt",
   "review this PR", or when the weekly engineering scheduled task fires. Works
@@ -11,7 +11,7 @@ metadata:
   version: "0.1.0"
 ---
 
-# Merit engineering review
+# Merit AC engineering review
 
 Read `merit-context` and `merit-goal` first. (This version does its own file
 collection, bundle inspection, and scoring directly — the
@@ -59,7 +59,7 @@ when the repo is available) and judge the design, not just the shape.
 
 ### 2. Scoring correctness
 
-This is Merit's product, so bugs here are existential.
+This is Merit AC's product, so bugs here are existential.
 
 - Division by zero when a person has outcomes but zero spend.
 - How negative `value_per_dollar` is derived and bounded — the demo shows

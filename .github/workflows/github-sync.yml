@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - name: Sync merged PRs and CI status into Merit
+      - name: Sync merged PRs and CI status into Merit AC
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
         run: flyctl ssh console -a meter -C "python github_sync.py"

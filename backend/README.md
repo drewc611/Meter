@@ -1,7 +1,7 @@
-# Merit backend — reference implementation
+# Merit AC backend — reference implementation
 
 This is a working implementation of the tracking pipeline described in the
-Merit product spec (§6–§8): how AI spend actually gets attributed to a
+Merit AC product spec (§6–§8): how AI spend actually gets attributed to a
 person, how "value produced" and "slop risk" get computed, and what the
 dashboard reads. It's built to be run, not just read — see **Quickstart**.
 
@@ -179,7 +179,7 @@ token by definition.
 `/auth/google/login` redirects to Google's OAuth consent screen; the
 callback verifies the returned ID token against Google's public keys
 (not just decodes it), finds-or-creates a `DashboardUser` by Google's
-stable per-account id, and redirects back to the frontend with a Merit
+stable per-account id, and redirects back to the frontend with a Merit AC
 session token attached. A user can have a password, a linked Google
 account, or both on the same row — `services/auth.py` links by email on
 first Google login if a password account with that email already exists.

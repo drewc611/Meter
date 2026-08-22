@@ -22,7 +22,7 @@ export default function ContentLayout({ active, wide, children }) {
               <i style={{ height: "15px", background: "var(--brand-soft)" }} />
               <i style={{ height: "18px", background: "var(--brand)" }} />
             </span>
-            Merit<sup>™</sup>
+            Merit AC<sup>™</sup>
           </a>
           <nav className="site-nav">
             {NAV_ITEMS.map((item) => (
@@ -39,7 +39,7 @@ export default function ContentLayout({ active, wide, children }) {
       <main className={wide ? "content wide" : "content"}>{children}</main>
       <footer className="site">
         <div className="footer-inner">
-          <span>Merit is a labeled prototype — the dashboard runs on illustrative demo data until you connect your own.</span>
+          <span>Merit AC is a labeled prototype — the dashboard runs on illustrative demo data until you connect your own.</span>
           <a href="/app">Open the app</a>
         </div>
       </footer>

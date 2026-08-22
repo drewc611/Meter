@@ -4,9 +4,9 @@ import Code from "../components/Code.jsx";
 
 export const meta = {
   outFile: "setup/python.html",
-  title: "Python setup — Merit",
+  title: "Python setup — Merit AC",
   description:
-    "Wire a Python backend's LLM calls into Merit's /ingest/usage endpoint, via a thin usage-attributing proxy — plus outcomes, quality signals, and how to verify it worked.",
+    "Wire a Python backend's LLM calls into Merit AC's /ingest/usage endpoint, via a thin usage-attributing proxy — plus outcomes, quality signals, and how to verify it worked.",
 };
 
 export default function SetupPython() {
@@ -21,7 +21,7 @@ export default function SetupPython() {
         Employees don't call the Anthropic/OpenAI API directly with a shared org key — they call a
         thin internal proxy. The proxy issues each employee their own logical key, forwards the
         request to the real provider, reads the token usage back off the response, prices it, and
-        fires a <code>UsageEvent</code> at Merit — all before the response reaches the caller. No
+        fires a <code>UsageEvent</code> at Merit AC — all before the response reaches the caller. No
         code changes in the calling application; just point <code>ANTHROPIC_BASE_URL</code> at the
         proxy instead of the vendor.
       </p>
@@ -60,10 +60,10 @@ async def proxy_anthropic_messages(request: Request, x_merit_proxy_key: str = He
 
     return payload`}</Code>
       <p>
-        The full, runnable reference lives at <code>backend/proxy_example.py</code> in the Merit
-        repo — same pattern LiteLLM's proxy uses, just with a Merit ingest call added at the end.
+        The full, runnable reference lives at <code>backend/proxy_example.py</code> in the Merit AC
+        repo — same pattern LiteLLM's proxy uses, just with a Merit AC ingest call added at the end.
         Fire the ingest call after the response streams back to the caller (or via a background
-        task/queue), so a slow Merit call never adds latency to the employee's actual request.
+        task/queue), so a slow Merit AC call never adds latency to the employee's actual request.
       </p>
 
       <h2 id="token">Getting your token</h2>

@@ -1,6 +1,6 @@
 # Security
 
-Merit is an early-stage prototype, still being hardened for production use.
+Merit AC is an early-stage prototype, still being hardened for production use.
 This file exists so that's not a secret, and so there's a clear channel to
 report anything found.
 
