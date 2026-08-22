@@ -27,6 +27,38 @@ def test_duplicate_email_is_idempotent(client, db):
     assert db.query(models.WaitlistSignup).filter_by(email="c@example.com").count() == 1
 
 
+def test_source_defaults_to_coming_soon(client, db):
+    client.post("/waitlist", json={"email": "nosrc@example.com"})
+    row = db.query(models.WaitlistSignup).filter_by(email="nosrc@example.com").one()
+    assert row.source == "coming-soon"
+
+
+def test_resignup_under_a_new_source_updates_it_in_place(client, db):
+    """Someone already on the general waitlist who later signs up for the
+    /challenge paid-track interest list should show up under that source,
+    not stay stuck on their original one -- and not get double-counted."""
+    client.post("/waitlist", json={"email": "e@example.com", "company": "Acme"})
+    r = client.post("/waitlist", json={"email": "e@example.com", "source": "challenge-paid-track"})
+    assert r.status_code == 201
+    row = db.query(models.WaitlistSignup).filter_by(email="e@example.com").one()
+    assert row.source == "challenge-paid-track"
+    assert row.company == "Acme"  # not blanked out by the company-less paid-track form
+    assert db.query(models.WaitlistSignup).filter_by(email="e@example.com").count() == 1
+
+
+def test_list_waitlist_filters_by_source(client):
+    client.post("/waitlist", json={"email": "general@example.com"})
+    client.post("/waitlist", json={"email": "paid@example.com", "source": "challenge-paid-track"})
+
+    r_all = client.get("/admin/waitlist")
+    assert r_all.status_code == 200
+    assert r_all.json()["count"] == 2
+
+    r_paid = client.get("/admin/waitlist?source=challenge-paid-track")
+    assert r_paid.json()["count"] == 1
+    assert r_paid.json()["entries"][0]["email"] == "paid@example.com"
+
+
 def test_rejects_malformed_email(client):
     r = client.post("/waitlist", json={"email": "not-an-email"})
     assert r.status_code == 422
@@ -77,6 +109,23 @@ def test_notify_waitlist_sends_and_marks_notified_once(client, db, monkeypatch):
     r2 = client.post("/admin/notify-waitlist")
     assert r2.json() == {"sent": 0, "failed": 0, "dry_run": False}
     assert sent_to == []
+
+
+def test_notify_waitlist_skips_other_sources(client, db, monkeypatch):
+    """A challenge-paid-track signup should never get the generic
+    coming-soon-launch email -- it's an unrelated message to that list."""
+    _configure_smtp(monkeypatch)
+    sent_to = []
+    monkeypatch.setattr("app.services.email.send_email", lambda to, subject, html, text: sent_to.append(to))
+
+    client.post("/waitlist", json={"email": "generalonly@example.com"})
+    client.post("/waitlist", json={"email": "paidonly@example.com", "source": "challenge-paid-track"})
+
+    r = client.post("/admin/notify-waitlist")
+    assert r.json() == {"sent": 1, "failed": 0, "dry_run": False}
+    assert sent_to == ["generalonly@example.com"]
+    paid_row = db.query(models.WaitlistSignup).filter_by(email="paidonly@example.com").one()
+    assert paid_row.notified_at is None
 
 
 def test_notify_waitlist_counts_failed_sends_without_aborting_the_batch(client, db, monkeypatch):

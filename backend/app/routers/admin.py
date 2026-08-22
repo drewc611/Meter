@@ -101,12 +101,26 @@ def get_org(db: Session = Depends(get_db), user: models.DashboardUser | None = D
     return org
 
 
+@router.get("/waitlist", response_model=schemas.WaitlistListOut)
+def list_waitlist(source: str | None = None, db: Session = Depends(get_db)):
+    """Every lead-capture signup, newest first. Pass ?source=challenge-paid-track
+    (or any other source string used by a "notify me" form on the site) to see
+    just that list; omit it to see everything."""
+    query = db.query(models.WaitlistSignup)
+    if source:
+        query = query.filter_by(source=source)
+    entries = query.order_by(models.WaitlistSignup.created_at.desc()).all()
+    return schemas.WaitlistListOut(count=len(entries), entries=entries)
+
+
 @router.post("/notify-waitlist", response_model=schemas.NotifyWaitlistResult)
 def notify_waitlist(dry_run: bool = False, db: Session = Depends(get_db)):
     """
-    Emails every waitlist signup that hasn't been notified yet (see
-    WaitlistSignup.notified_at) with a single fixed announcement -- a
-    one-off "the site is live" send, not a campaign tool.
+    Emails every coming-soon waitlist signup that hasn't been notified yet
+    (see WaitlistSignup.notified_at) with a single fixed "the site is live"
+    announcement -- a one-off send, not a campaign tool. Scoped to
+    source="coming-soon" specifically, so signups from other interest lists
+    (e.g. the /challenge paid-track form) never get this unrelated message.
 
     Requires MERIT_SMTP_HOST + MERIT_FROM_EMAIL (see services/email.py),
     503 if unset. dry_run=true skips the actual sends, so you can see the
@@ -118,7 +132,11 @@ def notify_waitlist(dry_run: bool = False, db: Session = Depends(get_db)):
             detail="Email isn't configured -- set MERIT_SMTP_HOST and MERIT_FROM_EMAIL (see backend/README.md).",
         )
 
-    pending = db.query(models.WaitlistSignup).filter(models.WaitlistSignup.notified_at.is_(None)).all()
+    pending = (
+        db.query(models.WaitlistSignup)
+        .filter(models.WaitlistSignup.notified_at.is_(None), models.WaitlistSignup.source == "coming-soon")
+        .all()
+    )
     sent = failed = 0
     for signup in pending:
         if dry_run:

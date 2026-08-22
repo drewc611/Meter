@@ -27,7 +27,7 @@ average the two into a single status.
 | `/guides` index + 3 launch articles | merit-growth | done — Ten Disciplines, Fourteen Domains, Four Control Boundaries |
 | `/challenge` landing page copy | merit-growth | done, fee mechanism now wired in |
 | Fee mechanism decided (Stripe vs. manual) | Andrew | **decided 2026-08-22: Stripe Payment Link, $299 one-time**, for a paid capstone-build review from Andrew — see `/challenge#paid-track` |
-| Stripe Payment Link actually created | Andrew | **open** — `frontend/src/content/data/paidTrack.js`'s `PAID_TRACK_PAYMENT_LINK` is still a placeholder; the CTA shows "coming soon" until a real Payment Link is created in Andrew's Stripe Dashboard and pasted in |
+| Stripe Payment Link actually created | Andrew | **open** — `frontend/src/content/data/paidTrack.js`'s `PAID_TRACK_PAYMENT_LINK` is still a placeholder; until it's set, `/challenge#paid-track` shows a "coming soon" badge plus a real email-capture form (`source=challenge-paid-track` in `waitlist_signups`, viewable via `GET /admin/waitlist?source=challenge-paid-track`) so interest isn't lost while Stripe isn't wired up |
 | Funnel direction decided (content → `/setup/*` vs. separate audience) | Andrew | open |
 
 ## Progress log
@@ -54,3 +54,15 @@ average the two into a single status.
 - Remaining opens: the actual Payment Link URL, and the funnel-direction
   question (does this content drive toward `/setup/*` or a separate
   audience?).
+
+### 2026-08-22 (later) — interest-capture list added for the placeholder period
+- Since the Payment Link is Andrew's own manual step and won't happen
+  instantly, `/challenge#paid-track` now also has a real "notify me" email
+  form next to the "coming soon" badge, so early interest isn't lost while
+  waiting. Reuses the existing `WaitlistSignup` table with a new `source`
+  field (`"challenge-paid-track"` vs. the original `"coming-soon"`) rather
+  than a new table -- same lead-capture concept, different list. Andrew can
+  see who signed up via `GET /admin/waitlist?source=challenge-paid-track`.
+  `/admin/notify-waitlist` (the "site is live" announcement) is now scoped
+  to `source="coming-soon"` only, so it can never accidentally email this
+  list the wrong message.

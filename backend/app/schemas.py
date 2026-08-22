@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 
 # ------------------------------------------------------------- requests
 
@@ -10,6 +10,7 @@ from pydantic import BaseModel, field_validator
 class WaitlistSignupIn(BaseModel):
     email: str
     company: str | None = None
+    source: str = "coming-soon"  # e.g. "challenge-paid-track" for the /challenge interest form
 
     @field_validator("email")
     @classmethod
@@ -93,6 +94,21 @@ class LoginIn(BaseModel):
 
 class WaitlistSignupOut(BaseModel):
     status: str = "joined"
+
+
+class WaitlistEntryOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)  # constructed from WaitlistSignup ORM rows, not a dict
+
+    email: str
+    company: str | None
+    source: str
+    created_at: datetime
+    notified_at: datetime | None
+
+
+class WaitlistListOut(BaseModel):
+    count: int
+    entries: list[WaitlistEntryOut]
 
 
 class UserOut(BaseModel):
