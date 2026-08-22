@@ -9,6 +9,7 @@ const NAV_ITEMS = [
   { key: "guides", href: "/guides", label: "Guides" },
   { key: "prompts", href: "/prompts", label: "Prompts" },
   { key: "challenge", href: "/challenge", label: "Challenge" },
+  { key: "community", href: "/community", label: "Community" },
 ];
 
 export default function ContentLayout({ active, wide, children }) {
