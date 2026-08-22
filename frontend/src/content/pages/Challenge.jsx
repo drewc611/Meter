@@ -1,6 +1,7 @@
 import ContentLayout from "../components/ContentLayout.jsx";
 import Toc from "../components/Toc.jsx";
 import Code from "../components/Code.jsx";
+import { PAID_TRACK_PAYMENT_LINK, PAID_TRACK_PRICE_LABEL } from "../data/paidTrack.js";
 
 export const meta = {
   outFile: "challenge.html",
@@ -86,6 +87,7 @@ export default function Challenge() {
           { href: "#security-tests", label: "Required security tests" },
           { href: "#evidence", label: "Evidence package" },
           { href: "#done", label: "Definition of done" },
+          { href: "#paid-track", label: "Paid track" },
         ]}
       />
 
@@ -238,9 +240,32 @@ export default function Challenge() {
         </p>
       </div>
 
+      <h2 id="paid-track">Paid track</h2>
+      <div className="card">
+        <p className="kicker" style={{ marginBottom: "8px" }}>
+          {PAID_TRACK_PRICE_LABEL}
+        </p>
+        <p>
+          The run above is free and complete on its own — build the platform, run the demo,
+          walk away with a real capstone and evidence package. The paid track is a structured
+          review from Andrew Clark of your finished build against the Definition of Done above:
+          what's solid, what's a gap dressed up as a control, and what to fix before you'd call
+          it production-ready.
+        </p>
+        {PAID_TRACK_PAYMENT_LINK ? (
+          <a className="btn btn-primary" href={PAID_TRACK_PAYMENT_LINK}>
+            Get your build reviewed — {PAID_TRACK_PRICE_LABEL}
+          </a>
+        ) : (
+          <span className="badge pending" style={{ marginBottom: 0 }}>
+            <i /> Payment link coming soon
+          </span>
+        )}
+      </div>
+
       <p>
-        There's still no fee mechanism decided for a paid track beyond this free run — see{" "}
-        <a href="/guides/ten-disciplines-of-governed-agentic-devsecops">the ten disciplines</a> and{" "}
+        See <a href="/guides/ten-disciplines-of-governed-agentic-devsecops">the ten disciplines</a>{" "}
+        and{" "}
         <a href="/guides/fourteen-domains-of-the-governed-agentic-platform">
           fourteen domains
         </a>{" "}

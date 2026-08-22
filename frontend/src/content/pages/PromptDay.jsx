@@ -30,6 +30,14 @@ export default function PromptDay({ entry }) {
       <h2>What to do with the answer</h2>
       <p>{entry.whatToDo}</p>
 
+      {entry.day === 30 && (
+        <p>
+          That's the full 30 days. If you want a second set of eyes on the result,{" "}
+          <a href="/challenge#paid-track">Andrew Clark offers a paid review</a> of finished
+          builds against the challenge's Definition of Done.
+        </p>
+      )}
+
       <div className="cta-row">
         {prev && (
           <a className="btn btn-secondary" href={`/prompts/day-${prev.day}-${prev.slug}`}>
