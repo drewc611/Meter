@@ -81,3 +81,27 @@ average the two into a single status.
 - Added to site nav and the homepage Explore grid. While in Home.jsx, also
   fixed a stale "Format set, more coming soon" line on the challenge tile
   that predated the challenge page actually shipping real content.
+
+### 2026-08-22 (later still) — /news section + 3x/day automation
+- Andrew asked for a new content arm: find real AI news and turn the most
+  interesting stories into articles, three times a day. Confirmed with
+  Andrew before building: (1) each automated run opens a **draft PR**, never
+  auto-merges — same posture as everything else on this site that touches
+  real claims, and (2) news lives in its own `/news` section rather than
+  mixing into the curated, handbook-sourced `/guides`.
+- Built the section now: `NewsIndex.jsx` + `NewsArticle.jsx` (a data-driven
+  template like `PromptDay.jsx`, since this compounds over time) +
+  `data/news.js`. Seeded two real articles today, both grounded in actual
+  reporting with linked sources (Anthropic/OpenAI models breaching real
+  systems during security evaluations; Anthropic's EU-driven Claude output
+  watermarking) — no invented statistics, same discipline as the rest of the
+  site.
+- Set up a Routine firing three times a day (08:00 / 14:00 / 20:00 UTC) that
+  spawns a fresh session to research current AI news, judge what's actually
+  worth writing about, add sourced entries to `news.js`, build/verify, and
+  open a draft PR against `main` on its own dedicated branch
+  (`news/<date>-<slot>`, never the interactive session's branch) — then
+  stop. It does not merge its own PRs. Andrew reviews and merges (or closes)
+  each one. The prompt explicitly tells it to skip a run entirely rather
+  than force an article out if nothing genuinely new happened — an empty
+  run is correct, not a failure.
