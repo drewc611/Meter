@@ -13,22 +13,24 @@ metadata:
 
 # Merit AC goal
 
-**Two goals now, tracked separately, never averaged into one score (added
-2026-08-21).** The design-partner goal (`merit-ai-team/docs/merit-goal.md`)
-and the content/challenge goal (`merit-ai-team/docs/merit-content-goal.md`)
-measure different things and can move in opposite directions in the same
-week. Report both, rank work against whichever one it actually serves, and
-never blend them into a single verdict — "content is up but partners are
-flat" is the honest sentence, not a combined average.
+**Three goals now, tracked separately, never averaged into one score (news
+goal added 2026-08-22).** The design-partner goal
+(`merit-ai-team/docs/merit-goal.md`), the content/challenge goal
+(`merit-ai-team/docs/merit-content-goal.md`), and the news goal
+(`merit-ai-team/docs/merit-news-goal.md`) measure different things and can
+move in opposite directions in the same week. Report all three, rank work
+against whichever one it actually serves, and never blend them into a
+single verdict — "content is up but partners are flat and news just
+started" is the honest sentence, not a combined average.
 
 Everything the team does gets ranked against the goal it's actually meant to
-move. Work that doesn't move either gets named as such rather than quietly
-done anyway.
+move. Work that doesn't move any of the three gets named as such rather than
+quietly done anyway.
 
-Read both files (plain Read, not a project tool — this plugin runs against
-files in `drewc611/Meter`, not a claude.ai Project; see `merit-context`) at
-the start of every merit run, even if this run's task only concerns one of
-them — the CEO brief needs both.
+Read all three files (plain Read, not a project tool — this plugin runs
+against files in `drewc611/Meter`, not a claude.ai Project; see
+`merit-context`) at the start of every merit run, even if this run's task
+only concerns one of them — the CEO brief needs all three.
 
 ## Modes
 
@@ -137,3 +139,20 @@ A goal file with three blanks in it is more honest than one with three guessed
 numbers. Flag the blanks in every weekly output on this goal until Andrew
 closes them, the same way the design-partner goal sat PROPOSED for its first
 two weeks.
+
+## Third goal — AI news (added 2026-08-22)
+
+Lives at `merit-ai-team/docs/merit-news-goal.md`. Same PROPOSED-with-blanks
+treatment as the content goal above — Andrew hasn't given an outcome,
+deadline, or measure for this one either. Do not invent them.
+
+Unlike the other two, this goal's work publishes **autonomously** — a
+scheduled run drafts an article, runs an adversarial Judge-tier pass, and
+merges directly with no human review, per Andrew's direct confirmation
+(2026-08-22). Because there's no human gate, this goal is scored on two
+structural things holding, not just publish volume: whether the Judge pass
+is actually rejecting things (check `merit-news-judge-log.md` — a long
+run of zero rejections is itself a finding, not necessarily good news),
+and whether every published article still carries an honest, dated
+corrections trail if one was ever needed. If either stops holding, say so
+plainly even if the publish count looks healthy.
