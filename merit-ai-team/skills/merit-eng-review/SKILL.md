@@ -108,6 +108,41 @@ exist, review them with the same rigor as the product:
 Only with repo access. Look for: tests covering the scoring math specifically,
 migration strategy, pinned dependency versions, and whether CI runs on PRs.
 
+### 6. Autonomous news pipeline (added 2026-08-22)
+
+The `/news` arm publishes with no human review gate — the Judge-tier pass
+and the article's own `corrections` trail are the entire safety mechanism
+(see `merit-ai-team/docs/merit-news-goal.md` and `merit-growth`'s SKILL.md).
+That makes the correction/retraction mechanism a **build requirement for
+this pipeline, not an afterthought bolted on after the first published
+error**. Treat any change to the news pipeline's code or automation as
+incomplete, not just improvable, if it ships without all of the following
+already working:
+
+- Every entry in `frontend/src/content/data/news.js` supports a
+  `corrections` array, and `NewsArticle.jsx` renders it visibly on the
+  article whenever it's non-empty — not hidden behind a click, not a
+  silent diff to the original body text.
+- The automation that publishes has a real, exercised path for *appending*
+  a correction to an already-published article (a dated entry, a note),
+  distinct from and never substituting for editing the original claim in
+  place. If that path only exists in a doc and has never actually been
+  run end-to-end, say so as a gap, the same way a missing test is a gap.
+- The Judge-tier pass genuinely blocks publication on failure — verify
+  this by reading `merit-ai-team/docs/merit-news-judge-log.md` for actual
+  `rejected` entries, not just checking the code path exists. A judge
+  pass that has never once rejected anything is itself worth flagging
+  (per `merit-goal`'s scoring note on this), not assumed clean.
+- No credential, token, or merge capability the pipeline uses to publish
+  autonomously is broader than it needs — same rotation/revocation
+  discipline already required of the ingest token and any `/challenge`
+  access token.
+
+A pipeline that skips any of these is not "mostly done" — flag it at the
+same severity as a scoring-correctness bug, because the entire point of
+building the corrections trail first was to not treat it as a nice-to-have
+added after something already went out wrong.
+
 ## How to report
 
 Findings ranked by severity, most severe first. Each one gets: what is wrong,

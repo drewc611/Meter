@@ -16,13 +16,18 @@ The one that pulls it together. Read `merit-context` and `merit-goal` first.
 
 ## Run order
 
-1. **Read both goals.** `merit-ai-team/docs/merit-goal.md` (design partners)
-   and `merit-ai-team/docs/merit-content-goal.md` (content/challenge).
-   Everything below is ranked against whichever one it actually serves — never
-   blend the two into a single score. If either is missing or still PROPOSED,
-   say so; the content goal has sat PROPOSED with blank outcome/deadline/
-   measure since 2026-08-21 and should be flagged every week until Andrew
-   closes it, same as the original goal was flagged for its first two weeks.
+1. **Read all three goals.** `merit-ai-team/docs/merit-goal.md` (design
+   partners), `merit-ai-team/docs/merit-content-goal.md` (content/challenge),
+   and `merit-ai-team/docs/merit-news-goal.md` (AI news). Everything below is
+   ranked against whichever one it actually serves — never blend the three
+   into a single score. If any is missing or still PROPOSED, say so; the
+   content goal has sat PROPOSED with blank outcome/deadline/measure since
+   2026-08-21 and the news goal since 2026-08-22 — flag each every week until
+   Andrew closes it, same as the original goal was flagged for its first two
+   weeks. The news goal also needs its two structural checks read from
+   `merit-news-judge-log.md` (is the Judge pass actually rejecting anything;
+   does every published article that needed one carry a corrections entry) —
+   report those even when the goal itself is still PROPOSED.
 
 2. **Read last week.** Read `merit-ai-team/docs/merit-infra-log.md`,
    `merit-eng-log.md`, `merit-growth-log.md`, and `merit-exec-brief.md`. Note
@@ -47,10 +52,14 @@ deciding what matters, killing what doesn't, and naming what he has to choose.
 
 Structure:
 
-**Goal lines, two of them.** Design-partner outcome, days remaining, status,
-number that changed. Then the content/challenge outcome the same way — or, if
-still PROPOSED, one line saying so plus what's blocking Andrew from filling it
-in. Do not merge them into one combined status.
+**Goal lines, three of them.** Design-partner outcome, days remaining, status,
+number that changed. Then the content/challenge outcome the same way, and the
+news outcome the same way again — for either, if still PROPOSED, one line
+saying so plus what's blocking Andrew from filling it in. For the news goal
+specifically, add whether the Judge-tier pass is actually rejecting anything
+and whether the corrections trail is holding — both goals-independent facts
+worth a line even before the goal itself has numbers. Do not merge the three
+into one combined status.
 
 **The three things.** Exactly three, ranked. Each one: what happened, why it
 matters to the goal, what it costs to act. If there aren't three things worth

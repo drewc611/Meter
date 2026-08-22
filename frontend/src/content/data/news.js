@@ -1,14 +1,20 @@
 // AI news commentary -- dated, sourced articles added as real news happens,
-// originally seeded manually and then picked up by a scheduled run three
-// times a day (see merit-ai-team/docs/merit-content-goal.md for the
-// automation). Every claim needs a real source in `sources` -- no invented
-// statistics, no treating a press release as independent reporting. Skip a
-// run entirely rather than forcing an article out just to hit the schedule:
-// an empty run is a correct outcome, not a failure.
+// picked up by a scheduled run three times a day that publishes autonomously
+// (see merit-ai-team/docs/merit-news-goal.md and merit-news-judge-log.md).
+// Every claim needs a real source in `sources` -- no invented statistics, no
+// treating a press release as independent reporting. Skip a run entirely
+// rather than forcing an article out just to hit the schedule: an empty run
+// is a correct outcome, not a failure.
 //
 // Each entry: { date: "YYYY-MM-DD", slug, title, dek, sources: [{label,url}],
-// body: [{type: "p"|"h2", text}] } -- newest first isn't required here,
-// NewsIndex.jsx sorts by date itself.
+// body: [{type: "p"|"h2", text}], corrections?: [{date, note}] } -- newest
+// first isn't required here, NewsIndex.jsx sorts by date itself.
+//
+// `corrections` is the visible retraction/correction trail this site commits
+// to given autonomous, no-human-review publishing: if a later run (or Andrew)
+// finds a factual error in a published article, the fix is a new dated entry
+// appended here -- describing what was wrong and what changed -- never a
+// silent edit to the original body text.
 export const NEWS_ARTICLES = [
   {
     date: "2026-08-22",
