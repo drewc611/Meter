@@ -7,6 +7,14 @@ export const meta = {
   description: "Commentary on the AI news that actually matters, picked up as it happens -- sourced, dated, no filler.",
 };
 
+const CATEGORY_LABELS = {
+  research: "Research",
+  product: "Product",
+  regulation: "Regulation",
+  funding: "Funding",
+  tools: "Tools",
+};
+
 export default function NewsIndex() {
   const sorted = [...NEWS_ARTICLES].sort((a, b) => (a.date < b.date ? 1 : -1));
   return (
@@ -32,6 +40,7 @@ export default function NewsIndex() {
             <a key={a.slug} className="tile" href={`/news/${a.slug}`}>
               <span className="tile-title">{a.title}</span>
               <span className="tile-meta">
+                {a.category ? `${CATEGORY_LABELS[a.category] ?? a.category} · ` : ""}
                 {a.date} — {a.dek}
               </span>
             </a>
