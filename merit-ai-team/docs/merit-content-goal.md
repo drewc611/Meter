@@ -126,3 +126,36 @@ average the two into a single status.
 - Updated cadence, once the Routine can actually be created: seven runs a
   day, spread roughly evenly (00:00 / 04:00 / 07:00 / 10:00 / 14:00 /
   17:00 / 21:00 UTC).
+
+### 2026-08-23 — site repositioned as an AI hub; two new reference sections
+- Andrew asked (directly, via a clarifying question rather than an
+  assumption) to reposition the whole site as "a one stop shop for all
+  AI," not just expand `/news`'s coverage. He confirmed the scope: full
+  site reposition, plus more news volume/categories, an AI model/tool
+  directory, and an AI glossary.
+- Rebranded the hero, meta title/description, and `CLAUDE.md`'s own "what
+  this is" sentence: Merit AC is now framed as a hub for AI (news, a
+  model/tool directory, a glossary) anchored by the spend/value tracker as
+  its flagship tool, not the tracker as the entire identity. `/app`'s own
+  title is deliberately unchanged — the product itself isn't repositioning,
+  the site around it is.
+- Shipped two new sections, both owned by `merit-growth` going forward:
+  - `/models` — a directory of 15 real AI models/tools across six
+    categories (LLMs, coding assistants, image/video generation, agent
+    frameworks, voice, other), each entry WebSearch-verified and dated
+    (`verifiedDate`) rather than a static list that goes stale silently.
+  - `/glossary` — 30 plain-English AI term definitions, including a few
+    (rework tax, shadow AI, slop, recoverable spend, confidence tier) that
+    are this site's own product terms, cross-checked against the actual
+    product code/docs rather than written from a marketing gloss.
+  - `/news` entries now carry an optional `category` field (research,
+    product, regulation, funding, tools), shown as a label on the index —
+    no filter UI yet, same "premature at this volume" call already applied
+    to `/guides`.
+- Nav grew from 7 to 9 items (added Models, Glossary), reordered into a
+  loose "learn" cluster (News/Models/Glossary) then a "practice" cluster
+  (Guides/Prompts/Challenge) — no new dropdown/grouping component, just
+  reordering the existing flat list.
+- The directory and glossary are one-time-authored-then-periodically-
+  revisited content, not continuously autonomous-published like `/news` —
+  no new goal file for this; it's scored as part of this content goal.

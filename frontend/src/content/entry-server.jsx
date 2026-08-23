@@ -13,6 +13,8 @@ import GuidesIndex, { meta as guidesMeta } from "./pages/GuidesIndex.jsx";
 import PromptsIndex, { meta as promptsMeta } from "./pages/PromptsIndex.jsx";
 import Challenge, { meta as challengeMeta } from "./pages/Challenge.jsx";
 import Community, { meta as communityMeta } from "./pages/Community.jsx";
+import ModelsDirectory, { meta as modelsMeta } from "./pages/ModelsDirectory.jsx";
+import Glossary, { meta as glossaryMeta } from "./pages/Glossary.jsx";
 import TenDisciplines, { meta as tenDisciplinesMeta } from "./pages/guides/TenDisciplines.jsx";
 import FourteenDomains, { meta as fourteenDomainsMeta } from "./pages/guides/FourteenDomains.jsx";
 import FourControlBoundaries, { meta as fourControlBoundariesMeta } from "./pages/guides/FourControlBoundaries.jsx";
@@ -37,6 +39,8 @@ const PAGES = [
   [Challenge, challengeMeta],
   [Community, communityMeta],
   [NewsIndex, newsIndexMeta],
+  [ModelsDirectory, modelsMeta],
+  [Glossary, glossaryMeta],
 ];
 
 export function renderAll() {

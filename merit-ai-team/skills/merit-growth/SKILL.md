@@ -99,6 +99,25 @@ signups) or serve a separate audience is still undecided as of 2026-08-21.
 Don't default either way in copy — flag it as open if it affects a specific
 CTA decision.
 
+Also owns `/models` (an AI model/tool directory) and `/glossary` (AI term
+definitions), added 2026-08-23 as part of Andrew's confirmed repositioning
+of the whole site as an AI hub — see `merit-ai-team/docs/merit-content-goal.md`'s
+2026-08-23 entry for the full decision. Unlike `/news`, these two are
+**one-time-authored-then-periodically-revisited**, not continuously
+published — there's no scheduled Routine for them. The discipline that
+matters here: every `/models` entry carries a `verifiedDate` and a real
+source, and this space moves fast enough (pricing changes, deprecations,
+whole products getting discontinued) that a stale, unverified entry is
+worse than no entry at all. Spot-check entries periodically rather than
+trusting an old `verifiedDate` indefinitely — bump the date on re-verify,
+and if a fact can't be confirmed anymore, cut the field or the entry rather
+than leave a guess standing. `/glossary` definitions carry a lower sourcing
+burden (standard field terminology, not a fast-changing fact) but still get
+written carefully — a few entries (rework tax, shadow AI, slop, recoverable
+spend, confidence tier) are this site's own product terms and must match
+what the product's own code/docs actually mean, not a looser marketing
+gloss.
+
 The `/challenge` fee mechanism (Stripe vs. manual) is also undecided. Don't
 draft checkout copy that implies a working payment flow until that's answered.
 

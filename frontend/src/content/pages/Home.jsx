@@ -2,16 +2,18 @@ import ContentLayout from "../components/ContentLayout.jsx";
 
 export const meta = {
   outFile: "index.html",
-  title: "Merit AC — AI Spend & Value",
+  title: "Merit AC — AI News, Tools & Spend Tracking",
   description:
-    "Merit AC tells a company what it spends on AI, what that spend is actually producing, and how much of it is rework risk instead of real work.",
+    "Merit AC is a hub for AI: sourced news, a directory of models and tools, a glossary of terms, and a tool that tracks whether a company's AI spend is producing real work or slop. Early prototype status.",
 };
 
 const EXPLORE = [
   { href: "/architecture", title: "Architecture", meta: "How Merit AC is built and hosted" },
   { href: "/setup/react", title: "Setup guides", meta: "Wire your AI usage in — React, Python, Node, TensorFlow/Pyro" },
-  { href: "/guides", title: "Guides", meta: "General writing on doing AI work well" },
   { href: "/news", title: "News", meta: "Sourced commentary on AI news that actually matters" },
+  { href: "/models", title: "Models & tools", meta: "A directory of AI models and tools — verified and dated" },
+  { href: "/glossary", title: "Glossary", meta: "Plain-English definitions for AI terms" },
+  { href: "/guides", title: "Guides", meta: "General writing on doing AI work well" },
   { href: "/prompts", title: "Prompts", meta: "A 30-day AI prompt archive" },
   { href: "/challenge", title: "The 30-day challenge", meta: "Build a governed agentic delivery platform, free" },
   { href: "/community", title: "Community", meta: "Not open yet — join the interest list" },
@@ -23,10 +25,12 @@ export default function Home() {
       <span className="badge">
         <i /> Pre-launch prototype
       </span>
-      <h1>AI spend isn&apos;t the risk. Slop wearing a good ROI number is.</h1>
+      <h1>AI moves fast, is full of hype, and hard to make sense of.</h1>
       <p className="lead">
-        Most tools stop at &quot;who spent what.&quot; Merit AC checks if the work was <b>any good</b> —
-        reverts, rewrites, regeneration loops — before it counts as value.
+        Merit AC is one place to follow it — news without the noise, a directory of the models and
+        tools actually worth knowing, and a glossary that skips the jargon. At the center: our own
+        tracker that checks if the work behind an ROI number is <b>real</b>, or wearing a good number
+        to hide slop.
       </p>
       <div className="cta-row">
         <a className="btn btn-primary" href="/app">

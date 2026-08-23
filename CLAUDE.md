@@ -4,20 +4,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Merit AC is an AI spend tracker: it tells a company what it spends on AI, who's
-spending it, and whether that spend is producing real work or slop. Early
-prototype status. Three parts:
+Merit AC is a hub for AI — news, a directory of models and tools, and a
+glossary — anchored by a flagship spend/value tracker that tells a company
+what it spends on AI, who's spending it, and whether that spend is producing
+real work or slop. Early prototype status. Three parts:
 
 - `backend/` — a runnable FastAPI + SQLite reference implementation of the
   tracking/scoring pipeline. This is where almost all the logic lives.
 - `frontend/` — a Vite + React dashboard that reads from the backend API,
   with an embedded fallback dataset so it renders even when the API isn't
   running. It's deployed at `/app`, not the site root — the root (`/`) and
-  the rest of the content arm (`/architecture`, `/setup/*`, `/guides`,
-  `/prompts`, `/challenge`) are React components under `src/content/` that
-  prerender to plain static HTML at build time, so they stay crawlable
-  rather than 404ing as client-only SPA routes, and so an anonymous visitor
-  lands on a real landing page instead of an auth-gated dashboard. See
+  the rest of the content arm (`/architecture`, `/setup/*`, `/news`,
+  `/models`, `/glossary`, `/guides`, `/prompts`, `/challenge`,
+  `/community`) are React components under `src/content/` that prerender
+  to plain static HTML at build time, so they stay crawlable rather than
+  404ing as client-only SPA routes, and so an anonymous visitor lands on a
+  real landing page instead of an auth-gated dashboard. See
   `frontend/README.md`.
 - `merit-ai-team/` — skills for the internal AI team that runs Merit AC's own
   product/growth/eng/infra loop (not part of the shipped product). Its own
