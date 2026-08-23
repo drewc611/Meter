@@ -28,3 +28,21 @@ stretch is itself worth checking: either the source material has been
 unusually clean, or the Judge pass has gotten lax.
 
 ## Log
+
+### 2026-08-23 14:30 UTC — openai-crosses-one-billion-active-users
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites OpenAI's own blog post (`openai.com/index/building-abundant-intelligence/`) as primary; TechSpot (byline Rob Thubron) as corroborating secondary, not the sole source.
+- Quotes ≤15 words, one per source: pass — OpenAI quote trimmed to the 12-word clause "more than one billion active users and more than two million businesses"; no quote taken from the TechSpot source.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — OpenAI's own blog (CFO Sarah Friar, named); TechSpot byline Rob Thubron, confirmed via direct fetch of the article.
+**Notes:** WebFetch on the OpenAI blog URL itself returned 403 (bot-blocked); primary-source claim rests on that URL being independently and consistently cited by multiple reputable secondary sources (AFP wire via CP24, TechSpot, PYMNTS) rather than on this run rendering the page directly. Flagging this as a real limitation, not a silent gap — a future run should retry fetching openai.com directly if a tool with different access becomes available, and downgrade this to "trade-report only" if the primary link is ever found to be wrong.
+
+### 2026-08-23 14:30 UTC — openai-astra-solves-ten-decades-old-math-problems
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites OpenAI's own report PDF (`cdn.openai.com/pdf/ten-proofs-oai.pdf`) as primary; THE DECODER (byline Matthias Bastian) as corroborating secondary.
+- Quotes ≤15 words, one per source: pass — "The mathematical arguments themselves, however, came from Astra" (9 words), one quote, attributed to OpenAI's own report.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — OpenAI's own report; THE DECODER byline Matthias Bastian, confirmed via direct fetch of the article.
+**Notes:** None.
