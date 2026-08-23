@@ -105,3 +105,24 @@ average the two into a single status.
   each one. The prompt explicitly tells it to skip a run entirely rather
   than force an article out if nothing genuinely new happened — an empty
   run is correct, not a failure.
+
+### 2026-08-23 — correction: posture and cadence both changed since the entry above
+- The entry above is stale on two points, corrected here rather than edited
+  in place (same append-only discipline as the `corrections` field on a
+  published article): (1) Andrew later confirmed the news arm publishes
+  **autonomously, with no human review gate** — the Judge-tier pass merges
+  directly, it does not stop at a draft PR for Andrew to review. See
+  `merit-ai-team/docs/merit-news-goal.md` and `merit-growth`'s SKILL.md for
+  the full decision and the two-round confirmation that produced it.
+  (2) Andrew asked for the cadence to increase from three runs a day to
+  **seven** runs a day.
+- The `create_trigger` Routine itself has still never actually been
+  created — every attempt across this session has failed with "MCP tool
+  call requires approval," which needs a human action in Andrew's own
+  interface, not a chat reply. The three-times-a-day description above was
+  the intended design at the time, not a confirmation that the Routine
+  exists. Until it's created, publishing on this arm only happens when
+  Andrew (or an interactive session) triggers a run by hand.
+- Updated cadence, once the Routine can actually be created: seven runs a
+  day, spread roughly evenly (00:00 / 04:00 / 07:00 / 10:00 / 14:00 /
+  17:00 / 21:00 UTC).
