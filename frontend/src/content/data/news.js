@@ -293,4 +293,129 @@ export const NEWS_ARTICLES = [
       },
     ],
   },
+  {
+    date: "2026-08-23",
+    slug: "google-gemini-robotics-er-2-refuses-unsafe-actions",
+    category: "research",
+    title: "Google's new robot-control model is built to refuse unsafe actions and stop when a person gets close",
+    dek:
+      "Gemini Robotics ER 2 extends Google DeepMind's embodied-reasoning model to full-body robot control, and its published benchmarks measure something more specific than raw task success: whether the robot knows when to stop.",
+    sources: [
+      {
+        label: "Introducing Gemini Robotics ER 2 — Google (official blog)",
+        url: "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-robotics-er-2/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Google DeepMind announced Gemini Robotics ER 2 on July 30, 2026 -- a vision-language model that acts as a robot's high-level reasoning layer (\"ER\" for Embodied Reasoning): it doesn't drive motors directly, but sees the physical world, plans multi-step tasks lasting several minutes, and orchestrates the lower-level control systems that do. This release extends the family to full-body control -- legs, torso, arms, and fingers under one learned policy -- rather than upper-body manipulation alone.",
+      },
+      {
+        type: "h2",
+        text: "The benchmark that matters more than the demo reel",
+      },
+      {
+        type: "p",
+        text:
+          "Alongside the usual capability numbers -- 91.3% accuracy on a timing/coordination benchmark, four times faster execution than competing models on the tasks Google tested -- Google published results on what it calls Safety Instruction Following and Human Proximity benchmarks, measuring whether the model halts, refuses an unsafe action, or asks for human input rather than pushing through. Google's own description: the model \"halts a humanoid robot when a person is nearby and autonomously resumes work.\"",
+      },
+      {
+        type: "h2",
+        text: "Why this is the right thing to be measuring",
+      },
+      {
+        type: "p",
+        text:
+          "A model that's fast and accurate at completing a physical task but has no measured behavior for \"a person just walked into the workspace\" is optimizing for the wrong variable. Publishing a benchmark specifically for refusal and human-proximity halting is Google treating that failure mode as a first-class metric, not an assumed property of a capable-enough model -- the same distinction this site keeps returning to for software agents: competence is not a control, and a control has to be measured, not assumed, to count as real.",
+      },
+    ],
+  },
+  {
+    date: "2026-08-23",
+    slug: "california-ai-transparency-act-takes-effect",
+    category: "regulation",
+    title: "California's AI content-labeling law took effect August 2, timed to line up with the EU's",
+    dek:
+      "SB 942, as amended by AB 853, now requires large generative-AI providers serving California to offer a free AI-detection tool and label AI-generated image, video, and audio content -- deliberately synced to the EU AI Act's own August 2 enforcement date.",
+    sources: [
+      {
+        label: "SB-942 California AI Transparency Act — California Legislative Information (official bill text)",
+        url: "https://leginfo.legislature.ca.gov/faces/billTextClient.xhtml?bill_id=202320240SB942",
+      },
+      {
+        label: "California Enacts AI Transparency Law Requiring Disclosures for AI Content — Jones Day (Kukkonen, Myers, Paez, Tait, Thomas)",
+        url: "https://www.jonesday.com/en/insights/2024/10/california-enacts-ai-transparency-law-requiring-disclosures-for-ai-content",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "California's SB 942, the AI Transparency Act, was signed in September 2024 with an original effective date of January 1, 2026. AB 853, signed October 2025, pushed that operative date to August 2, 2026 -- the same day the EU AI Act's transparency obligations for high-risk systems began being enforced -- and added separate hosting-platform obligations starting January 1, 2027.",
+      },
+      {
+        type: "h2",
+        text: "What it actually requires",
+      },
+      {
+        type: "p",
+        text:
+          "Covered generative-AI providers with more than one million monthly California users must offer a free AI-detection tool and provide both a visible disclosure and an embedded, harder-to-strip \"latent\" disclosure on AI-generated image, video, and audio content, per the statute. Providers also have to contractually require third-party licensees to keep those same transparency capabilities in place, not just implement them in-house and stop there.",
+      },
+      {
+        type: "h2",
+        text: "Why the date isn't a coincidence",
+      },
+      {
+        type: "p",
+        text:
+          "Two separate governments, on two continents, independently decided AI content-labeling obligations should land on the same day -- and California's own amendment explicitly aligned to it. That's a real, if narrow, instance of regulatory coordination in a space more often characterized by fragmentation, and it's the same underlying obligation this site already covered from Anthropic's side (watermarking Claude output for EU compliance): one technical response, at least two overlapping legal triggers, both now live.",
+      },
+    ],
+  },
+  {
+    date: "2026-08-23",
+    slug: "openai-shuts-down-atlas-browser",
+    category: "product",
+    title: "OpenAI shut down its standalone Atlas browser less than a year after launch",
+    dek:
+      "Atlas stopped working August 9, 2026, folded into ChatGPT Desktop's browser mode and ChatGPT Work instead -- a reversal on the standalone-AI-browser bet, and a useful contrast to Cloudflare's very different agent-browser approach covered here the same week.",
+    sources: [
+      {
+        label: "ChatGPT for your most ambitious work — OpenAI (official announcement)",
+        url: "https://openai.com/index/chatgpt-for-your-most-ambitious-work/",
+      },
+      {
+        label: "OpenAI is shutting down Atlas, but its AI browser ambitions are still growing — TechCrunch (Rebecca Bellan)",
+        url: "https://techcrunch.com/2026/07/09/openai-is-shutting-down-atlas-but-its-ai-browser-ambitions-are-still-growing/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "OpenAI announced on July 9, 2026 that it was sunsetting ChatGPT Atlas, its standalone AI browser launched in October 2025, with a deprecation date of August 9, 2026 -- a run of exactly ten months. Atlas's browsing capabilities aren't disappearing; they're being folded into an upgraded browser mode inside ChatGPT Desktop and into ChatGPT Work, OpenAI's newer unified platform for longer, multi-step browser tasks.",
+      },
+      {
+        type: "h2",
+        text: "Not a failure story, a packaging story",
+      },
+      {
+        type: "p",
+        text:
+          "The stated logic: once an AI agent can independently read a page and act on it, a standalone browser stops being the right container for that capability -- it becomes a feature of the assistant, not a separate product a user has to choose to open. Whether that's the real reason or a reasonable story for a product that didn't stick is hard to verify from outside the company, and this site isn't going to claim more certainty than the public record supports either way.",
+      },
+      {
+        type: "h2",
+        text: "A useful contrast, not a verdict",
+      },
+      {
+        type: "p",
+        text:
+          "It's worth reading alongside the Cloudflare Kitesurf story covered here the same week: two companies, two opposite bets on what \"browsing for AI\" should look like. OpenAI tried a human-facing browser with AI layered in, then retreated to folding that capability into an existing assistant. Cloudflare skipped the human-facing part entirely and built something with no tabs, no theme, no UI a person would ever touch. Neither approach is obviously right yet -- but the fact that one of 2026's most-watched AI browser bets didn't survive its first year is a data point worth having before treating any single vendor's browser-agent roadmap as settled.",
+      },
+    ],
+  },
 ];

@@ -64,3 +64,39 @@ unusually clean, or the Judge pass has gotten lax.
 - No absence-of-evidence claims: pass — explicitly hedged the security claim ("whether that holds up under real adversarial use is unproven this early") rather than asserting safety, and listed Kitesurf's stated current limitations (no video/WebGL/bot-detection/persistent auth) rather than omitting them.
 - Every citation has a confirmed byline/author: pass — Cloudflare's own blog (author Celso Martinho, listed on the post); TechCrunch byline Sarah Perez, confirmed via direct fetch of the article.
 **Notes:** None.
+
+### 2026-08-23 16:40 UTC — meta-muse-code-coding-agent (rejected)
+**Verdict:** rejected
+**Checks:**
+- Primary source over trade-report paraphrase: fail — despite three separate searches (direct site search, `ai.meta.com`/`about.fb.com` targeted, general web search), no Meta-owned URL for Muse Code specifically could be confirmed. Meta's other 2026 model launches (Muse Spark, Muse Image) do have confirmed `ai.meta.com`/`about.fb.com` posts, so the absence for Muse Code specifically is a real gap, not a search failure.
+- Quotes ≤15 words, one per source: n/a — no draft written, rejected before drafting.
+- No absence-of-evidence claims: n/a
+- Every citation has a confirmed byline/author: partial — CNBC, TechCrunch, Forbes, and others all report a named quote from Alexandr Wang (Meta's Chief AI Officer), which is a real signal the story is substantively true, but that's multiple secondary outlets independently reporting the same executive quote, not a primary company source this run could point to directly.
+**Notes:** This is a case the OpenAI-billion-users precedent (2026-08-23 14:30 UTC entry) doesn't fully cover: there, the primary URL was confirmed to exist and be cited consistently, just blocked from direct fetch. Here, no primary URL could be confirmed to exist at all. Treating these as different confidence tiers rather than the same "primary source, just unreachable" pass -- this one didn't clear the bar. Worth a future run retrying this story if a direct Meta blog post for Muse Code surfaces later.
+
+### 2026-08-23 16:40 UTC — google-gemini-robotics-er-2-refuses-unsafe-actions
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — single source, Google's own official blog (`blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-robotics-er-2/`); no trade-press paraphrase used.
+- Quotes ≤15 words, one per source: pass — Google quote trimmed to the 13-word clause "halts a humanoid robot when a person is nearby and autonomously resumes work."
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Google's own official blog, institutional source.
+**Notes:** Single-sourced (no independent secondary this run found beyond restatements of the same Google post) — flagging that explicitly rather than padding with a redundant citation. The underlying claim (a published safety benchmark) is itself the kind of thing a company has an incentive to overstate; a future run should look for independent testing of Gemini Robotics ER 2's safety claims once available.
+
+### 2026-08-23 16:40 UTC — california-ai-transparency-act-takes-effect
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites the official California Legislative Information bill text (`leginfo.legislature.ca.gov`) as primary for the law's current effective date and text; Jones Day's client insight (named attorneys) as secondary for plain-English summary, not for any legal fact not also in the bill text.
+- Quotes ≤15 words, one per source: n/a — no direct quotes used, paraphrase only.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — official government legislative record (institutional); Jones Day piece has five named attorney authors (Kukkonen, Myers, Paez, Tait, Thomas).
+**Notes:** The Jones Day piece is dated October 2024, before the AB 853 amendment that changed the effective date to August 2, 2026 -- used only for the law's substantive requirements (which AB 853 didn't change), not the date, which came from the current bill text directly.
+
+### 2026-08-23 16:40 UTC — openai-shuts-down-atlas-browser
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites OpenAI's own announcement (`openai.com/index/chatgpt-for-your-most-ambitious-work/`) as primary; TechCrunch (byline Rebecca Bellan) as corroborating secondary.
+- Quotes ≤15 words, one per source: n/a — no direct quotes used, paraphrase only, explicitly hedged ("hard to verify from outside the company") rather than asserting OpenAI's stated rationale as fact.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — OpenAI's own announcement; TechCrunch byline Rebecca Bellan, confirmed via direct fetch of the article.
+**Notes:** WebFetch on the OpenAI URL itself returned 403 (bot-blocked), same limitation as the 2026-08-23 14:30 UTC billion-users entry -- primary-source claim rests on the URL being consistently and directly cited by TechCrunch and other outlets as the actual announcement, not on this run rendering the page.
