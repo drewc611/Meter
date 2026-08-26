@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import ContentLayout from "../components/ContentLayout.jsx";
 import Toc from "../components/Toc.jsx";
 
@@ -5,8 +6,201 @@ export const meta = {
   outFile: "architecture.html",
   title: "Architecture — Merit AC",
   description:
-    "How Merit AC is built and hosted: the data model, the scoring pipeline, the deployment split, and what's deliberately not built yet.",
+    "How Merit AC is built and hosted, plus a field guide to the AI system archetypes it tracks — chatbot, RAG, copilot, agent, multi-agent, fine-tuned model, workflow automation, and computer-use — each with a diagram.",
 };
+
+// A step-and-arrow flow diagram for a "linear" archetype: A → B → C.
+function LinearDiagram({ steps }) {
+  return (
+    <div className="arch-diagram">
+      {steps.map((step, i) => (
+        <Fragment key={step.label}>
+          <div className="arch-step">
+            <span className="arch-step-label">{step.label}</span>
+            {step.note && <span className="arch-step-note">{step.note}</span>}
+          </div>
+          {i < steps.length - 1 && (
+            <span className="arch-arrow" aria-hidden="true">
+              →
+            </span>
+          )}
+        </Fragment>
+      ))}
+    </div>
+  );
+}
+
+// Same step row as LinearDiagram, but the last step feeds back into an
+// earlier one — the shape of an autonomous agent loop rather than a
+// one-shot pipeline.
+function LoopDiagram({ steps, loopLabel }) {
+  return (
+    <>
+      <LinearDiagram steps={steps} />
+      <p className="arch-loop-note">
+        <span className="arch-loop-icon" aria-hidden="true">
+          ↻
+        </span>
+        {loopLabel}
+      </p>
+    </>
+  );
+}
+
+// A single hub box branching into parallel spoke boxes — the shape of an
+// orchestrator dispatching to specialist sub-agents.
+function HubDiagram({ hub, spokes }) {
+  return (
+    <div className="arch-hub">
+      <div className="arch-step">
+        <span className="arch-step-label">{hub.label}</span>
+        {hub.note && <span className="arch-step-note">{hub.note}</span>}
+      </div>
+      <span className="arch-arrow" aria-hidden="true">
+        ↓
+      </span>
+      <div className="arch-spokes">
+        {spokes.map((spoke) => (
+          <div className="arch-step" key={spoke.label}>
+            <span className="arch-step-label">{spoke.label}</span>
+            {spoke.note && <span className="arch-step-note">{spoke.note}</span>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const ARCHETYPES = [
+  {
+    id: "chatbot",
+    name: "Chatbot / single-turn assistant",
+    shape: "Linear pipeline",
+    diagram: (
+      <LinearDiagram
+        steps={[
+          { label: "User message" },
+          { label: "LLM", note: "+ prior turns, if any" },
+          { label: "Response" },
+        ]}
+      />
+    ),
+    body: "The base case everything else on this page builds on: one message in, one response out. Conversation history gets replayed into each new call rather than the model \"remembering\" anything between requests — a long-running chat is really N independent calls, each carrying the whole transcript so far.",
+    watch: "Cost and latency both scale with transcript length, since every earlier turn gets re-sent and re-read on every new message.",
+  },
+  {
+    id: "rag",
+    name: "Retrieval-augmented generation (RAG)",
+    shape: "Linear pipeline",
+    diagram: (
+      <LinearDiagram
+        steps={[
+          { label: "Query" },
+          { label: "Retrieve", note: "vector / keyword search" },
+          { label: "Augment prompt" },
+          { label: "LLM" },
+          { label: "Grounded response" },
+        ]}
+      />
+    ),
+    body: "Used when the model needs facts it wasn't trained on — a company's own documents, a support-ticket history, anything that changes after the model's training cutoff. The retrieval step searches a knowledge base for passages relevant to the query and stuffs them into the prompt before the model ever sees the question, so the answer is grounded in real, current text instead of the model's memorized (and possibly stale or wrong) recall.",
+    watch: "The answer is only as good as what retrieval finds — a bad search match produces a confident, well-written answer grounded in the wrong document.",
+  },
+  {
+    id: "copilot",
+    name: "Coding assistant / copilot",
+    shape: "Linear pipeline, human-gated",
+    diagram: (
+      <LinearDiagram
+        steps={[
+          { label: "Code context", note: "open file, cursor" },
+          { label: "LLM suggestion" },
+          { label: "Human review" },
+          { label: "Accept / reject" },
+        ]}
+      />
+    ),
+    body: "Inline completions and in-editor chat both follow this shape: the model proposes, a person disposes. That human-review step is what separates a copilot from an agent below — every suggestion is a draft a person looks at before it lands, not an action the system carries out on its own.",
+    watch: "Rubber-stamped accepts (approving a diff without reading it) quietly erase the one control this archetype depends on.",
+  },
+  {
+    id: "agent",
+    name: "Agentic loop (tool-use agent)",
+    shape: "Autonomous loop",
+    diagram: (
+      <LoopDiagram
+        steps={[{ label: "Plan next step" }, { label: "Call a tool" }, { label: "Observe result" }]}
+        loopLabel="Repeats until the model decides the task is done, then returns a final answer."
+      />
+    ),
+    body: "The defining difference from a chatbot or copilot: the model decides which tool to call, when to call it, and when to stop — not a person clicking through steps. Each loop iteration feeds the previous tool's output back in as new context, so the model can react to what it just learned rather than following a script written in advance.",
+    watch: "An open-ended stop condition means a stuck agent can loop far longer (and spend far more) than a bounded pipeline ever would — this is why tool budgets and iteration caps matter operationally, not just correctness.",
+  },
+  {
+    id: "multi-agent",
+    name: "Multi-agent / orchestrator",
+    shape: "Hub and spokes",
+    diagram: (
+      <HubDiagram
+        hub={{ label: "Orchestrator", note: "decomposes the task" }}
+        spokes={[{ label: "Research agent" }, { label: "Code agent" }, { label: "Review agent" }]}
+      />
+    ),
+    body: "One agent receives the overall task, breaks it into sub-tasks, and dispatches each to a specialist agent — running in parallel or in sequence — then collects and synthesizes their results into one answer. Each spoke is usually itself an agentic loop (above), so this is a pattern built on top of the agent archetype, not a separate primitive.",
+    watch: "Cost is additive across every spoke that runs, and a wrong synthesis at the end can silently discard a spoke that actually got it right.",
+  },
+  {
+    id: "fine-tuned",
+    name: "Fine-tuned / specialized model",
+    shape: "Linear pipeline, offline",
+    diagram: (
+      <LinearDiagram
+        steps={[
+          { label: "Base model" },
+          { label: "+ domain training data" },
+          { label: "Fine-tuned checkpoint" },
+          { label: "Narrower, faster inference" },
+        ]}
+      />
+    ),
+    body: "The training step happens once, offline, ahead of time — unlike every other archetype here, there's no live pipeline at inference time beyond a normal model call. The payoff is a model that's cheaper, faster, and more consistent at one narrow, repeated task than prompting a large general model for the same thing over and over.",
+    watch: "A fine-tune trained on last quarter's data quietly drifts out of date the same way any other stale reference material does, just less visibly.",
+  },
+  {
+    id: "workflow",
+    name: "Workflow automation (LLM-in-pipeline)",
+    shape: "Linear pipeline, fixed by code",
+    diagram: (
+      <LinearDiagram
+        steps={[
+          { label: "Ingest" },
+          { label: "Classify", note: "LLM call" },
+          { label: "Extract", note: "LLM call" },
+          { label: "Write to system" },
+        ]}
+      />
+    ),
+    body: "Looks like the agent loop above but isn't one: control flow here is fixed by code ahead of time, and the LLM fills one or more defined steps rather than deciding what happens next. This is the right shape whenever the sequence of steps is already known and stable — it's more predictable and easier to debug than an agent, at the cost of not adapting when a case doesn't fit the pipeline it was built for.",
+    watch: "Inputs that fall outside what the pipeline was designed for don't get handled gracefully — they get force-fit into whichever fixed step happens to run.",
+  },
+  {
+    id: "computer-use",
+    name: "Computer-use / browser agent",
+    shape: "Autonomous loop",
+    diagram: (
+      <LoopDiagram
+        steps={[
+          { label: "Read screen", note: "screenshot / DOM" },
+          { label: "LLM picks an action" },
+          { label: "Action executes", note: "click, type, scroll" },
+        ]}
+        loopLabel="Repeats until the on-screen task is complete."
+      />
+    ),
+    body: "The same loop shape as the tool-use agent above, except the \"tools\" are mouse and keyboard actions on a real screen instead of API calls. Each iteration re-reads the current screen state before deciding the next action, since a click or page load can change what's actually on screen in ways the model has to notice rather than assume.",
+    watch: "Small UI changes (a moved button, a new dialog) can derail a run in ways an API-based agent, with its more stable interface, wouldn't hit.",
+  },
+];
 
 export default function Architecture() {
   return (
@@ -19,7 +213,8 @@ export default function Architecture() {
       <p className="lead">
         The same architecture documented in the repo's own <code>ARCHITECTURE.md</code> and{" "}
         <code>backend/README.md</code> — reality as deployed today, expanded here with the data
-        model and the parts deliberately left unbuilt.
+        model and the parts deliberately left unbuilt — plus a field guide to the AI system
+        archetypes Merit AC's own tool and model tracking sees in the wild.
       </p>
 
       <Toc
@@ -29,6 +224,7 @@ export default function Architecture() {
           { href: "#deployment", label: "3. Where it runs" },
           { href: "#verdict", label: "4. Does this hosting choice make sense?" },
           { href: "#stubbed", label: "5. What's deliberately not built yet" },
+          { href: "#archetypes", label: "6. AI system archetypes, with diagrams" },
         ]}
       />
 
@@ -226,6 +422,28 @@ export default function Architecture() {
           in production, not something the code assumes for you.
         </p>
       </div>
+
+      <h2 id="archetypes">6. AI system archetypes, with diagrams</h2>
+      <p>
+        A company's AI stack is rarely one thing — it's usually several of the patterns below
+        running at once, each showing up as a different shape in Merit AC's own tool and model
+        breakdown. This is a field guide to the eight that account for nearly everything in
+        production today: what each one is, how it's wired, and the failure mode specific to it.
+        Voice and other multimodal front-ends aren't listed separately — they're an input/output
+        layer on top of these shapes, not a distinct architecture of their own.
+      </p>
+
+      {ARCHETYPES.map((arch) => (
+        <div className="archetype" id={arch.id} key={arch.id}>
+          <h3>{arch.name}</h3>
+          <span className="archetype-shape">{arch.shape}</span>
+          {arch.diagram}
+          <p>{arch.body}</p>
+          <p className="arch-watch">
+            <b>Watch for:</b> {arch.watch}
+          </p>
+        </div>
+      ))}
     </ContentLayout>
   );
 }
