@@ -1,7 +1,7 @@
 # Merit AC API surface
 
 Grounded in `backend/README.md` and `backend/app/routers/*.py` in
-`drewc611/Meter` as of this plugin's creation. Cross-check against the live
+`drewc611/merit-ac` as of this plugin's creation. Cross-check against the live
 `GET /openapi.json` before relying on this for anything load-bearing — the
 repo can drift ahead of what's actually deployed at `api.usemeritai.com`.
 

@@ -68,7 +68,7 @@ In the Cloudflare dashboard: **Workers & Pages → Create → Import a
 repository** (this deploys as a Worker with static assets, not the older
 "Pages" product — same dashboard section, different underlying flow).
 
-1. Select the `drewc611/Meter` repo, branch `main`.
+1. Select the `drewc611/merit-ac` repo, branch `main`.
 2. Root/working directory: `frontend`.
 3. **Build command:** `npm run build`. **Build output directory:** `dist`.
    The dashboard is a Vite/React app (see `frontend/src/`) — this is what

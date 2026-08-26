@@ -153,7 +153,7 @@ scratch — nothing to adapt them from exists yet.
 
 ## Project docs this team maintains
 
-These are plain markdown files in this plugin's own repo (`drewc611/Meter`,
+These are plain markdown files in this plugin's own repo (`drewc611/merit-ac`,
 `merit-ai-team/docs/`) — not a claude.ai Project. Read/write them with normal
 file tools (Read/Write/Edit), same as any other file in this repo.
 

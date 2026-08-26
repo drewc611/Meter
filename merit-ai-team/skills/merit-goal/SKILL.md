@@ -28,7 +28,7 @@ move. Work that doesn't move any of the three gets named as such rather than
 quietly done anyway.
 
 Read all three files (plain Read, not a project tool — this plugin runs
-against files in `drewc611/Meter`, not a claude.ai Project; see
+against files in `drewc611/merit-ac`, not a claude.ai Project; see
 `merit-context`) at the start of every merit run, even if this run's task
 only concerns one of them — the CEO brief needs all three.
 

@@ -24,7 +24,7 @@ judgment, not a delegated pass.)
 
 Check, in order:
 
-1. The connected repo (`drewc611/Meter` in this environment). Best case —
+1. The connected repo (`drewc611/merit-ac` in this environment). Best case —
    review real code directly with Read/Grep.
 2. A different GitHub repo Andrew has named, if that's what's in scope this
    run.

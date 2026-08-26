@@ -63,7 +63,7 @@ flowchart TB
         VOL[("Volume: merit_data\n/data/merit.db")]
     end
 
-    GH["GitHub: drewc611/Meter\nbranch: main"]
+    GH["GitHub: drewc611/merit-ac\nbranch: main"]
 
     BROWSER -->|"HTTPS"| CFW
     BROWSER -->|"HTTPS, CORS-restricted\nto usemeritai.com"| API_SVC
