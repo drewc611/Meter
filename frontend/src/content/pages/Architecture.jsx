@@ -1,12 +1,13 @@
 import { Fragment } from "react";
 import ContentLayout from "../components/ContentLayout.jsx";
 import Toc from "../components/Toc.jsx";
+import Code from "../components/Code.jsx";
 
 export const meta = {
   outFile: "architecture.html",
   title: "Architecture — Merit AC",
   description:
-    "How Merit AC is built and hosted, plus a field guide to the AI system archetypes it tracks — chatbot, RAG, copilot, agent, multi-agent, fine-tuned model, workflow automation, and computer-use — each with a diagram.",
+    "How Merit AC is built and hosted, plus a field guide to twelve AI system archetypes — chatbot, RAG, copilot, agent, multi-agent, router, ensemble, evaluator, memory-augmented agent, fine-tuned model, workflow automation, and computer-use — each with a diagram, when to use it, when not to, and a prompt to try.",
 };
 
 // A step-and-arrow flow diagram for a "linear" archetype: A → B → C.
@@ -48,8 +49,9 @@ function LoopDiagram({ steps, loopLabel }) {
 }
 
 // A single hub box branching into parallel spoke boxes — the shape of an
-// orchestrator dispatching to specialist sub-agents.
-function HubDiagram({ hub, spokes }) {
+// orchestrator dispatching to specialists, a classifier routing to one
+// handler, or a fan-out that later merges back into one box below.
+function HubDiagram({ hub, spokes, mergeBox, note }) {
   return (
     <div className="arch-hub">
       <div className="arch-step">
@@ -67,6 +69,18 @@ function HubDiagram({ hub, spokes }) {
           </div>
         ))}
       </div>
+      {mergeBox && (
+        <>
+          <span className="arch-arrow" aria-hidden="true">
+            ↓
+          </span>
+          <div className="arch-step">
+            <span className="arch-step-label">{mergeBox.label}</span>
+            {mergeBox.note && <span className="arch-step-note">{mergeBox.note}</span>}
+          </div>
+        </>
+      )}
+      {note && <p className="arch-hub-note">{note}</p>}
     </div>
   );
 }
@@ -86,7 +100,15 @@ const ARCHETYPES = [
       />
     ),
     body: "The base case everything else on this page builds on: one message in, one response out. Conversation history gets replayed into each new call rather than the model \"remembering\" anything between requests — a long-running chat is really N independent calls, each carrying the whole transcript so far.",
-    watch: "Cost and latency both scale with transcript length, since every earlier turn gets re-sent and re-read on every new message.",
+    useWhen: [
+      "Quick Q&A, drafting, or brainstorming that doesn't depend on private or fast-changing information.",
+      "The full context the model needs fits comfortably in one prompt.",
+    ],
+    avoidWhen: [
+      "The answer depends on facts the model wasn't trained on, or that changed since training.",
+      "The task requires taking a real action outside the conversation, not just producing text.",
+    ],
+    tryPrompt: "Explain the tradeoffs between two build tools for a small Node.js project, then recommend one and say what would change your recommendation.",
   },
   {
     id: "rag",
@@ -104,7 +126,15 @@ const ARCHETYPES = [
       />
     ),
     body: "Used when the model needs facts it wasn't trained on — a company's own documents, a support-ticket history, anything that changes after the model's training cutoff. The retrieval step searches a knowledge base for passages relevant to the query and stuffs them into the prompt before the model ever sees the question, so the answer is grounded in real, current text instead of the model's memorized (and possibly stale or wrong) recall.",
-    watch: "The answer is only as good as what retrieval finds — a bad search match produces a confident, well-written answer grounded in the wrong document.",
+    useWhen: [
+      "Answers must be grounded in a specific, private, or frequently-changing corpus.",
+      "The corpus is too large to paste into a prompt directly.",
+    ],
+    avoidWhen: [
+      "The knowledge base is small enough to just include in the prompt outright — retrieval adds a failure point for no benefit.",
+      "The question is general knowledge the model already answers reliably.",
+    ],
+    tryPrompt: "Using only the attached policy documents, answer: what is our refund window for enterprise customers, and quote the exact clause it comes from.",
   },
   {
     id: "copilot",
@@ -121,7 +151,15 @@ const ARCHETYPES = [
       />
     ),
     body: "Inline completions and in-editor chat both follow this shape: the model proposes, a person disposes. That human-review step is what separates a copilot from an agent below — every suggestion is a draft a person looks at before it lands, not an action the system carries out on its own.",
-    watch: "Rubber-stamped accepts (approving a diff without reading it) quietly erase the one control this archetype depends on.",
+    useWhen: [
+      "Well-scoped, repetitive edits where a person can review every change before it lands.",
+      "The reviewer has enough context to actually catch a wrong suggestion.",
+    ],
+    avoidWhen: [
+      "The task needs many sequential steps with no natural point to pause and review.",
+      "Nobody is realistically going to read the diff before accepting it — the control exists on paper only.",
+    ],
+    tryPrompt: "Suggest a fix for this failing test. Show the diff and explain the change — I'll review it before applying anything.",
   },
   {
     id: "agent",
@@ -134,20 +172,123 @@ const ARCHETYPES = [
       />
     ),
     body: "The defining difference from a chatbot or copilot: the model decides which tool to call, when to call it, and when to stop — not a person clicking through steps. Each loop iteration feeds the previous tool's output back in as new context, so the model can react to what it just learned rather than following a script written in advance.",
-    watch: "An open-ended stop condition means a stuck agent can loop far longer (and spend far more) than a bounded pipeline ever would — this is why tool budgets and iteration caps matter operationally, not just correctness.",
+    useWhen: [
+      "The task needs multiple tool calls and the right sequence isn't known ahead of time.",
+      "Intermediate mistakes are cheap to notice and correct within the loop.",
+    ],
+    avoidWhen: [
+      "The steps are already fixed and known — a workflow pipeline gets the same result with less variance and cost.",
+      "A wrong intermediate action would be costly and nothing reviews it before it executes.",
+    ],
+    tryPrompt: "Find and fix the bug causing the checkout test to fail. You have read/write access to the repo and a test runner — work until the suite passes.",
   },
   {
     id: "multi-agent",
     name: "Multi-agent / orchestrator",
-    shape: "Hub and spokes",
+    shape: "Hub, spokes, and merge",
     diagram: (
       <HubDiagram
         hub={{ label: "Orchestrator", note: "decomposes the task" }}
         spokes={[{ label: "Research agent" }, { label: "Code agent" }, { label: "Review agent" }]}
+        mergeBox={{ label: "Synthesized answer" }}
       />
     ),
     body: "One agent receives the overall task, breaks it into sub-tasks, and dispatches each to a specialist agent — running in parallel or in sequence — then collects and synthesizes their results into one answer. Each spoke is usually itself an agentic loop (above), so this is a pattern built on top of the agent archetype, not a separate primitive.",
-    watch: "Cost is additive across every spoke that runs, and a wrong synthesis at the end can silently discard a spoke that actually got it right.",
+    useWhen: [
+      "Sub-tasks are genuinely independent and benefit from different context, tools, or specialization.",
+      "The synthesis step can actually catch a spoke that got it wrong.",
+    ],
+    avoidWhen: [
+      "A single agent could do the whole task in one pass — splitting it just multiplies cost.",
+      "There's no real synthesis logic, only a spoke that happens to run last.",
+    ],
+    tryPrompt: "Research this API's rate limits, then have a separate pass write and test a client wrapper around it, and a third pass review the wrapper for edge cases.",
+  },
+  {
+    id: "router",
+    name: "Router / classifier dispatch",
+    shape: "Branching dispatch",
+    diagram: (
+      <HubDiagram
+        hub={{ label: "Classifier" }}
+        spokes={[{ label: "Handler A" }, { label: "Handler B" }, { label: "Handler C" }]}
+        note="Exactly one branch executes, chosen by the classifier — unlike the orchestrator above, the others never run."
+      />
+    ),
+    body: "A lightweight first call reads the request and decides which single, purpose-built handler should take it — a support ticket gets tagged as billing/bug/general and sent to the matching template, prompt, or even a different model entirely. The classifier's only job is picking a lane; it doesn't do the actual work itself.",
+    useWhen: [
+      "Requests fall into a handful of known categories that each deserve a different, purpose-built handler.",
+      "Getting the category wrong occasionally is an acceptable cost.",
+    ],
+    avoidWhen: [
+      "The categories overlap heavily, or one general handler already does fine — a router just adds a misclassification failure mode.",
+      "A wrong route is expensive and there's no fallback for a low-confidence classification.",
+    ],
+    tryPrompt: "Read this support ticket and decide: is it a refund request, a bug report, or a general question? Route it to the matching template and fill it in.",
+  },
+  {
+    id: "ensemble",
+    name: "Ensemble / self-consistency",
+    shape: "Fan-out, fan-in",
+    diagram: (
+      <HubDiagram
+        hub={{ label: "Same prompt" }}
+        spokes={[{ label: "Run 1" }, { label: "Run 2" }, { label: "Run 3" }]}
+        mergeBox={{ label: "Vote / synthesize" }}
+      />
+    ),
+    body: "The same prompt runs several times — sometimes with slightly different phrasing or a nonzero temperature — and the final answer is picked by majority vote or by synthesizing across the runs. This trades extra cost for reliability on tasks where a single pass is inconsistent.",
+    useWhen: [
+      "The task has a knowable right answer and single runs disagree with each other often enough to matter.",
+      "The extra latency and cost of running N times is affordable for how often this gets called.",
+    ],
+    avoidWhen: [
+      "The task is open-ended or creative — there's no \"most common good essay\" to vote toward.",
+      "A single well-checked run is already reliable enough; the extra runs just add cost.",
+    ],
+    tryPrompt: "Solve this math word problem five times independently, then tell me which final answer appears most often and why the others might have diverged.",
+  },
+  {
+    id: "evaluator",
+    name: "Evaluator / LLM-as-judge",
+    shape: "Generate-and-judge loop",
+    diagram: (
+      <LoopDiagram
+        steps={[{ label: "Generate response" }, { label: "LLM judge scores it" }, { label: "Revise if it fails" }]}
+        loopLabel="Repeats until the judge accepts the output, or a retry cap is hit."
+      />
+    ),
+    body: "A second model call — sometimes the same model, sometimes a different one — scores or critiques the first call's output against a rubric, and a failing score triggers a revision. Used both as an offline evaluation harness over many examples and as a live gate before an answer ships.",
+    useWhen: [
+      "You need a scalable, consistent way to score or filter a large volume of model output against a rubric.",
+      "The rubric is specific enough that a judge model can apply it consistently.",
+    ],
+    avoidWhen: [
+      "The judge is the only check on something high-stakes — it can be fooled by confident, well-formatted output the same way a person skimming quickly can.",
+      "The rubric is vague enough that the judge's own bias decides the outcome.",
+    ],
+    tryPrompt: "Grade this draft against the rubric below on a 1-5 scale for each criterion, and say specifically what would move it from a 3 to a 5.",
+  },
+  {
+    id: "memory-agent",
+    name: "Memory-augmented agent",
+    shape: "Loop with persistent memory",
+    diagram: (
+      <LoopDiagram
+        steps={[{ label: "Recall relevant memory" }, { label: "LLM + recalled context" }, { label: "Write memory update" }]}
+        loopLabel="Each new session recalls what earlier ones wrote, so context persists without replaying the whole history."
+      />
+    ),
+    body: "Different from RAG's static knowledge base: here the store is written to as well as read from, usually by the same agent, so preferences and facts learned in one session are available in the next one without a person re-explaining them. The loop shape is the same as the tool-use agent above, with memory read/write treated as just another tool.",
+    useWhen: [
+      "An assistant should carry context, preferences, or facts across separate conversations or sessions.",
+      "What's worth remembering is reasonably stable, not something that's true for one conversation only.",
+    ],
+    avoidWhen: [
+      "Everything relevant fits in the current conversation anyway — persistent memory adds a staleness and privacy surface for no benefit.",
+      "The stored memory can't be reviewed or corrected by the person it's about.",
+    ],
+    tryPrompt: "Remember that I prefer terse code review comments with a suggested fix attached. Use that preference on every review you do for me from now on.",
   },
   {
     id: "fine-tuned",
@@ -164,7 +305,15 @@ const ARCHETYPES = [
       />
     ),
     body: "The training step happens once, offline, ahead of time — unlike every other archetype here, there's no live pipeline at inference time beyond a normal model call. The payoff is a model that's cheaper, faster, and more consistent at one narrow, repeated task than prompting a large general model for the same thing over and over.",
-    watch: "A fine-tune trained on last quarter's data quietly drifts out of date the same way any other stale reference material does, just less visibly.",
+    useWhen: [
+      "One narrow task, run at high volume, where consistency and latency/cost matter more than flexibility.",
+      "Enough labeled examples exist (or can be produced) to make training worthwhile.",
+    ],
+    avoidWhen: [
+      "The task changes often — a fine-tune goes stale the same way any snapshot does, just less visibly.",
+      "Volume is too low to justify collecting examples and retraining when the task shifts.",
+    ],
+    tryPrompt: "Fine-tune a small model on 500 labeled support tickets, then compare its classification accuracy against prompting a general model with the same examples as few-shot context.",
   },
   {
     id: "workflow",
@@ -181,7 +330,15 @@ const ARCHETYPES = [
       />
     ),
     body: "Looks like the agent loop above but isn't one: control flow here is fixed by code ahead of time, and the LLM fills one or more defined steps rather than deciding what happens next. This is the right shape whenever the sequence of steps is already known and stable — it's more predictable and easier to debug than an agent, at the cost of not adapting when a case doesn't fit the pipeline it was built for.",
-    watch: "Inputs that fall outside what the pipeline was designed for don't get handled gracefully — they get force-fit into whichever fixed step happens to run.",
+    useWhen: [
+      "The sequence of steps is already known and stable, and you want predictable, debuggable behavior.",
+      "Each step's inputs and outputs are well-defined enough to test independently.",
+    ],
+    avoidWhen: [
+      "Inputs vary enough that a fixed pipeline would mishandle common cases — that's a sign the task actually needs an agent's judgment.",
+      "The steps themselves need to change based on what an earlier step found.",
+    ],
+    tryPrompt: "Write a pipeline: read each incoming email, classify it as billing, support, or sales with one model call, extract the account ID with a second call, then insert both into the ticket queue.",
   },
   {
     id: "computer-use",
@@ -198,7 +355,15 @@ const ARCHETYPES = [
       />
     ),
     body: "The same loop shape as the tool-use agent above, except the \"tools\" are mouse and keyboard actions on a real screen instead of API calls. Each iteration re-reads the current screen state before deciding the next action, since a click or page load can change what's actually on screen in ways the model has to notice rather than assume.",
-    watch: "Small UI changes (a moved button, a new dialog) can derail a run in ways an API-based agent, with its more stable interface, wouldn't hit.",
+    useWhen: [
+      "There's no API for the system you need to operate, only a UI.",
+      "The UI is stable enough between runs that a screen-reading loop can reliably find what it needs.",
+    ],
+    avoidWhen: [
+      "An API exists — call it directly. It's faster, cheaper, and far less brittle than driving the UI.",
+      "The UI changes often enough (a moved button, a new dialog) that runs would derail unpredictably.",
+    ],
+    tryPrompt: "Open the billing dashboard, find last month's invoice total, and paste it into cell B2 of this spreadsheet.",
   },
 ];
 
@@ -213,8 +378,8 @@ export default function Architecture() {
       <p className="lead">
         The same architecture documented in the repo's own <code>ARCHITECTURE.md</code> and{" "}
         <code>backend/README.md</code> — reality as deployed today, expanded here with the data
-        model and the parts deliberately left unbuilt — plus a field guide to the AI system
-        archetypes Merit AC's own tool and model tracking sees in the wild.
+        model and the parts deliberately left unbuilt — plus a general field guide to how AI
+        systems get built, independent of any one product.
       </p>
 
       <Toc
@@ -224,7 +389,7 @@ export default function Architecture() {
           { href: "#deployment", label: "3. Where it runs" },
           { href: "#verdict", label: "4. Does this hosting choice make sense?" },
           { href: "#stubbed", label: "5. What's deliberately not built yet" },
-          { href: "#archetypes", label: "6. AI system archetypes, with diagrams" },
+          { href: "#archetypes", label: "6. AI system archetypes: diagrams, when to use, prompts to try" },
         ]}
       />
 
@@ -423,12 +588,11 @@ export default function Architecture() {
         </p>
       </div>
 
-      <h2 id="archetypes">6. AI system archetypes, with diagrams</h2>
+      <h2 id="archetypes">6. AI system archetypes: diagrams, when to use, prompts to try</h2>
       <p>
-        A company's AI stack is rarely one thing — it's usually several of the patterns below
-        running at once, each showing up as a different shape in Merit AC's own tool and model
-        breakdown. This is a field guide to the eight that account for nearly everything in
-        production today: what each one is, how it's wired, and the failure mode specific to it.
+        Almost every AI system in production today is built from some combination of the twelve
+        patterns below. For each one: what it is, a diagram of how it's wired, when it's the
+        right tool, when it isn't, and a real prompt you can try to see the pattern in action.
         Voice and other multimodal front-ends aren't listed separately — they're an input/output
         layer on top of these shapes, not a distinct architecture of their own.
       </p>
@@ -439,9 +603,26 @@ export default function Architecture() {
           <span className="archetype-shape">{arch.shape}</span>
           {arch.diagram}
           <p>{arch.body}</p>
-          <p className="arch-watch">
-            <b>Watch for:</b> {arch.watch}
-          </p>
+          <div className="arch-use">
+            <p>
+              <b>Use it when</b>
+            </p>
+            <ul>
+              {arch.useWhen.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+            <p>
+              <b>Skip it when</b>
+            </p>
+            <ul>
+              {arch.avoidWhen.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          </div>
+          <span className="arch-prompt-label">Try this prompt</span>
+          <Code>{arch.tryPrompt}</Code>
         </div>
       ))}
     </ContentLayout>
