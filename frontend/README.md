@@ -10,9 +10,9 @@ plain JS, no React) built as its own Vite entry so it still ships with a
 hashed `styles.css` reference without being pulled into the React bundle;
 it isn't linked from anywhere live, just still present in the repo.
 
-The content-site pages (`/`, `/architecture`, `/setup/*`, `/guides`,
-`/prompts`, `/challenge`) are real React components under `src/content/` —
-but they
+The content-site pages (`/`, `/architecture`, `/setup/*`, `/news`,
+`/models`, `/glossary`, `/guides`, `/prompts`, `/challenge`, `/community`)
+are real React components under `src/content/` — but they
 **prerender to plain static HTML at build time**, not client-rendered SPA
 routes, so each one ships as a real, crawlable file at its clean path
 instead of an empty shell that would 404 on a direct request (the
@@ -27,9 +27,12 @@ directory, gitignored and deleted automatically once prerendering finishes.
 Shared layout lives in `src/content/components/` (`ContentLayout.jsx` for
 the header/nav/footer, `Toc.jsx`, `Code.jsx`); `content.css` lives in
 `public/` so it copies through as a stable, unhashed `/content.css` without
-needing Vite's HTML-entry asset pipeline. `guides/` and `prompts/` render as
-honest "nothing published yet" pages until real content exists — don't add
-fabricated articles/prompts to make them look more finished than they are.
+needing Vite's HTML-entry asset pipeline. `/guides` and `/prompts` are
+published (three long-form guides, a 30-day prompt archive); `/news` and
+`/models` carry a sourcing discipline of their own (every entry needs a
+real citation, `/models` entries also a `verifiedDate`) — don't add
+fabricated articles/entries/prompts to any of them to make them look more
+finished than they are.
 
 ## Commands
 
@@ -72,7 +75,11 @@ src/
     components/           ContentLayout, Toc, Code
     pages/                Home (site root), Architecture,
                            SetupReact/Python/Node/TensorflowPyro,
-                           GuidesIndex, PromptsIndex, Challenge
+                           NewsIndex/NewsArticle, ModelsDirectory, Glossary,
+                           GuidesIndex + 3 guide pages, PromptsIndex/PromptDay,
+                           Challenge, Community
+    data/                  news.js, models.js, glossary.js, prompts.js —
+                           plain exported arrays the index/detail pages read
 ```
 
 ## Linting

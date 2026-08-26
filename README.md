@@ -1,9 +1,11 @@
 # Merit AC&trade;
 
-AI spend tracker built around the question spend-attribution tools don't
-ask: is the work behind that spend any good? Merit AC attributes AI spend to
-the person who generated it and correlates it against outcomes — table
-stakes now — then layers a quality-risk score on top (reverts, heavy
+A hub for AI — sourced news, a directory of models and tools, a glossary,
+and a governed-agentic-DevSecOps content arm — anchored by a flagship
+spend/value tracker built around the question spend-attribution tools
+don't ask: is the work behind that spend any good? Merit AC attributes AI
+spend to the person who generated it and correlates it against outcomes —
+table stakes now — then layers a quality-risk score on top (reverts, heavy
 rewrites, regeneration loops) so a clean "value per dollar" number can't
 hide slop.
 
@@ -62,9 +64,10 @@ frontend/      Sidebar dashboard (Overview, People, Teams & Roles, Alerts,
                `/app` in production, not the site root. Calls the backend
                API at localhost:8000 and falls back to embedded demo data if
                it's not running. The site root and the rest of the content
-               arm (architecture, setup guides, guides, prompts, challenge --
-               see "Site content" below) are separate prerendered pages, not
-               part of the dashboard. See frontend/README.md.
+               arm (architecture, setup guides, news, models, glossary,
+               guides, prompts, challenge, community -- see "Site content"
+               below) are separate prerendered pages, not part of the
+               dashboard. See frontend/README.md.
                coming-soon.html is the old pre-launch placeholder, no longer
                served anywhere.
 merit-ai-team/ Skills for the internal AI team that runs Merit AC's own
@@ -81,14 +84,26 @@ content arm below, so it's a real crawlable file rather than a client-side
 route (see `frontend/README.md`). The dashboard itself lives at `/app`,
 linked from the "Sign in" button in the header.
 
-- `/architecture` -- the same system/deployment writeup as
-  [`ARCHITECTURE.md`](ARCHITECTURE.md), reformatted for the public site
+- `/architecture` -- the system/deployment writeup from
+  [`ARCHITECTURE.md`](ARCHITECTURE.md), reformatted for the public site,
+  plus a general field guide to AI system design (twelve archetypes, six
+  complex agent patterns, the ML/AI software landscape, and composed
+  prompts combining them) -- independent of this product, published
+  interactively rather than as static docs
 - `/setup/react`, `/setup/python`, `/setup/node`, `/setup/tensorflow-pyro` --
   how to wire your own AI usage into Merit AC's `/ingest/usage` endpoint
-- `/guides`, `/prompts`, `/challenge` -- an AI-education content arm and a
-  30-day prompt challenge, both still in progress; each ships as an honest
-  "nothing published/decided yet" page rather than placeholder or invented
-  content until real material exists
+- `/news` -- sourced AI news commentary, the one arm that publishes
+  autonomously with a Judge-tier fact-check pass as its review gate (see
+  `merit-ai-team/skills/merit-growth/SKILL.md`)
+- `/models` -- a directory of AI models and tools; every entry carries a
+  source and a `verifiedDate`, spot-checked rather than trusted indefinitely
+- `/glossary` -- plain-English AI term definitions
+- `/guides`, `/prompts`, `/challenge` -- a governed-agentic-DevSecOps
+  content arm adapted from Andrew Clark's handbook: three long-form guides,
+  a 30-day prompt archive, and a free capstone project (build a governed
+  agentic delivery platform)
+- `/community` -- not open yet; an honest interest-list page rather than a
+  placeholder for a platform or price that hasn't been decided
 
 ## Quickstart
 
