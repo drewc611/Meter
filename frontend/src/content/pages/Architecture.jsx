@@ -276,6 +276,53 @@ const COMPLEX_AGENTS = [
   },
 ];
 
+const COMPOSED_PROMPTS = {
+  design: [
+    {
+      title: "Ship a new API endpoint",
+      combines: ["rag", "agent", "evaluator"],
+      prompt: "Look up our existing API conventions in the docs, then implement a new POST /export endpoint following them. Once it's done, have a second pass grade the implementation against our style guide before opening the PR.",
+    },
+    {
+      title: "Route incoming tickets by type",
+      combines: ["router", "workflow"],
+      prompt: "Build a pipeline that reads each incoming support ticket, classifies it as billing, bug, or general with one model call, and routes billing tickets to the finance queue, bugs to engineering, and everything else to a general queue.",
+    },
+    {
+      title: "Migrate a legacy service",
+      combines: ["planner-executor", "goal-stack"],
+      prompt: "Plan the migration of our auth service to the new SSO provider as an ordered list of subgoals. Keep a goal stack so the migration can resume after a session ends, and re-plan whenever a subgoal reveals a dependency you didn't expect.",
+    },
+    {
+      title: "Stress-test a feature spec before writing it",
+      combines: ["tree-of-thought", "debate"],
+      prompt: "Sketch three different approaches to this notifications feature, evaluate each one, and continue with the strongest. Then have a separate pass argue against that approach to surface what it's missing before you write the spec.",
+    },
+  ],
+  daily: [
+    {
+      title: "Morning inbox triage",
+      combines: ["router", "chatbot"],
+      prompt: "Read everything that came in overnight, sort it into urgent, needs a reply, and can wait, and draft a two-line summary for each item marked urgent.",
+    },
+    {
+      title: "Review a pull request",
+      combines: ["copilot", "reflection"],
+      prompt: "Review this PR diff and suggest specific line comments. Then critique your own review against our code review checklist before posting it, and revise anything that doesn't hold up.",
+    },
+    {
+      title: "Turn a meeting into action items",
+      combines: ["rag", "evaluator"],
+      prompt: "Summarize this meeting transcript, cross-reference it against last week's action items doc, and flag anything that was promised twice but never completed.",
+    },
+    {
+      title: "Prep a standup update",
+      combines: ["memory-agent"],
+      prompt: "Recall what I said I'd work on yesterday, compare it against today's commits, and draft my standup update, noting anything that slipped.",
+    },
+  ],
+};
+
 const TOOLING = [
   {
     category: "Model hubs & hosting",
@@ -596,6 +643,35 @@ const ARCHETYPES = [
   },
 ];
 
+// Name lookup for the "Combines:" tags on composed prompts below — draws
+// from the same two lists rather than duplicating pattern names by hand.
+const ALL_PATTERNS = [...ARCHETYPES, ...COMPLEX_AGENTS];
+
+// One composed-prompt entry: a title, which patterns it draws on (linked
+// back to their full cards above), and the prompt itself.
+function ComposedPromptCard({ entry }) {
+  return (
+    <div className="card">
+      <p style={{ marginBottom: "4px" }}>
+        <b>{entry.title}</b>
+      </p>
+      <p className="composed-combines">
+        Combines:{" "}
+        {entry.combines.map((id, i) => {
+          const pattern = ALL_PATTERNS.find((p) => p.id === id);
+          return (
+            <Fragment key={id}>
+              {i > 0 && ", "}
+              <a href={`#${id}`}>{pattern.name}</a>
+            </Fragment>
+          );
+        })}
+      </p>
+      <Code wrap>{entry.prompt}</Code>
+    </div>
+  );
+}
+
 export default function Architecture() {
   return (
     <ContentLayout active="architecture" wide>
@@ -620,6 +696,7 @@ export default function Architecture() {
           { href: "#archetypes", label: "AI system archetypes: diagrams, when to use, prompts to try" },
           { href: "#complex-agents", label: "Complex agent patterns: compounding the basics" },
           { href: "#tooling", label: "The ML/AI software landscape" },
+          { href: "#composed-prompts", label: "Composed prompts: combining patterns for real work" },
         ]}
       />
 
@@ -881,6 +958,24 @@ export default function Architecture() {
         maintained, sourced entries with pricing and a verification date, see{" "}
         <a href="/models">the models &amp; tools directory</a>.
       </p>
+
+      <h2 id="composed-prompts">9. Composed prompts: combining patterns for real work</h2>
+      <p>
+        Real tasks rarely use one pattern in isolation — a single request usually chains two or
+        three together. Below: four bigger design/build tasks and four small daily ones, each
+        naming the patterns from §6 and §7 it's built from, so you can trace exactly how they
+        combine.
+      </p>
+
+      <h3>Complex design &amp; build tasks</h3>
+      {COMPOSED_PROMPTS.design.map((entry) => (
+        <ComposedPromptCard entry={entry} key={entry.title} />
+      ))}
+
+      <h3>Daily / routine tasks</h3>
+      {COMPOSED_PROMPTS.daily.map((entry) => (
+        <ComposedPromptCard entry={entry} key={entry.title} />
+      ))}
     </ContentLayout>
   );
 }
