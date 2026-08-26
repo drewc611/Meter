@@ -418,4 +418,133 @@ export const NEWS_ARTICLES = [
       },
     ],
   },
+  {
+    date: "2026-08-24",
+    slug: "nvidia-500-billion-wall-street-ai-financing",
+    category: "funding",
+    title: "Nvidia recruited Wall Street to help finance $500 billion of AI infrastructure",
+    dek:
+      "Apollo, BlackRock, Blackstone, Brookfield, Goldman Sachs, and KKR will run financing platforms that lend Nvidia customers money to build data centers and buy Nvidia hardware -- funded mostly by third-party capital, not Nvidia's own balance sheet.",
+    sources: [
+      {
+        label: "NVIDIA Partners With Apollo, BlackRock, Blackstone, Brookfield, Goldman Sachs and KKR — NVIDIA Newsroom (official)",
+        url: "https://nvidianews.nvidia.com/news/nvidia-partners-with-apollo-blackrock-blackstone-brookfield-goldman-sachs-and-kkr-to-establish-ai-compute-infrastructure-financing-platforms-to-mobilize-over-500-billion-of-third-party-capital",
+      },
+      {
+        label: "Nvidia's AI moat is shifting from chips to capital — CNBC",
+        url: "https://www.cnbc.com/2026/08/18/nvidias-ai-moat-is-shifting-from-chips-to-capital.html",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Nvidia announced on August 10, 2026 that it's partnering with six major financial firms -- Apollo, BlackRock, Blackstone, Brookfield, Goldman Sachs, and KKR -- to build financing platforms aimed at mobilizing more than $500 billion in third-party capital. The money is meant to fund the data centers, servers, networking gear, buildings, and power that Nvidia's hyperscaler and frontier-lab customers need to buy and deploy its chips at the scale they're now buying them.",
+      },
+      {
+        type: "h2",
+        text: "What Nvidia is and isn't putting up",
+      },
+      {
+        type: "p",
+        text:
+          "The capital is explicitly framed as third-party: pension funds, insurers, and other institutional investors channeled through the six partner firms, not Nvidia's own cash. CEO Jensen Huang framed the pitch around the chips' resale value: Nvidia compute is \"broadly adopted, flexible across models and workloads, fungible and transferable across customers and operators\" -- in other words, a GPU cluster is collateral a lender can actually recover value from if a customer defaults, unlike a bespoke data center.",
+      },
+      {
+        type: "h2",
+        text: "The part worth watching",
+      },
+      {
+        type: "p",
+        text:
+          "Every dollar mobilized this way ultimately funds more purchases of Nvidia's own hardware -- Nvidia is not a neutral party financing someone else's independent decision, it's underwriting demand for its own product at a scale that's now measured against its balance sheet's own equity holdings. That's not evidence of anything improper on its own, but it is the detail a company evaluating its own AI infrastructure spend should hold onto: financing structures that make AI capacity easier and faster to acquire don't change whether the workloads running on that capacity are actually producing value, they just change how much capacity gets bought before anyone checks.",
+      },
+    ],
+  },
+  {
+    date: "2026-08-24",
+    slug: "china-ai-companion-rules-take-effect",
+    category: "regulation",
+    title: "China's first AI companion law took effect July 15 -- and some services shut down rather than comply",
+    dek:
+      "The Interim Measures for the Management of Anthropomorphic AI Interactive Services require disclosure that a service isn't human, anti-addiction safeguards, and a ban on virtual companion services for minors -- issued jointly by five government bodies including the Cyberspace Administration of China.",
+    sources: [
+      {
+        label: "人工智能拟人化互动服务管理暂行办法 — Cyberspace Administration of China (official)",
+        url: "https://www.cac.gov.cn/2026-04/10/c_1777558395023172.htm",
+      },
+      {
+        label: "Interim Measures for the Management of Anthropomorphic AI Interactive Services — China Law Translate (official English translation)",
+        url: "https://www.chinalawtranslate.com/human-like-ai/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "China's Cyberspace Administration and four other government bodies -- the National Development and Reform Commission, the Ministry of Industry and Information Technology, the Ministry of Public Security, and the State Administration for Market Regulation -- jointly published the Interim Measures for the Management of Anthropomorphic AI Interactive Services on April 10, 2026. The rule took effect July 15, 2026, making it China's first dedicated legislation for AI services designed to simulate an ongoing, humanlike relationship.",
+      },
+      {
+        type: "h2",
+        text: "What's actually covered",
+      },
+      {
+        type: "p",
+        text:
+          "The rule targets services that simulate a natural person's personality and communication style and sustain ongoing emotional interaction -- not ordinary customer-service bots, Q&A tools, or work assistants, which are explicitly exempted. Covered providers must complete algorithm filing and a security assessment, clearly disclose the service isn't human, add anti-addiction reminders and self-harm crisis pathways, and are barred from offering virtual companion or virtual relative services to minors or using emotional manipulation to push a user toward a decision.",
+      },
+      {
+        type: "h2",
+        text: "Why the compliance deadline had teeth",
+      },
+      {
+        type: "p",
+        text:
+          "This wasn't a rule that took effect quietly: multiple outlets reported some companion-style features from major Chinese AI services were pulled or restricted around the effective date rather than brought into compliance in place, with affected users losing chat history built up in those features. That's the detail worth sitting with regardless of where a reader stands on the policy itself -- a five-agency joint rule with a real enforcement mechanism moved several live products to shut a feature down rather than risk operating outside it, which is a different kind of signal than a law that exists on paper and gets quietly ignored.",
+      },
+    ],
+  },
+  {
+    date: "2026-08-24",
+    slug: "anthropic-bartz-settlement-final-approval",
+    category: "regulation",
+    title: "A federal judge gave final approval to Anthropic's $1.5 billion book-piracy settlement",
+    dek:
+      "Bartz v. Anthropic -- the largest publicly reported copyright recovery in US history -- pays roughly $3,000 per work across an estimated 500,000 books after Anthropic was found to have built a library from pirated copies, distinct from the separate ruling that using lawfully acquired books to train was fair use.",
+    sources: [
+      {
+        label: "Bartz v. Anthropic PBC, 4:24-cv-05417 — CourtListener (federal court docket, official record)",
+        url: "https://www.courtlistener.com/docket/69058235/bartz-v-anthropic-pbc/",
+      },
+      {
+        label: "Anthropic's landmark $1.5B copyright settlement is approved — TechCrunch (Kirsten Korosec)",
+        url: "https://techcrunch.com/2026/07/20/anthropics-landmark-1-5b-copyright-settlement-is-approved/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Judge Araceli Martinez-Olguin of the U.S. District Court for the Northern District of California signed an order granting final approval of the class-action settlement and entered final judgment in Bartz v. Anthropic on July 20, 2026. The settlement pays roughly $3,000 per work across an estimated 500,000 books, with attorneys' fees exceeding $100 million and more than 91% of eligible authors filing a claim.",
+      },
+      {
+        type: "h2",
+        text: "Two separate findings, easy to conflate",
+      },
+      {
+        type: "p",
+        text:
+          "This settlement resolves one specific piece of the case: Anthropic's creation and retention of a \"central library\" that included pirated books. It's a different finding from the same case's earlier summary judgment ruling, where the court held that training on lawfully acquired books was \"quintessentially transformative\" and protected as fair use. The $1.5 billion is the price of the piracy, not a verdict against AI training on copyrighted material generally -- a distinction that matters for reading this case correctly.",
+      },
+      {
+        type: "h2",
+        text: "Why the number, not just the ruling, is the story",
+      },
+      {
+        type: "p",
+        text:
+          "A per-work statutory-damages-range payout across roughly half a million works is a concrete, auditable number in a space that's mostly settled through vague headlines about \"landmark\" cases. For a governance-minded reader, that's the useful part: not the size of the number alone, but that a court-supervised claims process produced a specific, checkable dollar figure and a 91%-plus claims rate -- the same kind of receipts-over-rhetoric standard this site tries to apply to its own claims about AI spend and value.",
+      },
+    ],
+  },
 ];
