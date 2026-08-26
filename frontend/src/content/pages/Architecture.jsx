@@ -7,7 +7,7 @@ export const meta = {
   outFile: "architecture.html",
   title: "Architecture — Merit AC",
   description:
-    "How Merit AC is built and hosted, plus a field guide to twelve AI system archetypes and six complex agent patterns — each with a diagram, when to use it, when not to, and a prompt to try — and a landscape of the ML/AI software underneath them.",
+    "How Merit AC is built and hosted, plus a field guide to how AI systems get designed in general — archetypes, complex agent patterns, and the software that builds them, each with a diagram.",
 };
 
 // A step-and-arrow flow diagram for a "linear" archetype: A → B → C.
@@ -605,10 +605,9 @@ export default function Architecture() {
       </span>
       <h1>How Merit AC is built</h1>
       <p className="lead">
-        The same architecture documented in the repo's own <code>ARCHITECTURE.md</code> and{" "}
-        <code>backend/README.md</code> — reality as deployed today, expanded here with the data
-        model and the parts deliberately left unbuilt — plus a general field guide to how AI
-        systems get built, independent of any one product.
+        Two things on this page: exactly how Merit AC is built and hosted, and a field guide to
+        how AI systems get designed in general. The field guide stands on its own — read it
+        whether or not you use Merit AC.
       </p>
 
       <Toc
