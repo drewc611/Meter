@@ -119,6 +119,22 @@ function ArchetypeCard({ entry }) {
   );
 }
 
+// A quick-nav tile grid above a list of archetype cards -- each tile jumps
+// down to its full card (diagram, use/skip guidance, prompt) via anchor.
+// Reuses the same .grid/.tile classes as the homepage's Explore section.
+function TileNav({ items }) {
+  return (
+    <div className="grid">
+      {items.map((item) => (
+        <a className="tile" href={`#${item.id}`} key={item.id}>
+          <span className="tile-title">{item.name}</span>
+          <span className="tile-meta">{item.shape}</span>
+        </a>
+      ))}
+    </div>
+  );
+}
+
 const COMPLEX_AGENTS = [
   {
     id: "planner-executor",
@@ -812,6 +828,8 @@ export default function Architecture() {
         layer on top of these shapes, not a distinct architecture of their own.
       </p>
 
+      <TileNav items={ARCHETYPES} />
+
       {ARCHETYPES.map((arch) => (
         <ArchetypeCard entry={arch} key={arch.id} />
       ))}
@@ -824,6 +842,8 @@ export default function Architecture() {
         as a default starting point — each one adds real complexity (more calls, more places to
         debug, more cost) that has to be worth it.
       </p>
+
+      <TileNav items={COMPLEX_AGENTS} />
 
       {COMPLEX_AGENTS.map((entry) => (
         <ArchetypeCard entry={entry} key={entry.id} />
