@@ -7,7 +7,7 @@ export const meta = {
   outFile: "architecture.html",
   title: "Architecture — Merit AC",
   description:
-    "How Merit AC is built and hosted, plus a field guide to twelve AI system archetypes — chatbot, RAG, copilot, agent, multi-agent, router, ensemble, evaluator, memory-augmented agent, fine-tuned model, workflow automation, and computer-use — each with a diagram, when to use it, when not to, and a prompt to try.",
+    "How Merit AC is built and hosted, plus a field guide to twelve AI system archetypes and six complex agent patterns — each with a diagram, when to use it, when not to, and a prompt to try — and a landscape of the ML/AI software underneath them.",
 };
 
 // A step-and-arrow flow diagram for a "linear" archetype: A → B → C.
@@ -84,6 +84,181 @@ function HubDiagram({ hub, spokes, mergeBox, note }) {
     </div>
   );
 }
+
+// The shared card shape for one archetype/pattern entry: name, shape kicker,
+// diagram, body, use/skip guidance, and a prompt to try. Used for both the
+// base archetypes (§6) and the complex agent patterns (§8) below.
+function ArchetypeCard({ entry }) {
+  return (
+    <div className="archetype" id={entry.id}>
+      <h3>{entry.name}</h3>
+      <span className="archetype-shape">{entry.shape}</span>
+      {entry.diagram}
+      <p>{entry.body}</p>
+      <div className="arch-use">
+        <p>
+          <b>Use it when</b>
+        </p>
+        <ul>
+          {entry.useWhen.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
+        <p>
+          <b>Skip it when</b>
+        </p>
+        <ul>
+          {entry.avoidWhen.map((line) => (
+            <li key={line}>{line}</li>
+          ))}
+        </ul>
+      </div>
+      <span className="arch-prompt-label">Try this prompt</span>
+      <Code wrap>{entry.tryPrompt}</Code>
+    </div>
+  );
+}
+
+const COMPLEX_AGENTS = [
+  {
+    id: "planner-executor",
+    name: "Hierarchical planner-executor",
+    shape: "Iterative goal decomposition",
+    diagram: (
+      <LoopDiagram
+        steps={[
+          { label: "Planner picks next subgoal" },
+          { label: "Executor completes it" },
+          { label: "Planner reassesses" },
+        ]}
+        loopLabel="Repeats, pulling one subgoal at a time, until the planner judges the overall goal met."
+      />
+    ),
+    body: "A planner agent breaks a large goal into an ordered list of subgoals and hands them off one at a time to an executor — which may itself be a full agentic loop from §6. Unlike the flat multi-agent orchestrator above, the planner revisits and re-plans after every subgoal, so the remaining work can change mid-task as the executor learns things the planner didn't anticipate.",
+    useWhen: [
+      "The goal is too large or ambiguous to decompose correctly in one shot up front.",
+      "Later subgoals genuinely depend on what earlier ones discover.",
+    ],
+    avoidWhen: [
+      "The full decomposition is already knowable ahead of time — a flat multi-agent dispatch gets there with less overhead.",
+      "Re-planning this often would just add latency without changing the outcome.",
+    ],
+    tryPrompt: "Break \"migrate our billing service off the deprecated API\" into an ordered list of subgoals, complete the first one, then reassess whether the remaining list still makes sense before continuing.",
+  },
+  {
+    id: "reflection",
+    name: "Reflection / self-critique agent",
+    shape: "Generate-critique-revise loop",
+    diagram: (
+      <LoopDiagram
+        steps={[{ label: "Draft answer" }, { label: "Self-critique" }, { label: "Revise" }]}
+        loopLabel="Repeats until the agent's own critique passes, or a retry cap is hit."
+      />
+    ),
+    body: "The same model plays both roles: it drafts an answer, switches into a critical mode to critique its own draft against the task's requirements, then revises based on that critique. Different from the evaluator/LLM-as-judge archetype in §6 in one important way — there's no independent second model checking the work, so a blind spot in the model's judgment shows up in both the draft and the critique of it.",
+    useWhen: [
+      "A first draft is reliably better than a first-and-only draft, and the model can meaningfully critique its own category of mistakes.",
+      "An independent judge model isn't available or is too costly to run on every request.",
+    ],
+    avoidWhen: [
+      "The task has a failure mode the model systematically can't see in its own output — self-critique won't catch what the model doesn't know it's getting wrong.",
+      "A single well-prompted pass is already reliable enough that the extra round trip isn't worth the latency.",
+    ],
+    tryPrompt: "Draft a response to this customer complaint, then critique your own draft against our tone guidelines, then rewrite it based on that critique.",
+  },
+  {
+    id: "debate",
+    name: "Debate / adversarial agents",
+    shape: "Adversarial fan-out, judged",
+    diagram: (
+      <HubDiagram
+        hub={{ label: "Question" }}
+        spokes={[{ label: "Agent: argue for" }, { label: "Agent: argue against" }]}
+        mergeBox={{ label: "Judge decides" }}
+      />
+    ),
+    body: "Two agents argue opposing positions on the same question — not to be balanced, but to stress-test a claim by having something actively try to break it — and a judge (a third model call, or a person) weighs the two arguments and decides. Different from ensemble/self-consistency in §6: that archetype runs the same prompt multiple times looking for agreement; this one deliberately runs opposing prompts looking for disagreement.",
+    useWhen: [
+      "A claim needs to survive genuine pushback before it's trusted, not just repetition.",
+      "The judge step can meaningfully evaluate two arguments rather than just picking whichever sounds more confident.",
+    ],
+    avoidWhen: [
+      "The question doesn't have two real sides — forcing a debate on a factual lookup just adds noise.",
+      "Nobody or nothing is actually equipped to judge the two arguments fairly.",
+    ],
+    tryPrompt: "Have one pass argue we should ship this feature behind a flag next week, and another argue we should delay a sprint, then judge which argument holds up better and why.",
+  },
+  {
+    id: "tree-of-thought",
+    name: "Tree-of-thought exploration",
+    shape: "Branch, evaluate, prune",
+    diagram: (
+      <HubDiagram
+        hub={{ label: "Problem" }}
+        spokes={[{ label: "Branch A" }, { label: "Branch B" }, { label: "Branch C" }]}
+        note="Weak branches get pruned after evaluation; the survivors get explored further, recursively."
+      />
+    ),
+    body: "Instead of committing to one reasoning path, the model generates several different next steps in parallel, evaluates how promising each looks, discards the weak ones, and continues exploring only the survivors — recursively, like a search tree. Different from the router in §6, which picks one branch upfront by classification and never looks back; here, multiple branches actually get tried before any get cut.",
+    useWhen: [
+      "The problem has multiple plausible approaches and it's genuinely unclear which will pan out without trying them.",
+      "A wrong early commitment would be expensive to recover from.",
+    ],
+    avoidWhen: [
+      "There's usually one obvious approach — exploring alternatives that were never going to work just burns tokens.",
+      "The branching factor makes this too expensive for how often the task runs.",
+    ],
+    tryPrompt: "Propose three different approaches to fix this flaky test, sketch each one out one level deep, then rank them and continue only with the most promising one.",
+  },
+  {
+    id: "swarm",
+    name: "Swarm / blackboard agents",
+    shape: "Decentralized shared state",
+    diagram: (
+      <HubDiagram
+        hub={{ label: "Task" }}
+        spokes={[{ label: "Agent 1" }, { label: "Agent 2" }, { label: "Agent 3" }]}
+        mergeBox={{ label: "Shared blackboard state" }}
+        note="No central dispatcher — agents read and write the shared state independently and asynchronously."
+      />
+    ),
+    body: "A number of lightweight agents work on pieces of the same problem without a controller assigning them work — each reads a shared state (the \"blackboard\"), contributes what it can given what's there now, and writes its result back for the others to build on. Coordination is emergent rather than directed, the opposite design bet from the orchestrator archetype in §6.",
+    useWhen: [
+      "The problem naturally decomposes into many small, loosely-coupled contributions rather than a few big dependent ones.",
+      "The system should keep making progress even if individual agents fail or run slow — there's no single coordination point to bottleneck on.",
+    ],
+    avoidWhen: [
+      "The work has a clear dependency order — emergent coordination adds complexity a simple pipeline wouldn't need.",
+      "Debuggability matters more than throughput — a blackboard system is harder to reason about after the fact than an orchestrator's explicit dispatch log.",
+    ],
+    tryPrompt: "Set up three independent passes that all read and append to the same shared notes document about this codebase — one cataloguing modules, one flagging dead code, one noting test coverage gaps — with no pass waiting on another.",
+  },
+  {
+    id: "goal-stack",
+    name: "Long-horizon goal-stack agent",
+    shape: "Persistent loop with a goal stack",
+    diagram: (
+      <LoopDiagram
+        steps={[
+          { label: "Check goal stack" },
+          { label: "Work top sub-goal" },
+          { label: "Push / pop stack" },
+        ]}
+        loopLabel="Runs across many sessions — the goal stack persists, so progress survives a restart."
+      />
+    ),
+    body: "Built for objectives too large for one sitting: the agent keeps an explicit stack (or queue) of sub-goals, works the top one, and can push new sub-goals it discovers mid-task before popping back to where it left off. The stack itself is checkpointed, so a restart resumes from wherever it was rather than starting over — the key difference from the memory-augmented agent in §6, which persists learned facts and preferences, not in-progress task state.",
+    useWhen: [
+      "The objective genuinely can't complete in one continuous run — it spans restarts, rate limits, or multiple days.",
+      "Sub-goals discovered mid-task need to be handled without losing the thread of the original objective.",
+    ],
+    avoidWhen: [
+      "The task reliably finishes in one run — the checkpointing machinery is pure overhead for something that never needed to survive a restart.",
+      "Losing progress on a restart is genuinely fine — a simpler stateless loop is easier to reason about.",
+    ],
+    tryPrompt: "Start migrating this monorepo to the new build system. Keep a goal stack of remaining packages, work through them one at a time, and if you find a package with an unexpected circular dependency, push a sub-goal to resolve that before returning to the stack.",
+  },
+];
 
 const TOOLING = [
   {
@@ -428,6 +603,7 @@ export default function Architecture() {
           { href: "#verdict", label: "Does this hosting choice make sense?" },
           { href: "#stubbed", label: "What's deliberately not built yet" },
           { href: "#archetypes", label: "AI system archetypes: diagrams, when to use, prompts to try" },
+          { href: "#complex-agents", label: "Complex agent patterns: compounding the basics" },
           { href: "#tooling", label: "The ML/AI software landscape" },
         ]}
       />
@@ -637,37 +813,25 @@ export default function Architecture() {
       </p>
 
       {ARCHETYPES.map((arch) => (
-        <div className="archetype" id={arch.id} key={arch.id}>
-          <h3>{arch.name}</h3>
-          <span className="archetype-shape">{arch.shape}</span>
-          {arch.diagram}
-          <p>{arch.body}</p>
-          <div className="arch-use">
-            <p>
-              <b>Use it when</b>
-            </p>
-            <ul>
-              {arch.useWhen.map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-            </ul>
-            <p>
-              <b>Skip it when</b>
-            </p>
-            <ul>
-              {arch.avoidWhen.map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-            </ul>
-          </div>
-          <span className="arch-prompt-label">Try this prompt</span>
-          <Code wrap>{arch.tryPrompt}</Code>
-        </div>
+        <ArchetypeCard entry={arch} key={arch.id} />
       ))}
 
-      <h2 id="tooling">7. The ML/AI software landscape</h2>
+      <h2 id="complex-agents">7. Complex agent patterns: compounding the basics</h2>
       <p>
-        The archetypes above describe how a system is wired; this is what it's actually built
+        These six build on the archetypes in §6 rather than replacing them — a debate setup is
+        two agentic loops plus a judge; a planner-executor is a loop wrapped around another
+        loop. Reach for one of these once a single archetype from §6 genuinely isn't enough, not
+        as a default starting point — each one adds real complexity (more calls, more places to
+        debug, more cost) that has to be worth it.
+      </p>
+
+      {COMPLEX_AGENTS.map((entry) => (
+        <ArchetypeCard entry={entry} key={entry.id} />
+      ))}
+
+      <h2 id="tooling">8. The ML/AI software landscape</h2>
+      <p>
+        The patterns above describe how a system is wired; this is what it's actually built
         out of. Most real stacks combine several rows below — a RAG pipeline alone typically
         touches a model hub, a vector database, and an orchestration framework before it ever
         answers a question.
