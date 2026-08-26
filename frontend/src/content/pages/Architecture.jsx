@@ -422,13 +422,13 @@ export default function Architecture() {
 
       <Toc
         items={[
-          { href: "#pipeline", label: "1. The ingestion & scoring pipeline" },
-          { href: "#data-model", label: "2. Data model" },
-          { href: "#deployment", label: "3. Where it runs" },
-          { href: "#verdict", label: "4. Does this hosting choice make sense?" },
-          { href: "#stubbed", label: "5. What's deliberately not built yet" },
-          { href: "#archetypes", label: "6. AI system archetypes: diagrams, when to use, prompts to try" },
-          { href: "#tooling", label: "7. The ML/AI software landscape" },
+          { href: "#pipeline", label: "The ingestion & scoring pipeline" },
+          { href: "#data-model", label: "Data model" },
+          { href: "#deployment", label: "Where it runs" },
+          { href: "#verdict", label: "Does this hosting choice make sense?" },
+          { href: "#stubbed", label: "What's deliberately not built yet" },
+          { href: "#archetypes", label: "AI system archetypes: diagrams, when to use, prompts to try" },
+          { href: "#tooling", label: "The ML/AI software landscape" },
         ]}
       />
 
@@ -661,7 +661,7 @@ export default function Architecture() {
             </ul>
           </div>
           <span className="arch-prompt-label">Try this prompt</span>
-          <Code>{arch.tryPrompt}</Code>
+          <Code wrap>{arch.tryPrompt}</Code>
         </div>
       ))}
 
