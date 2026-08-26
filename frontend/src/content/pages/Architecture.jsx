@@ -85,6 +85,44 @@ function HubDiagram({ hub, spokes, mergeBox, note }) {
   );
 }
 
+const TOOLING = [
+  {
+    category: "Model hubs & hosting",
+    does: "Where trained models get published, versioned, downloaded, and often run directly.",
+    examples: "Hugging Face, Ollama's model library, Replicate",
+  },
+  {
+    category: "Training frameworks",
+    does: "The libraries actual model training is written against — defining, running, and differentiating neural networks.",
+    examples: "PyTorch, TensorFlow, JAX",
+  },
+  {
+    category: "Classical ML",
+    does: "Non-deep-learning machine learning — regression, decision trees, clustering — still the right tool for a lot of tabular-data problems.",
+    examples: "scikit-learn, XGBoost, LightGBM",
+  },
+  {
+    category: "Agent / orchestration frameworks",
+    does: "Code scaffolding for chaining prompts, tools, and retrieval into the archetypes above, instead of wiring the loop by hand.",
+    examples: "LangChain, LlamaIndex, Haystack",
+  },
+  {
+    category: "Vector databases",
+    does: "Store embeddings and do similarity search over them — the retrieval half of RAG (above).",
+    examples: "Pinecone, Weaviate, Chroma, pgvector",
+  },
+  {
+    category: "Experiment tracking / MLOps",
+    does: "Log training runs, compare metrics across them, and manage a model's lifecycle from experiment to deployed checkpoint.",
+    examples: "MLflow, Weights & Biases",
+  },
+  {
+    category: "Inference serving",
+    does: "Run a trained model efficiently at request time — batching, scaling, and managing GPU memory so it isn't wasted per-request.",
+    examples: "vLLM, NVIDIA Triton, Hugging Face Text Generation Inference",
+  },
+];
+
 const ARCHETYPES = [
   {
     id: "chatbot",
@@ -390,6 +428,7 @@ export default function Architecture() {
           { href: "#verdict", label: "4. Does this hosting choice make sense?" },
           { href: "#stubbed", label: "5. What's deliberately not built yet" },
           { href: "#archetypes", label: "6. AI system archetypes: diagrams, when to use, prompts to try" },
+          { href: "#tooling", label: "7. The ML/AI software landscape" },
         ]}
       />
 
@@ -625,6 +664,40 @@ export default function Architecture() {
           <Code>{arch.tryPrompt}</Code>
         </div>
       ))}
+
+      <h2 id="tooling">7. The ML/AI software landscape</h2>
+      <p>
+        The archetypes above describe how a system is wired; this is what it's actually built
+        out of. Most real stacks combine several rows below — a RAG pipeline alone typically
+        touches a model hub, a vector database, and an orchestration framework before it ever
+        answers a question.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>What it does</th>
+            <th>Examples</th>
+          </tr>
+        </thead>
+        <tbody>
+          {TOOLING.map((row) => (
+            <tr key={row.category}>
+              <td>
+                <b>{row.category}</b>
+              </td>
+              <td>{row.does}</td>
+              <td>{row.examples}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p>
+        This list is deliberately a landscape, not a directory — no pricing, versions, or
+        endorsements, since those go stale fast and aren't the point here. For actively
+        maintained, sourced entries with pricing and a verification date, see{" "}
+        <a href="/models">the models &amp; tools directory</a>.
+      </p>
     </ContentLayout>
   );
 }
