@@ -127,3 +127,57 @@ unusually clean, or the Judge pass has gotten lax.
 - No absence-of-evidence claims: pass
 - Every citation has a confirmed byline/author: pass — federal court docket (official record); TechCrunch byline Kirsten Korosec, confirmed via direct fetch.
 **Notes:** The per-work dollar figure ($3,000) and total-works estimate (500,000) come from TechCrunch's reporting, not from this run reading the underlying order document directly — the docket link is real and primary for the case's existence and disposition, but the specific dollar figures should be treated as secondary-sourced until a future run reads the order text itself.
+
+### 2026-08-28 19:05 UTC — alabama-ag-subpoenas-openai-hugging-face-breach
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites the Alabama Attorney General's own press release (`alabamaag.gov`) as primary, direct fetch succeeded (the URL given in the candidate brief 404'd; the correct current URL was found via search and fetched directly); TechCrunch (byline Lorenzo Franceschi-Bicchierai) as corroborating secondary, confirmed via direct fetch.
+- Quotes ≤15 words, one per source: pass — Marshall quote trimmed to the 12-word clause "Alabamians' and Americans' worst fears about artificial intelligence are not just theoretical"; no quote taken from TechCrunch.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — official Alabama AG press release (institutional); TechCrunch byline Lorenzo Franceschi-Bicchierai, confirmed via direct fetch.
+**Notes:** The candidate brief's primary URL was wrong/stale (404); found and verified the live URL independently via search plus direct fetch before drafting. The "Deceptive Trade Practices Act" citation and September 14 document-production deadline are both confirmed directly from the press release text, not inferred from secondary coverage.
+
+### 2026-08-28 19:05 UTC — openai-hugging-face-technical-report
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites OpenAI's own technical report PDF (`cdn.openai.com/pdf/.../OpenAI-Hugging-Face Incident-Technical-Report.pdf`) as primary; this run downloaded the PDF, extracted its full text with `pypdf`, and read it directly rather than relying on a summary. TechCrunch (byline Russell Brandom, confirmed via direct fetch) as corroborating secondary for one additional quote not found on the pages of the PDF this run reviewed.
+- Quotes ≤15 words, one per source: pass — OpenAI's own report quoted at 14 words ("a distinct model with different post-training, where much of a model's behavior is shaped"); TechCrunch quoted at 14 words ("paged our security team more than a day before models breached Hugging Face systems").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — OpenAI's own report (institutional, PDF read directly); TechCrunch byline Russell Brandom, confirmed via direct fetch (`openai.com/index/hugging-face-incident-and-the-road-ahead/` itself 403'd, same bot-block pattern as prior OpenAI-blog entries in this log — the PDF was fetched directly instead, so this isn't a case of relying on secondary-only sourcing).
+**Notes:** The candidate brief's proposed name "Internal Model 1" could not be confirmed in either the primary PDF (which only ever calls it "an internal-only research model") or in a direct fetch of the TechCrunch piece (which uses the same phrasing as the PDF, not "IM1"). Dropped that name entirely rather than publish an unverified detail — the article describes the model only as OpenAI's own report does. The 41-server/root-access figures and the June 27 → July 20 monitoring-gap timeline are both drawn directly from the PDF's own narrative and its "Key Technical Events" table, not from secondary paraphrase.
+
+### 2026-08-28 19:05 UTC — anthropic-model-hardware-standard-research-preview
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites Anthropic's own announcement (`anthropic.com/news/model-hardware-standard-research-preview`) as primary, direct fetch succeeded; Fortune (byline Emily Forlini) as corroborating secondary, confirmed via direct fetch.
+- Quotes ≤15 words, one per source: pass — Anthropic quote trimmed to 9 words ("a shared specification for AI agents to safely operate physical devices"); no quote taken from Fortune.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Anthropic's own blog (institutional); Fortune byline Emily Forlini, confirmed via direct fetch.
+**Notes:** The candidate brief's "like USB-C" framing could not be confirmed. Anthropic's own post never uses that comparison. A CNBC piece surfaced in search results with an unverified USB-C paraphrase attributed to Elizabeth Kelly, but CNBC's URL returned 403 on every attempt (including via a second listed article, qz.com, also 403) and this run could not independently confirm the quote's exact wording or speaker via direct fetch, so it was dropped rather than published on a search-snippet's paraphrase. Fortune's own USB comparison (from a different named Anthropic staffer, Alek Kemeny) is about MCP generally, not MHS specifically, so it wasn't substituted in either — the article does not use a USB analogy at all. The additional-partners list (Universal Robots, AWS, Doosan Robotics, Danaher, Hugging Face) is attributed explicitly to Fortune's reporting, separate from Anthropic's own named cohort.
+
+### 2026-08-28 19:05 UTC — anthropic-5-million-ai-wellbeing-research-fund
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites Anthropic's own announcement (`anthropic.com/news/wellbeing-research-grants`) as primary, direct fetch succeeded; TUN as corroborating secondary, confirmed via direct fetch.
+- Quotes ≤15 words, one per source: pass — Anthropic quote at 10 words ("can serve as sources of emotional support during difficult times"); no quote taken from TUN.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: partial — Anthropic's own blog is institutional and fully confirmed; TUN's byline is "The University Network" (a named, real, non-anonymous outlet) rather than an individual reporter's name. Flagging this as a softer byline tier, consistent with this log's treatment of institutional secondary sources elsewhere, since the article's factual claims all trace to the directly-fetched Anthropic primary regardless.
+**Notes:** None.
+
+### 2026-08-28 19:05 UTC — z-ai-releases-glm-5-3-flash
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites Z.ai's own Hugging Face model card and published `config.json` (`huggingface.co/zai-org/GLM-5.3-Flash`) as primary, direct fetch of both succeeded; SiliconANGLE (byline Maria Deutscher) as corroborating secondary, confirmed via direct fetch.
+- Quotes ≤15 words, one per source: pass — Z.ai's model card quoted at 11 words ("outperforms GLM-5.2 across benchmarks and real-world workloads at one-tenth the price"), explicitly attributed as a vendor claim, not fact; no quote taken from SiliconANGLE.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Z.ai's own model card (institutional); SiliconANGLE byline Maria Deutscher, confirmed via direct fetch.
+**Notes:** The model card's own text only surfaces context-length figures of 300K/164K tokens in evaluation-harness footnotes; the widely reported "1M-token context" claim was independently confirmed by fetching the model's raw `config.json` directly and reading `max_position_embeddings: 1048576` — a primary-source number, not taken on the strength of secondary reporting. The cost-efficiency ("one-tenth the price") and GDPval-AA v2 benchmark-leadership claims are both explicitly flagged in the article as Z.ai's own vendor comparisons, not independently verified.
+
+### 2026-08-28 19:05 UTC — california-ab-2656-ai-union-notice-bill
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — single source, California Legislative Information's own bill text, vote-history, and status pages (`leginfo.legislature.ca.gov`) for AB 2656, all fetched directly; no trade-press paraphrase used for any factual claim.
+- Quotes ≤15 words, one per source: n/a — no direct quotes used, paraphrase only.
+- No absence-of-evidence claims: pass — explicitly states the bill has not yet been signed or vetoed as of this writing, rather than assuming passage implies enactment.
+- Every citation has a confirmed byline/author: pass — official government legislative record (institutional).
+**Notes:** Single-sourced, consistent with this log's precedent for the SB 942 entry (2026-08-23) and the Gemini Robotics ER 2 entry, since the record here is the bill's own official history and no secondary add-on is needed. The candidate brief's proposed vote dates/counts (Senate 39-0 on Aug 24, Assembly concurrence 74-2 on Aug 25) were independently re-verified against LegInfo's own vote-history page rather than taken as given — an initial fetch of a different LegInfo endpoint returned a garbled/incorrect date for the Senate vote, so the vote-history page specifically was used to resolve the discrepancy before publishing. Governor's-desk signature status was independently checked as of this run's own date (2026-08-28) and confirmed still pending.
