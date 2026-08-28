@@ -321,6 +321,114 @@ const COMPOSED_PROMPTS = {
       prompt: "Recall what I said I'd work on yesterday, compare it against today's commits, and draft my standup update, noting anything that slipped.",
     },
   ],
+  research: [
+    {
+      title: "Competitive landscape scan",
+      combines: ["router", "rag", "evaluator"],
+      prompt: "Classify each of these twelve competitor announcements by category (pricing, feature, partnership), pull the relevant facts from our own market-notes doc for context, then grade which three actually change our positioning.",
+    },
+    {
+      title: "Root-cause a production incident",
+      combines: ["agent", "tree-of-thought", "reflection"],
+      prompt: "Investigate why checkout latency spiked at 2pm. Explore three plausible root causes in parallel, narrow to the most likely one using the logs, then critique your own conclusion against the timeline before writing the postmortem draft.",
+    },
+    {
+      title: "Synthesize customer interview notes",
+      combines: ["rag", "ensemble", "evaluator"],
+      prompt: "Read all eight interview transcripts, extract the three most-repeated pain points three separate times independently, then judge which pain point actually shows up consistently versus which only looked common because of how one transcript worded it.",
+    },
+    {
+      title: "Validate a build-vs-buy decision",
+      combines: ["debate", "evaluator"],
+      prompt: "Argue for building the entitlements service in-house, then argue for buying a vendor solution, then score both arguments against our actual constraints (team size, timeline, compliance) before recommending one.",
+    },
+    {
+      title: "Audit a dataset for bias before training",
+      combines: ["agent", "evaluator", "reflection"],
+      prompt: "Scan this labeled dataset for class imbalance and label-quality issues, flag anything that would bias the model, then critique your own audit against a checklist of dataset red flags before signing off.",
+    },
+  ],
+  ops: [
+    {
+      title: "Triage a security alert",
+      combines: ["router", "agent"],
+      prompt: "Classify this alert as false-positive, needs-investigation, or active-incident, and if it's the latter two, pull the relevant logs and start building a timeline of what happened.",
+    },
+    {
+      title: "Draft an incident postmortem",
+      combines: ["rag", "reflection"],
+      prompt: "Pull the incident timeline from the tracking doc, draft the postmortem, then critique your own draft against our blameless-postmortem template before circulating it.",
+    },
+    {
+      title: "Run a pre-deploy risk check",
+      combines: ["evaluator", "tree-of-thought"],
+      prompt: "Look at this deploy's diff, sketch three ways it could fail in production, and grade the deploy as low, medium, or high risk based on which failure modes are actually plausible given what changed.",
+    },
+    {
+      title: "Coordinate a multi-service rollback",
+      combines: ["planner-executor", "goal-stack"],
+      prompt: "Plan the rollback of last night's release across the three affected services as an ordered sequence, keep a stack of remaining services to roll back, and re-check the plan after each one in case a dependency surfaces.",
+    },
+    {
+      title: "Respond to an on-call page at 3am",
+      combines: ["agent", "memory-agent"],
+      prompt: "Diagnose why the payment queue is backing up, and recall what fixed the similar backup two weeks ago before trying anything new.",
+    },
+  ],
+  writing: [
+    {
+      title: "Turn engineering notes into a customer-facing changelog",
+      combines: ["rag", "reflection"],
+      prompt: "Read this sprint's commit messages and PR descriptions, draft a changelog entry a customer would actually understand, then critique your own draft for any internal jargon that slipped through.",
+    },
+    {
+      title: "Draft a difficult message to a stakeholder",
+      combines: ["debate", "evaluator"],
+      prompt: "Draft this project-delay message two ways — one that leads with the bad news, one that leads with the mitigation plan — then judge which one a skeptical stakeholder would actually respond better to.",
+    },
+    {
+      title: "Write release notes across three audiences",
+      combines: ["router", "chatbot"],
+      prompt: "Take this feature description and write three versions: one for the changelog, one for the sales team, one for support — routing the technical depth up or down for each audience.",
+    },
+    {
+      title: "Prep talking points for a board update",
+      combines: ["rag", "tree-of-thought"],
+      prompt: "Pull this quarter's actual numbers from the metrics doc, sketch two different narratives the data could support, and pick the one that's most defensible under follow-up questions.",
+    },
+    {
+      title: "Localize a product announcement",
+      combines: ["chatbot", "evaluator"],
+      prompt: "Rewrite this announcement in plain, non-native-English-friendly phrasing, then grade the result against a checklist of idioms and culturally-specific references that wouldn't translate.",
+    },
+  ],
+  learning: [
+    {
+      title: "Build a new hire's first-week ramp plan",
+      combines: ["planner-executor", "rag"],
+      prompt: "Pull the onboarding checklist and this person's role, break the first week into an ordered set of subgoals, and adjust the plan after each day based on what they've actually picked up.",
+    },
+    {
+      title: "Turn a senior engineer's tribal knowledge into a runbook",
+      combines: ["agent", "reflection"],
+      prompt: "Interview-style, ask this engineer to walk through how they debug a stuck deploy, write it up as a runbook, then critique the runbook for any step that assumes context a new hire wouldn't have.",
+    },
+    {
+      title: "Create a quiz to check understanding after a training",
+      combines: ["evaluator", "ensemble"],
+      prompt: "Write five questions testing the training material just covered, generate three candidate answer keys independently, and flag any question where the three answer keys disagree — that's a sign the question itself is ambiguous.",
+    },
+    {
+      title: "Explain a complex system to a non-technical stakeholder",
+      combines: ["tree-of-thought", "chatbot"],
+      prompt: "Sketch three different analogies for explaining how our recommendation engine works, pick the one that holds up best under a follow-up question, and write the explanation.",
+    },
+    {
+      title: "Debug a new hire's first production bug with them",
+      combines: ["copilot", "reflection"],
+      prompt: "Walk through this bug with the new hire, suggesting where to look next rather than just fixing it yourself, then afterward critique whether your hints actually taught the debugging process or just gave away the answer.",
+    },
+  ],
 };
 
 const TOOLING = [
@@ -962,9 +1070,8 @@ export default function Architecture() {
       <h2 id="composed-prompts">9. Composed prompts: combining patterns for real work</h2>
       <p>
         Real tasks rarely use one pattern in isolation — a single request usually chains two or
-        three together. Below: four bigger design/build tasks and four small daily ones, each
-        naming the patterns from §6 and §7 it's built from, so you can trace exactly how they
-        combine.
+        three together. Below: 28 prompts across six categories, each naming the patterns from
+        §6 and §7 it's built from, so you can trace exactly how they combine.
       </p>
 
       <h3>Complex design &amp; build tasks</h3>
@@ -974,6 +1081,26 @@ export default function Architecture() {
 
       <h3>Daily / routine tasks</h3>
       {COMPOSED_PROMPTS.daily.map((entry) => (
+        <ComposedPromptCard entry={entry} key={entry.title} />
+      ))}
+
+      <h3>Research &amp; analysis tasks</h3>
+      {COMPOSED_PROMPTS.research.map((entry) => (
+        <ComposedPromptCard entry={entry} key={entry.title} />
+      ))}
+
+      <h3>Incident &amp; ops tasks</h3>
+      {COMPOSED_PROMPTS.ops.map((entry) => (
+        <ComposedPromptCard entry={entry} key={entry.title} />
+      ))}
+
+      <h3>Writing &amp; communication tasks</h3>
+      {COMPOSED_PROMPTS.writing.map((entry) => (
+        <ComposedPromptCard entry={entry} key={entry.title} />
+      ))}
+
+      <h3>Learning &amp; onboarding tasks</h3>
+      {COMPOSED_PROMPTS.learning.map((entry) => (
         <ComposedPromptCard entry={entry} key={entry.title} />
       ))}
     </ContentLayout>
