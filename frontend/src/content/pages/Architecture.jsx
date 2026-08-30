@@ -429,6 +429,114 @@ const COMPOSED_PROMPTS = {
       prompt: "Walk through this bug with the new hire, suggesting where to look next rather than just fixing it yourself, then afterward critique whether your hints actually taught the debugging process or just gave away the answer.",
     },
   ],
+  sales: [
+    {
+      title: "Qualify an inbound lead",
+      combines: ["router", "rag"],
+      prompt: "Read this inbound lead's form answers and their company's public site, classify them as enterprise, mid-market, or self-serve, and pull the two most relevant case studies from our deck library for whichever segment they land in.",
+    },
+    {
+      title: "Draft a renewal risk brief",
+      combines: ["rag", "evaluator"],
+      prompt: "Pull this account's support ticket history and usage data from the CRM notes, then score their renewal risk as low, medium, or high based on ticket sentiment and usage trend, not just contract date.",
+    },
+    {
+      title: "Prep for a competitive deal",
+      combines: ["debate", "tree-of-thought"],
+      prompt: "Sketch three ways this prospect could justify picking the competitor instead of us, then argue against the strongest one, and draft the objection-handling talking point that actually survives that argument.",
+    },
+    {
+      title: "Summarize a sales call for the deal record",
+      combines: ["chatbot", "evaluator"],
+      prompt: "Summarize this call transcript into next steps, stated budget, and decision timeline, then grade your own summary against the transcript for anything you inferred that wasn't actually said.",
+    },
+    {
+      title: "Personalize outreach at scale without genericizing it",
+      combines: ["router", "ensemble"],
+      prompt: "Classify these fifty prospects into three outreach angles based on their most recent public activity, then draft three candidate opening lines per angle and keep only the one that references something specific to that company.",
+    },
+  ],
+  data: [
+    {
+      title: "Investigate a metric that suddenly moved",
+      combines: ["agent", "tree-of-thought"],
+      prompt: "Signups dropped 20% starting Tuesday. Explore three plausible causes in parallel -- a funnel change, a tracking bug, a traffic-source shift -- and narrow to the most likely one using the actual event data before reporting back.",
+    },
+    {
+      title: "Build a dashboard spec from a stakeholder's vague ask",
+      combines: ["chatbot", "evaluator"],
+      prompt: "Turn this one-line dashboard request into a full spec: the metrics, the filters, the intended audience, and what decision it's meant to inform. Then check the spec against what the stakeholder actually said to make sure you didn't invent requirements.",
+    },
+    {
+      title: "Reconcile two reports that disagree",
+      combines: ["rag", "evaluator"],
+      prompt: "These two reports show different revenue numbers for the same month. Trace each one back to its underlying query, and identify exactly where the definitions diverge rather than just picking the number that looks right.",
+    },
+    {
+      title: "Write a data quality check before a model retrain",
+      combines: ["agent", "evaluator"],
+      prompt: "Before we retrain on this new batch of data, scan it for duplicate records, missing required fields, and label drift versus the last training set, and flag anything that would silently degrade the model.",
+    },
+    {
+      title: "Turn a raw analysis into an exec-ready takeaway",
+      combines: ["rag", "tree-of-thought"],
+      prompt: "Take this analysis notebook's findings, sketch two different one-sentence takeaways it could support, and pick the one that's actually defensible under a 'so what should we do differently' follow-up.",
+    },
+  ],
+  hiring: [
+    {
+      title: "Screen resumes against a role's actual requirements",
+      combines: ["router", "evaluator"],
+      prompt: "Sort these thirty resumes into strong-match, possible, and not-a-fit against the role's must-have requirements only -- not the nice-to-haves -- and flag any strong-match candidate whose experience looks inflated relative to their listed title.",
+    },
+    {
+      title: "Draft interview questions that actually test the role",
+      combines: ["tree-of-thought", "evaluator"],
+      prompt: "Sketch three different interview questions for this role's hardest actual responsibility, then pick the one that's hardest to answer with a rehearsed, generic response.",
+    },
+    {
+      title: "Synthesize interview feedback across a panel",
+      combines: ["rag", "ensemble"],
+      prompt: "Read all five interviewers' notes on this candidate, extract the recurring themes independently for each, then flag anywhere the panel actually disagreed rather than smoothing it into one consensus summary.",
+    },
+    {
+      title: "Draft a role's leveling justification",
+      combines: ["rag", "evaluator"],
+      prompt: "Pull this candidate's stated scope and impact from their resume and interview notes, compare it against our leveling rubric, and grade whether the proposed level is actually supported or just matches what they asked for.",
+    },
+    {
+      title: "Write a rejection that's honest without being harsh",
+      combines: ["debate", "chatbot"],
+      prompt: "Draft this rejection two ways -- one that's vague and safe, one that gives one specific, useful piece of feedback -- then pick whichever version you'd actually want to receive if you were the candidate.",
+    },
+  ],
+  legal: [
+    {
+      title: "Flag risky clauses in an incoming contract",
+      combines: ["agent", "evaluator"],
+      prompt: "Read this vendor contract and flag any clause that deviates from our standard terms -- indemnification, liability caps, auto-renewal -- and grade each flag as a dealbreaker, a negotiation point, or a note for the file.",
+    },
+    {
+      title: "Check a marketing claim against what we can actually prove",
+      combines: ["rag", "evaluator"],
+      prompt: "Pull the underlying data behind this proposed marketing claim, and grade whether the claim as written is actually supported or needs a qualifier to stay accurate.",
+    },
+    {
+      title: "Summarize a new regulation's actual obligations",
+      combines: ["rag", "chatbot"],
+      prompt: "Read this new regulation's text and summarize it into a plain-language list of what specifically changes for our product, not what changes for the industry in general.",
+    },
+    {
+      title: "Prep a response to a data subject access request",
+      combines: ["agent", "workflow"],
+      prompt: "Locate every system that holds this person's data based on our data map, compile what's found into the standard DSAR response template, and flag any system on the data map that returned nothing so we can confirm it's actually empty, not unchecked.",
+    },
+    {
+      title: "Pressure-test a policy before it ships internally",
+      combines: ["debate", "tree-of-thought"],
+      prompt: "Sketch three ways an employee could reasonably misread this new expense policy, argue for the interpretation most likely to cause disputes, and rewrite the policy language to close that gap before it goes out.",
+    },
+  ],
 };
 
 const TOOLING = [
@@ -1070,7 +1178,7 @@ export default function Architecture() {
       <h2 id="composed-prompts">9. Composed prompts: combining patterns for real work</h2>
       <p>
         Real tasks rarely use one pattern in isolation — a single request usually chains two or
-        three together. Below: 28 prompts across six categories, each naming the patterns from
+        three together. Below: 48 prompts across ten categories, each naming the patterns from
         §6 and §7 it's built from, so you can trace exactly how they combine.
       </p>
 
@@ -1101,6 +1209,26 @@ export default function Architecture() {
 
       <h3>Learning &amp; onboarding tasks</h3>
       {COMPOSED_PROMPTS.learning.map((entry) => (
+        <ComposedPromptCard entry={entry} key={entry.title} />
+      ))}
+
+      <h3>Sales &amp; customer-facing tasks</h3>
+      {COMPOSED_PROMPTS.sales.map((entry) => (
+        <ComposedPromptCard entry={entry} key={entry.title} />
+      ))}
+
+      <h3>Data &amp; analytics tasks</h3>
+      {COMPOSED_PROMPTS.data.map((entry) => (
+        <ComposedPromptCard entry={entry} key={entry.title} />
+      ))}
+
+      <h3>Hiring &amp; people tasks</h3>
+      {COMPOSED_PROMPTS.hiring.map((entry) => (
+        <ComposedPromptCard entry={entry} key={entry.title} />
+      ))}
+
+      <h3>Legal &amp; compliance tasks</h3>
+      {COMPOSED_PROMPTS.legal.map((entry) => (
         <ComposedPromptCard entry={entry} key={entry.title} />
       ))}
     </ContentLayout>
