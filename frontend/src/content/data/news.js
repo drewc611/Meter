@@ -971,4 +971,291 @@ export const NEWS_ARTICLES = [
       },
     ],
   },
+  {
+    date: "2026-09-03",
+    slug: "nvidia-to-acquire-hugging-face-12-93-billion",
+    category: "funding",
+    title: "Nvidia will acquire Hugging Face for $12.93 billion",
+    dek:
+      "About $11.9 billion goes to shareholders and up to $1 billion in retention equity to employees -- Nvidia says its own compute won't be required to build on or deploy through the platform, and the deal follows a $500 million investment offer Hugging Face turned down in 2023.",
+    sources: [
+      {
+        label: "NVIDIA to Acquire Hugging Face — NVIDIA (official, Jensen Huang)",
+        url: "https://blogs.nvidia.com/blog/nvidia-to-acquire-hugging-face/",
+      },
+      {
+        label: "Nvidia confirms it will buy Hugging Face for $12.9 billion — TechCrunch (Ivan Mehta)",
+        url: "https://techcrunch.com/2026/09/03/nvidia-confirms-it-will-buy-hugging-face-for-12-9-billion/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Nvidia announced on September 3, 2026 that it has agreed to acquire Hugging Face for $12.93 billion -- about $11.9 billion paid to Hugging Face's shareholders plus an equity-based retention program worth up to $1 billion for employees who join Nvidia, per the companies' own SEC filing on the deal. It's one of the largest acquisitions in Nvidia's history, and it hands the industry's dominant AI chipmaker ownership of the site 18 million developers use to share open models, datasets, and applications.",
+      },
+      {
+        type: "h2",
+        text: "The promise Nvidia is making about staying neutral",
+      },
+      {
+        type: "p",
+        text:
+          "In his own announcement, CEO Jensen Huang wrote that \"Hugging Face will remain an open platform for the entire AI ecosystem,\" and that Nvidia compute won't be required to build on or deploy through it -- developers keep their choice of model, framework, cloud, and hardware. Hugging Face CEO Clément Delangue framed the deal as a scale problem, saying the platform \"needs more compute, more support, more collaboration, and more visibility\" to grow further. The transaction is expected to close in the first half of 2027, pending regulatory approval.",
+      },
+      {
+        type: "h2",
+        text: "Not the first offer",
+      },
+      {
+        type: "p",
+        text:
+          "Nvidia tried to buy into Hugging Face once before: a roughly $500 million investment proposal in late 2023 that would have valued the company at $7 billion, which Hugging Face turned down because, per Financial Times reporting cited by TechCrunch, it didn't want a single investor with outsized influence over its direction. An acquisition is a different structure than a minority investment, but the number moved from a $7 billion valuation to a $12.93 billion purchase price in under three years -- and a full sale settles the influence question the 2023 offer raised, just not in the direction Hugging Face was originally worried about.",
+      },
+      {
+        type: "p",
+        text:
+          "The real test here isn't the price, it's the neutrality promise. Merit AC's own tool-breakdown analytics exist because what an organization's AI spend actually buys depends on which models and platforms people reach for, not just the invoice total -- and a large share of the open-model tooling that kind of analysis depends on now sits inside the balance sheet of the industry's dominant compute vendor. Nvidia has an obvious incentive to nudge that ecosystem toward its own hardware over time, even while promising not to require it today. Whether the promise holds is worth checking against what Hugging Face actually does over the next few years, not assuming from a launch-day blog post.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-02",
+    slug: "nvidia-nemotron-ultra-cc-outscores-human-ioi-2026",
+    category: "research",
+    title: "Nvidia says its Nemotron-3-Ultra-CC model outscored the top human at the 2026 Olympiad in Informatics",
+    dek:
+      "Running live under the same no-internet, local-execution rules as the teenagers competing against it, the 550-billion-parameter system posted 535.4 out of 600 -- above both the gold-medal cutoff and the top human score. The claim comes from Nvidia's own unreviewed preprint, with almost no independent verification yet.",
+    sources: [
+      {
+        label:
+          "Post-Training Language Models for Gold-Medal Performance in Coding Competitions — arXiv (Ficek, Narenthiran, Samadi, Majumdar, Ginsburg; NVIDIA)",
+        url: "https://arxiv.org/abs/2609.02849",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Nvidia researchers posted a paper on arXiv on September 2, 2026 claiming that a competition-tuned version of their Nemotron 3 Ultra model, called Nemotron-3-Ultra-CC, outscored every human contestant at the 2026 International Olympiad in Informatics (IOI). Run live under the same constraints as the teenage competitors it was up against -- no internet access, submissions judged locally, the same time limits -- the system scored 535.4 out of 600, clearing both the contest's own gold-medal threshold of 361.12 and the top human score of 498.27.",
+      },
+      {
+        type: "h2",
+        text: "A different model, a different competition",
+      },
+      {
+        type: "p",
+        text:
+          "This isn't the same system as \"Nemotron-Cascade,\" the separate Nvidia model line associated with earlier work around the International Mathematical Olympiad -- Nemotron-3-Ultra-CC is a distinct, newer system (550 billion total parameters, 55 billion active) built on Nvidia's Nemotron 3 Ultra base model, and IOI is a programming contest, not a math one. The paper credits most of the gain to GenCorrect, a test-time strategy that generates, checks, and revises candidate solutions using the contest's own automated judge as feedback -- the authors write it's \"the first AI system to outscore the highest-scoring human contestant on an IOI problem set.\"",
+      },
+      {
+        type: "h2",
+        text: "Worth flagging: this is Nvidia grading its own model",
+      },
+      {
+        type: "p",
+        text:
+          "The paper hasn't been peer reviewed, it's Nvidia's own team publishing a claim about Nvidia's own model, and as of this writing the only outside discussion of it found is a single automated analysis blog -- no mainstream tech outlet had covered it independently at the time of writing. None of that makes the arithmetic wrong; IOI's scoring is a hard, objective pass/fail judge, which is exactly the kind of result that's easy for someone else to check. It does mean the \"first to beat a human\" framing should be read as the authors' own claim about their own system until someone outside Nvidia verifies it.",
+      },
+      {
+        type: "p",
+        text:
+          "That last point is close to the whole reason Merit AC's own Tier 3 -- sampled human grading of AI output -- is deliberately left stubbed rather than faked: a benchmark with a built-in, objective judge, like a compiler or a contest's automated grader, is the rare case where a vendor's claim about its own model is directly checkable by someone else. Almost none of the AI work an organization actually pays for looks like that. IOI has a compiler; a quarterly report or a customer email doesn't -- which is exactly why a company's own AI spend can't be graded by extrapolating from a coding-contest score, no matter how real that score turns out to be.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-02",
+    slug: "elon-university-washington-post-ai-companion-survey",
+    category: "research",
+    title: "27% of US adult internet users have social or emotional interactions with AI, new survey finds",
+    dek:
+      "A YouGov poll for Elon University's Imagining the Digital Future Center, covered the same day by The Washington Post, found that among the AI-companion users it isolated, 31% consider their bot a friend and 39% tell it things they wouldn't tell another person.",
+    sources: [
+      {
+        label:
+          "Imagining the Digital Future Center reports on 'The Rise of AI Companions' — Elon University News Bureau (official)",
+        url: "https://www.elon.edu/u/news/2026/09/02/imagining-the-digital-future-center-reports-on-the-rise-of-ai-companions/",
+      },
+      {
+        label:
+          "'A friend I can trust': How Americans described their relationship with AI — The Washington Post",
+        url: "https://www.washingtonpost.com/technology/interactive/2026/09/02/27-us-adults-turn-ai-personal-emotional-social-queries/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Elon University's Imagining the Digital Future Center published survey results on September 2, 2026, covered the same day by The Washington Post, putting a number on something that's mostly been anecdotal: how many people treat an AI chatbot as something closer to a companion than a tool. Across a screened sample of US adult internet users, 27% reported having meaningful social or emotional interactions with an AI large language model.",
+      },
+      {
+        type: "h2",
+        text: "How the survey was built",
+      },
+      {
+        type: "p",
+        text:
+          "YouGov fielded the poll for Elon between May 18 and 22, 2026, screening 4,268 US adult internet users and matching them down to a working sample of 4,031, from which it drew a target subsample of 1,000 people with social or emotional AI use, matched to the broader population on gender, age, race, and education. That subsample is where the more specific figures below come from.",
+      },
+      {
+        type: "h2",
+        text: "Inside the 1,000-person companion sample",
+      },
+      {
+        type: "p",
+        text:
+          "31% consider their AI a friend, 59% agree it gives them support they need, 39% say they've told the AI things they wouldn't tell another person, and 37% say they'd feel a personal loss if they lost access to it. Center director Lee Rainie called the results \"the first wave of insights about these emerging relationships\" as large language models become part of daily life.",
+      },
+      {
+        type: "p",
+        text:
+          "This site's own tracker is built around a narrower, harder-edged version of the same question -- not whether an employee likes talking to a model, but whether the work that comes out the other side is worth what it cost. The two questions turn out to be entangled: if more than a third of people already say losing AI access would feel like a personal loss, that's not just a wellbeing statistic, it's a signal about how embedded these tools already are in daily judgment and decision-making, inside and outside of work, well ahead of most organizations having any systematic way to tell whether that embedding is producing good outcomes or just familiar ones.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-03",
+    slug: "openai-gpt-6-astra-critical-cybersecurity-launch",
+    category: "product",
+    title: "OpenAI launches GPT-6 Astra, its first model rated 'Critical' for cybersecurity capability",
+    dek:
+      "The rollout starts with vetted defenders in OpenAI's Daybreak program before reaching ChatGPT and the API -- a distinct, later milestone from the Astra math-proof preview this site covered in August, and OpenAI's own safety materials admit the model is also harder to monitor than its predecessor.",
+    sources: [
+      {
+        label: "Deployment safety: GPT-6 Astra — OpenAI (official)",
+        url: "https://deploymentsafety.openai.com/gpt-6-astra",
+      },
+      {
+        label: "OpenAI debuts GPT-6 Astra, says it triggered security measures — NBC News (Jared Perlo)",
+        url: "https://www.nbcnews.com/tech/tech-news/openai-debuts-gpt-6-astra-security-measures-rcna595940",
+      },
+      {
+        label: "'Welcome to the AGI era': OpenAI launches GPT-6 Astra — VentureBeat (Carl Franzen)",
+        url: "https://venturebeat.com/technology/welcome-to-the-agi-era-openai-launches-gpt-6-astra",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "OpenAI released GPT-6 Astra on September 3, 2026, rolling it out first to organizations in Daybreak, its vetted cybersecurity-defender program, before opening it to ChatGPT Plus, Pro, Business, and Enterprise users, the API, and cloud platforms including AWS and Azure over the following days. Per OpenAI's own deployment-safety documentation, Astra is the first model the company has ever classified as reaching \"Critical\" under its Preparedness Framework's cybersecurity category -- its highest capability tier.",
+      },
+      {
+        type: "h2",
+        text: "What crossing that line actually restricts",
+      },
+      {
+        type: "p",
+        text:
+          "OpenAI's own framing is blunt about what the classification means: with the right tools and access, the model \"can find previously unknown security flaws and develop new ways to exploit them,\" largely without step-by-step human direction. In practice that means Astra currently refuses to generate proof-of-concept exploits outside Daybreak, and OpenAI says it plans to loosen those restrictions gradually as it expands vetted access, rather than opening the capability broadly on day one.",
+      },
+      {
+        type: "h2",
+        text: "Not the Astra story this site already ran",
+      },
+      {
+        type: "p",
+        text:
+          "This is a different milestone from the one this site covered in August, when an internal Astra research preview produced ten machine-checked math proofs for about $2,000 in compute -- that was a research-capability teaser; this is the actual model launch, with the cybersecurity classification as its headline safety fact rather than a footnote.",
+      },
+      {
+        type: "p",
+        text:
+          "OpenAI's own safety materials pair the capability jump with an uncomfortable admission: Astra's monitorability -- how well its reasoning can be observed for warning signs -- has decreased relative to its predecessor, even as its raw capability went up. Chief scientist Jakub Pachocki put a line on that trade-off: \"we will not accept the degradation in our ability to monitor model alignment.\" That's the exact tension Merit AC's own scoring keeps running into on a much smaller scale -- a system getting more capable doesn't automatically mean it's getting easier to verify, and a benchmark score alone can't tell an organization which side of that trade a given deployment landed on.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-01",
+    slug: "anthropic-claude-fable-mythos-5-1-launch",
+    category: "product",
+    title: "Anthropic splits its flagship model into public Claude Fable 5.1 and gated Claude Mythos 5.1",
+    dek:
+      "Same underlying model, two safeguard regimes: Fable 5.1 is generally available with a 75% cut to cache-read pricing and 60% fewer cybersecurity false positives, while Mythos 5.1's looser guardrails are restricted to vetted cybersecurity and life-sciences partners.",
+    sources: [
+      {
+        label: "Introducing Claude Fable 5.1 and Claude Mythos 5.1 — Anthropic (official)",
+        url: "https://www.anthropic.com/claude-fable-and-mythos-5-1",
+      },
+      {
+        label: "Anthropic's new Fable release is cheaper, less restrictive — TechCrunch (Russell Brandom)",
+        url: "https://techcrunch.com/2026/09/01/anthropics-new-fable-release-is-cheaper-less-restrictive/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Anthropic released two versions of its newest model on September 1, 2026: Claude Fable 5.1, generally available to everyone, and Claude Mythos 5.1, the identical underlying model running with looser safety guardrails, restricted to vetted partners through two new programs -- one for cybersecurity defense, one for life-sciences research done in partnership with the US government.",
+      },
+      {
+        type: "h2",
+        text: "Cheaper and less trigger-happy",
+      },
+      {
+        type: "p",
+        text:
+          "Fable 5.1 cuts cache-read pricing 75%, to $0.25 per million tokens, bringing typical-workload costs down about 25% and highly agentic workloads down as much as 45%, per Anthropic's own numbers. The company also says its updated cybersecurity safeguards block 60% fewer false positives than before, and Claude Code sessions specifically see about 60% fewer safeguard interventions per session -- a direct answer to a complaint that's dogged safety-tuned models generally: flagging legitimate work as often as real misuse isn't actually safer, just more annoying.",
+      },
+      {
+        type: "h2",
+        text: "What the gate buys, and what it doesn't",
+      },
+      {
+        type: "p",
+        text:
+          "Mythos 5.1's Cyber and Life Sciences Verification Programs let vetted defenders and researchers get real answers to questions Fable would hedge on -- discovering vulnerabilities rather than just describing them defensively, for instance. Anthropic is also rolling out \"Enterprise Frontier Safeguards\" starting this fall, letting eligible customers run the model on their own cloud infrastructure with data never touching Anthropic's servers, and the company told TechCrunch plainly: \"Anthropic has never trained on enterprise data without explicit permission, and never will.\"",
+      },
+      {
+        type: "p",
+        text:
+          "The Fable/Mythos split is Anthropic making an admission most vendors leave implicit: the same model can be simultaneously too restrictive for some legitimate users and not restrictive enough to hand to everyone. Merit AC's own quality-proxy scoring runs into a version of that same tension constantly -- a safeguard tuned to catch the worst misuse ends up flagging a lot of ordinary, valuable work along the way, and the cost of that false-positive rate rarely shows up on an invoice even though it's a real tax on the people trying to get work done.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-02",
+    slug: "google-gemini-3-8-flash-cyber-fairwind-program",
+    category: "product",
+    title: "Google launches Gemini 3.8 Flash, plus a cybersecurity variant restricted to vetted defenders",
+    dek:
+      "The third Flash update in three months ships at introductory pricing of $0.75/$3.75 per million input/output tokens through the end of the year, while Gemini 3.8 Flash Cyber -- reserved for governments, critical-infrastructure operators, and software maintainers in Google's new Fairwind Program -- finds real vulnerabilities across 20 languages 71% of the time.",
+    sources: [
+      {
+        label: "Gemini 3.8 Flash — Google DeepMind (official)",
+        url: "https://deepmind.google/models/gemini/flash/",
+      },
+      {
+        label: "Gemini 3.8 Flash rolling out three weeks after last release — 9to5Google (Abner Li)",
+        url: "https://9to5google.com/2026/09/02/gemini-3-8-flash-launch/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Google released Gemini 3.8 Flash on September 2, 2026 -- the third Flash-tier update in three months, arriving three weeks after Gemini 3.7 Flash -- with gains in agentic coding and long-running, multi-step tasks, according to Google DeepMind's own model page. It's generally available now across the Gemini app, AI Studio, the Gemini API, and Google Antigravity.",
+      },
+      {
+        type: "h2",
+        text: "A second, gated version built for defenders",
+      },
+      {
+        type: "p",
+        text:
+          "Alongside it, Google introduced Gemini 3.8 Flash Cyber, a specialized version for vulnerability discovery and automated patching that's available only through a new Fairwind Program restricted to governments and national cyber authorities, operators of critical infrastructure like healthcare and energy networks, and maintainers of widely-used software platforms -- gated behind mandatory multi-factor authentication, background verification, and a ban on redistributing access. Google's own figures put it at a 71% real-world vulnerability-discovery rate across 20 programming languages, and Chrome's security team reported it produced 2.6 times more correct patches than larger commercial models it was tested against, per 9to5Google's reporting.",
+      },
+      {
+        type: "p",
+        text:
+          "Pricing for the general Flash 3.8 model is introductory through December 31, 2026, at $0.75 per million input tokens and $3.75 per million output tokens, doubling to $1.50 and $7.50 on January 1, 2027, per Google's own published rate card.",
+      },
+      {
+        type: "p",
+        text:
+          "A cybersecurity model that's simultaneously cheap enough for wide use and gated specifically to keep it out of the wrong hands is a strange combination on paper, and it's the same trade-off this site keeps flagging in AI procurement generally: the sticker price on an API call describes almost nothing about who's allowed to use the capability behind it, under what oversight, or what it's actually worth to the org paying for it. A pricing page is not a governance policy, even when a vendor ships both on the same day.",
+      },
+    ],
+  },
 ];
