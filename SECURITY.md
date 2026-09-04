@@ -43,6 +43,11 @@ be an account-existence oracle, since an unknown email short-circuits to
 401 without ever hashing anything while a known one reached bcrypt and
 raised.
 
+`/openapi.json`, `/docs`, and `/redoc` are disabled in production via
+`MERIT_DISABLE_API_DOCS=true` (set in `fly.toml`) — every route still
+works, only the schema/UI that lists the full admin and ingest surface is
+hidden. Unset locally, so `make run` still has interactive docs.
+
 Known gaps: no rate limiting on `/auth/login`, `/auth/signup`, or
 `/waitlist`, no audit log of who accessed what, account recovery
 (forgot-password) isn't built, and the "Sign in with Google" `state`
