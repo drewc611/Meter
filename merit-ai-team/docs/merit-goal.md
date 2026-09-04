@@ -24,3 +24,10 @@ final**, per this skill's own "never adopt the default silently" rule.
 - File created from `merit-goal`'s proposed default; no measured progress
   yet. Needs Andrew's confirmation (see note above) before the next weekly
   score treats this as authoritative.
+
+### 2026-09-04 — first CEO brief run
+- Still unconfirmed by Andrew, two weeks on. `/api/adoption` count: 0 real
+  tenants, demo data only. First actual `merit-ceo-brief` run — full
+  synthesis in `merit-exec-brief.md`'s 2026-09-04 entry. Top recommendation
+  from that run: confirm this goal as written, nothing's surfaced to
+  contradict it.
