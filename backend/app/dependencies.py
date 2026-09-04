@@ -98,6 +98,30 @@ def require_admin(
     return user
 
 
+def require_operator(
+    user: models.DashboardUser | None = Depends(get_current_user),
+) -> models.DashboardUser | None:
+    """Deployment-operator gate for the waitlist endpoints, layered on
+    get_current_user. Deliberately stricter than require_admin: with
+    MERIT_SIGNUP_CODE unset (the public free-personal-use posture) every
+    signup is the sole admin of its own brand-new org, so is_admin alone
+    would let any anonymous visitor self-signup and immediately read every
+    waitlist lead's email -- and WaitlistSignup rows predate any
+    Organization, so there's no tenant scoping to fall back on either.
+    Membership in MERIT_ADMIN_EMAILS (read live, same convention as
+    routers/auth.py's _should_be_admin) is the check instead. A None user
+    (login off) passes through unchanged, exactly like require_admin.
+    """
+    if user is None:
+        return None
+    admin_emails = {e.strip().lower() for e in os.environ.get("MERIT_ADMIN_EMAILS", "").split(",") if e.strip()}
+    if user.email.strip().lower() not in admin_emails:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Deployment-operator access required (MERIT_ADMIN_EMAILS)"
+        )
+    return user
+
+
 def resolve_org_id(db: Session, user: models.DashboardUser | None) -> int | None:
     """Which Organization a /api/* or /admin/* request is scoped to. A
     logged-in user's own org_id, always. With login off (get_current_user

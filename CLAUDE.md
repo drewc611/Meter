@@ -74,8 +74,10 @@ itself is deployed at `/app`, not the site root — see "Site content" in
 CLAUDE.md's own product description above and `frontend/README.md`; the
 built `dist/` output (Cloudflare's Build command runs `npm run build`)
 covers the whole domain, dashboard and content pages alike.
-`frontend/coming-soon.html` is the old pre-launch placeholder, still
-present in the repo but not served anywhere — see `frontend/README.md`.
+`frontend/coming-soon.html` is the old pre-launch placeholder — it's still
+a Vite build input, so it ships to `dist/coming-soon.html` and is reachable
+live at `/coming-soon.html`; it just isn't linked from anywhere in the
+site's navigation — see `frontend/README.md`.
 
 `styles.css` is shared, unchanged, referenced via a plain `<link>` tag in
 both HTML entries — Vite processes `<link rel="stylesheet">` tags in any

@@ -4,8 +4,17 @@
 # /architecture, etc.) share the same URL across deploys, so without an
 # explicit rule an edge cache or a visitor's browser can keep serving an
 # old build's HTML after a new one ships.
+#
+# The /* block also carries the site-wide security response headers. No
+# Content-Security-Policy yet: three pages still use inline <script>
+# (src/content/pages/Community.jsx, src/content/pages/Challenge.jsx, and
+# app.html's theme script), so a CSP would need hashes or nonces for those
+# first -- deferred, tracked in SECURITY.md's known gaps.
 /*
   Cache-Control: no-cache, must-revalidate
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable

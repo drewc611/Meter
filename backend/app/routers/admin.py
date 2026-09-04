@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from .. import models, schemas
-from ..dependencies import get_current_user, get_db, resolve_org_id
+from ..dependencies import get_current_user, get_db, require_operator, resolve_org_id
 from ..periods import current_period
 from ..services import email, scoring
 from ..time_utils import utcnow
@@ -101,11 +101,16 @@ def get_org(db: Session = Depends(get_db), user: models.DashboardUser | None = D
     return org
 
 
-@router.get("/waitlist", response_model=schemas.WaitlistListOut)
+@router.get("/waitlist", response_model=schemas.WaitlistListOut, dependencies=[Depends(require_operator)])
 def list_waitlist(source: str | None = None, db: Session = Depends(get_db)):
     """Every lead-capture signup, newest first. Pass ?source=challenge-paid-track
     (or any other source string used by a "notify me" form on the site) to see
-    just that list; omit it to see everything."""
+    just that list; omit it to see everything.
+
+    Operator-only (require_operator), not merely is_admin like the rest of
+    this router: waitlist rows belong to no Organization, so a self-signup
+    admin of their own brand-new org has no business reading other people's
+    leads. See dependencies.require_operator."""
     query = db.query(models.WaitlistSignup)
     if source:
         query = query.filter_by(source=source)
@@ -113,9 +118,13 @@ def list_waitlist(source: str | None = None, db: Session = Depends(get_db)):
     return schemas.WaitlistListOut(count=len(entries), entries=entries)
 
 
-@router.post("/notify-waitlist", response_model=schemas.NotifyWaitlistResult)
+@router.post("/notify-waitlist", response_model=schemas.NotifyWaitlistResult, dependencies=[Depends(require_operator)])
 def notify_waitlist(dry_run: bool = False, db: Session = Depends(get_db)):
     """
+    Operator-only (require_operator), same reasoning as GET /waitlist above
+    -- this one also sends mail through the deployment's own SMTP identity,
+    so is_admin alone would hand any self-signup a send-to-every-lead button.
+
     Emails every coming-soon waitlist signup that hasn't been notified yet
     (see WaitlistSignup.notified_at) with a single fixed "the site is live"
     announcement -- a one-off send, not a campaign tool. Scoped to

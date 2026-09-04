@@ -7,8 +7,10 @@ components + hooks, no state library beyond React context. Its HTML entry is
 lives at `/` instead. `coming-soon.html` is a separate, unrelated static
 HTML page (the old pre-launch placeholder — waitlist form + ROI calculator,
 plain JS, no React) built as its own Vite entry so it still ships with a
-hashed `styles.css` reference without being pulled into the React bundle;
-it isn't linked from anywhere live, just still present in the repo.
+hashed `styles.css` reference without being pulled into the React bundle.
+Being a build input, it ships to `dist/coming-soon.html` and is reachable
+live at `/coming-soon.html` — it just isn't linked from anywhere in the
+site's navigation.
 
 The content-site pages (`/`, `/architecture`, `/setup/*`, `/news`,
 `/models`, `/glossary`, `/guides`, `/prompts`, `/challenge`, `/community`)
@@ -52,7 +54,7 @@ without it, the dashboard falls back to the embedded demo snapshot in
 
 ```
 app.html                Vite entry for the dashboard — React root + <link> to styles.css, deployed at /app
-coming-soon.html        Separate static Vite entry, untouched by the React app
+coming-soon.html        Separate static Vite entry, untouched by the React app — ships to /coming-soon.html, unlinked
 styles.css              Shared stylesheet, referenced by both HTML entries
 public/
   content.css           Shared stylesheet for the content-site pages

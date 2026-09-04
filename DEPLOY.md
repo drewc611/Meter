@@ -105,15 +105,16 @@ where you expected LIVE.
 - `https://api.usemeritai.com/healthz` — should return `{"status":"ok"}`.
 - `https://usemeritai.com` — shows the marketing/content landing page (see
   README.md's "Site content"). The dashboard is at `https://usemeritai.com/app`.
-  The old "coming soon" placeholder is still around at
-  `frontend/coming-soon.html`, just not served anywhere.
+  The old "coming soon" placeholder (`frontend/coming-soon.html`) is still
+  built and served, at `https://usemeritai.com/coming-soon.html` — it just
+  isn't linked from anywhere in the site's navigation.
 
 ## Production status
 
 Live: the ingestion token (`MERIT_API_KEY`) is generated, set, and enforced
 on `/ingest/*`; the real dashboard is at `/app`
-(`frontend/coming-soon.html` is the old placeholder, no longer served
-anywhere); per-user login (`MERIT_JWT_SECRET`, Google OAuth,
+(`frontend/coming-soon.html` is the old placeholder, still built and served
+at `/coming-soon.html` but unlinked); per-user login (`MERIT_JWT_SECRET`, Google OAuth,
 `MERIT_SIGNUP_CODE`) is on, see "Turning on dashboard login" below; and
 [`TRADEMARK.md`](TRADEMARK.md)'s events table has its first-use-in-commerce
 date recorded.
