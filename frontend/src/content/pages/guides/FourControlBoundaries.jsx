@@ -5,7 +5,7 @@ export const meta = {
   outFile: "guides/four-control-boundaries.html",
   title: "Four Control Boundaries for Agentic DevSecOps — Merit AC Guides",
   description:
-    "Code generation is the easy part. The enterprise problem is controlling what happens after the model decides what it wants to do — adapted from Andrew Clark's Agentic DevSecOps carousel.",
+    "Code generation is the easy part. The enterprise problem is controlling what happens after the model decides what it wants to do — adapted from our own Agentic DevSecOps reference deck.",
 };
 
 export default function FourControlBoundaries() {
@@ -13,7 +13,7 @@ export default function FourControlBoundaries() {
     <ContentLayout active="guides" wide>
       <span className="kicker">Guide · from the Agentic DevSecOps reference deck</span>
       <span className="badge">
-        <i /> Andrew Clark
+        <i /> From the Merit AC team
       </span>
       <h1>Four control boundaries for agentic DevSecOps</h1>
       <p className="lead">

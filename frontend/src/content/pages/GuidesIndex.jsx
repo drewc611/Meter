@@ -29,12 +29,12 @@ export default function GuidesIndex() {
     <ContentLayout active="guides">
       <span className="kicker">Content</span>
       <span className="badge">
-        <i /> By Andrew Clark
+        <i /> From the Merit AC team
       </span>
       <h1>Guides</h1>
       <p className="lead">
         General writing on doing AI work well — starting with governed agentic DevSecOps, adapted
-        from Andrew Clark's <em>Enterprise Agentic DevSecOps Handbook</em> and reference materials.
+        from our own <em>Enterprise Agentic DevSecOps Handbook</em> and reference materials.
       </p>
       <div className="grid">
         {GUIDES.map((g) => (

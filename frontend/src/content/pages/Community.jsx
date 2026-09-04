@@ -4,12 +4,12 @@ export const meta = {
   outFile: "community.html",
   title: "Community — Merit AC",
   description:
-    "A space to compare notes on governed agentic DevSecOps with Andrew Clark and other people running the 30-day challenge. Not open yet — join the interest list.",
+    "A space to compare notes on governed agentic DevSecOps with the Merit AC team and other people running the 30-day challenge. Not open yet — join the interest list.",
 };
 
 const PILLARS = [
   {
-    title: "Andrew's own build notes",
+    title: "The team's own build notes",
     body:
       "What's actually working (and what broke) as the reference platform behind the guides, prompts, and challenge keeps getting built out — not a polished summary after the fact. If a control boundary turns out to be harder to enforce than the guide made it sound, that's what shows up here.",
   },
@@ -53,8 +53,8 @@ export default function Community() {
       </span>
       <h1>Community</h1>
       <p className="lead">
-        A space to go deeper on governed agentic DevSecOps than a page can — with Andrew Clark and
-        other people building through the <a href="/challenge">30-day challenge</a>. It isn't open
+        A space to go deeper on governed agentic DevSecOps than a page can — with the Merit AC team
+        and other people building through the <a href="/challenge">30-day challenge</a>. It isn't open
         yet. No platform or price has been decided, so there's nothing to sell here — just an honest
         description and a place to say you're interested.
       </p>

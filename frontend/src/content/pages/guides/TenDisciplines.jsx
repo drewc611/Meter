@@ -6,7 +6,7 @@ export const meta = {
   outFile: "guides/ten-disciplines-of-governed-agentic-devsecops.html",
   title: "The Ten Disciplines of Governed Agentic DevSecOps — Merit AC Guides",
   description:
-    "Ten recurring control disciplines for running a coding agent like Claude Code safely at enterprise scale, adapted from Andrew Clark's Enterprise Agentic DevSecOps Handbook.",
+    "Ten recurring control disciplines for running a coding agent like Claude Code safely at enterprise scale, adapted from our own Enterprise Agentic DevSecOps Handbook.",
 };
 
 const CONTROL_TABLE = [
@@ -38,14 +38,14 @@ export default function TenDisciplines() {
     <ContentLayout active="guides" wide>
       <span className="kicker">Guide · from the Enterprise Agentic DevSecOps Handbook</span>
       <span className="badge">
-        <i /> Andrew Clark
+        <i /> From the Merit AC team
       </span>
       <h1>The ten disciplines of governed agentic DevSecOps</h1>
       <p className="lead">
         Claude Code accelerates engineering work. It should never be the thing that decides whether
         its own work is safe to ship. These ten disciplines are the recurring control points that
         show up, in one form or another, in every part of an enterprise deployment of a coding
-        agent — repository to production. Adapted from Andrew Clark's{" "}
+        agent — repository to production. Adapted from our own{" "}
         <em>Enterprise Agentic DevSecOps Handbook</em> (August 2026 edition).
       </p>
 

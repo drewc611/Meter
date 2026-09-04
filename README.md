@@ -99,7 +99,7 @@ linked from the "Sign in" button in the header.
   source and a `verifiedDate`, spot-checked rather than trusted indefinitely
 - `/glossary` -- plain-English AI term definitions
 - `/guides`, `/prompts`, `/challenge` -- a governed-agentic-DevSecOps
-  content arm adapted from Andrew Clark's handbook: three long-form guides,
+  content arm adapted from an internal reference handbook: three long-form guides,
   a 30-day prompt archive, and a free capstone project (build a governed
   agentic delivery platform)
 - `/community` -- not open yet; an honest interest-list page rather than a

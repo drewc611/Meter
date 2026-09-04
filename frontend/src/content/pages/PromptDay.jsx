@@ -33,7 +33,7 @@ export default function PromptDay({ entry }) {
       {entry.day === 30 && (
         <p>
           That's the full 30 days. If you want a second set of eyes on the result,{" "}
-          <a href="/challenge#paid-track">Andrew Clark offers a paid review</a> of finished
+          <a href="/challenge#paid-track">a paid review is available</a> of finished
           builds against the challenge's Definition of Done.
         </p>
       )}

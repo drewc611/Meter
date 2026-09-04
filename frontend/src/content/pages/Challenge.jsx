@@ -7,7 +7,7 @@ export const meta = {
   outFile: "challenge.html",
   title: "The 30-Day Challenge: Build a Governed Agentic Delivery Platform — Merit AC",
   description:
-    "A free 30-day run through governed agentic DevSecOps, ending in a real capstone project: build a Governed Agentic Delivery Platform, adapted from Andrew Clark's handbook.",
+    "A free 30-day run through governed agentic DevSecOps, ending in a real capstone project: build a Governed Agentic Delivery Platform, adapted from our own reference handbook.",
 };
 
 const COMPONENTS = [
@@ -64,7 +64,7 @@ export default function Challenge() {
     <ContentLayout active="challenge" wide>
       <span className="kicker">Challenge · from the Enterprise Agentic DevSecOps Handbook</span>
       <span className="badge">
-        <i /> Andrew Clark — free, 30 days
+        <i /> Free, 30 days
       </span>
       <h1>Build a Governed Agentic Delivery Platform</h1>
       <p className="lead">
@@ -248,9 +248,9 @@ export default function Challenge() {
         <p>
           The run above is free and complete on its own — build the platform, run the demo,
           walk away with a real capstone and evidence package. The paid track is a structured
-          review from Andrew Clark of your finished build against the Definition of Done above:
-          what's solid, what's a gap dressed up as a control, and what to fix before you'd call
-          it production-ready.
+          review of your finished build against the Definition of Done above: what's solid,
+          what's a gap dressed up as a control, and what to fix before you'd call it
+          production-ready.
         </p>
         {PAID_TRACK_PAYMENT_LINK ? (
           <a className="btn btn-primary" href={PAID_TRACK_PAYMENT_LINK}>

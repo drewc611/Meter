@@ -14,8 +14,8 @@
 // on -- see NewsIndex.jsx's CATEGORY_LABELS for the fixed set.
 //
 // `corrections` is the visible retraction/correction trail this site commits
-// to given autonomous, no-human-review publishing: if a later run (or Andrew)
-// finds a factual error in a published article, the fix is a new dated entry
+// to given autonomous, no-human-review publishing: if a later run (or a
+// maintainer) finds a factual error in a published article, the fix is a new dated entry
 // appended here -- describing what was wrong and what changed -- never a
 // silent edit to the original body text.
 export const NEWS_ARTICLES = [
