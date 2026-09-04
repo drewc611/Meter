@@ -105,20 +105,31 @@ partners.
 
 Carry these forward; re-check rather than re-discover them.
 
-1. **No security headers on the frontend.** No HSTS, CSP, X-Frame-Options,
-   X-Content-Type-Options, or Referrer-Policy. Cheap fix via a Cloudflare
-   `_headers` file or Transform Rule.
-2. **`/openapi.json` and `/docs` are publicly readable** on the production API.
-   That publishes the full admin and ingest surface to anyone. Gate them or
-   disable in prod.
-3. **Admin endpoints exist with unknown auth.** `/admin/identity-mapping`,
-   `/admin/recompute-scores`, `/admin/notify-waitlist`. Confirm they require an
-   authenticated admin role — the last one can email the whole waitlist.
-4. **Zero crawlable content.** The SPA ships an empty `<div id="root">`. No
-   sitemap.xml. Search engines and AI answer engines see nothing but a title.
-5. **Single API region (`ord`) and unknown backup posture.** Fine for now,
-   worth a stated position before the first paying customer.
-6. **No pricing page, no docs, no changelog** on the public site.
+1. **~~No security headers on the frontend.~~ Fixed 2026-09-04** (PR #87).
+   `X-Frame-Options`, `X-Content-Type-Options`, and `Referrer-Policy` are
+   live in `frontend/public/_headers`, confirmed via `curl -I` against the
+   production site the same day. CSP itself is still open — three
+   inline-script sites need hashes/nonces first, noted in `SECURITY.md`.
+2. **~~`/openapi.json` and `/docs` are publicly readable.~~ Fixed
+   2026-09-04.** `MERIT_DISABLE_API_DOCS=true` in `fly.toml` now hides
+   `/openapi.json`, `/docs`, and `/redoc` in production — every route
+   still works, only the schema/UI is gone.
+3. **~~Admin endpoints exist with unknown auth.~~ Confirmed and hardened
+   2026-09-04.** `/admin/*` requires `is_admin`; `/admin/waitlist` and
+   `/admin/notify-waitlist` specifically now also require
+   `require_operator` (`MERIT_ADMIN_EMAILS` membership), after a security
+   audit found any self-signup user could otherwise read and mass-email
+   the whole waitlist (PR #87) — see `merit-eng-log.md`.
+4. **Zero crawlable content.** Still open — actually superseded: the site
+   now ships real prerendered content routes (`/architecture`, `/news`,
+   `/guides`, `/prompts`, etc., see `merit-infra-log.md`'s 2026-08-21
+   entry), so "empty `<div id="root">`" is stale for those pages
+   specifically. Re-verify `/app` itself (the dashboard SPA) and whether
+   `sitemap.xml` lists everything that's shipped since.
+5. **Single API region (`ord`) and unknown backup posture.** Still open.
+   Fine for now, worth a stated position before the first paying customer.
+6. **No pricing page, no docs, no changelog** on the public site. Still
+   open.
 
 ## Missing pieces (as of 2026-08-21)
 

@@ -47,7 +47,19 @@ def create_app() -> FastAPI:
             "token for any user. Rotate it to a long random value (secrets.token_urlsafe(48))."
         )
 
-    app = FastAPI(title="Merit AC API", version="0.1.0")
+    # /openapi.json, /docs, and /redoc publish the full admin and ingest
+    # endpoint surface to anyone who looks -- harmless in local dev, but on
+    # a real deployment it's a map handed to an attacker for free. Set
+    # MERIT_DISABLE_API_DOCS to turn them off; every route still works,
+    # only the schema/UI is hidden.
+    docs_disabled = os.environ.get("MERIT_DISABLE_API_DOCS", "").strip().lower() in ("1", "true", "yes")
+    app = FastAPI(
+        title="Merit AC API",
+        version="0.1.0",
+        docs_url=None if docs_disabled else "/docs",
+        redoc_url=None if docs_disabled else "/redoc",
+        openapi_url=None if docs_disabled else "/openapi.json",
+    )
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,

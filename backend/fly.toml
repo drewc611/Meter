@@ -12,6 +12,10 @@ primary_region = 'iad'
   # Locks down CORS to the real frontend origin(s) instead of config.py's
   # wide-open local-dev default. Update this if the frontend domain changes.
   MERIT_CORS_ORIGINS = 'https://usemeritai.com,https://www.usemeritai.com'
+  # Hides /docs, /redoc, and /openapi.json on the live API -- every route
+  # still works, this just stops handing the full admin/ingest endpoint
+  # list to anyone who looks. Unset locally so `make run` still has docs.
+  MERIT_DISABLE_API_DOCS = 'true'
 
 # Persistent volume for merit.db -- the image already points MERIT_DATABASE_URL
 # at /data/merit.db (see Dockerfile), this just makes /data survive deploys
