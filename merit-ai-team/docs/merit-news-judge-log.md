@@ -262,3 +262,75 @@ unusually clean, or the Judge pass has gotten lax.
 - No absence-of-evidence claims: pass
 - Every citation has a confirmed byline/author: pass — Google DeepMind's own official pages (institutional); 9to5Google byline Abner Li, confirmed via direct fetch.
 **Notes:** Caught and corrected a factual error in the candidate brief: it described this as "the third Flash update in six weeks," but a direct fetch of 9to5Google's own reporting (byline Abner Li) gives the verified framing as "the third Flash update in three months," arriving "three weeks after" the prior release — the six-weeks figure could not be confirmed anywhere and was replaced with the verified three-months framing. All pricing and Fairwind Program eligibility details came from Google's own pages directly, per this site's standing rule not to publish unconfirmed pricing/program specifics on secondary-only sourcing.
+
+### 2026-09-04 12:00 UTC — fda-authorizes-vitestro-aletta-robotic-blood-draw
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — single source, the FDA's own official press announcement (`fda.gov/news-events/press-announcements/fda-authorizes-first-its-kind-robotic-blood-draw-device`), fetched directly; a government primary, no trade-press paraphrase needed or used.
+- Quotes ≤15 words, one per source: pass — Michelle Tarver (CDRH director) quoted at 12 words, using a bracket-edited fragment ("advanc[es] innovative medical devices that help meet a critical public health need") of a longer sentence in the FDA's release.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — official FDA press release (institutional, .gov domain).
+**Notes:** Single-sourced, consistent with this log's precedent for other single official-government-source entries (SB 942, AB 2656, Gemini Robotics ER 2). The one-phlebotomist-to-three-devices supervision ratio and the De Novo pathway/special-controls details were both confirmed directly from the FDA's own release text, not taken from the candidate brief's paraphrase.
+
+### 2026-09-04 12:00 UTC — meta-18-billion-child-safety-settlement-age-verification
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites Fortune's own reporting (AP/Barbara Ortutay byline, `fortune.com/2026/09/01/meta-age-checking-ai-scans/`) as the lead source per the candidate brief, direct fetch succeeded; TechCrunch (byline Amanda Silberling, confirmed via direct fetch) as corroborating secondary for the settlement's payment structure specifically.
+- Quotes ≤15 words, one per source: n/a — no direct quotes used; paraphrase only, after finding the settlement's dollar-figure breakdown was reported inconsistently across outlets (Fortune said a flat "$18 billion"; a New York AG press release said "$12.1B guaranteed / up to $17.1B"; BleepingComputer said "$12.7B / $5.3B") and choosing not to publish a specific dollar split not confirmed by either of this article's own two listed sources.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Fortune/AP byline Barbara Ortutay; TechCrunch byline Amanda Silberling, both confirmed via direct fetch.
+**Notes:** This run independently found and fetched three additional secondary sources (New York AG's own press release, BleepingComputer, TechCrunch) beyond the two candidate-brief leads, specifically because the settlement's exact dollar-amount structure was restated inconsistently across all of them — a live example of the standing rule to verify funding/settlement figures carefully. Rather than pick one inconsistent breakdown to publish as precise, the article uses only the framing independently confirmed by TechCrunch's own reporting (one of this article's two listed sources): "up to $18 billion... roughly 30% contingent on YouTube and TikTok." The 52-attorney-general count (not the candidate brief's "48 states + DC/territories") was verified directly against TechCrunch's and BleepingComputer's own reporting and used instead. Explicit paragraph included distinguishing this from Anthropic's Bartz settlement and the DOJ's NYT filing, per the candidate brief's own conflation warning.
+
+### 2026-09-04 12:00 UTC — doj-statement-of-interest-nyt-openai-fair-use
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites PYMNTS's direct reporting (`pymnts.com/legal/2026/doj-sides-with-openai-against-the-ny-times-in-high-stakes-copyright-case`) as the near-primary lead per the candidate brief, fetched directly; IPWatchdog (byline Eileen McDermott, confirmed via direct fetch) as corroborating secondary. A CourtListener docket search and a direct fetch of the Washington Post's own reporting were both attempted to find a stronger primary than PYMNTS, per the candidate brief's suggestion, but both returned errors (search tool returned no usable docket page; washingtonpost.com 403'd) — PYMNTS and IPWatchdog stand as this article's sourcing.
+- Quotes ≤15 words, one per source: pass — DOJ quoted at 14 words ("a strong interest in continuing to develop a robust and competitive artificial intelligence industry"); NYT spokesperson Graham James quoted at 13 words ("undermine the sustainability of the human-created content that a healthy society depends on"), both trimmed from longer sentences captured in the PYMNTS fetch.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: partial — PYMNTS carries only an institutional byline ("By PYMNTS"), not an individual reporter's name, the same softer tier this log has applied to TUN previously; IPWatchdog byline Eileen McDermott is a fully confirmed individual byline, verified via direct fetch.
+**Notes:** The NYT spokesperson's name (Graham James) was independently cross-checked against a separate web search beyond the PYMNTS fetch before being published, given how easy a misattributed spokesperson quote would be to get wrong. The article is explicit that this is a *different*, ongoing case from the already-published Bartz v. Anthropic settlement, per the candidate brief's conflation warning — the two are contrasted directly in the body rather than left for the reader to infer.
+
+### 2026-09-04 12:00 UTC — felix-200-million-series-c-whatsapp-remittances
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — single source, Crunchbase News's own reporting (byline Mary Ann Azevedo, `news.crunchbase.com/venture/fintech-whatsapp-remittance-startup-felix-raises-200m-a16z-general-catalyst/`), fetched directly.
+- Quotes ≤15 words, one per source: pass — co-founder Manuel Godoy quoted at 12 words ("even getting a small loan was harder than it should have been").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Crunchbase News byline Mary Ann Azevedo, confirmed via direct fetch.
+**Notes:** The $87M-equity/$113M-debt split (candidate brief's proposed figures) was independently re-verified against Crunchbase News's own reported numbers rather than assumed correct — confirmed exact match. Company is sometimes referred to elsewhere as "Félix Pago"; Crunchbase News's own article consistently uses "Félix," so the article follows its primary source's naming rather than a secondary variant.
+
+### 2026-09-04 12:00 UTC — lyte-165-million-series-c-robot-perception
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — single source, Crunchbase News's own reporting (byline Mary Ann Azevedo, `news.crunchbase.com/venture/robotics-ai-startup-lyte-seriesc-raise-maverick/`), fetched directly.
+- Quotes ≤15 words, one per source: pass — CEO Alexander Shpunt quoted at 14 words ("physical AI will create entirely new categories of robots, and every one of them"), trimmed from a longer sentence.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Crunchbase News byline Mary Ann Azevedo, confirmed via direct fetch.
+**Notes:** The $165M/$1.6B valuation figures and the "ex-Apple Face ID team" framing were both independently verified against Crunchbase News's own reporting, which traces the founders' background through PrimeSense (acquired by Apple in 2013) rather than a vaguer "worked at Apple" claim — the article uses that more precise lineage.
+
+### 2026-09-04 12:00 UTC — hiddenlayer-100-million-series-b-agentic-ai-security
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites HiddenLayer's own press release via PR Newswire (`prnewswire.com/news-releases/hiddenlayer-raises-100m-series-b-to-advance-trustworthy-ai-302867783.html`) as primary, direct fetch succeeded; TechCrunch (byline Ram Iyer, confirmed via direct fetch) as corroborating secondary.
+- Quotes ≤15 words, one per source: pass — Delta-v Capital partner Dan Williams quoted at 14 words from the PR Newswire release ("built a platform from the ground up to secure AI across its full lifecycle"); CEO Chris Sestito quoted at 4 words from TechCrunch's own reporting ("Inference is still inference").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — HiddenLayer's own press release (institutional, official PR Newswire distribution); TechCrunch byline Ram Iyer, confirmed via direct fetch.
+**Notes:** Per the candidate brief's own flag, the 10x-ARR-growth and "90% from new customers" figures are stated explicitly in the article as HiddenLayer's own self-reported claim, with no independent auditor cited by either source — not repeated as independently verified fact. The product name "Agent Harness Security" was confirmed verbatim from the PR Newswire release rather than the candidate brief's approximation.
+
+### 2026-09-04 12:00 UTC — canada-responsible-data-centre-development-principles
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — single source, BetaKit's own reporting (byline Alex Riehl, `betakit.com/openai-anthropic-sign-on-to-canadas-new-data-centre-framework-as-public-opinion-sours-on-buildout/`), fetched directly. A search for the Canadian government's own press release (canada.ca/ised-isde.canada.ca) did not surface a fetchable, independently confirmable government page beyond BetaKit's own reporting, so BetaKit stands as the sole source, consistent with this log's precedent for single-source entries.
+- Quotes ≤15 words, one per source: pass — AI Minister Evan Solomon quoted at 12 words ("we expect projects to pay the costs they create, protect local resources"), trimmed from a longer sentence.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — BetaKit byline Alex Riehl, confirmed via direct fetch.
+**Notes:** The 23-company signatory count and the five-point framework text were both verified directly against BetaKit's own article rather than the candidate brief's paraphrase. The article explicitly frames the accord as voluntary and non-binding rather than implying regulatory force, per this log's standing "no absence-of-evidence claims" discipline applied to enforcement mechanisms specifically.
+
+### 2026-09-04 12:00 UTC — mbzuai-ifm-k2-horizon-open-model-release
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: partial — IFM's own site (`ifm.ai/k2/` and `ifm.ai/k2/press-release/`) returned 403 on every direct-fetch attempt, consistent with the candidate brief's own warning; per the candidate brief's standing rule for bot-blocked primaries, this run instead used multiple independent bylined secondary sources (The National, byline Cody Combs; tbreak, byline Abbas Jaffar Ali; Middle East AI News, byline Carrington Malin — all three confirmed via direct fetch and agreeing on the model count, parameter range, and Apache 2.0 license) plus a direct fetch of Hugging Face's own IFM organization page and the flagship model's own model card as primary-adjacent artifacts.
+- Quotes ≤15 words, one per source: n/a — no direct quotes used; the "largest fully open model release" framing is explicitly presented as IFM's own claim/superlative rather than quoted verbatim, since no single confirmed exact wording for that specific phrase was found across the fetched sources (they render it with different exact wording: "one of the largest," "world's largest," "the industry's largest").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — The National byline Cody Combs, tbreak byline Abbas Jaffar Ali, Middle East AI News byline Carrington Malin, all confirmed via direct fetch; Hugging Face model card and org page are institutional/primary artifacts.
+**Notes:** A direct fetch of the flagship 375B-A23B model's own Hugging Face card found a real discrepancy worth flagging rather than smoothing over: as of this run, the card describes intermediate checkpoints and training code as still forthcoming rather than already live, even though IFM's own release framing (per secondary reporting) describes the release as already including those artifacts — the article states this gap explicitly instead of repeating the release's framing uncritically. The diffusion-distillation ~3x-speedup claim is attributed specifically to IFM's own characterization (via Middle East AI News's direct reporting), not published as an independently benchmarked fact.
