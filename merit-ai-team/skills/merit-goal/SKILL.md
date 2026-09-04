@@ -2,7 +2,7 @@
 name: merit-goal
 description: >
   Sets, reads, and scores Merit AC's standing goal — the one objective every agent
-  run is measured against. Use when Andrew says "goal", "/goal", "set the
+  run is measured against. Use when the founder says "goal", "/goal", "set the
   goal", "what's the goal", "are we on track", "how are we doing against the
   goal", "change the goal", or when any weekly merit run needs to know what it
   is working toward. Every other merit-* skill reads this before deciding what
@@ -34,7 +34,7 @@ only concerns one of them — the CEO brief needs all three.
 
 ## Modes
 
-Pick from what Andrew said.
+Pick from what the founder said.
 
 ### Set — "set the goal", "/goal <text>", "new goal"
 
@@ -47,7 +47,7 @@ A goal needs four things. Ask for anything missing, in one round:
   signed" is a goal. "Do more marketing" is not.
 - **Deadline** — a date.
 - **Measure** — how you'll know, and where the number comes from.
-- **Constraint** — what Andrew won't trade to get it. Usually budget, or "no
+- **Constraint** — what the founder won't trade to get it. Usually budget, or "no
   surveillance-tool positioning," or "don't break the prototype."
 
 Then write the file:
@@ -104,7 +104,7 @@ legitimate and useful finding.
 
 ## Default goal
 
-If no goal file exists and Andrew hasn't set one, propose this and ask him to
+If no goal file exists and the founder hasn't set one, propose this and ask them to
 confirm or replace it — do not adopt it silently:
 
 > **Outcome:** Ten design partners using Merit AC on their own AI spend data.
@@ -122,33 +122,33 @@ headers, SEO, the methodology page — is downstream of getting real tenants.
 
 Lives at `merit-ai-team/docs/merit-content-goal.md`, same file shape as above,
 same Set / Read / Score / Amend modes. **Do not invent the outcome, deadline,
-or measure** — none of the three have been given by Andrew as of 2026-08-21.
-Propose this shell, marked PROPOSED, and ask him to fill the blanks rather
+or measure** — none of the three have been given by the founder as of 2026-08-21.
+Propose this shell, marked PROPOSED, and ask them to fill the blanks rather
 than guessing a number to make the file look complete:
 
-> **Outcome:** <needs Andrew: e.g. "N challenge signups converted to paid" or
+> **Outcome:** <needs the founder: e.g. "N challenge signups converted to paid" or
 > "N guides + prompts published and indexed">
-> **Deadline:** <needs Andrew>
-> **Measure:** <needs Andrew: published post count? paid conversions? traffic
+> **Deadline:** <needs the founder>
+> **Measure:** <needs the founder: published post count? paid conversions? traffic
 > to `/guides` or `/prompts`?>
 > **Constraint:** No invented statistics in guides/prompts, same sourcing
 > discipline as the design-partner goal's copy. Fee mechanism (Stripe vs.
 > manual) must be confirmed before `/challenge` describes a working checkout.
 
 A goal file with three blanks in it is more honest than one with three guessed
-numbers. Flag the blanks in every weekly output on this goal until Andrew
+numbers. Flag the blanks in every weekly output on this goal until the founder
 closes them, the same way the design-partner goal sat PROPOSED for its first
 two weeks.
 
 ## Third goal — AI news (added 2026-08-22)
 
 Lives at `merit-ai-team/docs/merit-news-goal.md`. Same PROPOSED-with-blanks
-treatment as the content goal above — Andrew hasn't given an outcome,
+treatment as the content goal above — the founder hasn't given an outcome,
 deadline, or measure for this one either. Do not invent them.
 
 Unlike the other two, this goal's work publishes **autonomously** — a
 scheduled run drafts an article, runs an adversarial Judge-tier pass, and
-merges directly with no human review, per Andrew's direct confirmation
+merges directly with no human review, per the founder's direct confirmation
 (2026-08-22). Because there's no human gate, this goal is scored on two
 structural things holding, not just publish volume: whether the Judge pass
 is actually rejecting things (check `merit-news-judge-log.md` — a long

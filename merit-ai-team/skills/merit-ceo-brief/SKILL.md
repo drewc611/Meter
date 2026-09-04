@@ -3,7 +3,7 @@ name: merit-ceo-brief
 description: >
   The weekly CEO synthesis for Merit AC — runs the whole team, reads every log,
   scores progress against the goal, and returns the three things that matter
-  and the decisions Andrew owes. Use when Andrew says "CEO brief", "weekly
+  and the decisions the founder owes. Use when the founder says "CEO brief", "weekly
   brief", "run the team", "where are we", "what do I need to decide", "state of
   the business", or when the weekly CEO scheduled task fires.
 metadata:
@@ -23,7 +23,7 @@ The one that pulls it together. Read `merit-context` and `merit-goal` first.
    into a single score. If any is missing or still PROPOSED, say so; the
    content goal has sat PROPOSED with blank outcome/deadline/measure since
    2026-08-21 and the news goal since 2026-08-22 — flag each every week until
-   Andrew closes it, same as the original goal was flagged for its first two
+   the founder closes it, same as the original goal was flagged for its first two
    weeks. The news goal also needs its two structural checks read from
    `merit-news-judge-log.md` (is the Judge pass actually rejecting anything;
    does every published article that needed one carry a corrections entry) —
@@ -47,15 +47,15 @@ The one that pulls it together. Read `merit-context` and `merit-goal` first.
 
 ## What the brief is
 
-Not a status report. Andrew has the logs. This is the part only a CEO does:
-deciding what matters, killing what doesn't, and naming what he has to choose.
+Not a status report. The founder has the logs. This is the part only a CEO does:
+deciding what matters, killing what doesn't, and naming what they have to choose.
 
 Structure:
 
 **Goal lines, three of them.** Design-partner outcome, days remaining, status,
 number that changed. Then the content/challenge outcome the same way, and the
 news outcome the same way again — for either, if still PROPOSED, one line
-saying so plus what's blocking Andrew from filling it in. For the news goal
+saying so plus what's blocking the founder from filling it in. For the news goal
 specifically, add whether the Judge-tier pass is actually rejecting anything
 and whether the corrections trail is holding — both goals-independent facts
 worth a line even before the goal itself has numbers. Do not merge the three
@@ -63,9 +63,9 @@ into one combined status.
 
 **The three things.** Exactly three, ranked. Each one: what happened, why it
 matters to the goal, what it costs to act. If there aren't three things worth
-Andrew's attention, give two. Never pad to three.
+The founder's attention, give two. Never pad to three.
 
-**Decisions owed.** Things only Andrew can decide, each with the options, the
+**Decisions owed.** Things only the founder can decide, each with the options, the
 tradeoff, and a recommendation. Make the recommendation — a CEO brief that
 lists options without a position is a memo.
 
@@ -82,7 +82,7 @@ that keeps the other four honest.
 - **Don't launder inference as fact.** Anything not directly observed gets
   labeled. Confidence discipline is Merit AC's own product claim; the team that
   builds it doesn't get to be sloppier than the product.
-- **No invented numbers.** If Andrew hasn't connected billing, analytics, or
+- **No invented numbers.** If the founder hasn't connected billing, analytics, or
   the waitlist count, say the data isn't there and name what to connect. An
   estimate that reads like a measurement is the worst output this skill can
   produce.
@@ -90,7 +90,7 @@ that keeps the other four honest.
 
 ## Voice
 
-Andrew's, per the `andrew-agent:write-as-andrew` skill if that plugin is
+The founder's, per the `andrew-agent:write-as-andrew` skill if that plugin is
 available in the current environment (it isn't part of this plugin, so check
 before relying on it): direct, opinionated, specific names and numbers, point
 first then support. No preamble, no inspirational close, no "in today's

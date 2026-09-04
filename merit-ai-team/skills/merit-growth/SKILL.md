@@ -3,7 +3,7 @@ name: merit-growth
 description: >
   Runs Merit AC's marketing and growth work — positioning, landing page copy, SEO
   and AI-answer-engine visibility, content calendar, and design-partner
-  outreach. Use when Andrew says "marketing", "growth", "write the landing
+  outreach. Use when the founder says "marketing", "growth", "write the landing
   page", "content plan", "SEO", "how do we get design partners", "who are our
   competitors", or when the weekly growth scheduled task fires.
 metadata:
@@ -63,7 +63,7 @@ post. Write that first.
 
 ### 3. Category naming
 
-"AI spend and value" is accurate but not a search term. Decide what Andrew
+"AI spend and value" is accurate but not a search term. Decide what the founder
 wants to be found for — AI cost management, AI ROI measurement, AI FinOps, AI
 spend governance — and use it consistently. Bring evidence on search volume and
 who already owns each term rather than picking on instinct.
@@ -77,7 +77,7 @@ who already owns each term rather than picking on instinct.
 3. One concrete deliverable. Not a plan — a written thing: a page of copy, a
    post, an outreach sequence, a methodology explainer. One finished artifact
    beats five recommendations.
-4. Outreach status: waitlist volume if Andrew has shared it, and a short list
+4. Outreach status: waitlist volume if the founder has shared it, and a short list
    of named companies fitting the profile with a reason each.
 
 ## Content arm (added 2026-08-21)
@@ -100,7 +100,7 @@ Don't default either way in copy — flag it as open if it affects a specific
 CTA decision.
 
 Also owns `/models` (an AI model/tool directory) and `/glossary` (AI term
-definitions), added 2026-08-23 as part of Andrew's confirmed repositioning
+definitions), added 2026-08-23 as part of the founder's confirmed repositioning
 of the whole site as an AI hub — see `merit-ai-team/docs/merit-content-goal.md`'s
 2026-08-23 entry for the full decision. Unlike `/news`, these two are
 **one-time-authored-then-periodically-revisited**, not continuously
@@ -128,7 +128,7 @@ news, tracked against its own goal (`merit-ai-team/docs/merit-news-goal.md`),
 never blended with the content or design-partner goals.
 
 This is the one arm that **publishes autonomously** — no human reviews an
-article before it goes live, per Andrew's direct confirmation. That makes
+article before it goes live, per the founder's direct confirmation. That makes
 the Judge-tier pass the entire safety mechanism, not a formality before a
 human double-checks it:
 
@@ -148,7 +148,7 @@ human double-checks it:
   `merit-ai-team/docs/merit-news-judge-log.md` regardless of outcome. A
   rejected draft is the pipeline working; log it as plainly as a shipped
   one.
-- If a later run (or Andrew) finds a published article was wrong, the fix
+- If a later run (or the founder) finds a published article was wrong, the fix
   is a dated entry in that article's `corrections` array in
   `frontend/src/content/data/news.js` — visible on the article itself,
   never a silent edit to the original text.
@@ -165,9 +165,9 @@ a process change.
 ## Writing rules
 
 Use the `andrew-agent:write-as-andrew` skill for anything going out under
-Andrew's name, if that plugin is available in the current environment — it
+The founder's name, if that plugin is available in the current environment — it
 isn't part of this plugin, so check before relying on it. Otherwise follow
-Andrew's stated preferences directly: direct, opinionated, specific names and
+The founder's stated preferences directly: direct, opinionated, specific names and
 numbers, no "in today's landscape," no "it's worth noting," no
 bold-term-colon-explanation lists, one em dash maximum.
 
@@ -201,5 +201,5 @@ If this run touched the content arm, also append to
 **Drafted, awaiting deploy:** <count and titles>
 **Stack coverage so far:** react <n> · python <n> · node <n> · tensorflow-pyro <n>
 
-**Goal:** <content outcome — or "PROPOSED, awaiting Andrew"> · <days left | n/a> · <status>
+**Goal:** <content outcome — or "PROPOSED, awaiting the founder"> · <days left | n/a> · <status>
 ```

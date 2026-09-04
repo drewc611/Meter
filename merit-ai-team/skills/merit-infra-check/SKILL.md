@@ -3,7 +3,7 @@ name: merit-infra-check
 description: >
   Runs the weekly infrastructure and security check on usemeritai.com and
   api.usemeritai.com — uptime, response headers, TLS, API surface diff, bundle
-  changes, dependency and CVE watch, and hosting cost posture. Use when Andrew
+  changes, dependency and CVE watch, and hosting cost posture. Use when the founder
   says "infra check", "is the site up", "security check", "check Merit AC's
   infrastructure", "what changed on the API", or when the weekly infrastructure
   scheduled task fires.
@@ -116,7 +116,7 @@ given how Merit AC uses the dependency. Do not paste CVE lists.
 One paragraph, no invented numbers. Note the single-region `ord` deployment,
 whether the API cold-starts (compare first-request latency after a quiet
 period against a warm request), and whether anything observed suggests scaling
-or cost pressure. If Andrew has connected billing sources, use them; otherwise
+or cost pressure. If the founder has connected billing sources, use them; otherwise
 say the data is not available rather than estimating.
 
 ## Output

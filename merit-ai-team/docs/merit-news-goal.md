@@ -22,9 +22,9 @@ source. Publishing is autonomous (see below) — the constraint that
 replaces human review is the Judge-tier pass plus the visible
 corrections trail on every article (`corrections` field in `news.js`,
 rendered on the article itself).
-**Set:** 2026-08-22, proposed. **Confirmed by Andrew: 2026-09-04**,
+**Set:** 2026-08-22, proposed. **Confirmed by the founder: 2026-09-04**,
 per the 2026-09-04 CEO brief's recommendation (score accuracy, not
-volume) and Andrew's direct instruction to act on it.
+volume) and the founder's direct instruction to act on it.
 
 Never average this into the other two goals' status. Rank `merit-growth`'s
 news-related work against this one specifically.
@@ -35,7 +35,7 @@ The design-partner and content/challenge goals both route through a normal
 PR review before anything ships. This one doesn't: a scheduled run
 researches real AI news, drafts an article, runs it through an adversarial
 Judge-tier pass, and — if the pass clears it — commits, builds, and merges
-directly to `main` with no human in the loop. This is Andrew's explicit,
+directly to `main` with no human in the loop. This is the founder's explicit,
 directly-confirmed decision (2026-08-22), made independently of an earlier
 document that tried to justify the same decision with fabricated incident
 history — see the note in `merit-eng-review`'s SKILL.md and the
@@ -58,7 +58,7 @@ track regardless of publish volume.
 ## Progress log
 
 ### 2026-08-22 — goal proposed, autonomous publishing confirmed
-- Andrew directly confirmed autonomous publishing (Judge-tier pass, no
+- The founder directly confirmed autonomous publishing (Judge-tier pass, no
   human review gate) for the news arm, in response to a direct question —
   twice, the second time explicitly independent of a prior document that
   had cited four specific incidents (a fabricated Hacker News quote, a
@@ -66,8 +66,8 @@ track regardless of publish volume.
   absence-of-evidence claims) as justification. Those incidents were
   checked against `merit-growth-log.md` and do not exist there — the file
   has no dated entries at all. The autonomous-publish decision stands on
-  Andrew's own confirmation, not on that document's claims.
-- Outcome/deadline/measure still open — flag every run until Andrew closes
+  the founder's own confirmation, not on that document's claims.
+- Outcome/deadline/measure still open — flag every run until the founder closes
   them.
 
 ### 2026-09-04 — goal confirmed, scored on accuracy not volume
@@ -75,7 +75,7 @@ track regardless of publish volume.
   straight check, and flagged that today's run published 23 articles
   across four rounds with zero logged rejections — either genuinely
   clean sourcing, or a Judge pass that's stopped saying no, and an
-  unscored goal can't tell the difference. Andrew confirmed the goal as
+  unscored goal can't tell the difference. The founder confirmed the goal as
   written above the same day: outcome, 2026-11-03 deadline, and a
   measure that pairs published volume with corrections-per-article
   rather than scoring volume alone.

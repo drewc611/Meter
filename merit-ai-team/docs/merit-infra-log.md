@@ -33,7 +33,7 @@ index (`/guides/`, `/prompts/`), which then returns 200 with the real page
 
 **Update, later same day:** the eight pages were rebuilt as React components
 under `frontend/src/content/` (plain HTML entries → prerendered React, per
-Andrew's request), but the *output* is unchanged — `npm run build` still
+The founder's request), but the *output* is unchanged — `npm run build` still
 runs a prerender step (`vite build --ssr` + `scripts/prerender-content.mjs`)
 that writes each one to a real file at the same path in `dist/` before
 Cloudflare ever serves it, so this finding still holds. Re-verify against
