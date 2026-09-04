@@ -35,8 +35,17 @@ def create_app() -> FastAPI:
     # accepted at all -- unset means it is, as long as at most one org exists.
     if not os.environ.get("MERIT_API_KEY"):
         logger.warning("MERIT_API_KEY is unset -- /ingest/* has no auth enforced while at most one org exists.")
-    if not os.environ.get("MERIT_JWT_SECRET"):
+    jwt_secret = os.environ.get("MERIT_JWT_SECRET")
+    if not jwt_secret:
         logger.warning("MERIT_JWT_SECRET is unset -- /api/* and /admin/* have no login enforced, anyone can read data.")
+    elif len(jwt_secret) < 32:
+        # Anyone who guesses this secret can forge a session token for any
+        # user, so a short one is barely better than none -- same "loud in
+        # `fly logs`, don't refuse to boot" treatment as the unset case.
+        logger.warning(
+            "MERIT_JWT_SECRET is shorter than 32 characters -- a guessable secret lets anyone forge a session "
+            "token for any user. Rotate it to a long random value (secrets.token_urlsafe(48))."
+        )
 
     app = FastAPI(title="Merit AC API", version="0.1.0")
     app.add_middleware(

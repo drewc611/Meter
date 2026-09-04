@@ -182,6 +182,50 @@ def test_login_rejects_unknown_email(client, monkeypatch):
     assert r.status_code == 401
 
 
+# --------------------------------------------------------------- oversized passwords (bcrypt's 72-byte limit)
+
+
+def test_oversized_password_is_422_on_signup_and_login(client, monkeypatch):
+    """bcrypt raises past 72 bytes. Rejecting at the validation layer keeps
+    that out of the handler entirely -- it used to surface as a 500."""
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    huge = "a" * 200
+    assert (
+        client.post("/auth/signup", json={"email": "a@example.com", "password": huge, "name": "Ada"}).status_code == 422
+    )
+    assert client.post("/auth/login", json={"email": "a@example.com", "password": huge}).status_code == 422
+    # Multibyte: 72 characters, 144 bytes -- the character-count cap alone
+    # would let this through to bcrypt.
+    multibyte = "é" * 72
+    assert (
+        client.post("/auth/signup", json={"email": "b@example.com", "password": multibyte, "name": "Bo"}).status_code
+        == 422
+    )
+    assert client.post("/auth/login", json={"email": "b@example.com", "password": multibyte}).status_code == 422
+
+
+def test_oversized_password_does_not_reveal_whether_the_account_exists(client, monkeypatch):
+    """The enumeration oracle this closes: an existing email used to crash
+    into a 500 while an unknown one cleanly 401'd, because `or` short-circuits
+    past verify_password. Both are the same status now."""
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    client.post("/auth/signup", json={"email": "real@example.com", "password": "hunter22", "name": "Ada"})
+    huge = "a" * 200
+    existing = client.post("/auth/login", json={"email": "real@example.com", "password": huge})
+    unknown = client.post("/auth/login", json={"email": "nobody@example.com", "password": huge})
+    assert existing.status_code == unknown.status_code == 422
+
+
+def test_verify_password_returns_false_for_oversized_input(monkeypatch):
+    """The backstop under the schema cap: verify_password itself never
+    raises, whatever reaches it."""
+    from app.services import auth as auth_service
+
+    hashed = auth_service.hash_password("hunter22")
+    assert auth_service.verify_password("a" * 200, hashed) is False
+    assert auth_service.verify_password("hunter22", hashed) is True
+
+
 # --------------------------------------------------------------- /auth/me
 
 

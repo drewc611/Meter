@@ -2,15 +2,32 @@
 
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+# bcrypt hashes at most 72 *bytes* and raises ValueError past that, so both
+# password fields below are capped here -- an oversized password is then a
+# clean 422 at the validation layer instead of ever reaching bcrypt (where
+# it used to become a 500, and on /auth/login an account-existence oracle:
+# an unknown email short-circuits to 401 without hashing anything).
+# Field(max_length=...) counts characters, so _bcrypt_safe_password also
+# checks the encoded length for multibyte passwords.
+BCRYPT_MAX_PASSWORD_BYTES = 72
+
+
+def _bcrypt_safe_password(v: str) -> str:
+    if len(v.encode("utf-8")) > BCRYPT_MAX_PASSWORD_BYTES:
+        raise ValueError(f"password must be at most {BCRYPT_MAX_PASSWORD_BYTES} bytes")
+    return v
+
 
 # ------------------------------------------------------------- requests
 
 
 class WaitlistSignupIn(BaseModel):
     email: str
-    company: str | None = None
-    source: str = "coming-soon"  # e.g. "challenge-paid-track" for the /challenge interest form
+    company: str | None = Field(default=None, max_length=200)
+    # e.g. "challenge-paid-track" for the /challenge interest form
+    source: str = Field(default="coming-soon", max_length=200)
 
     @field_validator("email")
     @classmethod
@@ -64,7 +81,7 @@ class IdentityMappingIn(BaseModel):
 
 class SignupIn(BaseModel):
     email: str
-    password: str
+    password: str = Field(max_length=BCRYPT_MAX_PASSWORD_BYTES)
     name: str
     signup_code: str | None = None
 
@@ -78,15 +95,20 @@ class SignupIn(BaseModel):
 
     @field_validator("password")
     @classmethod
-    def _min_length(cls, v: str) -> str:
+    def _length_bounds(cls, v: str) -> str:
         if len(v) < 8:
             raise ValueError("password must be at least 8 characters")
-        return v
+        return _bcrypt_safe_password(v)
 
 
 class LoginIn(BaseModel):
     email: str
-    password: str
+    password: str = Field(max_length=BCRYPT_MAX_PASSWORD_BYTES)
+
+    @field_validator("password")
+    @classmethod
+    def _max_bytes(cls, v: str) -> str:
+        return _bcrypt_safe_password(v)
 
 
 # ------------------------------------------------------------- responses

@@ -41,7 +41,18 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(password: str, password_hash: str) -> bool:
-    return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
+    try:
+        return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
+    except ValueError:
+        # bcrypt refuses anything over 72 bytes (and any malformed hash)
+        # by raising. schemas.LoginIn caps the input long before this, but
+        # an uncaught raise here would surface as a 500 -- and since
+        # routers/auth.py's `or` short-circuits past this call for an
+        # unknown email, a 500-vs-401 split would say "that account exists,"
+        # which is exactly what that handler's same-message-either-way
+        # comment is there to prevent. A wrong password, whatever its
+        # shape, is just False.
+        return False
 
 
 def issue_token(user: models.DashboardUser) -> str:

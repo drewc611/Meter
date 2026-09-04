@@ -12,9 +12,19 @@ single shared secret. Session tokens are signed JWTs; rotating the secret
 invalidates every issued session at once if that's ever needed.
 
 Every `Team`/`Identity`/`DashboardUser`/`PersonScore` row belongs to
-exactly one `Organization` (tenant), and every query is scoped to it — this
-is what makes it safe for unrelated individuals to self-signup on the same
-deployment. `MERIT_SIGNUP_CODE` controls which of two modes a signup lands
+exactly one `Organization` (tenant), and every query over those tables is
+scoped to it — this is what makes it safe for unrelated individuals to
+self-signup on the same deployment. `WaitlistSignup` is the one table with
+no tenant: a lead-capture signup happens before any org exists, so there's
+nothing to scope it to. The waitlist endpoints (`GET /admin/waitlist`,
+`POST /admin/notify-waitlist`) are gated on that basis by
+`require_operator`, which requires the logged-in user's email to be in
+`MERIT_ADMIN_EMAILS` — deployment-operator membership, not merely `is_admin`.
+That distinction matters because with `MERIT_SIGNUP_CODE` unset every
+signup is automatically the sole admin of their own brand-new org, so
+`is_admin` alone would let any self-signup read every lead's contact
+details or mail all of them through the deployment's own SMTP identity.
+`MERIT_SIGNUP_CODE` controls which of two modes a signup lands
 in: unset, the public free-personal-use posture, every signup gets its own
 brand-new isolated org and is its sole admin; set, a company deployment
 gated to one shared org, where the first signup with the matching code is
@@ -26,17 +36,32 @@ unauthenticated write is only ever accepted while at most one org exists in
 the whole database -- the instant a second tenant exists, it's rejected
 with no operator action required.
 
-Known gaps: no rate limiting on login attempts, no audit log of who
-accessed what, account recovery (forgot-password) isn't built, and the
-"Sign in with Google" `state`
+`/auth/login` and `/auth/signup` cap password length at bcrypt's 72-byte
+limit and reject anything longer with a 422 at the validation layer, so an
+oversized password no longer crashes the handler with a 500 — which used to
+be an account-existence oracle, since an unknown email short-circuits to
+401 without ever hashing anything while a known one reached bcrypt and
+raised.
+
+Known gaps: no rate limiting on `/auth/login`, `/auth/signup`, or
+`/waitlist`, no audit log of who accessed what, account recovery
+(forgot-password) isn't built, and the "Sign in with Google" `state`
 parameter isn't a CSRF nonce (it only carries an optional signup code) --
 worst case there is an attacker tricking a victim's browser into logging
 into the attacker's own Google account on this site, not an account
-takeover. `/admin/*` (identity mapping, recompute-scores) requires a
-dashboard account with `is_admin` set, not just any logged-in viewer.
-Session tokens live in the browser's `localStorage`, not an httpOnly
-cookie, and there's no Content-Security-Policy header on the deployed
-site -- a successful XSS anywhere could read a visitor's token. Don't
+takeover. That same Google callback hands the session JWT back to the
+frontend in the redirect's *query string* rather than its URL fragment, so
+the token can land in browser history, a `Referer` header, or an
+intermediary's logs -- moving it to a fragment needs a matching frontend
+change and hasn't been done yet. `/admin/*` (identity mapping,
+recompute-scores) requires a dashboard account with `is_admin` set, not
+just any logged-in viewer. Session tokens live in the browser's
+`localStorage`, not an httpOnly cookie, and there's still no
+Content-Security-Policy header on the deployed site (the other security
+response headers -- `X-Frame-Options`, `X-Content-Type-Options`,
+`Referrer-Policy` -- are set in `frontend/public/_headers`; a CSP needs
+hashes or nonces for the three remaining inline `<script>` blocks first)
+-- a successful XSS anywhere could read a visitor's token. Don't
 point this deployment at real people's data, and don't assume the live
 site is production-hardened, until you've reviewed those gaps against
 your own risk tolerance. The seeded demo data (`backend/seed.py`) is

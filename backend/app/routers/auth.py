@@ -7,6 +7,7 @@ needs an authenticated user to answer "who am I."
 """
 
 import os
+import secrets
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
@@ -38,7 +39,11 @@ def _frontend_url() -> str:
 
 def _check_signup_code(provided: str | None) -> None:
     expected = os.environ.get("MERIT_SIGNUP_CODE")
-    if expected and provided != expected:
+    # compare_digest, not != -- a plain string compare short-circuits on the
+    # first differing byte, which leaks the code one character at a time to
+    # anyone timing the responses. Compared as bytes since compare_digest
+    # rejects non-ASCII str.
+    if expected and not (provided and secrets.compare_digest(provided.encode("utf-8"), expected.encode("utf-8"))):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid or missing signup code")
 
 
