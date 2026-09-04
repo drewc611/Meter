@@ -151,6 +151,73 @@ nav.site-nav a.nav-cta:focus-visible {
   transform: translateY(-1px);
 }
 
+/* ---------- mobile nav (CSS-only checkbox toggle, no JS) ---------- */
+.nav-toggle-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.nav-toggle {
+  display: none;
+}
+
+/* Below this width, nine nav items plus the brand mark and sign-in button
+   wrap onto several rows -- and since header.site is position: sticky, that
+   wrapped block stays pinned across the whole viewport height on a phone as
+   the visitor scrolls, hiding everything below it. Collapse into a toggled
+   menu instead of letting it wrap. */
+@media (max-width: 760px) {
+  .nav-toggle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    order: 2;
+  }
+  .nav-toggle span:not(.sr-only) {
+    display: block;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--ink);
+    transition: transform 0.18s var(--ease-out), opacity 0.18s var(--ease-out);
+  }
+  .brand-mark {
+    order: 1;
+  }
+  nav.site-nav {
+    display: none;
+    order: 3;
+    flex-basis: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-3);
+    padding-top: var(--sp-4);
+    margin-top: var(--sp-3);
+    border-top: 1px solid var(--line);
+  }
+  nav.site-nav a.nav-cta {
+    margin-top: var(--sp-1);
+  }
+  .nav-toggle-input:checked ~ .nav-toggle span:not(.sr-only):nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .nav-toggle-input:checked ~ .nav-toggle span:not(.sr-only):nth-child(2) {
+    opacity: 0;
+  }
+  .nav-toggle-input:checked ~ .nav-toggle span:not(.sr-only):nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+  .nav-toggle-input:checked ~ nav.site-nav {
+    display: flex;
+  }
+}
+
 /* ---------- layout ---------- */
 main.content {
   max-width: 760px;

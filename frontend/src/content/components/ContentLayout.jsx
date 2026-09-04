@@ -28,6 +28,16 @@ export default function ContentLayout({ active, wide, children }) {
             </span>
             Merit AC<sup>™</sup>
           </a>
+          {/* CSS-only mobile menu toggle (checkbox hack) -- no JS, matches this
+              component's own "never ships client-side JS" contract above. Below
+              the nav's wrap breakpoint, .site-nav is hidden until this is checked. */}
+          <input type="checkbox" id="navToggle" className="nav-toggle-input" aria-hidden="true" />
+          <label htmlFor="navToggle" className="nav-toggle">
+            <span aria-hidden="true" />
+            <span aria-hidden="true" />
+            <span aria-hidden="true" />
+            <span className="sr-only">Menu</span>
+          </label>
           <nav className="site-nav">
             {NAV_ITEMS.map((item) => (
               <a key={item.key} href={item.href} aria-current={item.key === active ? "page" : undefined}>
