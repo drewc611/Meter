@@ -2,7 +2,7 @@
 name: merit-eng-review
 description: >
   Reviews Merit AC's code and API design — the public API contract, the frontend
-  bundle, scoring-logic correctness, and accumulating tech debt. Use when Andrew
+  bundle, scoring-logic correctness, and accumulating tech debt. Use when the founder
   says "code review", "review the API", "eng review", "what's the tech debt",
   "review this PR", or when the weekly engineering scheduled task fires. Works
   against a connected repo when one is available, and against the public
@@ -26,7 +26,7 @@ Check, in order:
 
 1. The connected repo (`drewc611/merit-ac` in this environment). Best case —
    review real code directly with Read/Grep.
-2. A different GitHub repo Andrew has named, if that's what's in scope this
+2. A different GitHub repo the founder has named, if that's what's in scope this
    run.
 3. Neither reachable. Fall back to public artifacts: `/openapi.json`, the
    shipped JS bundle, and rendered app behavior.

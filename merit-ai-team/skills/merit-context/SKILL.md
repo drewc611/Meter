@@ -14,7 +14,7 @@ metadata:
 
 # Merit AC — shared context
 
-Load this first. Do not restate it back to Andrew; use it.
+Load this first. Do not restate it back to the founder; use it.
 
 ## What Merit AC is
 
@@ -81,7 +81,7 @@ Merit AC is no longer just the ROI product. Three surfaces, three audiences:
    product buyer — this is top-of-funnel, not the pitch itself.
 3. **The 30-day challenge** — `/challenge`. A free run of daily prompts with a
    paid unlock at the end. **Fee mechanism (Stripe vs. manual) is undecided as
-   of 2026-08-21 — do not describe a working checkout until Andrew confirms.**
+   of 2026-08-21 — do not describe a working checkout until the founder confirms.**
 
 **Content tracking is a separate goal from the design-partner goal**, not a
 sub-goal of it. See `merit-goal` for both. Whether content is meant to funnel
@@ -143,7 +143,7 @@ runs in. Every skill here has been adapted to do its own fact-collection and
 judgment directly instead of routing to them, and to check for the two
 external skills before relying on them rather than assuming they're there.
 
-If Andrew wants the tiered-routing model for real (cheaper fact-collection
+If the founder wants the tiered-routing model for real (cheaper fact-collection
 runs on a smaller/cheaper pass, judgment calls reserved for a stronger one),
 `merit-executor`/`merit-probe`/`merit-analyst` would need to be written from
 scratch — nothing to adapt them from exists yet.
@@ -155,11 +155,11 @@ scratch — nothing to adapt them from exists yet.
 - **Never send authenticated or destructive requests.** Read-only probes on
   public endpoints only. Never call `/admin/*`, `/ingest/*`, or `/waitlist`.
 - **Separate finding from inference.** Label anything not directly observed.
-- **Report the delta.** Andrew has read this before. Lead with what changed
+- **Report the delta.** the founder has read this before. Lead with what changed
   since the last run, not with a re-description of the system.
 - **Write findings back to the docs.** Every run appends to the relevant file
   under `merit-ai-team/docs/` (see the table below) so the next run has memory.
-- **Andrew's voice.** Direct, opinionated, specific. No "in today's landscape,"
+- **the founder's voice.** Direct, opinionated, specific. No "in today's landscape,"
   no "it's worth noting," no bold-term-colon-explanation lists.
 
 ## Project docs this team maintains

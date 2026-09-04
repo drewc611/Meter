@@ -4,7 +4,7 @@ import { PROMPTS } from "../data/prompts.js";
 export const meta = {
   outFile: "prompts/index.html",
   title: "Prompts — Merit AC",
-  description: "A 30-day detailed AI prompt archive on governed agentic DevSecOps, adapted from Andrew Clark's handbook.",
+  description: "A 30-day detailed AI prompt archive on governed agentic DevSecOps, adapted from our own reference handbook.",
 };
 
 const SECTIONS = [
@@ -23,7 +23,7 @@ export default function PromptsIndex() {
       <h1>Prompts</h1>
       <p className="lead">
         A daily prompt archive on governed agentic DevSecOps — the prompt itself, why it's built
-        that way, and what to do with the answer. Adapted from Andrew Clark's{" "}
+        that way, and what to do with the answer. Adapted from our own{" "}
         <em>Enterprise Agentic DevSecOps Handbook</em>: ten recurring control disciplines, a tour of
         fourteen platform domains, then six days building the capstone project behind{" "}
         <a href="/challenge">the challenge</a>.

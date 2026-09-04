@@ -5,7 +5,7 @@ export const meta = {
   outFile: "guides/fourteen-domains-of-the-governed-agentic-platform.html",
   title: "Fourteen Domains of the Governed Agentic Platform — Merit AC Guides",
   description:
-    "A map of the fourteen domains that make up an enterprise agentic DevSecOps platform, from platform operating model to GovCloud, adapted from Andrew Clark's handbook.",
+    "A map of the fourteen domains that make up an enterprise agentic DevSecOps platform, from platform operating model to GovCloud, adapted from our own reference handbook.",
 };
 
 const DOMAINS = [
@@ -182,13 +182,13 @@ export default function FourteenDomains() {
     <ContentLayout active="guides" wide>
       <span className="kicker">Guide · from the Enterprise Agentic DevSecOps Handbook</span>
       <span className="badge">
-        <i /> Andrew Clark
+        <i /> From the Merit AC team
       </span>
       <h1>Fourteen domains of the governed agentic platform</h1>
       <p className="lead">
         The <a href="/guides/ten-disciplines-of-governed-agentic-devsecops">ten control disciplines</a>{" "}
         repeat throughout an enterprise deployment — this is the map of where. Fourteen domains, each
-        a real chapter of Andrew Clark's <em>Enterprise Agentic DevSecOps Handbook</em>, from the
+        a real chapter of our own <em>Enterprise Agentic DevSecOps Handbook</em>, from the
         platform's operating model down to the technical reference at the back.
       </p>
 

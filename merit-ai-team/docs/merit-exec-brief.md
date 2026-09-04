@@ -1,6 +1,6 @@
 # Merit AC executive brief
 
-Maintained by `merit-ceo-brief`. Weekly synthesis for Andrew — two goal lines,
+Maintained by `merit-ceo-brief`. Weekly synthesis for the founder — two goal lines,
 never blended. Append each week's brief as a new dated section.
 
 ## Log
@@ -18,10 +18,10 @@ healthy just now (`/healthz` → `{"status":"ok"}`, homepage renders real
 content, not a blank SPA shell).
 
 **Content/challenge goal.** ACTIVE since 2026-08-22, 47 days left on its
-60-day clock. Everything gated on Andrew got shipped — 7 site pages, 30
+60-day clock. Everything gated on the founder got shipped — 7 site pages, 30
 prompts, 3 guides, `/models`, `/glossary`, `/challenge`. But the actual
 measure — signups × paid-conversion rate — is structurally zero, because
-`PAID_TRACK_PAYMENT_LINK` is still the placeholder Andrew was supposed to
+`PAID_TRACK_PAYMENT_LINK` is still the placeholder the founder was supposed to
 set two weeks ago. No amount of content shipped moves this number until
 that two-minute step happens.
 
@@ -38,7 +38,7 @@ safeguard working as designed, not it going untested.
 
 1. **The content goal's real measure has been at zero for two weeks over a
    task that takes two minutes.** Every guide, prompt, and page shipped
-   since 2026-08-22 is upstream of a Stripe Payment Link Andrew hasn't
+   since 2026-08-22 is upstream of a Stripe Payment Link the founder hasn't
    created. This is the "recommended three weeks running, still not done"
    case the brief format exists to name.
 2. **`/openapi.json` and `/docs` are still publicly readable on the

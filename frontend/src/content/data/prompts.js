@@ -2,7 +2,7 @@
 // "The ten disciplines of governed agentic DevSecOps"; days 11-24 walk the
 // fourteen domains from "Fourteen domains of the governed agentic platform";
 // days 25-30 walk the six build phases of the /challenge capstone project.
-// Every "why" line is grounded in Andrew Clark's Enterprise Agentic DevSecOps
+// Every "why" line is grounded in the team's own Enterprise Agentic DevSecOps
 // Handbook -- nothing here is a generic productivity-prompt filler.
 //
 // Each `prompt` is a full role + context + numbered-steps + constraints +
