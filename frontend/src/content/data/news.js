@@ -1258,4 +1258,355 @@ export const NEWS_ARTICLES = [
       },
     ],
   },
+  {
+    date: "2026-08-19",
+    slug: "fda-authorizes-vitestro-aletta-robotic-blood-draw",
+    category: "regulation",
+    title: "The FDA authorized the first fully autonomous robotic blood-draw device",
+    dek:
+      "Vitestro's Aletta performs a complete venipuncture -- tourniquet through bandage -- without a human operator, and the agency's own authorization lets one phlebotomist supervise up to three devices at once.",
+    sources: [
+      {
+        label: "FDA authorizes first-of-its-kind robotic blood draw device — FDA (official press announcement)",
+        url: "https://www.fda.gov/news-events/press-announcements/fda-authorizes-first-its-kind-robotic-blood-draw-device",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "The FDA announced on August 19, 2026 that it had authorized Vitestro's Aletta system through the De Novo pathway -- the route the agency uses for a genuinely new type of low- to moderate-risk device, one with no existing predicate to compare it against. Aletta is built to perform a full venipuncture blood draw on its own: it uses near-infrared light and Doppler ultrasound to locate a vein, then independently applies the tourniquet, disinfects the skin, inserts the needle, collects the sample, and applies the bandage, without a person doing any of those individual steps.",
+      },
+      {
+        type: "h2",
+        text: "What the authorization actually allows",
+      },
+      {
+        type: "p",
+        text:
+          "A trained phlebotomist still starts each session and watches for complications, but doesn't perform the draw -- and per the FDA's own announcement, that supervision ratio doesn't have to be one-to-one: a single phlebotomist can oversee up to three Aletta devices running at the same time. Alongside the authorization, the FDA established special controls specific to this new device category, covering labeling, performance testing, and clinical requirements, which future robotic blood-draw devices from other manufacturers will also have to meet. CDRH director Michelle Tarver framed the decision as balancing capability against risk: the authorization, in her words, \"advanc[es] innovative medical devices that help meet a critical public health need.\"",
+      },
+      {
+        type: "h2",
+        text: "Why the staffing ratio is the number that matters",
+      },
+      {
+        type: "p",
+        text:
+          "The headline capability here -- a robot doing a needle stick unsupervised -- is the attention-getting part, but the one-to-three staffing ratio is the number with an actual balance sheet attached to it. A hospital lab or blood-draw clinic evaluating this isn't just buying a device that performs a task; it's buying a claimed change in how many trained staff a given volume of draws requires, and that's exactly the kind of claim that needs to be measured against real throughput and error rates in a live clinical setting, not taken as validated the moment a De Novo authorization letter is signed. The FDA's special controls give a real, published bar those follow-on measurements can be checked against -- which is more than most AI-adjacent product launches offer, and worth noting as a model for what a credible autonomy claim in a regulated industry looks like.",
+      },
+    ],
+  },
+  {
+    date: "2026-08-26",
+    slug: "meta-18-billion-child-safety-settlement-age-verification",
+    category: "regulation",
+    title: "Meta's up-to-$18 billion child-safety settlement requires better AI age-checking within a year",
+    dek:
+      "The deal with a 52-attorney-general coalition pays out over ten years, with roughly 30% of the total contingent on YouTube and TikTok adopting similar changes -- and requires Meta to upgrade photo-based AI age-assurance technology, audited by outside reviewers.",
+    sources: [
+      {
+        label: "Meta agrees to pay up to $18 billion to settle child safety lawsuits, will upgrade AI age checks — Fortune (AP / Barbara Ortutay)",
+        url: "https://fortune.com/2026/09/01/meta-age-checking-ai-scans/",
+      },
+      {
+        label: "Meta's $18B child-safety deal hinges on age-verification tech that doesn't work well — TechCrunch (Amanda Silberling)",
+        url: "https://techcrunch.com/2026/08/26/metas-18b-child-safety-deal-hinges-on-age-verification-tech-that-doesnt-work-well/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Meta reached a settlement with a bipartisan coalition of 52 state attorneys general on August 26, 2026, resolving claims that its Instagram and Facebook design choices drove compulsive use among children and teenagers. The total is being widely reported as up to $18 billion, paid out over ten years, with roughly 30% of that contingent on TikTok and YouTube separately agreeing to comparable design changes and matching payments of their own, according to TechCrunch's reporting.",
+      },
+      {
+        type: "h2",
+        text: "The part that's actually new: AI age-checking",
+      },
+      {
+        type: "p",
+        text:
+          "Beyond usage limits for minors, the settlement requires Meta to strengthen its AI-based age-assurance technology within one year, combining internal and third-party tools. Per Fortune's reporting, that includes analyzing photos for physical cues like height and bone structure, alongside existing signals like birthday posts, school references, and friend networks -- and the deal requires regular outside audits measuring how well the system actually works, including specific targets for how often it wrongly labels a minor as an adult.",
+      },
+      {
+        type: "h2",
+        text: "A concrete example of a familiar problem",
+      },
+      {
+        type: "p",
+        text:
+          "TechCrunch's own reporting flags the gap directly worth sitting with: every design change the settlement mandates -- usage limits, notification restrictions, account defaults for minors -- only works if the age-verification layer underneath it is accurate, and AI age-estimation from photos is a genuinely hard, error-prone problem, not a solved one Meta is simply choosing not to deploy. That's the same shape of question this site keeps asking about AI systems deployed inside a company for very different reasons: a capability claim (\"our AI can tell who's a minor\") isn't worth anything without a measured error rate attached to it, and a settlement that requires an outside audit of that error rate is a meaningfully stronger commitment than one that just requires the feature to exist.",
+      },
+      {
+        type: "p",
+        text:
+          "It's also worth flagging as a different case entirely from the settlements this site has covered on the copyright side -- Anthropic's Bartz book-piracy payout, and the DOJ's separate fair-use filing in the Times' case against OpenAI -- since it's easy for \"a big AI-adjacent legal settlement\" headlines to blur together. This one is about child safety and platform design, adjudicated by state attorneys general, not a federal copyright question.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-01",
+    slug: "doj-statement-of-interest-nyt-openai-fair-use",
+    category: "regulation",
+    title: "The DOJ filed a brief backing OpenAI's fair-use defense against The New York Times",
+    dek:
+      "The 20-page Statement of Interest, filed September 1 in the SDNY, argues that AI training on copyrighted text is fair use and warns that ruling otherwise would hand the AI industry to whichever companies can afford licensing -- a different, ongoing case from Anthropic's own book-piracy settlement covered here in August.",
+    sources: [
+      {
+        label: "DOJ Sides with OpenAI Against the NY Times in High-Stakes Copyright Case — PYMNTS",
+        url: "https://www.pymnts.com/legal/2026/doj-sides-with-openai-against-the-ny-times-in-high-stakes-copyright-case",
+      },
+      {
+        label: "DOJ Sides with OpenAI, Warns Obstacles to AI Development Threaten National Security — IPWatchdog (Eileen McDermott)",
+        url: "https://ipwatchdog.com/2026/09/03/doj-sides-with-openai-warns-obstacles-to-ai-development-threaten-national-security/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "The U.S. Department of Justice filed a 20-page Statement of Interest on September 1, 2026, in the Southern District of New York, in the long-running copyright case The New York Times brought against OpenAI and Microsoft. The filing doesn't make the DOJ a party to the case -- it's submitted under the statute that lets a federal agency lay out its legal position in someone else's litigation -- but it asks the court to rule that training large language models on copyrighted text is fair use.",
+      },
+      {
+        type: "h2",
+        text: "The argument, in the government's own words",
+      },
+      {
+        type: "p",
+        text:
+          "The brief frames the stakes as bigger than one publisher's claim: the DOJ says it has \"a strong interest in continuing to develop a robust and competitive artificial intelligence industry,\" and warns that requiring licenses for training data would create a barrier only the largest technology companies could absorb -- effectively locking in an oligopoly rather than protecting competition. The Times pushed back through spokesperson Graham James, who said the administration's position would \"undermine the sustainability of the human-created content that a healthy society depends on.\"",
+      },
+      {
+        type: "h2",
+        text: "Not the same case as Anthropic's settlement",
+      },
+      {
+        type: "p",
+        text:
+          "This is worth separating clearly from the Bartz v. Anthropic settlement covered here in August: that case resolved a claim that Anthropic built a training library out of pirated books, and the $1.5 billion payout was priced against that piracy specifically, not against training on lawfully acquired text. The Times' case against OpenAI and Microsoft is the other half of the same underlying legal question this site has been tracking -- whether training an LLM on lawfully obtained but copyrighted material is itself infringement -- and the DOJ's filing is the federal government's first stated position on that specific question, not a ruling, verdict, or settlement of any kind. The judge still has to decide.",
+      },
+      {
+        type: "p",
+        text:
+          "For a company thinking about its own AI spend, the practical stakes are more concrete than the legal theory: if licensing becomes a mandatory cost of training a competitive model, that cost gets passed down through every vendor's pricing eventually. A government brief arguing against that outcome doesn't settle the question, but it's a real signal about which way federal policy is currently leaning on a cost that would otherwise show up, eventually, on every enterprise AI invoice.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-01",
+    slug: "felix-200-million-series-c-whatsapp-remittances",
+    category: "funding",
+    title: "Félix raised $200 million to turn WhatsApp into a bank for Latino immigrants",
+    dek:
+      "The Miami fintech's Series C splits $87 million in equity led by a16z from $113 million in debt from General Catalyst -- funding a move from remittances into loans and savings for a market traditional banks have mostly ignored.",
+    sources: [
+      {
+        label: "WhatsApp Remittance Startup Félix Secures $200M Series C Led By a16z, General Catalyst — Crunchbase News (Mary Ann Azevedo)",
+        url: "https://news.crunchbase.com/venture/fintech-whatsapp-remittance-startup-felix-raises-200m-a16z-general-catalyst/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Félix, a Miami-based fintech whose entire consumer product runs inside WhatsApp, announced a $200 million Series C on September 1, 2026. The round splits into two distinct instruments: $87 million in equity co-led by Andreessen Horowitz, with participation from QED Investors, Castle Island Ventures, Switch Ventures, Contour Venture Partners, and Endeavor Catalyst, plus a separate $113 million debt facility from General Catalyst's Customer Value Fund.",
+      },
+      {
+        type: "h2",
+        text: "What the product actually is",
+      },
+      {
+        type: "p",
+        text:
+          "Founded in 2020 by Manuel Godoy and Bernardo García, Félix lets users in the U.S. send remittances to family across 11 Latin American markets entirely through WhatsApp conversations -- no separate app to download. Per Crunchbase News, the company has processed more than $8 billion in transactions and grown revenue 2.5x year over year, and is using this round to expand beyond remittances into lending and savings products for the same Latino immigrant customer base. Co-founder Godoy tied the pitch to his own experience: \"even getting a small loan was harder than it should have been,\" he said, describing a design philosophy that starts with the person rather than a predefined product.",
+      },
+      {
+        type: "h2",
+        text: "The equity/debt split is the actual story",
+      },
+      {
+        type: "p",
+        text:
+          "A $200 million \"Series C\" headline number obscures a meaningfully different reality once it's split: $87 million is Félix's own capital to spend on product and growth, while $113 million is a debt facility meant to be lent back out to customers as the loan product itself -- General Catalyst's fund exists specifically to finance the receivables a fintech originates, not to fund the company's operations. That distinction matters for reading any AI-adjacent or AI-branded fintech funding headline correctly going forward: the size of a round says very little on its own about how much of that money the company actually gets to spend versus how much is capital it's re-lending, and conflating the two produces a badly inflated sense of a startup's actual operating runway.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-02",
+    slug: "lyte-165-million-series-c-robot-perception",
+    category: "funding",
+    title: "Ex-Apple Face ID engineers raised $165 million to give robots a trustworthy sense of the world",
+    dek:
+      "Lyte's Series C, led by Maverick Silicon, triples the perception-hardware startup's valuation to $1.6 billion -- its bet is that every category of physical-AI robot will need custom sensors and silicon that make 'is this real' a solved problem before a robot ever acts on it.",
+    sources: [
+      {
+        label: "Former Apple Engineers' Physical AI Startup Lyte Raises $165M — Crunchbase News (Mary Ann Azevedo)",
+        url: "https://news.crunchbase.com/venture/robotics-ai-startup-lyte-seriesc-raise-maverick/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Lyte, a robot-perception hardware startup founded by former Apple engineers, announced a $165 million Series C on September 2, 2026, led by Maverick Silicon and bringing its post-money valuation to $1.6 billion -- more than triple its prior mark. Fidelity Management and Research, which led Lyte's Series B, returned alongside Atreides Management, Key1 Capital, and Ora Global, taking the company's total capital raised since its 2021 founding to $272 million.",
+      },
+      {
+        type: "h2",
+        text: "The pedigree behind the pitch",
+      },
+      {
+        type: "p",
+        text:
+          "Founders Alexander Shpunt, Arman Hajati, and Yuval Gerson worked on advanced sensing and perception technology at Apple; Shpunt previously co-founded PrimeSense, whose 3D-sensing technology powered the original Microsoft Kinect before Apple acquired the company in 2013 and folded that work into what became Face ID. Lyte builds custom silicon, multimodal sensors, and spatial software that let a robot determine where it is and what's moving around it -- CEO Shpunt's own framing: \"physical AI will create entirely new categories of robots, and every one of them\" will need trustworthy perception to act on.",
+      },
+      {
+        type: "h2",
+        text: "Why perception is the boring, load-bearing part",
+      },
+      {
+        type: "p",
+        text:
+          "It's easy for robotics funding coverage to gravitate toward the flashiest capability -- a humanoid folding laundry, an arm performing surgery -- and skip past the sensing layer that has to be right before any of that is safe to run unsupervised. Lyte's bet is essentially that the more autonomous a robot's decision-making gets, the more its perception hardware needs to be treated as a distinct, auditable component rather than an assumed-solved input, which is the same logic this site keeps applying to software agents: a system's competence at the task in front of it says nothing about whether the sensing or access layer underneath is actually trustworthy, and that layer is exactly where a well-funded, narrowly focused vendor can do real work other AI headlines skip past.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-02",
+    slug: "hiddenlayer-100-million-series-b-agentic-ai-security",
+    category: "funding",
+    title: "HiddenLayer raised $100 million as it claims 10x ARR growth securing AI agents",
+    dek:
+      "The Austin-based Series B, led by Delta-v Capital with Microsoft's M12 and Morgan Stanley participating, funds a new 'Agent Harness Security' product aimed at AI coding agents at runtime -- the revenue-growth figure is HiddenLayer's own claim, not independently verified.",
+    sources: [
+      {
+        label: "HiddenLayer Raises $100M Series B to Advance Trustworthy AI — PR Newswire (official)",
+        url: "https://www.prnewswire.com/news-releases/hiddenlayer-raises-100m-series-b-to-advance-trustworthy-ai-302867783.html",
+      },
+      {
+        label: "HiddenLayer nabs $100M as enterprises rush to secure their AI deployments — TechCrunch (Ram Iyer)",
+        url: "https://techcrunch.com/2026/09/02/hiddenlayer-nabs-100m-as-enterprises-rush-to-secure-their-ai-deployments/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "HiddenLayer announced a $100 million Series B on September 2, 2026, led by Delta-v Capital with participation from Ten Eleven Ventures, Morgan Stanley, Microsoft's M12, and Booz Allen Ventures, bringing the Austin-based company's total funding past $155 million. The company, founded in 2022, builds security tooling meant to cover the full lifecycle of AI systems -- discovery, supply-chain security, attack simulation, and runtime protection -- rather than a single point product.",
+      },
+      {
+        type: "h2",
+        text: "What the new money funds",
+      },
+      {
+        type: "p",
+        text:
+          "The round funds a specific new product, Agent Harness Security, extending HiddenLayer's runtime protection to secure AI coding agents specifically while they write, review, and ship code -- a response to the same category of risk this site has covered repeatedly this year: agents acting with real permissions inside real systems, where a runtime boundary either holds or it doesn't. Delta-v Capital partner Dan Williams framed the investment thesis around breadth: HiddenLayer, in his words, \"built a platform from the ground up to secure AI across its full lifecycle.\"",
+      },
+      {
+        type: "h2",
+        text: "The growth number is a company claim, not a fact",
+      },
+      {
+        type: "p",
+        text:
+          "HiddenLayer's own release states its annual recurring revenue grew more than 10x over the past year, with more than 90% of that growth from new customers signed in the same period -- both figures reported directly by the company, with no independent auditor or third party cited behind them. CEO Chris Sestito's own framing to TechCrunch was blunter about why the platform generalizes across use cases: \"Inference is still inference.\" That's worth stating plainly rather than repeating as settled fact: a 10x ARR claim from a private security vendor raising a round is exactly the kind of number that's true often enough to be worth taking seriously, and also exactly the kind of number a company has every incentive to round favorably. Treating a vendor's self-reported growth rate with the same skepticism this site applies to a vendor's self-reported benchmark numbers is the same discipline either way.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-03",
+    slug: "canada-responsible-data-centre-development-principles",
+    category: "regulation",
+    title: "Canada signed 23 AI and tech firms onto a voluntary data-centre buildout framework",
+    dek:
+      "The Responsible Data Centre Development Principles, announced by AI Minister Evan Solomon, ask OpenAI, Anthropic, Google, Microsoft, Meta, AWS, and 17 others to commit to five voluntary rules -- including not shifting infrastructure costs onto ordinary ratepayers -- as public opinion on the AI buildout sours.",
+    sources: [
+      {
+        label: "OpenAI, Anthropic sign on to Canada's new data centre framework as public opinion sours on buildout — BetaKit (Alex Riehl)",
+        url: "https://betakit.com/openai-anthropic-sign-on-to-canadas-new-data-centre-framework-as-public-opinion-sours-on-buildout/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Canada's AI Minister Evan Solomon announced the Responsible Data Centre Development Principles on September 3, 2026, in Markham, Ontario -- a voluntary five-point framework signed by 23 companies, including OpenAI, Anthropic, Google, Microsoft, Meta, Amazon Web Services, Cohere, Bell, and Telus. Nothing in it is legally binding; it's a public commitment, not a regulation.",
+      },
+      {
+        type: "h2",
+        text: "The five commitments",
+      },
+      {
+        type: "p",
+        text:
+          "The framework asks signatories to: create lasting local benefits like jobs and compute access; avoid shifting electricity costs onto ordinary ratepayers and protect grid reliability; minimize water use and environmental impact, favoring efficient designs like closed-loop cooling; stay transparent with independently verifiable data on noise, emissions, and resource use; and bring genuine strategic value to Canada through investment and supply-chain participation. Solomon's own framing of the second point was the most pointed: \"we expect projects to pay the costs they create, protect local resources.\"",
+      },
+      {
+        type: "h2",
+        text: "A voluntary framework is a bet on reputational pressure, not enforcement",
+      },
+      {
+        type: "p",
+        text:
+          "BetaKit's own framing -- \"as public opinion sours on buildout\" -- is the context that makes this more than a photo-op: a government publishing a named list of AI companies that did and didn't sign a cost-shifting pledge is a soft-power tool, not a legal one, and its only enforcement mechanism is whatever reputational cost a company pays for being seen breaking a public commitment later. Whether that's enough to actually stop a hyperscaler from pushing grid-upgrade costs onto a local utility's ratepayers is an open question this framework doesn't answer by itself. But it's a useful marker for a company running its own AI infrastructure spend to watch: a signature on a voluntary framework like this is a stated intention, not a verified outcome, and the gap between the two is exactly the kind of thing worth checking a year from now rather than assuming away.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-03",
+    slug: "mbzuai-ifm-k2-horizon-open-model-release",
+    category: "tools",
+    title: "MBZUAI's IFM released six open models with full weights, data, and training logs",
+    dek:
+      "K2 Horizon spans 0.9B to 375B parameters under Apache 2.0, and IFM is calling it the largest fully open model release in AI history -- a claim this site independently checked against Hugging Face's own published artifacts rather than taking on the strength of a single press release.",
+    sources: [
+      {
+        label: "UAE's AI university introduces world's largest 'fully open' models — The National (Cody Combs)",
+        url: "https://www.thenationalnews.com/future/technology/2026/09/03/mbzuai-k2-horizon-ai-open-model-uae/",
+      },
+      {
+        label: "K2 Horizon AI models: MBZUAI launches six open models — tbreak (Abbas Jaffar Ali)",
+        url: "https://tbreak.com/mbzuai-k2-horizon-ai-models/",
+      },
+      {
+        label: "IFM/K2-Horizon-375B-A23B — Hugging Face (official model card)",
+        url: "https://huggingface.co/IFM/K2-Horizon-375B-A23B",
+      },
+      {
+        label: "MBZUAI's IFM releases world's largest fully open AI model — Middle East AI News (Carrington Malin)",
+        url: "https://www.middleeastainews.com/p/mbzuais-ifm-releases-worlds-largest",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "The Institute of Foundation Models (IFM), part of Abu Dhabi's Mohamed bin Zayed University of Artificial Intelligence, released K2 Horizon on September 3, 2026: six models ranging from 0.9 billion to 375 billion parameters, all under the Apache 2.0 license. IFM is billing this, per multiple outlets' independent reporting on its own announcement, as the largest fully open model release in AI history -- and unlike a typical open-weights release, it says it published the pretraining datasets, training code, model configurations, and evaluation results alongside the weights themselves.",
+      },
+      {
+        type: "h2",
+        text: "Checking the claim against the actual artifacts",
+      },
+      {
+        type: "p",
+        text:
+          "IFM's own press materials returned a blocked request on direct fetch, so this run verified the release independently: Hugging Face's IFM organization page lists the full K2 Horizon model family plus several published datasets -- including TxT360-v2 for pretraining, and separate math- and code-reasoning datasets -- confirming that training data, not just weights, is genuinely public. The flagship 375B-A23B model's own card is more measured than the marketing framing, however: as of this run, it describes the final weights as released now, with intermediate checkpoints and training code still described as forthcoming rather than already live -- a real gap between the release's stated ambition and what's verifiably downloadable for the largest model specifically, worth noting rather than glossing over.",
+      },
+      {
+        type: "h2",
+        text: "The technical claim worth flagging separately",
+      },
+      {
+        type: "p",
+        text:
+          "IFM also claims a technique it calls diffusion distillation -- pairing a frozen autoregressive model with lightweight adapters that generate blocks of tokens in parallel -- delivers roughly a 3x inference speedup with no loss in output quality, per Middle East AI News's direct reporting on IFM's release. That's IFM's own characterization of its own architecture, not an independently benchmarked result this run could verify directly, and should be read the same way as any other lab's self-reported efficiency number.",
+      },
+      {
+        type: "p",
+        text:
+          "The largest-fully-open-release superlative is IFM's own claim, not an independently adjudicated fact, and no source this run found offers a rigorous methodology for ranking open releases against each other. What is independently verifiable is that IFM published more of its actual research pipeline than most labs do, training data and methodology included, and that transparency is the part with real value to a company evaluating whether to self-host an open-weight model instead of paying for API access: the more of a model's actual construction is checkable, the easier it is to reason about what you're actually running, cost and behavior both, rather than trusting a vendor's word for it.",
+      },
+    ],
+  },
 ];
