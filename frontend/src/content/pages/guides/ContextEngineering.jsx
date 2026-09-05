@@ -12,7 +12,7 @@ export const meta = {
 export default function ContextEngineering() {
   return (
     <ContentLayout active="guides" wide>
-      <span className="kicker">Guide</span>
+      <span className="kicker">Guide · context management</span>
       <h1>Context engineering: what actually goes into the context window</h1>
       <p className="lead">
         A context window is not a scratchpad with infinite room and a hard wall at the end. It is a
