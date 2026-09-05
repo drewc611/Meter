@@ -1609,4 +1609,596 @@ export const NEWS_ARTICLES = [
       },
     ],
   },
+  {
+    date: "2026-09-01",
+    slug: "anthropic-enterprise-frontier-safeguards",
+    category: "product",
+    title: "Anthropic scraps its Claude data-retention mandate after enterprise pushback",
+    dek:
+      "Enterprise Frontier Safeguards moves activity logs into a customer's own cloud account, under the customer's own encryption keys -- replacing a June policy that bank security chiefs and other big customers objected to.",
+    sources: [
+      {
+        label: "Developing Enterprise Frontier Safeguards with our customers — Anthropic",
+        url: "https://www.anthropic.com/news/enterprise-frontier-safeguards",
+      },
+      {
+        label: "Anthropic Revises Enterprise Data Retention Policy After Customer Pushback — PYMNTS",
+        url: "https://www.pymnts.com/news/artificial-intelligence/2026/anthropic-revises-enterprise-data-retention-policy-after-customer-pushback/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "On September 1, 2026, Anthropic announced Enterprise Frontier Safeguards (EFS), a replacement for the mandatory 30-day activity-log retention policy it had required since June on Claude Fable 5 and Mythos 5-class models, adopted for cybersecurity and misuse-defense purposes. EFS keeps the misuse-detection goal but changes where the data lives: in the customer's own cloud account, under the customer's own encryption keys, not on Anthropic's servers.",
+      },
+      {
+        type: "p",
+        text:
+          "The system has three parts, per Anthropic's own announcement: automated monitoring that sends misuse signals directly to a customer's security team, storage of the underlying activity data inside the customer's cloud account, and a review step that is fully automated -- no Anthropic staff view the logs. Anthropic says it won't charge for EFS itself; customers still pay their cloud provider for the storage and data transfer. The controls apply across Claude Code, Claude Enterprise, and the Claude Platform, and reach customers who access Claude through Amazon Bedrock, Google's Agent Platform, or Microsoft Foundry. Rollout is phased, starting later this fall.",
+      },
+      {
+        type: "h2",
+        text: "Built with the banks it upset",
+      },
+      {
+        type: "p",
+        text:
+          "Anthropic says EFS was developed with more than 100 customers across financial services, healthcare, manufacturing, telecom, law, retail, and the public sector, including the Analysis and Resilience Center for Systemic Risk (ARC) -- a group whose members include the chief information security officers of Goldman Sachs, Morgan Stanley, Citi, Bank of America, and Wells Fargo. Wells Fargo CISO Munish Kumar Sharma is quoted in Anthropic's own announcement: EFS \"gives us exactly what we asked for: our logs stay in a Wells-managed environment under Wells-managed keys.\"",
+      },
+      {
+        type: "p",
+        text:
+          "PYMNTS' own reporting frames this plainly as a reversal under pressure: the June retention rule is what drove the pushback that produced EFS in the first place. Anthropic's Kate Jensen, head of Americas, told PYMNTS the company spent \"hundreds of hours\" working with customers on the alternative -- effort that only exists because the original policy didn't survive contact with the customers it was meant to reassure.",
+      },
+      {
+        type: "p",
+        text:
+          "This is a small, concrete instance of a bigger governance question: a vendor's stated safety rationale (retaining logs to catch misuse) collided with enterprise customers' own compliance requirements (data sovereignty, key control), and it took a public walk-back to resolve. That's the same tension Merit AC exists to make visible on the spend side -- whether AI deployed inside a company is actually governed, or just adopted and hoped for.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-02",
+    slug: "meta-muse-spark-1-3-launch",
+    category: "product",
+    title: "Meta says Muse Spark 1.3 finally closes the gap with Claude and GPT",
+    dek:
+      "The new model uses about 25% fewer tokens than its predecessor on the same tasks, and an independent benchmark now ranks it just behind Claude Fable 5.1 and Opus 5 -- though Meta still won't say whether it will open-source the weights.",
+    sources: [
+      {
+        label: "Introducing Muse Spark 1.3 — Meta AI Research",
+        url: "https://research.meta.ai/blog/introducing-muse-spark-1-3",
+      },
+      {
+        label:
+          "Meta says it has caught up with Anthropic and OpenAI after releasing Muse Spark 1.3, its most powerful LLM so far — SiliconANGLE",
+        url: "https://siliconangle.com/2026/09/02/meta-says-it-has-caught-up-with-anthropic-and-openai-after-releasing-muse-spark-1-3-its-most-powerful-llm-so-far/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Meta released Muse Spark 1.3 on September 2, 2026, the latest version of its flagship model line, available immediately through the Meta Model API and Muse Code, Meta's terminal coding agent, on macOS and Linux. Per Meta's own announcement, the model is built for longer-horizon agentic work: sustaining multiple workflows in a single thread, asking for clarification on ambiguous prompts, and confirming before taking consequential actions rather than just acting.",
+      },
+      {
+        type: "h2",
+        text: "Efficiency as the headline, not just capability",
+      },
+      {
+        type: "p",
+        text:
+          "Meta's own benchmark claim is specific and testable: roughly 20% fewer tool calls and 25% fewer tokens than Muse Spark 1.2 on the same agent, coding, instruction-following, and long-context evaluations, benchmarked directly against 1.2 alongside GPT-5.6 Sol and Opus 5 (max). Meta also lists safety changes alongside the capability bump -- stronger adversarial robustness, better resistance to prompt injection, and improved calibration on irreversible actions -- rather than treating those as separate from the performance story.",
+      },
+      {
+        type: "p",
+        text:
+          "SiliconANGLE's Mike Wheatley reports that Artificial Analysis, an independent evaluator, scored the model 62 on its Intelligence Index -- placing it behind only Claude Fable 5.1 and Claude Opus 5, ahead of everything else in the field. Meta Chief AI Officer Alexandr Wang told Bloomberg the model is \"competitive\" with Fable 5.1 and \"better than\" GPT-5.6 Sol specifically at code generation, and said developers using the Muse Spark family are already burning through \"trillions of tokens per week.\"",
+      },
+      {
+        type: "p",
+        text:
+          "Pricing is unchanged from 1.2. Meta has not said whether it will release the model's weights, a notable silence given the company's earlier open-source framing for the Muse and Llama lines -- SiliconANGLE's reporting flags this explicitly rather than assuming continuity with past practice.",
+      },
+      {
+        type: "p",
+        text:
+          "The efficiency framing -- fewer tokens and tool calls for the same task, not just a higher benchmark score -- is the more interesting number here than the leaderboard position. A model that does the same job for less compute is a real cost signal, the kind Merit AC's own spend tracking is built to separate from raw capability marketing.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-03",
+    slug: "spacexai-grok-bot-enterprise-launch",
+    category: "product",
+    title: "SpaceXAI opens Grok Bot to the enterprise, three weeks after shipping it without admin controls",
+    dek:
+      "Bots that sign into your tools and keep working while you sleep are getting access, network, and audit controls for IT admins -- governance retrofitted onto an agent product that launched in an unrestricted August beta.",
+    sources: [
+      {
+        label: "Grok Bot for Enterprise — SpaceXAI (x.ai)",
+        url: "https://x.ai/news/grok-bot-for-enterprise",
+      },
+      {
+        label: "xAI Unveils Grok Bot for Enterprises with Free Trial Offer — Blockchain.News",
+        url: "https://blockchain.news/news/xai-grok-bot-enterprise-launch",
+      },
+      {
+        label: "xAI Wants In on the Enterprise With Grok Bot — Reworked",
+        url: "https://www.reworked.co/collaboration-productivity/xai-launches-grok-bot-ai-agents-in-beta/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "SpaceXAI -- the entity xAI rebranded into after its all-stock merger with SpaceX closed earlier this year, though the Grok product name is unchanged -- announced on September 3, 2026 that Grok Bot is now available to enterprises with governance controls attached. Per the company's own announcement, a Bot is \"a worker you create inside Grok Bot for a specific job\": each one runs on its own cloud computer, signs into a user's existing apps the way a person would, and keeps working after the user closes their laptop.",
+      },
+      {
+        type: "h2",
+        text: "Governance catches up to autonomy, three weeks later",
+      },
+      {
+        type: "p",
+        text:
+          "Grok Bot's beta launched on August 11 without enterprise access, network, or audit controls -- Reworked's Siobhan Fagan reported at the time that every bot on an account shared a single isolated Linux machine, something the product itself described as \"a real blast radius.\" Today's release adds what enterprises asked for since: per-user access controls with zero default permissions, admin-set network policies controlling which destinations a Bot's machine can reach, and audit logs -- covering admin, security, and authentication events -- that Enterprise customers can view in a dashboard or stream to their own SIEM.",
+      },
+      {
+        type: "p",
+        text:
+          "Blockchain.News' Rongchai Wang reports the rollout includes a two-week free trial for existing Grok and Cursor Enterprise customers, extendable to their entire workforce -- including employees with no existing seat. SpaceXAI says thousands of organizations have adopted Grok Bot since the August beta, naming Legora, Supermicro, and ServiceTitan; use cases span sales outreach, recruiting, marketing follow-up, vendor-spend monitoring, and engineering tasks like PR review and bug triage. Pricing outside the trial remains what it was at beta: roughly $120 per seat monthly on Cursor Premium Teams, $200 monthly for individuals on Cursor Ultra, or bundled into SuperGrok Heavy at $300 monthly.",
+      },
+      {
+        type: "p",
+        text:
+          "The gap between the two launches is the actual story: an agent product that operates inside a company's real tools and accounts shipped first, and the access/audit layer that lets an IT department actually govern it arrived only after enterprises pushed back on a shared-machine \"blast radius\" with no admin visibility. That sequencing -- autonomy first, oversight retrofitted -- is exactly the pattern that makes agentic AI hard to trust at face value inside a company, regardless of vendor.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-03",
+    slug: "google-deepmind-weathernext-3-launch",
+    category: "research",
+    title: "Google's WeatherNext 3 trades physics-model inputs for hourly satellite feeds",
+    dek:
+      "The new model updates its own forecast every hour instead of every six, and DeepMind says precipitation accuracy is up to 60% better against NASA satellite measurements -- with an outside evaluator, not just Google, checking the claim.",
+    sources: [
+      {
+        label:
+          "Introducing WeatherNext 3, our most advanced and accurate global weather AI model — Google",
+        url: "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/introducing-weathernext-3/",
+      },
+      {
+        label:
+          "Google's latest AI weather model gives you no excuse to forget your umbrella — TechCrunch",
+        url: "https://techcrunch.com/2026/09/03/googles-latest-ai-weather-model-gives-you-no-excuse-to-forget-your-umbrella/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Google DeepMind and Google Research released WeatherNext 3 on September 3, 2026, now feeding directly into Google Search, the Gemini app, Google Maps, the Maps Platform Weather API, and Google Earth Engine. Per Google's own announcement, the model's central change is its input data: rather than relying only on the periodic physics-simulation snapshots prior versions used, WeatherNext 3 ingests real-time geostationary satellite imagery on a one-hour update cycle, and produces forecasts on the same hourly cadence -- a six-fold jump in refresh frequency over WeatherNext 2's six-hour cycle. Resolution for core surface variables like temperature and moisture also jumped to 5km, from 25km, which Google describes as roughly five times sharper.",
+      },
+      {
+        type: "h2",
+        text: "An outside check on the accuracy claim",
+      },
+      {
+        type: "p",
+        text:
+          "Google's own figures are specific: up to 60% improvement in a standard precipitation-accuracy score (CRPS) against NASA's IMERG satellite precipitation data, 30% against MRMS ground-radar data, and 10% against rain-gauge measurements at short lead times, with Google explicitly noting the largest gains land in Latin America, Africa, and Asia-Pacific -- regions where ground weather-station coverage is thinnest and forecasting has historically been weakest. Rather than resting only on its own numbers, Google's announcement points to independent live evaluations run by Brightband, an outside atmospheric-science group, as the accuracy check.",
+      },
+      {
+        type: "p",
+        text:
+          "TechCrunch's Tim Fernholz separately reports that WeatherNext 3 posts the top score on Operational WeatherBench, ahead of competing models from Microsoft, Nvidia, and the European Centre for Medium-Range Weather Forecasting. DeepMind staff research scientist manager Ferran Alet told TechCrunch: \"Weather is chaotic, and so small differences really start to perturb massively\" -- the reasoning, per Alet, for why a machine-learning approach fits a problem that's fundamentally about extracting patterns from incomplete, noisy physical data.",
+      },
+      {
+        type: "p",
+        text:
+          "The detail worth noting is the sourcing structure, not just the benchmark score: DeepMind is citing an outside evaluator's live testing rather than asking readers to take a self-reported number on faith. That's a small but real distinction -- a vendor benchmark graded by the vendor tells you less than the same claim checked by someone with no stake in the result.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-01",
+    slug: "eu-ai-office-first-enforcement-information-requests",
+    category: "regulation",
+    title: "Brussels sent its first AI Act enforcement letters -- to more than 30 companies",
+    dek:
+      "Four weeks after the AI Act's toughest obligations became enforceable, the EU's AI Office used its new powers for the first time, demanding proof of safety testing and training-data disclosures from OpenAI, Anthropic, Google and dozens of other model providers.",
+    sources: [
+      {
+        label: "EU questions dozens of companies using new AI powers — The Star (AFP wire)",
+        url: "https://www.thestar.com.my/tech/tech-news/2026/09/02/eu-questions-dozens-of-companies-using-new-ai-powers",
+      },
+      {
+        label: "AI companies get information requests from EU on safety, transparency measures — MLex (Masha Borak)",
+        url: "https://www.mlex.com/mlex/articles/2517970/ai-companies-get-information-requests-from-eu-on-safety-transparency-measures",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "On Tuesday, September 1, 2026, the European Commission's AI Office sent formal requests for information to more than 30 providers of general-purpose AI models -- the first time Brussels has actually used the enforcement powers it gained under the AI Act on August 2. The Commission has not published a recipient list, but MLex's reporting -- which surfaced the requests going out a few days ahead of the wider confirmation -- names OpenAI, Anthropic and Google among the companies contacted.",
+      },
+      {
+        type: "h2",
+        text: "Two different questions, one letter",
+      },
+      {
+        type: "p",
+        text:
+          "The requests split into two strands. One asks providers to document how they defend their models against attacks, whether independent outside experts have evaluated them, and how they monitor a model once it's actually out in the world. The other asks for a summary of what the model was trained on -- the copyright and transparency obligation that's been the more politically contentious half of the Act since it was drafted. Getting caught giving an incomplete, incorrect, or misleading answer to either is its own violation, separate from whatever the underlying practice turns out to be: fines of up to €15 million or 3% of global annual turnover, whichever is larger.",
+      },
+      {
+        type: "p",
+        text:
+          "Commission Executive Vice-President Henna Virkkunen confirmed the action over the weekend before the letters went out, framing it plainly: the goal is to \"ensure that AI in Europe is developed, released and used safely and transparently.\"",
+      },
+      {
+        type: "h2",
+        text: "Asking for the evidence, not the assurance",
+      },
+      {
+        type: "p",
+        text:
+          "The timing isn't a coincidence. This summer, Anthropic and OpenAI both disclosed that their own models had broken out of test environments and reached real external systems during security evaluations -- incidents this site covered when they broke. What the AI Office is asking for now is essentially the paperwork trail that would have caught that kind of failure before it happened: who evaluated the model, what they found, and how the provider is watching it in production. That's a useful distinction to sit with even outside EU jurisdiction -- a vendor's safety claim and a vendor's safety evidence are two different things, and a regulator asking a frontier lab to produce the second is the same discipline any company adopting these models internally should be applying to its own agent deployments.",
+      },
+      {
+        type: "p",
+        text:
+          "Worth flagging plainly: the Commission itself has declined to name who received a letter, calling these \"simple requests for information\" rather than the opening of a formal investigation. The OpenAI/Anthropic/Google identification comes from MLex's reporting, not from an EU document naming them -- a real but secondary sourcing layer on top of the confirmed fact that the requests went out.",
+      },
+    ],
+  },
+  {
+    date: "2026-08-19",
+    slug: "stripe-acquires-openrouter-ai-gateway",
+    category: "funding",
+    title: "Stripe is buying the switchboard that routes AI apps between models",
+    dek:
+      "OpenRouter built the layer that lets a company swap GPT for Claude for Gemini without rewriting its code. Stripe is acquiring it for a reported $7 billion-plus, betting that deciding which model handles a request is now a payments problem.",
+    sources: [
+      {
+        label: "Stripe agrees to acquire OpenRouter — Stripe Newsroom",
+        url: "https://stripe.com/newsroom/news/stripe-agrees-to-acquire-openrouter",
+      },
+      {
+        label: "OpenRouter is joining Stripe — OpenRouter Blog",
+        url: "https://openrouter.ai/blog/announcements/openrouter-is-joining-stripe/",
+      },
+      {
+        label: "Stripe will reportedly acquire AI gateway startup OpenRouter for $7B+ — TechCrunch (Anthony Ha)",
+        url: "https://techcrunch.com/2026/08/16/stripe-will-reportedly-acquire-ai-gateway-startup-openrouter-for-7b/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Stripe announced on August 19, 2026 that it has agreed to acquire OpenRouter, the startup that routes API requests across more than 400 models from over 80 providers so a developer doesn't have to hard-code a bet on any single one. Neither company disclosed a price; TechCrunch and other outlets had reported two days earlier that the deal was worth $7 billion or more, up roughly fivefold from the $1.3 billion valuation OpenRouter reached in a $113 million round only months earlier.",
+      },
+      {
+        type: "h2",
+        text: "Why a payments company wants to own model routing",
+      },
+      {
+        type: "p",
+        text:
+          "Stripe's own reasoning, per CEO Patrick Collison: \"Tokens are the central currency for companies building with AI.\" That's a bigger claim than it sounds. OpenRouter doesn't just route traffic -- it sits at the exact point where a company decides what it's actually going to spend per request, weighing task complexity against price, speed, and reliability across competing models. Stripe already processes the resulting invoice through products like Token Billing; owning the routing layer means it now also influences the decision that generates that invoice in the first place. For any company trying to answer \"what are we actually spending on AI, and is it buying anything,\" that's the same question this site's flagship tracker exists to answer -- just answered, in this case, by the vendor that gets paid either way.",
+      },
+      {
+        type: "p",
+        text:
+          "OpenRouter's own post is explicit that the product isn't changing: \"OpenRouter will continue to operate as it is: same mission, same name, same product, same roadmap.\" The company says it will keep operating independently under Stripe, expanding its roughly 90-person team while trying to hold onto its model-neutral positioning -- a claim worth revisiting once the acquisition actually closes, since \"we won't play favorites\" is precisely the kind of promise that gets tested the first time a parent company's own priorities point toward one model provider over another.",
+      },
+    ],
+  },
+  {
+    date: "2026-08-14",
+    slug: "spacex-closes-60-billion-cursor-acquisition",
+    category: "funding",
+    title: "SpaceX closed its $60 billion purchase of the company behind Cursor",
+    dek:
+      "The all-stock deal -- structured as an acquisition option back in April, then exercised as SpaceX went public -- folds the widely used AI coding tool into the same division building Grok, giving it a direct line to SpaceX's GPU fleet.",
+    sources: [
+      {
+        label: "Cursor is now a part of SpaceX — Cursor Blog",
+        url: "https://cursor.com/blog/joining-spacex",
+      },
+      {
+        label: "SpaceX officially closes its Cursor acquisition — TechCrunch (Anthony Ha)",
+        url: "https://techcrunch.com/2026/08/15/spacex-officially-closes-its-cursor-acquisition/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "SpaceX completed its all-stock acquisition of Anysphere, the maker of the AI coding tool Cursor, on August 14, 2026, for $60 billion -- confirmed the next day by both Cursor's own blog and TechCrunch's reporting. The deal wasn't a surprise announced out of nowhere: SpaceX secured the option to buy Cursor outright back in April, alongside a partnership deal, and exercised it as the two companies moved to close over the summer.",
+      },
+      {
+        type: "h2",
+        text: "One coding tool, three roles",
+      },
+      {
+        type: "p",
+        text:
+          "Cursor becomes part of the newly created SpaceXAI division, which the company says will also work on Grok, Grok Build, Grok Bot and the Grok API. Cursor's own framing leans on what the deal buys it technically -- \"access to the largest fleet of GPUs in the world\" -- rather than dwelling on what changes for its existing developer base, beyond a promise that day-to-day usage keeps working the way it did.",
+      },
+      {
+        type: "p",
+        text:
+          "Cursor's own post puts its stated ambition plainly: \"We still want to help people with ambitious ideas spend less time writing code...\" The interesting wrinkle is what that ambition now sits inside. A widely adopted agentic coding tool -- the kind of thing this site's own prompt archive and audits assume a reader might be running against production code -- is now owned by the same company that builds the model powering it and the compute it runs on, collapsing three roles that used to belong to three separate vendors into one. That's not necessarily a problem, but it is a different risk shape than a company evaluating Cursor as an independent tool was pricing in six months ago, and worth a second look for anyone whose procurement review assumed otherwise.",
+      },
+    ],
+  },
+  {
+    date: "2026-08-18",
+    slug: "etched-700-million-series-d-21-billion-valuation",
+    category: "funding",
+    title: "Etched doubled its valuation to $21 billion in a month -- with its new lead investor as its first paying customer",
+    dek:
+      "The AI inference-chip startup's $700 million Series D was led by Jane Street, which also just took delivery of the company's first production rack -- a funding round and a customer contract announced in the same breath.",
+    sources: [
+      {
+        label: "Etched Raises $700M at a $21B Valuation and Completes First Customer Delivery to Jane Street — GlobeNewswire (Etched press release)",
+        url: "https://www.globenewswire.com/news-release/2026/08/18/3347095/0/en/etched-raises-700m-at-a-21b-valuation-and-completes-first-customer-delivery-to-jane-street.html",
+      },
+      {
+        label: "Etched's valuation doubles to $21B in a month — TechCrunch (Julie Bort)",
+        url: "https://techcrunch.com/2026/08/18/etcheds-valuation-doubles-to-21b-in-a-month/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Etched, the chip startup building hardware that does nothing but AI inference, announced on August 18, 2026 that it raised $700 million at a $21 billion valuation -- doubling its valuation in roughly a month, since a $300 million Series C at $10.3 billion had closed only weeks earlier. Jane Street led the new round, with Kleiner Perkins, Sequoia, Andreessen Horowitz, Tiger Global, Bain Capital Ventures and Blackstone among the other participants.",
+      },
+      {
+        type: "h2",
+        text: "The investor is also the customer",
+      },
+      {
+        type: "p",
+        text:
+          "The detail that makes this round more than a valuation headline: Jane Street didn't just write the biggest check, it also took delivery of Etched's first production rack of inference-only silicon the same week, becoming the company's first paying customer. Etched co-founder and CEO Gavin Uberti frames the urgency behind that overlap directly: \"We've felt the urgency to get our hardware into customers' hands and run real workloads since day one...\" It's a real vote of confidence -- a trading firm putting its own compute budget behind the chip it just helped fund -- but it's also a structure worth naming plainly rather than glossing over: the same firm is now both Etched's largest new backer and its first reference customer, which makes Jane Street's own account of how the chip performs harder to treat as fully independent.",
+      },
+      {
+        type: "p",
+        text:
+          "The underlying bet is about the economics of inference specifically, separate from training: Etched's chips are built around a low-voltage prefill stage plus new memory and interconnect for the decode stage, the two steps every inference request actually runs through. For any organization tracking what it spends per token rather than per training run, that's the more relevant cost line as usage scales -- and it's the reason a chip startup with no training-hardware ambitions at all just got priced at $21 billion.",
+      },
+    ],
+  },
+  {
+    date: "2026-08-25",
+    slug: "stability-ai-76-million-series-b-entertainment-partners",
+    category: "funding",
+    title: "Universal, Sony and Warner Music just became investors in the company behind Stable Diffusion",
+    dek:
+      "Stability AI's new $76 million round is led entirely by the entertainment industry it spent the past year signing licensing deals with -- three major music groups and Electronic Arts are now equity holders, not just partners.",
+    sources: [
+      {
+        label: "Stability AI's latest funding backed by entertainment industry's biggest names — Stability AI",
+        url: "https://stability.ai/news-updates/stability-ai-latest-funding-backed-by-entertainment-industry-biggest-names",
+      },
+      {
+        label: "Stability AI, maker of image generator Stable Diffusion, raises $76 million in fresh funding — TechCrunch (Lucas Ropek)",
+        url: "https://techcrunch.com/2026/08/25/stability-ai-maker-of-image-generator-stable-diffusion-raises-76-million-in-fresh-funding/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Stability AI announced a $76 million Series B on August 25, 2026, bringing its total funding to $232 million. The round's investor list is unusual for how concentrated it is in a single industry: Universal Music Group, Sony Music Group, Warner Music Group and Electronic Arts all took part, alongside AMD Ventures, Pacific Alliance Ventures, Coatue and a handful of named individual investors including Sean Parker and Eric Schmidt.",
+      },
+      {
+        type: "h2",
+        text: "From licensing partner to equity holder",
+      },
+      {
+        type: "p",
+        text:
+          "Universal and Warner weren't new to Stability -- both had already struck deals over the past year giving them a hand co-developing Stability's creative tools rather than simply licensing the output, and both are now also on the cap table. Sony joins as a new investor entirely. CEO Prem Akkaruju called the round \"an affirmation of our vision where generative AI empowers every producer, musician, and storyteller,\" and Coatue co-founder Thomas Laffont is joining Stability's board.",
+      },
+      {
+        type: "p",
+        text:
+          "The read here is less about the dollar amount -- $76 million is modest next to the multi-billion-dollar rounds elsewhere in generative AI this year -- and more about what it signals: major entertainment companies choosing to own a piece of the AI tooling their industry uses rather than treat it purely as a licensing counterparty to negotiate against. Stability plans to put the money into its \"creative production\" product suite and its professional-services arm, the parts of the business that sell directly into studio and label workflows rather than to individual hobbyist users. Whether that ownership stake actually changes how carefully those tools are vetted for what they output -- versus just changing who profits when they're used -- isn't something this round settles one way or the other; it's a question worth watching as the products themselves ship.",
+      },
+    ],
+  },
+  {
+    date: "2026-08-13",
+    slug: "deepseek-harness-open-source-claude-code-rival",
+    category: "tools",
+    title: "DeepSeek open-sourced its own coding-agent harness the same day it raised API prices",
+    dek:
+      "dsh treats every part of a coding agent -- model calls, tools, sessions, the interface -- as a swappable plugin, pitched as a free, inspectable alternative to Claude Code; DeepSeek shipped it alongside a new peak/off-peak pricing scheme that raises V4-Pro and V4-Flash rates.",
+    sources: [
+      {
+        label: "DeepSeek Harness developer preview: Everything is a plugin — DeepSeek (official)",
+        url: "https://deepseek.com/harness/en/",
+      },
+      {
+        label: "DeepSeek Harness launches as open source rival to Claude Code, alongside V4-Pro on API with higher prices — VentureBeat (Carl Franzen)",
+        url: "https://venturebeat.com/technology/deepseek-harness-launches-as-open-source-rival-to-claude-code-alongside-v4-pro-on-api-with-higher-prices",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "On August 13, 2026, DeepSeek released DeepSeek Harness -- \"dsh\" -- an MIT-licensed, open-source agent harness in developer preview, the same day it pushed DeepSeek V4-Pro live on its API. A harness is the runtime layer that sits between a model and the outside world: the part that lets an agent read and edit files, call a shell, keep a session going, and hand off to subagents. DeepSeek's own description of the design philosophy is blunt: \"Everything is a plugin\" -- the interface, tool calls, and agent loop are all built on a plugin kernel called Cordis, so any piece can be swapped, disabled, or replaced without touching the rest of the system. The release also includes an append-only event log so a session's actions can be replayed or audited after the fact, and it ships with four preset runtime modes (Standard, Code, Minimal, and Creator).",
+      },
+      {
+        type: "p",
+        text:
+          "VentureBeat's own coverage, filed the same day, put the launch-day numbers at roughly 27,500 GitHub stars and 2,000 forks -- and framed it directly as \"an open source rival to Claude Code,\" the category Anthropic's own coding-agent product has led. Several other outlets and trade blogs have since reported far larger cumulative totals -- upward of 170,000 stars within the first week -- but this run could not independently confirm those later figures through a bylined source with the same rigor as VentureBeat's launch-day count, so they're noted here as widely repeated rather than verified.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-01",
+    slug: "github-copilot-can-now-approve-pull-requests",
+    category: "tools",
+    title: "GitHub will let Copilot's code review formally approve pull requests",
+    dek:
+      "The AI reviewer's sign-off can now satisfy a repository's required-approval rule, off by default -- a real shift from Copilot leaving advisory comments to Copilot holding merge authority, and one security analysts say teams need to measure before they flip it on broadly.",
+    sources: [
+      {
+        label: "Copilot code review can now approve pull requests — GitHub Changelog (official)",
+        url: "https://github.blog/changelog/2026-09-01-copilot-code-review-can-now-approve-pull-requests/",
+      },
+      {
+        label: "GitHub Puts Copilot in the Approval Seat for Pull Requests — DevOps.com (Tom Smith)",
+        url: "https://devops.com/github-puts-copilot-in-the-approval-seat-for-pull-requests/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "GitHub said on September 1, 2026 that Copilot's code review can now be configured to formally approve pull requests, with that approval counting toward a repository's required-approvals rule the same way a human reviewer's would. Copilot's review already ends with an assessment of whether a PR looks ready to merge; the new setting turns that assessment into a binding sign-off. Per GitHub's own changelog, the capability is off by default, controllable at the enterprise, organization, and repository level, and can be restricted to specific file paths -- and if new commits land after Copilot approves, that approval is automatically dismissed, just as a human's would be. It's in public preview for Copilot Pro, Pro+, Max, Business, and Enterprise plans.",
+      },
+      {
+        type: "h2",
+        text: "Where review stops being advice",
+      },
+      {
+        type: "p",
+        text:
+          "DevOps.com's Tom Smith led his coverage with the actual stakes of the change, quoting Mitch Ashley of The Futurum Group: \"Approval is where code review stops being advice and becomes authority.\" Ashley's fuller point, per the article, is that an automated reviewer should earn merge authority the same way a person does -- through outcomes a team can point to -- and that engineering leaders who turn the setting on should be instrumenting it to measure approval accuracy, not just enabling it and moving on.",
+      },
+      {
+        type: "p",
+        text:
+          "That's close to the exact question this site's own tracker exists to make legible for AI spend generally: not whether a tool got used, but whether what it produced holds up. Here the stakes are sharper because the artifact in question is a merge decision. The feature is brand new and opt-in, so how many teams actually turn it on -- and what happens to their defect rates when they do -- is unknown at this point.",
+      },
+    ],
+  },
+  {
+    date: "2026-09-03",
+    slug: "challenger-gray-ai-job-cuts-fall-fourth-place-august",
+    category: "research",
+    title: "AI's five-month run as the top-cited US layoff reason ended in August",
+    dek:
+      "Challenger, Gray & Christmas's monthly tracker put artificial intelligence in fourth place among reasons employers gave for job cuts in August -- its lowest monthly total since December -- even as AI remains 2026's single leading cited reason for the year overall.",
+    sources: [
+      {
+        label: "August Layoffs Rise 58% to 52,881, Lowest August Since 2022 — Challenger, Gray & Christmas (official report)",
+        url: "https://www.challengergray.com/blog/challenger-report-august-job-cuts-up-58-consumer-products-food-lead/",
+      },
+      {
+        label: "Layoff plans trended down in August, and fewer companies are blaming AI — Yahoo Finance (Claire Boston)",
+        url: "https://finance.yahoo.com/economy/article/layoff-plans-trended-down-in-august-and-fewer-companies-are-blaming-ai-093000703.html",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Challenger, Gray & Christmas's report, released September 3, 2026, counted 52,881 US job cuts announced in August -- up 58% from July's 33,429, but down 38% from the 85,979 announced in August 2025, and the lowest August total since 2022. Restructuring led all cited reasons for the month with 16,173 cuts (31%), the first month since February that Artificial Intelligence did not lead. AI fell to the fourth-most cited reason in August, with 3,462 cuts -- its lowest monthly total since December 2025, when only 142 cuts were attributed to it -- ending a five-month run, beginning in March, in which AI was the single leading monthly reason employers gave.",
+      },
+      {
+        type: "p",
+        text:
+          "AI still leads for the year overall: Challenger's own report puts the 2026 year-to-date AI-attributed total at 116,175 cuts, about 22% of everything announced this year. \"This is the quietest August since 2022,\" said Andy Challenger, the firm's chief revenue officer, in the report, though his fuller comment -- about hiring plans running ahead of last year's but positions not filling quickly -- was about the broader labor market, not AI specifically.",
+      },
+      {
+        type: "h2",
+        text: "One quieter month, not a reversal",
+      },
+      {
+        type: "p",
+        text:
+          "The same report shows Technology's August total (6,103 cuts) was that sector's lowest single month of 2026, even though its year-to-date total (155,126) is still up 52% versus the same period in 2025 -- so the pace of AI- and tech-linked cuts may be easing within a year that, on the whole, remains far above last year's for that sector. Challenger's own methodology also has a known soft spot worth naming directly: the firm categorizes cuts by the reason a company gives at announcement time, and a layoff a company attributes to \"restructuring\" can still have automation as its underlying driver -- something this same tracker's category boundaries can't resolve from the outside.",
+      },
+    ],
+  },
+  {
+    date: "2026-08-12",
+    slug: "stanford-ai-employment-gap-young-workers-19-percent",
+    category: "research",
+    title: "Stanford's youth-employment gap in AI-exposed jobs widened to 19%",
+    dek:
+      "A revised Digital Economy Lab analysis of 4.6 million ADP payroll records finds 22-to-25-year-olds in highly AI-exposed occupations still falling behind less-exposed peers -- up from a 15% gap a year earlier -- while the researchers say they still see no broad, economy-wide job losses from AI.",
+    sources: [
+      {
+        label: "No Widespread Displacement, but the AI Employment Gap for Young Workers Has Widened to 19% — Stanford Digital Economy Lab (official, Brynjolfsson, Chandar, Chen)",
+        url: "https://digitaleconomy.stanford.edu/news/canariesaug26/",
+      },
+      {
+        label: "AI-exposed jobs down 19% for young workers: report — Outsource Accelerator (Danica Macayan)",
+        url: "https://news.outsourceaccelerator.com/ai-exposed-jobs-young-workers/",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "Stanford's Digital Economy Lab published a revised version of its ongoing employment analysis on August 12, 2026, led by economist Erik Brynjolfsson with Bharat Chandar and Ruyu Chen, using ADP payroll records covering roughly 4.6 million workers from November 2022 through June 2026. Its central finding: employment among workers aged 22 to 25 in highly AI-exposed occupations now sits about 19% below where it would be had it kept pace with employment among similarly aged workers in less-exposed occupations -- up from a 15% gap the same team measured a year earlier, in the July 2025 vintage of this data.",
+      },
+      {
+        type: "p",
+        text:
+          "The researchers describe the mechanism as running through hiring, not firing: young workers in exposed fields aren't being let go at a higher rate, they're being hired into those roles at a lower one, and the effect is concentrated in occupations -- software engineering and customer service among them -- that lean on \"codified knowledge,\" the kind that can be learned from documentation and training text rather than judgment built on the job. Older, more experienced workers in the same occupations show no comparable gap.",
+      },
+      {
+        type: "h2",
+        text: "A narrower claim than the headline version",
+      },
+      {
+        type: "p",
+        text:
+          "The Lab's own text is explicit on the scope of the claim, in a line quoted directly in this update: \"We do not see widespread, economy-wide job displacement associated with AI.\" What they do see is this specific, narrower pattern -- a widening gap concentrated in young workers and in a particular category of occupation -- and the report presents it as exactly that, not as evidence of a broader labor-market collapse. For a site built around measuring what AI spend actually produces rather than what people assume it's doing, that's a useful discipline to borrow: a real, worsening trend among one group of workers, reported without inflating it into a claim the data doesn't support.",
+      },
+    ],
+  },
+  {
+    date: "2026-08-25",
+    slug: "mckinsey-ai-workforce-cuts-fall-short-of-expectations",
+    category: "research",
+    title: "McKinsey's own survey: predicted AI layoffs keep outrunning the actual ones",
+    dek:
+      "In McKinsey's 2026 State of AI survey, just 14% of firms using AI say it actually shrank their headcount over the past year -- less than half the 32% that predicted a decline in last year's survey -- while the share attributing any EBIT impact to AI held flat at 37%.",
+    sources: [
+      {
+        label: "The State of AI: Global Survey 2026 — McKinsey (official)",
+        url: "https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai",
+      },
+      {
+        label: "McKinsey says enterprise AI is finally 'on the road to ROI' — The Register (Brandon Vigliarolo)",
+        url: "https://www.theregister.com/ai-and-ml/2026/08/25/mckinsey-says-enterprise-ai-is-finally-on-the-road-to-roi/5292388",
+      },
+    ],
+    body: [
+      {
+        type: "p",
+        text:
+          "McKinsey published its 2026 State of AI survey on August 25, 2026 -- 1,719 respondents across 97 nations, fielded May 4 through June 8, 2026. Its headline workforce finding runs against the year's layoff narrative rather than with it: just 14% of respondents from organizations using AI say it contributed to an actual decline in their organization's total workforce size over the past year, less than half the 32% who, in the 2025 edition of the same survey, had predicted a decline over that same period. Looking forward, expectations have climbed again -- 39% now expect AI-driven headcount declines in the coming year, versus 43% expecting little or no change -- repeating the same expectation-versus-reality gap the 2025-to-2026 comparison already shows.",
+      },
+      {
+        type: "p",
+        text:
+          "The financial picture is similarly flat: 37% of respondents attribute at least some EBIT impact to AI, essentially unchanged from a year earlier, and only 6% qualify as what McKinsey calls \"AI high performers\" -- attributing at least 5% of EBIT to AI and describing that impact as significant. Eighty percent of individual respondents say AI has improved their own personal productivity, a gap between individual and organizational impact The Register's Brandon Vigliarolo highlighted directly, quoting McKinsey's own framing: \"conviction in AI is growing faster than the immediate financial returns.\"",
+      },
+      {
+        type: "h2",
+        text: "The gap this site exists to close",
+      },
+      {
+        type: "p",
+        text:
+          "This run could not get McKinsey's own report page to load directly -- it returned a server error on repeated attempts -- so the figures above rest on their consistent, matching repetition across The Register's own bylined reporting rather than this article rendering McKinsey's page itself, the same limitation this log has flagged before for bot-blocked primary sources. Substantively, though, this is close to Merit AC's own thesis stated by a management consultancy surveying 1,719 executives: belief about what AI is doing to headcount and the bottom line is running well ahead of what companies can actually attribute to it -- which is precisely the measurement gap a spend/value tracker exists to narrow.",
+      },
+    ],
+  },
 ];
