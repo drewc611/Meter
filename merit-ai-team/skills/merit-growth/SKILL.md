@@ -121,11 +121,45 @@ gloss.
 The `/challenge` fee mechanism (Stripe vs. manual) is also undecided. Don't
 draft checkout copy that implies a working payment flow until that's answered.
 
+## Site interactivity (added 2026-09-05)
+
+The founder asked directly for the site to become "more interactive." No specific
+feature was named — that's this arm's job to propose, not assume. Two hard
+constraints bound every idea before it goes further:
+
+- `ContentLayout.jsx`'s own top comment states it "never ships any client-side
+  JS" for the marketing/content pages (home, architecture, setup, guides,
+  prompts, challenge, community, news, models, glossary) — they're prerendered
+  static HTML on purpose, so nothing hydrates and nothing is blank until JS
+  runs. An "interactive feature" that breaks this contract for the whole site
+  is not a small ask; treat it as the kind of change that needs the founder's
+  sign-off before touching `ContentLayout.jsx` itself, not something to slip in
+  quietly.
+- The existing precedent for interactivity on this site is CSS-only (the
+  mobile-nav hamburger toggle) or a small, self-contained vanilla-JS widget
+  scoped to one page (the coming-soon waitlist form and recoverable-spend
+  calculator, both pre-dating the current site and not on the live nav).
+  New ideas should fit one of those two shapes — a CSS-only interaction, or an
+  isolated inline `<script>` on the one page that needs it — rather than
+  introducing a framework, client-side routing, or app-wide hydration.
+
+Next run should draft 2-3 concrete, scoped proposals (what page, what
+interaction, which of the two shapes above, and why it's worth the added
+complexity) and log them here or in `merit-content-log.md` rather than
+building blind — this is exactly the kind of pick where guessing wrong means
+throwaway work on a public site.
+
 ## News arm (added 2026-08-22)
 
 Growth also owns the `/news` pipeline — commentary on real, current AI
 news, tracked against its own goal (`merit-ai-team/docs/merit-news-goal.md`),
 never blended with the content or design-partner goals.
+
+Target cadence as of 2026-09-05: **every 5 hours**, per the founder's direct
+request that day (supersedes the earlier "seven times a day" figure — see
+`merit-news-goal.md`'s progress log). This is a target for how often a run
+checks in, not a quota — a run with nothing that clears the Judge-tier bar
+still skips cleanly, same as always.
 
 This is the one arm that **publishes autonomously** — no human reviews an
 article before it goes live, per the founder's direct confirmation. That makes

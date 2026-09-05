@@ -1,5 +1,5 @@
 // AI news commentary -- dated, sourced articles added as real news happens,
-// picked up by a scheduled run seven times a day that publishes autonomously
+// picked up by a scheduled run every 5 hours that publishes autonomously
 // (see merit-ai-team/docs/merit-news-goal.md and merit-news-judge-log.md).
 // Every claim needs a real source in `sources` -- no invented statistics, no
 // treating a press release as independent reporting. Skip a run entirely
