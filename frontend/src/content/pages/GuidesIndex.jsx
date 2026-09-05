@@ -27,6 +27,21 @@ const GUIDES = [
     title: "AI system design patterns",
     meta: "Twelve archetypes, six complex agent patterns, and the ML/AI software landscape — independent of Merit AC itself",
   },
+  {
+    href: "/guides/ai-evaluation-methods",
+    title: "AI evaluation methods",
+    meta: "Rubrics, LLM-as-judge, and benchmarks — when to use which, and how judges fail",
+  },
+  {
+    href: "/guides/rag-failure-modes",
+    title: "RAG failure modes",
+    meta: "A debugging field guide — retrieval failure, lost-in-the-middle, reranking, chunking",
+  },
+  {
+    href: "/guides/context-engineering",
+    title: "Context engineering",
+    meta: "What actually competes for space in the context window, and how to manage it",
+  },
 ];
 
 export default function GuidesIndex() {
@@ -39,8 +54,8 @@ export default function GuidesIndex() {
       <h1>Guides</h1>
       <p className="lead">
         General writing on doing AI work well — governed agentic DevSecOps adapted from our own{" "}
-        <em>Enterprise Agentic DevSecOps Handbook</em>, plus a standalone field guide to how AI
-        systems get designed in general.
+        <em>Enterprise Agentic DevSecOps Handbook</em>, plus a standalone set of field guides on
+        how AI systems actually work, break, and get evaluated.
       </p>
       <div className="grid">
         {GUIDES.map((g) => (

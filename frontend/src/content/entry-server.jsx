@@ -19,6 +19,9 @@ import TenDisciplines, { meta as tenDisciplinesMeta } from "./pages/guides/TenDi
 import FourteenDomains, { meta as fourteenDomainsMeta } from "./pages/guides/FourteenDomains.jsx";
 import FourControlBoundaries, { meta as fourControlBoundariesMeta } from "./pages/guides/FourControlBoundaries.jsx";
 import AISystemPatterns, { meta as aiSystemPatternsMeta } from "./pages/guides/AISystemPatterns.jsx";
+import AIEvaluationMethods, { meta as aiEvaluationMethodsMeta } from "./pages/guides/AIEvaluationMethods.jsx";
+import RagFailureModes, { meta as ragFailureModesMeta } from "./pages/guides/RagFailureModes.jsx";
+import ContextEngineering, { meta as contextEngineeringMeta } from "./pages/guides/ContextEngineering.jsx";
 import PromptLibrary, { meta as promptLibraryMeta } from "./pages/PromptLibrary.jsx";
 import PromptDay, { promptMeta } from "./pages/PromptDay.jsx";
 import { PROMPTS } from "./data/prompts.js";
@@ -38,6 +41,9 @@ const PAGES = [
   [FourteenDomains, fourteenDomainsMeta],
   [FourControlBoundaries, fourControlBoundariesMeta],
   [AISystemPatterns, aiSystemPatternsMeta],
+  [AIEvaluationMethods, aiEvaluationMethodsMeta],
+  [RagFailureModes, ragFailureModesMeta],
+  [ContextEngineering, contextEngineeringMeta],
   [PromptsIndex, promptsMeta],
   [PromptLibrary, promptLibraryMeta],
   [Challenge, challengeMeta],
