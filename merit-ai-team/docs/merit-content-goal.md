@@ -30,6 +30,7 @@ average the two into a single status.
 | Stripe Payment Link actually created | the founder | **open** — `frontend/src/content/data/paidTrack.js`'s `PAID_TRACK_PAYMENT_LINK` is still a placeholder; until it's set, `/challenge#paid-track` shows a "coming soon" badge plus a real email-capture form (`source=challenge-paid-track` in `waitlist_signups`, viewable via `GET /admin/waitlist?source=challenge-paid-track`) so interest isn't lost while Stripe isn't wired up |
 | Funnel direction decided (content → `/setup/*` vs. separate audience) | the founder | open |
 | `/community` page | merit-growth | done — interest-capture only (`source=community-interest`); platform and price both open, same as the paid track |
+| Site interactivity — propose and ship 2-3 concrete features | merit-growth | **open** — new ask from the founder, 2026-09-05; see `merit-growth`'s SKILL.md "Site interactivity" section for the constraints any proposal has to fit |
 
 ## Progress log
 
@@ -159,3 +160,13 @@ average the two into a single status.
 - The directory and glossary are one-time-authored-then-periodically-
   revisited content, not continuously autonomous-published like `/news` —
   no new goal file for this; it's scored as part of this content goal.
+
+### 2026-09-05 — site interactivity assigned to growth
+- The founder asked directly for the site to be "more interactive." No
+  feature was specified — that's growth's job to propose, not guess at.
+  Added as an open sub-goal above; the concrete constraints any proposal
+  has to fit (no client-side JS on the prerendered content pages, CSS-only
+  or a scoped single-page vanilla-JS island are the two shapes that fit
+  precedent) are written into `merit-growth`'s SKILL.md rather than
+  repeated here. Nothing shipped yet — this entry records the ask and the
+  ownership, not a finished feature.

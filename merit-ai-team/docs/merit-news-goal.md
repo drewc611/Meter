@@ -88,3 +88,15 @@ track regardless of publish volume.
   and "zero corrections logged because nobody checked" look identical
   from outside, which is exactly why the new measure pairs both numbers
   instead of reporting volume alone.
+
+### 2026-09-05 — cadence updated to every 5 hours
+- The founder asked directly for news articles on a 5-hour cadence,
+  replacing the earlier "seven times a day" figure carried in `news.js`'s
+  own top comment (now updated to match). This is a target for how often
+  a run checks in for new candidates, not a per-run quota — the
+  reject-or-skip discipline above still applies in full: a run with
+  nothing that clears the Judge-tier bar publishes nothing, on this
+  cadence same as any other.
+- No change to the measure or deadline set on 2026-09-04 — published
+  volume was never the thing being scored, and a faster check-in cadence
+  doesn't change that.
