@@ -22,6 +22,11 @@ const GUIDES = [
     title: "Four control boundaries for agentic DevSecOps",
     meta: "Code generation is the easy part — the short version, in four boundaries",
   },
+  {
+    href: "/guides/ai-system-design-patterns",
+    title: "AI system design patterns",
+    meta: "Twelve archetypes, six complex agent patterns, and the ML/AI software landscape — independent of Merit AC itself",
+  },
 ];
 
 export default function GuidesIndex() {
@@ -33,8 +38,9 @@ export default function GuidesIndex() {
       </span>
       <h1>Guides</h1>
       <p className="lead">
-        General writing on doing AI work well — starting with governed agentic DevSecOps, adapted
-        from our own <em>Enterprise Agentic DevSecOps Handbook</em> and reference materials.
+        General writing on doing AI work well — governed agentic DevSecOps adapted from our own{" "}
+        <em>Enterprise Agentic DevSecOps Handbook</em>, plus a standalone field guide to how AI
+        systems get designed in general.
       </p>
       <div className="grid">
         {GUIDES.map((g) => (

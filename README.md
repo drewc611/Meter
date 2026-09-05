@@ -84,12 +84,10 @@ content arm below, so it's a real crawlable file rather than a client-side
 route (see `frontend/README.md`). The dashboard itself lives at `/app`,
 linked from the "Sign in" button in the header.
 
-- `/architecture` -- the system/deployment writeup from
-  [`ARCHITECTURE.md`](ARCHITECTURE.md), reformatted for the public site,
-  plus a general field guide to AI system design (twelve archetypes, six
-  complex agent patterns, the ML/AI software landscape, and composed
-  prompts combining them) -- independent of this product, published
-  interactively rather than as static docs
+- `/architecture` -- purely the system/deployment writeup from
+  [`ARCHITECTURE.md`](ARCHITECTURE.md), reformatted for the public site: the
+  ingestion/scoring pipeline, data model, where it runs, and what's
+  deliberately not built yet
 - `/setup/react`, `/setup/python`, `/setup/node`, `/setup/tensorflow-pyro` --
   how to wire your own AI usage into Merit AC's `/ingest/usage` endpoint
 - `/news` -- sourced AI news commentary, the one arm that publishes
@@ -99,9 +97,16 @@ linked from the "Sign in" button in the header.
   source and a `verifiedDate`, spot-checked rather than trusted indefinitely
 - `/glossary` -- plain-English AI term definitions
 - `/guides`, `/prompts`, `/challenge` -- a governed-agentic-DevSecOps
-  content arm adapted from an internal reference handbook: three long-form guides,
-  a 30-day prompt archive, and a free capstone project (build a governed
-  agentic delivery platform)
+  content arm adapted from an internal reference handbook: three long-form
+  guides, a 30-day prompt archive, and a free capstone project (build a
+  governed agentic delivery platform). `/guides` also carries a fourth,
+  independent guide -- a general field guide to AI system design (twelve
+  archetypes, six complex agent patterns, and the ML/AI software landscape),
+  not adapted from the handbook and not specific to this product.
+  `/prompts` links out to a separate composed-and-advanced prompt library
+  (235 prompts across 41 categories, each naming which of the guide's
+  patterns it combines) -- a different shape from the daily archive, so it
+  lives at its own URL rather than inside the 30-day calendar.
 - `/community` -- not open yet; an honest interest-list page rather than a
   placeholder for a platform or price that hasn't been decided
 

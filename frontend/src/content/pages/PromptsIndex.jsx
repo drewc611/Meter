@@ -47,6 +47,16 @@ export default function PromptsIndex() {
           </div>
         </div>
       ))}
+
+      <div className="card">
+        <p>
+          <b>Looking for something other than the daily archive?</b> The{" "}
+          <a href="/prompts/composed-and-advanced-prompts">composed &amp; advanced prompt library</a>{" "}
+          has 235 more — prompts that combine multiple{" "}
+          <a href="/guides/ai-system-design-patterns">AI system design patterns</a> for real,
+          non-trivial work, each one naming exactly which patterns it's built from.
+        </p>
+      </div>
     </ContentLayout>
   );
 }

@@ -18,6 +18,8 @@ import Glossary, { meta as glossaryMeta } from "./pages/Glossary.jsx";
 import TenDisciplines, { meta as tenDisciplinesMeta } from "./pages/guides/TenDisciplines.jsx";
 import FourteenDomains, { meta as fourteenDomainsMeta } from "./pages/guides/FourteenDomains.jsx";
 import FourControlBoundaries, { meta as fourControlBoundariesMeta } from "./pages/guides/FourControlBoundaries.jsx";
+import AISystemPatterns, { meta as aiSystemPatternsMeta } from "./pages/guides/AISystemPatterns.jsx";
+import PromptLibrary, { meta as promptLibraryMeta } from "./pages/PromptLibrary.jsx";
 import PromptDay, { promptMeta } from "./pages/PromptDay.jsx";
 import { PROMPTS } from "./data/prompts.js";
 import NewsIndex, { meta as newsIndexMeta } from "./pages/NewsIndex.jsx";
@@ -35,7 +37,9 @@ const PAGES = [
   [TenDisciplines, tenDisciplinesMeta],
   [FourteenDomains, fourteenDomainsMeta],
   [FourControlBoundaries, fourControlBoundariesMeta],
+  [AISystemPatterns, aiSystemPatternsMeta],
   [PromptsIndex, promptsMeta],
+  [PromptLibrary, promptLibraryMeta],
   [Challenge, challengeMeta],
   [Community, communityMeta],
   [NewsIndex, newsIndexMeta],
