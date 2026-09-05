@@ -334,3 +334,172 @@ unusually clean, or the Judge pass has gotten lax.
 - No absence-of-evidence claims: pass
 - Every citation has a confirmed byline/author: pass — The National byline Cody Combs, tbreak byline Abbas Jaffar Ali, Middle East AI News byline Carrington Malin, all confirmed via direct fetch; Hugging Face model card and org page are institutional/primary artifacts.
 **Notes:** A direct fetch of the flagship 375B-A23B model's own Hugging Face card found a real discrepancy worth flagging rather than smoothing over: as of this run, the card describes intermediate checkpoints and training code as still forthcoming rather than already live, even though IFM's own release framing (per secondary reporting) describes the release as already including those artifacts — the article states this gap explicitly instead of repeating the release's framing uncritically. The diffusion-distillation ~3x-speedup claim is attributed specifically to IFM's own characterization (via Middle East AI News's direct reporting), not published as an independently benchmarked fact.
+
+### 2026-09-05 — three-lane research run (90-day catch-up batch)
+
+Three independent research passes ran in parallel today, each assigned a
+separate topic lane (research/product; regulation/funding; tools/labor) to
+cover the gap since the last published article (2026-09-03). All three were
+told to target roughly 9 articles each but to report the honest count
+regardless of whether that target was hit. Combined raw yield: 15 drafted
+candidates across the three lanes, 8 rejected before or during drafting.
+One of the 15 drafted candidates was a duplicate: the research/product lane
+and the tools/labor lane both independently found and drafted the same
+story (Anthropic's September 1 Enterprise Frontier Safeguards announcement),
+under different slugs and with different secondary sources. Rather than
+publish the same underlying event twice, the research/product lane's
+version (slug `anthropic-enterprise-frontier-safeguards`) was kept and the
+tools/labor lane's duplicate draft (which would have used the slug
+`anthropic-enterprise-frontier-safeguards-customer-controlled-data`) was
+dropped without being published. Net: 14 unique articles published today.
+
+### 2026-09-05 09:15 UTC — anthropic-enterprise-frontier-safeguards
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites Anthropic's own announcement (`anthropic.com/news/enterprise-frontier-safeguards`) as primary, direct fetch succeeded twice (general facts, then specifically to pull every named customer quote verbatim); PYMNTS as corroborating secondary, confirmed via direct fetch.
+- Quotes ≤15 words, one per source: pass — Wells Fargo CISO Munish Kumar Sharma quoted at 10 words ("our logs stay in a Wells-managed environment under Wells-managed keys"), pulled directly from Anthropic's own page; no quote taken from PYMNTS.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: partial — Anthropic's own blog is institutional and fully confirmed; PYMNTS carries only an institutional byline ("PYMNTS"), not an individual reporter's name, consistent with this log's existing softer tier for institutional bylines (TUN, PYMNTS precedent from 2026-09-04).
+**Notes:** A search-engine summary of a separate outlet's coverage of this story surfaced an alleged Dario Amodei quote that reads as garbled — mixing an executive quote with an unrelated customer name in a way that doesn't match how the primary's actual named-customer quotes are structured. A direct fetch of Anthropic's own page, specifically targeting every named-individual quote it contains, did not surface this quote at all. Dropped it entirely rather than publish an unverified/likely-fabricated attribution — same discipline this log applied to the unconfirmed "USB-C" quote in the 2026-08-28 model-hardware-standard entry. Separately: this same underlying story was independently drafted a second time by a different research pass this session under a different slug — see the batch note above. Only this version was published; the duplicate draft was discarded, not merged or silently dropped.
+
+### 2026-09-05 09:15 UTC — meta-muse-spark-1-3-launch
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites Meta AI Research's own announcement (`research.meta.ai/blog/introducing-muse-spark-1-3`) as primary, direct fetch succeeded; SiliconANGLE (byline Mike Wheatley) as corroborating secondary, confirmed via direct fetch, refetched a second time specifically to re-verify every Alexandr Wang quote word-for-word.
+- Quotes ≤15 words, one per source: pass — Wang quoted at the two-word fragments "competitive" and "better than" (used exactly as quoted in SiliconANGLE) plus a separate 4-word quote ("trillions of tokens per week"); no quote taken from the Meta primary, which contains no named individual quotes at all.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Meta AI Research's own blog (institutional); SiliconANGLE byline Mike Wheatley, confirmed via direct fetch.
+**Notes:** An initial fetch of the SiliconANGLE piece returned a paraphrased summary that included a quote attributed to Wang that could not be reproduced on a second, more targeted fetch — appears to have been a summarization artifact, not real article text. Dropped it and used only quotes independently reconfirmed on the second, more careful pass. Meta's own page confirms the ~20%-fewer-tool-calls/~25%-fewer-tokens efficiency figures directly; the Artificial Analysis Intelligence Index score is attributed specifically to SiliconANGLE's own reporting of that independent evaluator, not to Meta's own claims.
+
+### 2026-09-05 09:45 UTC — spacexai-grok-bot-enterprise-launch
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites SpaceXAI's own announcement (`x.ai/news/grok-bot-for-enterprise`) as primary, direct fetch succeeded; Blockchain.News (byline Rongchai Wang) as corroborating secondary for the September 3 enterprise-controls launch specifically; Reworked (byline Siobhan Fagan) as a second secondary, used only for the separate, earlier August 11 beta-launch details, clearly distinguished in the article's own text from the September 3 announcement rather than conflated with it.
+- Quotes ≤15 words, one per source: pass — SpaceXAI's own page quoted at 14 words; Reworked quoted at the short fragment "a real blast radius" (5 words); no quote taken from Blockchain.News.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — SpaceXAI's own blog (institutional); Blockchain.News byline Rongchai Wang and Reworked byline Siobhan Fagan, both confirmed via direct fetch.
+**Notes:** Verified the xAI/SpaceX merger and "SpaceXAI" rebrand independently before using that name in the article — confirmed via multiple outlets that the merger closed February 2, 2026 and the rebrand was completed July 6, 2026, with the Grok product name explicitly kept unchanged. Pricing figures came from the original August 11 reporting and were not re-confirmed as unchanged by a direct September fetch, so this is flagged as carried over rather than independently re-verified at publish time.
+
+### 2026-09-05 10:10 UTC — google-deepmind-weathernext-3-launch
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites Google's own announcement (`blog.google/innovation-and-ai/models-and-research/google-deepmind/introducing-weathernext-3/`) as primary, direct fetch succeeded; TechCrunch (byline Tim Fernholz) as corroborating secondary, refetched a second time specifically to pull exact quote wording.
+- Quotes ≤15 words, one per source: pass — Ferran Alet (DeepMind) quoted at 12 words, sourced to TechCrunch; no quote taken from Google's own page, which names no individual spokesperson.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Google's own blog (institutional); TechCrunch byline Tim Fernholz, confirmed via direct fetch.
+**Notes:** An initial search-engine fetch returned the wrong DeepMind blog post (a prior, narrower release under a similar-sounding URL). Caught this before drafting and located and fetched the correct, current WeatherNext 3 post directly. The CRPS precipitation-accuracy percentages and the regional-gain claim are both confirmed directly from Google's own page text, not from secondary paraphrase. Flagged explicitly in the article that Google's own performance claims rest partly on an outside evaluator (Brightband) rather than purely self-graded benchmarks.
+
+### 2026-09-05 10:30 UTC — ai-agents-open-ended-research-shadow-evaluation (rejected)
+**Verdict:** rejected
+**Checks:**
+- Primary source over trade-report paraphrase: pass on the primary itself — the underlying preprint (arXiv 2607.27191) was fetched directly and read in full.
+- Quotes ≤15 words, one per source: n/a — no draft written, rejected before drafting.
+- No absence-of-evidence claims: n/a
+- Every citation has a confirmed byline/author: fail — the news hook for covering this now (Nature News) had no confirmable individual byline despite multiple attempts; secondary write-ups found also lacked a confirmed human byline.
+**Notes:** Substantively on-theme (a controlled study finding frontier agents can do the engineering of open-ended AI research but get rejected by the original papers' own authors on research judgment and creativity) but sits at the edge of this run's recency window and couldn't clear the confirmed-byline bar on any secondary. Rejected rather than published on the primary alone. Worth revisiting if a bylined outlet picks the paper up later.
+
+### 2026-09-05 10:35 UTC — aalto-machine-learning-superconductor-discovery (rejected)
+**Verdict:** rejected
+**Notes:** Real research, but published June 17, 2026 — well outside this run's recency guidance. Rejected on recency alone before pursuing full sourcing.
+
+### 2026-09-05 10:35 UTC — alibaba-qwen3-8-max-unveiling (rejected)
+**Verdict:** rejected
+**Notes:** Qwen3.8-Max was unveiled August 3, 2026 — over a month before this run's date. A more recent frontier-model story (Meta's Muse Spark 1.3) was prioritized instead; not pursued to full source-verification depth.
+
+### 2026-09-05 09:15 UTC — eu-ai-office-first-enforcement-information-requests
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: partial — no dedicated European Commission press release for this specific action could be found; the closest available primary is an on-record, named-speaker statement from Commission VP Henna Virkkunen, relayed via AFP wire and republished by The Star. MLex (Masha Borak, confirmed byline) used as corroborating secondary.
+- Quotes ≤15 words, one per source: pass — Virkkunen quoted at 13 words; no quote taken from MLex.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: partial — MLex byline confirmed via direct fetch; the AFP-wire source carries no individual byline, only wire-service attribution, consistent with this log's existing softer tier for institutional/wire sources.
+**Notes:** Two dates are in tension and both are disclosed rather than smoothed over: MLex's own byline dates its report ahead of the wider confirmation, while a separate wire bulletin dates the actual sending of the requests to September 1, with Virkkunen's on-record confirmation coming beforehand. The article uses September 1 — the date the requests actually went out — as its date field, and states plainly that the Commission itself declined to name recipients, attributing the OpenAI/Anthropic/Google identification specifically to MLex's reporting rather than to an EU document.
+
+### 2026-09-05 09:15 UTC — stripe-acquires-openrouter-ai-gateway
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites Stripe's own newsroom announcement and OpenRouter's own blog post as primary, both fetched directly; TechCrunch (byline Anthony Ha) as corroborating secondary for the $7B+ price, which neither company itself disclosed.
+- Quotes ≤15 words, one per source: pass — Collison quoted at 10 words; OpenRouter's own blog quoted at 12 words; no quote taken from TechCrunch.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Stripe and OpenRouter are institutional primary sources; TechCrunch byline Anthony Ha, confirmed via direct fetch.
+**Notes:** Deal price is explicitly flagged in the article as reported, not confirmed by either company. The "OpenRouter stays neutral" claim is presented as OpenRouter's own stated promise, with an explicit editorial caveat that it's the kind of promise likely to be tested rather than a settled fact.
+
+### 2026-09-05 09:15 UTC — spacex-closes-60-billion-cursor-acquisition
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites Cursor's own blog post as primary, fetched directly; TechCrunch (byline Anthony Ha) as corroborating secondary.
+- Quotes ≤15 words, one per source: pass — Cursor's own blog quoted at 14 words and a separate 10-word phrase, both attributed to the same primary source; no quote taken from TechCrunch.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Cursor's own blog (institutional primary); TechCrunch byline Anthony Ha, confirmed via direct fetch.
+**Notes:** Deliberately dropped two figures that turned up repeatedly in aggregator coverage but couldn't be traced to a bylined source on direct fetch: a "largest venture-backed acquisition on record" superlative and a specific annualized-revenue figure for Cursor. Neither appears in Cursor's own post or in the directly-fetched TechCrunch piece, so neither is in the published article.
+
+### 2026-09-05 09:15 UTC — etched-700-million-series-d-21-billion-valuation
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites Etched's own press release distributed via GlobeNewswire (confirmed company-issued) as primary; TechCrunch (byline Julie Bort) as corroborating secondary.
+- Quotes ≤15 words, one per source: pass — Etched co-founder/CEO Gavin Uberti quoted at 14 words; no quote taken from TechCrunch.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Etched's own press release (institutional primary); TechCrunch byline Julie Bort, confirmed via direct fetch.
+**Notes:** The article explicitly names a nuance the press release itself doesn't flag: Jane Street is simultaneously the round's lead investor and, per the same release's own headline, the company's first paying customer — stated plainly as making Jane Street's own account of the chip's performance harder to treat as fully independent, a real structural fact rather than speculation about motive.
+
+### 2026-09-05 09:15 UTC — stability-ai-76-million-series-b-entertainment-partners
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites Stability AI's own announcement as primary, fetched directly; TechCrunch (byline Lucas Ropek) as corroborating secondary.
+- Quotes ≤15 words, one per source: pass — CEO Prem Akkaruju quoted at 14 words; no quote taken from TechCrunch.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Stability AI's own announcement (institutional primary); TechCrunch byline Lucas Ropek, confirmed via direct fetch.
+**Notes:** An earlier draft framing described Universal/Sony/Warner as "the AI company they used to sue" — checked specifically and found false: the active music-industry lyrics lawsuit over AI training is against Anthropic, not Stability AI, and no lawsuit by Universal, Sony, or Warner against Stability AI was found. That framing was dropped entirely before drafting rather than corrected after the fact; the published article instead accurately describes Universal and Warner as prior licensing partners now also holding equity, with Sony joining fresh.
+
+### 2026-09-05 09:15 UTC — nvidia-perplexity-investment-talks (rejected)
+**Verdict:** rejected
+**Notes:** Only sourcing is a single outlet reporting the two companies are "in talks," with both companies declining to comment — a rumored, unconfirmed negotiation, not a completed or acknowledged round. Revisit only if either company confirms.
+
+### 2026-09-05 09:15 UTC — amazon-ftc-sponsored-ads-lawsuit (rejected)
+**Verdict:** rejected
+**Notes:** Real, fresh lawsuit (FTC + 22 states v. Amazon, August 31, 2026) but about auction-pricing mechanics and advertiser disclosure, not an AI-specific regulatory question — an "AI pricing" framing appeared only in secondary commentary, not in the FTC's own complaint. Judged out of this run's regulation/policy lane rather than genuinely an AI story stretched to fit it.
+
+### 2026-09-05 16:10 UTC — deepseek-harness-open-source-claude-code-rival
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites DeepSeek's own product page and its official GitHub repository as primary, both confirmed to exist; VentureBeat (byline Carl Franzen) as corroborating secondary for launch-day adoption figures.
+- Quotes ≤15 words, one per source: pass — DeepSeek's own stated design principle quoted at 4 words ("Everything is a plugin"); no quote taken from VentureBeat.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — DeepSeek's own official page (institutional); VentureBeat byline Carl Franzen, confirmed via direct fetch.
+**Notes:** Multiple lower-tier blogs reported cumulative star counts well above 100,000 within the harness's first week, but none of those specific claims could be traced to a confirmed, bylined outlet — the article explicitly flags the larger totals as "widely repeated... but not independently verified," using only VentureBeat's own directly-fetched launch-day figure as a verified number.
+
+### 2026-09-05 16:10 UTC — github-copilot-can-now-approve-pull-requests
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites GitHub's own official changelog post as primary, direct fetch succeeded; DevOps.com (byline Tom Smith) as corroborating secondary.
+- Quotes ≤15 words, one per source: pass — Mitch Ashley (The Futurum Group) quoted at 11 words, trimmed from a longer three-sentence quote captured via direct fetch; no quote taken from GitHub's own changelog.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — GitHub's own changelog (institutional); DevOps.com byline Tom Smith, confirmed via direct fetch.
+**Notes:** The article explicitly notes the feature is public preview and opt-in, with no real-world approval-accuracy data yet, rather than treating GitHub's launch framing as evidence the feature works well in practice.
+
+### 2026-09-05 16:10 UTC — challenger-gray-ai-job-cuts-fall-fourth-place-august
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — this run downloaded Challenger, Gray & Christmas's own August 2026 PDF report directly and extracted its full text after an initial fetch failed to parse it; Yahoo Finance (byline Claire Boston) as corroborating secondary.
+- Quotes ≤15 words, one per source: pass — Andy Challenger quoted at 7 words, read directly off the PDF; no quote taken from Yahoo Finance.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Challenger, Gray & Christmas's own report (institutional, official); Yahoo Finance byline Claire Boston, confirmed via direct fetch.
+**Notes:** Explicitly flagged Challenger's own category-attribution limitation (a cut a company labels "restructuring" can still be automation-driven underneath) rather than treating the monthly AI-cited-cuts figure as a complete picture of AI's actual layoff impact. Verified directly from the PDF, not secondary paraphrase: the exact totals, month-over-month/year-over-year deltas, and the AI-specific figures.
+
+### 2026-09-05 16:10 UTC — stanford-ai-employment-gap-young-workers-19-percent
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites Stanford Digital Economy Lab's own published update as primary, direct fetch succeeded and confirmed named authors, methodology, and exact quoted text directly on the page; Outsource Accelerator (byline Danica Macayan) as corroborating secondary.
+- Quotes ≤15 words, one per source: pass — Stanford's own text quoted at 11 words; no quote taken from Outsource Accelerator.
+- No absence-of-evidence claims: pass — repeats the researchers' own explicit statement that they do not see broad displacement, rather than asserting an absence of displacement independently.
+- Every citation has a confirmed byline/author: pass — Stanford Digital Economy Lab (institutional, named academic authors); Outsource Accelerator byline Danica Macayan, confirmed via direct fetch.
+**Notes:** Deliberately distinguished this update's own scope from a related, separately-published earlier piece covering the original ~15% finding from a year earlier — that earlier piece was NOT used as a source for this article since it predates and describes a different data vintage, avoiding the conflation risk of citing older coverage for a newer number.
+
+### 2026-09-05 16:10 UTC — mckinsey-ai-workforce-cuts-fall-short-of-expectations
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: partial — McKinsey's own report page returned repeated server errors and could not be rendered directly by this run; the survey's existence, exact publish date, field dates, and headline figures were confirmed instead through consistent, matching repetition across multiple independent sources, most importantly The Register (byline Brandon Vigliarolo), following this log's own precedent for a bot-blocked primary URL.
+- Quotes ≤15 words, one per source: pass — McKinsey's own framing, as quoted by The Register, trimmed to 11 words; no separate quote taken from any other secondary source.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: partial — McKinsey's report is institutional and its existence/figures are corroborated by multiple outlets, but this run never rendered the McKinsey page itself; The Register byline Brandon Vigliarolo is fully confirmed via direct fetch.
+**Notes:** This is explicitly a softer-primary-sourcing case, flagged in the article's own body rather than glossed over — the specific figures were cross-checked across multiple aggregator summaries and one fully-bylined outlet, but this run did not find a second fully-named-byline outlet independently reporting the same figures, so it is logged as "partial" rather than "pass" on both checks rather than rounded up.
