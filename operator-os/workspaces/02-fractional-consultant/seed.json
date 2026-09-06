@@ -1,0 +1,117 @@
+{
+  "config": {
+    "business_name": "Second Desk Operations",
+    "operator": "Nora Halstead",
+    "trade": "fractional operations consulting on monthly retainer",
+    "currency": "USD",
+    "currency_symbol": "$",
+    "hourly_rate": "165.00",
+    "target_margin_pct": "62",
+    "tax_rate_pct": "0",
+    "tax_set_aside_pct": "30",
+    "invoice_terms_days": "15",
+    "capacity_hours_per_week": "26",
+    "opening_cash": "18240.00",
+    "week_starts": "monday",
+    "quiet_hours": "18:30-08:00"
+  },
+  "contacts": [
+    {"id":"c0001","name":"Delia Marchetti","company":"Northgate Logistics Co","role":"COO","email":"d.marchetti@example.com","phone":"555-0207","source":"referral","status":"active","tags":"retainer,concentration","first_contact":"T-410","last_contact":"T-2","notes":"Month twelve of the retainer. 9000 a month, which is more than half of everything."},
+    {"id":"c0002","name":"Warren Fitz","company":"Bellhaven Dental Group","role":"practice director","email":"wfitz@example.com","phone":"555-0233","source":"referral","status":"active","tags":"retainer","first_contact":"T-150","last_contact":"T-5","notes":"Month five. Asks for exactly what he agreed to and nothing else."},
+    {"id":"c0003","name":"Priyanka Boro","company":"Cotter Fabrication","role":"general manager","email":"pboro@example.com","phone":"555-0219","source":"referral","status":"active","tags":"retainer,scope-creep","first_contact":"T-118","last_contact":"T","notes":"Month three. Bought a Friday review. Now calls daily."},
+    {"id":"c0004","name":"Samuel Oyelaran","company":"Ridgeline Pet Supply","role":"founder","email":"sam@example.com","phone":"555-0244","source":"referral","status":"past","tags":"project,slow-pay","first_contact":"T-190","last_contact":"T-27","notes":"Inventory rebuild finished. Went quiet the day after handover."},
+    {"id":"c0005","name":"Hana Lindqvist","company":"Vessel Coffee Roasters","role":"operations lead","email":"hana@example.com","phone":"555-0261","source":"referral","status":"lead","tags":"","first_contact":"T-11","last_contact":"T-4","notes":"Wants two weeks of diagnostic. Keeps describing it as ongoing."},
+    {"id":"c0006","name":"Terrence Bode","company":"Kilmartin Group","role":"managing partner","email":"tbode@example.com","phone":"555-0278","source":"referral","status":"lead","tags":"","first_contact":"T-19","last_contact":"T-9","notes":"Referred by Ruth. Wants six months. Has not read the scope yet."},
+    {"id":"c0007","name":"Joanne Pike","company":"Arbor Craft Interiors","role":"owner","email":"jpike@example.com","phone":"555-0288","source":"website","status":"dormant","tags":"","first_contact":"T-300","last_contact":"T-96","notes":"Four months on retainer, then hired an office manager. One month never paid."},
+    {"id":"c0008","name":"Miguel Santoro","company":"Halberd Staffing","role":"VP operations","email":"msantoro@example.com","phone":"555-0295","source":"conference","status":"lead","tags":"","first_contact":"T-34","last_contact":"T-30","notes":"Wants help. Cannot say with what. Four weeks of nothing."},
+    {"id":"c0009","name":"Ruth Ellery","company":"Ellery Bookkeeping","role":"bookkeeper","email":"ruth@example.com","phone":"555-0212","source":"trade","status":"active","tags":"partner","first_contact":"T-520","last_contact":"T-16","notes":"Sends one good referral a quarter. Sees every client book before Nora does."},
+    {"id":"c0010","name":"Dev Anand","company":"Northgate Logistics Co","role":"finance director","email":"danand@example.com","phone":"555-0209","source":"referral","status":"active","tags":"","first_contact":"T-395","last_contact":"T-6","notes":"Approves the invoices. Queries anything above the retainer line."}
+  ],
+  "deals": [
+    {"id":"d0001","contact_id":"c0006","title":"Kilmartin retainer, six months","value":"24000.00","stage":"quoted","confidence":"55","opened":"T-19","expected_close":"T+12","next_action":"Send the month one scope on one page","next_action_due":"T-2","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0002","contact_id":"c0005","title":"Vessel two week ops diagnostic","value":"5800.00","stage":"negotiating","confidence":"70","opened":"T-11","expected_close":"T+9","next_action":"Put the last day in writing before anything starts","next_action_due":"T+3","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0003","contact_id":"c0008","title":"Halberd retainer, scope undefined","value":"18000.00","stage":"new","confidence":"25","opened":"T-34","expected_close":"T+60","next_action":"","next_action_due":"","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0004","contact_id":"c0001","title":"Northgate renewal, months 13 to 18","value":"58800.00","stage":"negotiating","confidence":"80","opened":"T-25","expected_close":"T+21","next_action":"Reprice at 9800 and cap the standing calls at two a week","next_action_due":"T+1","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0005","contact_id":"c0002","title":"Bellhaven retainer, months 1 to 6","value":"24000.00","stage":"won","confidence":"100","opened":"T-140","expected_close":"T-120","next_action":"","next_action_due":"","status":"won","closed_on":"T-118","lost_reason":""},
+    {"id":"d0006","contact_id":"c0007","title":"Arbor Craft retainer restart","value":"9600.00","stage":"lost","confidence":"0","opened":"T-95","expected_close":"T-62","next_action":"","next_action_due":"","status":"lost","closed_on":"T-58","lost_reason":"Hired a full time office manager instead"}
+  ],
+  "quotes": [
+    {"id":"q0001","deal_id":"d0001","contact_id":"c0006","number":"Q-0311","issued":"T-16","expires":"T+14","subtotal":"24000.00","tax":"0.00","total":"24000.00","status":"sent","decided_on":"","notes":"Six months at 4000. Month one is diagnostic only."},
+    {"id":"q0002","deal_id":"d0002","contact_id":"c0005","number":"Q-0313","issued":"T-8","expires":"T+22","subtotal":"5800.00","tax":"0.00","total":"5800.00","status":"sent","decided_on":"","notes":"Fixed fee. Two weeks. Named last day, written handover, no standing call after."},
+    {"id":"q0003","deal_id":"d0005","contact_id":"c0002","number":"Q-0288","issued":"T-132","expires":"T-102","subtotal":"24000.00","tax":"0.00","total":"24000.00","status":"accepted","decided_on":"T-118","notes":"Sixteen hours a month, listed line by line."},
+    {"id":"q0004","deal_id":"d0006","contact_id":"c0007","number":"Q-0295","issued":"T-92","expires":"T-62","subtotal":"9600.00","tax":"0.00","total":"9600.00","status":"declined","decided_on":"T-58","notes":"Lost to a salary. Joanne showed her the maths and she agreed with it."}
+  ],
+  "projects": [
+    {"id":"p0001","contact_id":"c0001","deal_id":"","name":"Northgate retainer, month 12","status":"active","start":"T-6","due":"T+24","budget":"9000.00","hours_estimate":"34","health":"amber","next_milestone":"Warehouse handover doc, week three","closed_on":""},
+    {"id":"p0002","contact_id":"c0002","deal_id":"d0005","name":"Bellhaven retainer, month 5","status":"active","start":"T-6","due":"T+24","budget":"4000.00","hours_estimate":"16","health":"green","next_milestone":"Hygiene schedule signed off and handed over","closed_on":""},
+    {"id":"p0003","contact_id":"c0003","deal_id":"","name":"Cotter retainer, month 3","status":"active","start":"T-6","due":"T+24","budget":"3200.00","hours_estimate":"13","health":"red","next_milestone":"Daily call ends, Friday review returns","closed_on":""},
+    {"id":"p0004","contact_id":"c0004","deal_id":"","name":"Ridgeline inventory rebuild","status":"done","start":"T-88","due":"T-32","budget":"12500.00","hours_estimate":"70","health":"amber","next_milestone":"","closed_on":"T-30"},
+    {"id":"p0005","contact_id":"c0001","deal_id":"","name":"Northgate retainer, month 11","status":"done","start":"T-37","due":"T-7","budget":"9000.00","hours_estimate":"34","health":"amber","next_milestone":"","closed_on":"T-7"},
+    {"id":"p0006","contact_id":"c0005","deal_id":"d0002","name":"Vessel ops diagnostic","status":"planned","start":"T+14","due":"T+28","budget":"5800.00","hours_estimate":"24","health":"","next_milestone":"Countersigned scope with an end date on it","closed_on":""}
+  ],
+  "tasks": [
+    {"id":"t0001","project_id":"p0001","title":"Write the Northgate warehouse handover doc","due":"T+9","priority":"high","status":"doing","estimate_min":"900","done_on":"","blocked_by":"","notes":"The only month twelve deliverable anyone will remember."},
+    {"id":"t0002","project_id":"p0001","title":"Log last week's unbilled Northgate hours","due":"T-4","priority":"now","status":"todo","estimate_min":"20","done_on":"","blocked_by":"","notes":"Second week running. Roughly five and a half hours."},
+    {"id":"t0003","project_id":"p0003","title":"Tell Cotter the daily call is out of scope","due":"T-2","priority":"high","status":"todo","estimate_min":"25","done_on":"","blocked_by":"","notes":"In writing. Once. Not in the call itself."},
+    {"id":"t0004","project_id":"p0002","title":"Hand Bellhaven the hygiene schedule and stop","due":"T+4","priority":"normal","status":"todo","estimate_min":"300","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0005","project_id":"","title":"Send Kilmartin the month one scope","due":"T-2","priority":"now","status":"todo","estimate_min":"60","done_on":"","blocked_by":"","notes":"24000 sitting on a quote he has not opened."},
+    {"id":"t0006","project_id":"","title":"Reprice the Northgate renewal at 9800","due":"T+1","priority":"high","status":"todo","estimate_min":"120","done_on":"","blocked_by":"","notes":"Twelve months at the old number is a decision, not a default."},
+    {"id":"t0007","project_id":"p0003","title":"Rebuild the Cotter quality log","due":"T+11","priority":"normal","status":"doing","estimate_min":"420","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0008","project_id":"","title":"Reconcile the timer against the calendar","due":"T-9","priority":"high","status":"todo","estimate_min":"90","done_on":"","blocked_by":"","notes":"Six weeks of gaps. Northgate is the worst of them."},
+    {"id":"t0009","project_id":"p0006","title":"Write the end date into the Vessel scope","due":"T+6","priority":"normal","status":"blocked","estimate_min":"40","done_on":"","blocked_by":"Vessel countersignature","notes":""},
+    {"id":"t0010","project_id":"","title":"Ask Ruth Ellery for two introductions","due":"T+8","priority":"normal","status":"todo","estimate_min":"30","done_on":"","blocked_by":"","notes":"One client is 55 percent of income. Fix the numerator or the denominator."},
+    {"id":"t0011","project_id":"p0001","title":"Run the Northgate weekly ops call","due":"T+2","priority":"normal","status":"todo","estimate_min":"90","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0012","project_id":"p0004","title":"Close out the Ridgeline handover file","due":"T-21","priority":"low","status":"done","estimate_min":"45","done_on":"T-22","blocked_by":"","notes":""},
+    {"id":"t0013","project_id":"p0001","title":"Second site count at Northgate","due":"T+16","priority":"normal","status":"todo","estimate_min":"480","done_on":"","blocked_by":"","notes":"Full day on site. Bill it as a day, not as hours."},
+    {"id":"t0014","project_id":"p0002","title":"Send Bellhaven the month six renewal note","due":"T+18","priority":"normal","status":"todo","estimate_min":"20","done_on":"","blocked_by":"","notes":"He renews if she asks. She has to ask."}
+  ],
+  "time": [
+    {"id":"h0001","date":"T-16","project_id":"p0001","task_id":"","minutes":"300","billable":"yes","rate":"165.00","notes":"Inventory variance workup"},
+    {"id":"h0002","date":"T-9","project_id":"p0001","task_id":"t0001","minutes":"240","billable":"yes","rate":"165.00","notes":"Warehouse floor interviews"},
+    {"id":"h0003","date":"T-2","project_id":"p0001","task_id":"","minutes":"330","billable":"no","rate":"165.00","notes":"Calls and messages that were never in the scope"},
+    {"id":"h0004","date":"T-17","project_id":"p0003","task_id":"","minutes":"480","billable":"yes","rate":"165.00","notes":"Month three kickoff, on site"},
+    {"id":"h0005","date":"T-12","project_id":"p0003","task_id":"t0007","minutes":"210","billable":"yes","rate":"165.00","notes":"Quality log build"},
+    {"id":"h0006","date":"T-3","project_id":"p0003","task_id":"","minutes":"240","billable":"no","rate":"165.00","notes":"Daily calls, week three. Four of them."},
+    {"id":"h0007","date":"T-5","project_id":"p0002","task_id":"","minutes":"180","billable":"yes","rate":"165.00","notes":"Hygiene schedule rebuild"},
+    {"id":"h0008","date":"T-19","project_id":"p0002","task_id":"","minutes":"150","billable":"yes","rate":"165.00","notes":"Front desk handover"},
+    {"id":"h0009","date":"T-34","project_id":"p0005","task_id":"","minutes":"480","billable":"yes","rate":"165.00","notes":"Month eleven delivery week"},
+    {"id":"h0010","date":"T-40","project_id":"p0004","task_id":"","minutes":"600","billable":"yes","rate":"165.00","notes":"Count reconciliation, full day"}
+  ],
+  "invoices": [
+    {"id":"i0001","project_id":"p0001","contact_id":"c0001","number":"INV-0212","issued":"T-6","due":"T+9","subtotal":"9000.00","tax":"0.00","total":"9000.00","status":"sent","paid_on":"","method":"","notes":"Northgate month twelve retainer."},
+    {"id":"i0002","project_id":"p0005","contact_id":"c0001","number":"INV-0198","issued":"T-37","due":"T-22","subtotal":"9000.00","tax":"0.00","total":"9000.00","status":"paid","paid_on":"T-19","method":"transfer","notes":"Month eleven. Three days late, same as every month."},
+    {"id":"i0003","project_id":"p0002","contact_id":"c0002","number":"INV-0213","issued":"T-6","due":"T+9","subtotal":"4000.00","tax":"0.00","total":"4000.00","status":"sent","paid_on":"","method":"","notes":"Bellhaven month five retainer."},
+    {"id":"i0004","project_id":"","contact_id":"c0002","number":"INV-0201","issued":"T-36","due":"T-21","subtotal":"4000.00","tax":"0.00","total":"4000.00","status":"paid","paid_on":"T-24","method":"transfer","notes":"Bellhaven month four. Paid early, unprompted."},
+    {"id":"i0005","project_id":"p0003","contact_id":"c0003","number":"INV-0214","issued":"T-6","due":"T+9","subtotal":"3200.00","tax":"0.00","total":"3200.00","status":"sent","paid_on":"","method":"","notes":"Cotter month three retainer. Same number as month one, twice the work."},
+    {"id":"i0006","project_id":"","contact_id":"c0003","number":"INV-0202","issued":"T-36","due":"T-21","subtotal":"3200.00","tax":"0.00","total":"3200.00","status":"paid","paid_on":"T-14","method":"transfer","notes":"Cotter month two."},
+    {"id":"i0007","project_id":"p0004","contact_id":"c0004","number":"INV-0187","issued":"T-58","due":"T-43","subtotal":"6250.00","tax":"0.00","total":"6250.00","status":"paid","paid_on":"T-40","method":"transfer","notes":"Ridgeline, first half of the rebuild."},
+    {"id":"i0008","project_id":"p0004","contact_id":"c0004","number":"INV-0195","issued":"T-30","due":"T-15","subtotal":"6250.00","tax":"0.00","total":"6250.00","status":"sent","paid_on":"","method":"","notes":"Ridgeline, second half. Sam stopped answering the day after handover."},
+    {"id":"i0009","project_id":"p0001","contact_id":"c0001","number":"INV-0206","issued":"T-20","due":"T-5","subtotal":"1650.00","tax":"0.00","total":"1650.00","status":"part_paid","paid_on":"T-2","method":"transfer","notes":"Ten hours above the retainer. Dev paid four and queried six."},
+    {"id":"i0010","project_id":"","contact_id":"c0007","number":"INV-0176","issued":"T-104","due":"T-89","subtotal":"4800.00","tax":"0.00","total":"4800.00","status":"written_off","paid_on":"","method":"","notes":"Arbor Craft final month. Written off at eighty nine days."}
+  ],
+  "expenses": [
+    {"id":"e0001","date":"T-45","vendor":"Redline Data Services","category":"subcontract","amount":"4200.00","project_id":"p0004","billable":"no","method":"transfer","receipt":"yes","notes":"Three weeks of count cleanup. Quoted the job before she priced this."},
+    {"id":"e0002","date":"T-52","vendor":"Northern Rail","category":"travel","amount":"680.00","project_id":"p0004","billable":"no","method":"card","receipt":"yes","notes":"Four site trips, fixed fee job"},
+    {"id":"e0003","date":"T-61","vendor":"Harbor Inn","category":"travel","amount":"240.00","project_id":"p0004","billable":"no","method":"card","receipt":"yes","notes":"Two nights, count week"},
+    {"id":"e0004","date":"T-17","vendor":"Northern Rail","category":"travel","amount":"186.00","project_id":"p0003","billable":"yes","method":"card","receipt":"yes","notes":"Cotter kickoff, on site"},
+    {"id":"e0005","date":"T-8","vendor":"Meridian Suite","category":"software","amount":"149.00","project_id":"","billable":"no","method":"card","receipt":"yes","notes":"Docs, timer, invoicing"},
+    {"id":"e0006","date":"T-8","vendor":"Ellery Bookkeeping","category":"accounting","amount":"320.00","project_id":"","billable":"no","method":"transfer","receipt":"yes","notes":"Monthly"},
+    {"id":"e0007","date":"T-22","vendor":"Statewide Professional Liability","category":"insurance","amount":"218.00","project_id":"","billable":"no","method":"transfer","receipt":"yes","notes":""},
+    {"id":"e0008","date":"T-30","vendor":"Coworking Nine","category":"premises","amount":"340.00","project_id":"","billable":"no","method":"card","receipt":"yes","notes":"Desk, month to month"},
+    {"id":"e0009","date":"T-12","vendor":"Northern Rail","category":"travel","amount":"94.00","project_id":"p0001","billable":"no","method":"card","receipt":"no","notes":"Northgate site visit. Never went on an invoice."},
+    {"id":"e0010","date":"T-26","vendor":"Clearpath Legal","category":"legal","amount":"450.00","project_id":"","billable":"no","method":"transfer","receipt":"yes","notes":"Rewrote the scope clause. A year late."},
+    {"id":"e0011","date":"T-38","vendor":"Meridian Suite","category":"software","amount":"149.00","project_id":"","billable":"no","method":"card","receipt":"yes","notes":""},
+    {"id":"e0012","date":"T-60","vendor":"Coworking Nine","category":"premises","amount":"340.00","project_id":"","billable":"no","method":"card","receipt":"yes","notes":""}
+  ],
+  "recurring": [
+    {"id":"r0001","label":"Northgate retainer","type":"income","amount":"9000.00","cadence":"monthly","next_date":"T+24","category":"retainer","notes":"Fifty five percent of the month. Renewal decision lands in three weeks."},
+    {"id":"r0002","label":"Bellhaven retainer","type":"income","amount":"4000.00","cadence":"monthly","next_date":"T+24","category":"retainer","notes":"Sixteen hours. Uses fourteen."},
+    {"id":"r0003","label":"Cotter Fabrication retainer","type":"income","amount":"3200.00","cadence":"monthly","next_date":"T+24","category":"retainer","notes":"Priced for thirteen hours. Running at fifteen and a half with a week left."},
+    {"id":"r0004","label":"Desk and software","type":"cost","amount":"489.00","cadence":"monthly","next_date":"T+12","category":"overhead","notes":""},
+    {"id":"r0005","label":"Insurance and bookkeeper","type":"cost","amount":"538.00","cadence":"monthly","next_date":"T+16","category":"overhead","notes":""}
+  ],
+  "notes": {
+    "c0001.md": "# Delia Marchetti, Northgate Logistics\n\nMonth twelve. 9000 a month against a book of 16200, so Northgate is 55 percent\nof the business. If Delia leaves, two of the three remaining retainers do not\ncover the desk, the insurance and the tax.\n\n- Renewal is a decision on both sides. Reprice at 9800 and cap the standing\n  calls at two a week, or the unbilled hours carry into month eighteen.\n- Dev Anand approves the invoices. He pays the retainer line without reading it\n  and queries every line above it. Anything out of scope goes on its own invoice\n  with the hours listed, or it does not get paid.\n- Five and a half hours last month never reached a time entry.\n",
+    "p0003.md": "# Cotter retainer, month 3\n\nSold as a Friday review at 3200 a month, thirteen hours. Week one it was a\nMonday check in as well. Week three it is a daily call and a shift board rebuild\nnobody agreed to.\n\nMonth three: fifteen and a half hours logged, four of them unbillable, and the\nmonth is not over. At 165 an hour the retainer returns 14 percent against a 62\npercent target.\n\nThe fix is one sentence in writing to Priyanka: the daily call is out of scope,\nit ends Friday, and the shift board is month four work at month four prices.\nSay it once. Do not say it on the call.\n"
+  }
+}

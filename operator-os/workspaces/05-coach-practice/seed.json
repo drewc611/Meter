@@ -1,0 +1,122 @@
+{
+  "config": {
+    "business_name": "Northbank Coaching",
+    "operator": "Dean Lowrie",
+    "trade": "career and leadership coaching",
+    "currency": "USD",
+    "currency_symbol": "$",
+    "hourly_rate": "180.00",
+    "target_margin_pct": "45",
+    "tax_rate_pct": "0",
+    "tax_set_aside_pct": "27",
+    "invoice_terms_days": "14",
+    "capacity_hours_per_week": "22",
+    "opening_cash": "16240.00",
+    "week_starts": "monday",
+    "quiet_hours": "18:30-08:00"
+  },
+  "contacts": [
+    {"id":"c0001","name":"Marla Doyle","company":"Harbour Logistics","role":"operations manager","email":"m.doyle@example.com","phone":"555-0132","source":"referral","status":"active","tags":"individual,package","first_contact":"T-78","last_contact":"T-16","notes":"Six session package, four delivered. Wants to be a director in eighteen months."},
+    {"id":"c0002","name":"Ben Ostrowski","company":"Quill Software","role":"new team lead","email":"b.ostrowski@example.com","phone":"555-0148","source":"referral","status":"active","tags":"individual,package","first_contact":"T-26","last_contact":"T-9","notes":"Three session package. First time managing people. Prepares too much."},
+    {"id":"c0003","name":"Tamsin Vale","company":"Redcastle Retail","role":"regional manager","email":"t.vale@example.com","phone":"555-0176","source":"website","status":"lead","tags":"individual","first_contact":"T-11","last_contact":"T-4","notes":"Quote sent for six sessions. Says her employer might pay. Has not asked them."},
+    {"id":"c0004","name":"Roland Achebe","company":"Pemberton Group","role":"finance director","email":"r.achebe@example.com","phone":"555-0119","source":"referral","status":"active","tags":"individual,executive,reschedules","first_contact":"T-104","last_contact":"T-7","notes":"Executive package, six sessions at ninety minutes. Three delivered in fourteen weeks."},
+    {"id":"c0005","name":"Hilary Quan","company":"Cordell Manufacturing","role":"head of people","email":"h.quan@example.com","phone":"555-0163","source":"referral","status":"active","tags":"corporate,sponsor","first_contact":"T-190","last_contact":"T-6","notes":"Bought the pilot cohort. Now scoping a programme for eight managers. Signs off slowly, pays slower."},
+    {"id":"c0006","name":"Devin Marsh","company":"Ashbury Financial Group","role":"learning and development lead","email":"d.marsh@example.com","phone":"555-0187","source":"referral","status":"active","tags":"corporate,sponsor,slow-pay","first_contact":"T-260","last_contact":"T-22","notes":"Biggest account. Cycle one closed months ago. Cycle two has been about to start since summer."},
+    {"id":"c0007","name":"Nora Betancourt","company":"Vantage Care Services","role":"service manager","email":"n.betancourt@example.com","phone":"555-0154","source":"referral","status":"active","tags":"individual,cohort","first_contact":"T-40","last_contact":"T-10","notes":"Autumn cohort, self funded seat. Talks the most, gets the most out of it."},
+    {"id":"c0008","name":"Karl Vinter","company":"Selwyn Foods","role":"plant supervisor","email":"k.vinter@example.com","phone":"555-0125","source":"website","status":"dormant","tags":"individual,expired-package","first_contact":"T-165","last_contact":"T-58","notes":"Paid for four sessions, used one, changed employer. Has asked twice whether the package is still live."},
+    {"id":"c0009","name":"Sandra Ipp","company":"Ipp Executive Search","role":"recruiter","email":"s.ipp@example.com","phone":"555-0191","source":"trade","status":"active","tags":"referrer","first_contact":"T-420","last_contact":"T-18","notes":"Sends two or three placed candidates a year. Best source of individual clients."},
+    {"id":"c0010","name":"Felicity Odom","company":"Odom People Consulting","role":"HR consultant","email":"f.odom@example.com","phone":"555-0138","source":"trade","status":"active","tags":"referrer","first_contact":"T-330","last_contact":"T-35","notes":"Sends corporate work she cannot deliver herself. Introduced Cordell."},
+    {"id":"c0011","name":"Jasper Klein","company":"Loamfield Housing","role":"team leader","email":"j.klein@example.com","phone":"555-0107","source":"referral","status":"active","tags":"individual,cohort","first_contact":"T-38","last_contact":"T-16","notes":"Autumn cohort, self funded seat. Invoice unpaid, no reminder sent yet."}
+  ],
+  "deals": [
+    {"id":"d0001","contact_id":"c0003","title":"Six session package, Tamsin V","value":"2400.00","stage":"quoted","confidence":"55","opened":"T-11","expected_close":"T+9","next_action":"Ask her directly whether she is asking her employer or paying herself","next_action_due":"T-2","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0002","contact_id":"c0005","title":"Cordell leadership programme, 8 managers","value":"14400.00","stage":"negotiating","confidence":"65","opened":"T-38","expected_close":"T+27","next_action":"Send the two option scope, six sessions or eight","next_action_due":"T+3","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0003","contact_id":"c0006","title":"Ashbury coaching pool, cycle two","value":"9600.00","stage":"qualified","confidence":"50","opened":"T-24","expected_close":"T+40","next_action":"","next_action_due":"","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0004","contact_id":"c0004","title":"Executive package extension, 4 sessions","value":"3200.00","stage":"new","confidence":"40","opened":"T-6","expected_close":"T+21","next_action":"Raise the extension at session five, not after session six","next_action_due":"T+5","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0005","contact_id":"c0001","title":"Six session package, Marla D","value":"2400.00","stage":"won","confidence":"100","opened":"T-75","expected_close":"T-60","next_action":"","next_action_due":"","status":"won","closed_on":"T-58","lost_reason":""},
+    {"id":"d0006","contact_id":"c0008","title":"Renewal, four sessions","value":"1600.00","stage":"lost","confidence":"0","opened":"T-140","expected_close":"T-100","next_action":"","next_action_due":"","status":"lost","closed_on":"T-96","lost_reason":"Changed employer, new company has an internal coach"}
+  ],
+  "quotes": [
+    {"id":"q0001","deal_id":"d0001","contact_id":"c0003","number":"Q-0118","issued":"T-9","expires":"T+6","subtotal":"2400.00","tax":"0.00","total":"2400.00","status":"sent","decided_on":"","notes":"Six sessions of sixty minutes over four months. Payable in full before session one."},
+    {"id":"q0002","deal_id":"d0002","contact_id":"c0005","number":"Q-0119","issued":"T-16","expires":"T+14","subtotal":"14400.00","tax":"0.00","total":"14400.00","status":"sent","decided_on":"","notes":"Eight managers, six sessions each, one sponsor review. Priced per seat."},
+    {"id":"q0003","deal_id":"d0005","contact_id":"c0001","number":"Q-0111","issued":"T-70","expires":"T-40","subtotal":"2400.00","tax":"0.00","total":"2400.00","status":"accepted","decided_on":"T-58","notes":""}
+  ],
+  "projects": [
+    {"id":"p0001","contact_id":"c0001","deal_id":"d0005","name":"Six session package, Marla D","status":"active","start":"T-52","due":"T+16","budget":"2400.00","hours_estimate":"9","health":"amber","next_milestone":"Session five, the conversation she keeps postponing","closed_on":""},
+    {"id":"p0002","contact_id":"c0004","deal_id":"","name":"Executive package, Roland A","status":"active","start":"T-98","due":"T+9","budget":"4800.00","hours_estimate":"14","health":"red","next_milestone":"Session four, moved twice, third date offered","closed_on":""},
+    {"id":"p0003","contact_id":"c0002","deal_id":"","name":"Three session package, Ben O","status":"active","start":"T-20","due":"T+21","budget":"1350.00","hours_estimate":"5","health":"green","next_milestone":"Session two today","closed_on":""},
+    {"id":"p0004","contact_id":"c0005","deal_id":"","name":"Cordell pilot cohort","status":"done","start":"T-150","due":"T-72","budget":"5400.00","hours_estimate":"20","health":"green","next_milestone":"","closed_on":"T-68"},
+    {"id":"p0005","contact_id":"c0007","deal_id":"","name":"Group cohort, autumn","status":"active","start":"T-14","due":"T+42","budget":"7200.00","hours_estimate":"26","health":"amber","next_milestone":"Session three, the feedback module, not built yet","closed_on":""},
+    {"id":"p0006","contact_id":"c0006","deal_id":"","name":"Ashbury coaching pool, cycle one","status":"done","start":"T-210","due":"T-124","budget":"9600.00","hours_estimate":"34","health":"green","next_milestone":"","closed_on":"T-118"}
+  ],
+  "tasks": [
+    {"id":"t0001","project_id":"p0001","title":"Session five, Marla D","due":"T+2","priority":"high","status":"todo","estimate_min":"60","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0002","project_id":"p0001","title":"Session four note, Marla D","due":"T-16","priority":"normal","status":"done","estimate_min":"45","done_on":"T-15","blocked_by":"","notes":"Written on a Sunday, like all of them."},
+    {"id":"t0003","project_id":"p0002","title":"Session four, Roland A, third date offered","due":"T-3","priority":"now","status":"todo","estimate_min":"90","done_on":"","blocked_by":"","notes":"He has moved it twice. Neither cancellation was charged."},
+    {"id":"t0004","project_id":"p0002","title":"Rewrite the 360 summary Roland asked for","due":"T-1","priority":"high","status":"blocked","estimate_min":"120","done_on":"","blocked_by":"Roland has not sent the raw export","notes":"Not in the package. Not on any invoice."},
+    {"id":"t0005","project_id":"p0003","title":"Session two, Ben O","due":"T","priority":"high","status":"todo","estimate_min":"60","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0006","project_id":"p0005","title":"Group cohort session three","due":"T+4","priority":"high","status":"todo","estimate_min":"180","done_on":"","blocked_by":"","notes":"Six seats, three hours."},
+    {"id":"t0007","project_id":"p0005","title":"Build the feedback module for cohort session three","due":"T+2","priority":"high","status":"todo","estimate_min":"240","done_on":"","blocked_by":"","notes":"Nobody pays for build time. It still has to exist by Thursday."},
+    {"id":"t0008","project_id":"p0005","title":"Six individual cohort follow up notes","due":"T+5","priority":"normal","status":"todo","estimate_min":"180","done_on":"","blocked_by":"","notes":"Thirty minutes a head, promised in the brochure."},
+    {"id":"t0009","project_id":"","title":"Individual sessions on the calendar, week one","due":"T+4","priority":"high","status":"todo","estimate_min":"900","done_on":"","blocked_by":"","notes":"Fifteen booked, not counting Marla, Ben, or the cohort."},
+    {"id":"t0010","project_id":"","title":"Individual sessions on the calendar, week two","due":"T+11","priority":"high","status":"todo","estimate_min":"960","done_on":"","blocked_by":"","notes":"Sixteen booked. Two of them are reschedules from last month."},
+    {"id":"t0011","project_id":"","title":"Individual sessions on the calendar, week three","due":"T+18","priority":"high","status":"todo","estimate_min":"900","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0012","project_id":"","title":"Individual sessions on the calendar, week four","due":"T+25","priority":"high","status":"todo","estimate_min":"900","done_on":"","blocked_by":"","notes":"Two slots left in the whole month."},
+    {"id":"t0013","project_id":"","title":"Prep and follow up for the next four weeks of sessions","due":"T+21","priority":"normal","status":"todo","estimate_min":"840","done_on":"","blocked_by":"","notes":"Twenty minutes either side of every session. None of it is billed."},
+    {"id":"t0014","project_id":"","title":"Send Cordell the two option scope","due":"T+3","priority":"high","status":"todo","estimate_min":"90","done_on":"","blocked_by":"","notes":"Six sessions or eight. Do not offer to build extra material for free."},
+    {"id":"t0015","project_id":"","title":"Chase INV-0412 at Ashbury, second reminder","due":"T-6","priority":"high","status":"todo","estimate_min":"15","done_on":"","blocked_by":"","notes":"Thirty eight days past due. Devin says accounts pay on their own schedule."}
+  ],
+  "time": [
+    {"id":"h0001","date":"T-46","project_id":"p0001","task_id":"","minutes":"240","billable":"yes","rate":"180.00","notes":"Sessions one to four, sixty minutes each"},
+    {"id":"h0002","date":"T-45","project_id":"p0001","task_id":"","minutes":"220","billable":"no","rate":"180.00","notes":"Prep and written notes for those four sessions"},
+    {"id":"h0003","date":"T-12","project_id":"p0002","task_id":"","minutes":"270","billable":"yes","rate":"180.00","notes":"Sessions one to three, ninety minutes each"},
+    {"id":"h0004","date":"T-11","project_id":"p0002","task_id":"","minutes":"285","billable":"no","rate":"180.00","notes":"Prep, notes, and two reschedules chased by phone"},
+    {"id":"h0005","date":"T-2","project_id":"p0002","task_id":"","minutes":"120","billable":"no","rate":"180.00","notes":"Rewriting the 360 summary he asked for"},
+    {"id":"h0006","date":"T-9","project_id":"p0003","task_id":"","minutes":"60","billable":"yes","rate":"180.00","notes":"Session one"},
+    {"id":"h0007","date":"T-9","project_id":"p0003","task_id":"","minutes":"50","billable":"no","rate":"180.00","notes":"Intake read and session one note"},
+    {"id":"h0008","date":"T-10","project_id":"p0005","task_id":"","minutes":"300","billable":"yes","rate":"180.00","notes":"Cohort sessions one and two"},
+    {"id":"h0009","date":"T-8","project_id":"p0005","task_id":"","minutes":"420","billable":"no","rate":"180.00","notes":"Material build, six follow up notes, two seat swaps"},
+    {"id":"h0010","date":"T-96","project_id":"p0004","task_id":"","minutes":"720","billable":"yes","rate":"180.00","notes":"Six programme sessions, four managers"},
+    {"id":"h0011","date":"T-92","project_id":"p0004","task_id":"","minutes":"720","billable":"no","rate":"180.00","notes":"Prep, notes, and the sponsor report Cordell asked for at the end"},
+    {"id":"h0012","date":"T-170","project_id":"p0006","task_id":"","minutes":"720","billable":"yes","rate":"180.00","notes":"Twelve coaching sessions across the pool"},
+    {"id":"h0013","date":"T-165","project_id":"p0006","task_id":"","minutes":"960","billable":"no","rate":"180.00","notes":"Prep, notes, sponsor calls, and quarterly reporting"},
+    {"id":"h0014","date":"T-4","project_id":"","task_id":"","minutes":"90","billable":"no","rate":"180.00","notes":"Three discovery calls, none booked anything"}
+  ],
+  "invoices": [
+    {"id":"i0001","project_id":"p0001","contact_id":"c0001","number":"INV-0431","issued":"T-58","due":"T-44","subtotal":"2400.00","tax":"0.00","total":"2400.00","status":"paid","paid_on":"T-56","method":"card","notes":"Paid in full before session one. Two sessions still owed."},
+    {"id":"i0002","project_id":"p0002","contact_id":"c0004","number":"INV-0418","issued":"T-95","due":"T-81","subtotal":"4800.00","tax":"0.00","total":"4800.00","status":"paid","paid_on":"T-88","method":"transfer","notes":"Six sessions bought. Three delivered in fourteen weeks."},
+    {"id":"i0003","project_id":"p0003","contact_id":"c0002","number":"INV-0446","issued":"T-20","due":"T-6","subtotal":"1350.00","tax":"0.00","total":"1350.00","status":"paid","paid_on":"T-17","method":"card","notes":"Three sessions, paid up front. One delivered."},
+    {"id":"i0004","project_id":"p0005","contact_id":"c0007","number":"INV-0448","issued":"T-16","due":"T-2","subtotal":"1200.00","tax":"0.00","total":"1200.00","status":"paid","paid_on":"T-14","method":"card","notes":"Autumn cohort, one self funded seat."},
+    {"id":"i0005","project_id":"p0005","contact_id":"c0011","number":"INV-0449","issued":"T-16","due":"T-2","subtotal":"1200.00","tax":"0.00","total":"1200.00","status":"sent","paid_on":"","method":"","notes":"Same terms as Nora. No reminder sent."},
+    {"id":"i0006","project_id":"p0005","contact_id":"c0005","number":"INV-0450","issued":"T-15","due":"T+30","subtotal":"4800.00","tax":"0.00","total":"4800.00","status":"sent","paid_on":"","method":"","notes":"Cordell sponsoring four cohort seats. Forty five day terms, their paper."},
+    {"id":"i0007","project_id":"p0004","contact_id":"c0005","number":"INV-0392","issued":"T-70","due":"T-25","subtotal":"5400.00","tax":"0.00","total":"5400.00","status":"paid","paid_on":"T-19","method":"transfer","notes":"Pilot cohort. Fifty one days from issue to money."},
+    {"id":"i0008","project_id":"p0006","contact_id":"c0006","number":"INV-0361","issued":"T-125","due":"T-80","subtotal":"9600.00","tax":"0.00","total":"9600.00","status":"paid","paid_on":"T-72","method":"transfer","notes":"Cycle one in full. Fifty three days."},
+    {"id":"i0009","project_id":"","contact_id":"c0006","number":"INV-0412","issued":"T-83","due":"T-38","subtotal":"3200.00","tax":"0.00","total":"3200.00","status":"sent","paid_on":"","method":"","notes":"Interim sessions between cycles. Chased once, politely, in August."},
+    {"id":"i0010","project_id":"","contact_id":"c0006","number":"INV-0455","issued":"T-2","due":"T+43","subtotal":"4800.00","tax":"0.00","total":"4800.00","status":"draft","paid_on":"","method":"","notes":"Cycle two, first half. Not sent because nothing is signed."}
+  ],
+  "expenses": [
+    {"id":"e0001","date":"T-44","vendor":"Reflect Assessments","category":"assessment tools","amount":"95.00","project_id":"p0001","billable":"yes","method":"card","receipt":"yes","notes":"Strengths inventory licence"},
+    {"id":"e0002","date":"T-13","vendor":"Reflect Assessments","category":"assessment tools","amount":"240.00","project_id":"p0002","billable":"yes","method":"card","receipt":"yes","notes":"360 licence, priced into the package"},
+    {"id":"e0003","date":"T-11","vendor":"Copyline Print","category":"materials","amount":"180.00","project_id":"p0005","billable":"yes","method":"card","receipt":"yes","notes":"Cohort workbooks, six copies"},
+    {"id":"e0004","date":"T-9","vendor":"Meeting Room Collective","category":"premises","amount":"60.00","project_id":"p0005","billable":"yes","method":"card","receipt":"yes","notes":"Room hire, cohort session two"},
+    {"id":"e0005","date":"T-95","vendor":"Meeting Room Collective","category":"premises","amount":"260.00","project_id":"p0004","billable":"yes","method":"card","receipt":"yes","notes":"Room hire across the pilot cohort"},
+    {"id":"e0006","date":"T-160","vendor":"Reflect Assessments","category":"assessment tools","amount":"320.00","project_id":"p0006","billable":"yes","method":"card","receipt":"yes","notes":"Twelve assessment licences for the pool"},
+    {"id":"e0007","date":"T-30","vendor":"Guild of Coaches","category":"professional","amount":"420.00","project_id":"","billable":"no","method":"transfer","receipt":"yes","notes":"Annual accreditation renewal"},
+    {"id":"e0008","date":"T-6","vendor":"Bramble Supervision","category":"supervision","amount":"165.00","project_id":"","billable":"no","method":"transfer","receipt":"yes","notes":"Monthly supervision, required to stay accredited"},
+    {"id":"e0009","date":"T-21","vendor":"Sessionly","category":"software","amount":"78.00","project_id":"","billable":"no","method":"card","receipt":"yes","notes":"Scheduling, video, and the reminder emails nobody reads"},
+    {"id":"e0010","date":"T-12","vendor":"Northbank Coworking","category":"premises","amount":"240.00","project_id":"","billable":"no","method":"transfer","receipt":"yes","notes":"Desk and one bookable room"},
+    {"id":"e0011","date":"T-3","vendor":"Regional Rail","category":"travel","amount":"96.00","project_id":"","billable":"no","method":"card","receipt":"no","notes":"Cordell site visit for a sponsor conversation that was not scoped"}
+  ],
+  "recurring": [
+    {"id":"r0001","label":"Monthly supervision","type":"cost","amount":"165.00","cadence":"monthly","next_date":"T+18","category":"professional","notes":"Not optional. Accreditation depends on it."},
+    {"id":"r0002","label":"Professional indemnity insurance","type":"cost","amount":"62.00","cadence":"monthly","next_date":"T+9","category":"insurance","notes":""},
+    {"id":"r0003","label":"Scheduling and video software","type":"cost","amount":"78.00","cadence":"monthly","next_date":"T+12","category":"software","notes":""},
+    {"id":"r0004","label":"Coworking desk","type":"cost","amount":"240.00","cadence":"monthly","next_date":"T+24","category":"premises","notes":""},
+    {"id":"r0005","label":"Guild of Coaches membership","type":"cost","amount":"35.00","cadence":"monthly","next_date":"T+21","category":"professional","notes":""},
+    {"id":"r0006","label":"Ashbury coaching pool retainer","type":"income","amount":"3200.00","cadence":"monthly","next_date":"T+7","category":"retainer","notes":"Invoiced monthly. Arrives about seven weeks after it is invoiced."}
+  ],
+  "notes": {
+    "c0004.md": "# Roland Achebe\n\nSix ninety minute sessions, paid in full ninety five days ago. Three delivered.\nSession four has been booked three times and moved twice, both times inside\ntwenty four hours.\n\n- The package has no expiry and no cancellation term. Add both to the next one.\n- He asked for a written 360 summary that was never in the scope. Two hours so\n  far, none of it invoiced.\n- Do not offer the four session extension after session six. Offer it at five,\n  while there is still something to finish.\n",
+    "p0005.md": "# Group cohort, autumn\n\nSix seats. Two self funded, four sponsored by Cordell. Three hours a session,\nsix people in the room, one of him.\n\nThe cohort is the only thing in the practice that does not scale with his\ncalendar. One session serves six clients. An individual session serves one.\n\nWhat it costs so far: five hours delivered, seven hours building material and\nwriting follow ups. The build cost is one time. The follow up cost is not, and\nat six seats it is three hours after every session.\n\nDecide before the spring cohort: cap the written follow ups at one paragraph\neach, or price them in at the seat level.\n"
+  }
+}

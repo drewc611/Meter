@@ -1,0 +1,12 @@
+{
+  "name": "example-quotes-pdf",
+  "version": "1.0.0",
+  "title": "Quotes as PDF",
+  "description": "Render one quote as a self contained HTML sheet that prints to PDF.",
+  "author": "Operator OS",
+  "licence": "Same as the product",
+  "requires": {"operator_os": ">=1.0"},
+  "capabilities": ["commands", "tools"],
+  "entry": "plugin.py",
+  "enabled": true
+}

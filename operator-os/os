@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Operator OS launcher. Works from anywhere.
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PY="$(command -v python3 || command -v python)"
+if [ -z "$PY" ]; then
+  echo "Python is not installed, or not on your PATH."
+  echo "Mac:     brew install python   (or download from python.org)"
+  echo "Windows: install from python.org and tick 'Add python.exe to PATH'"
+  exit 1
+fi
+exec "$PY" "$HERE/scripts/os.py" "$@"

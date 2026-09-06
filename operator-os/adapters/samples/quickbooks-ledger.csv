@@ -1,0 +1,11 @@
+Northwind Field Services
+Transaction Detail by Account
+August 2026
+
+Date,Transaction Type,Num,Name,Memo/Description,Account,Split,Amount
+2026-08-02,Expense,EXP-4411,Northgate Supply Co,Condenser pad and strapping,Job Materials,Checking,-842.50
+2026-08-06,Bill,BILL-2210,Meridian Insurance,Liability premium August,Insurance,Accounts Payable,-412.00
+2026-08-11,Check,1042,Crosstown Tool Hire,Manifold set rental,Small Tools,Checking,-128.75
+2026-08-13,Invoice,INV-2046,Iverson Builds,Oakhill unit 2 first half,Accounts Receivable,Sales,3600.00
+2026-08-20,Credit Card Charge,,Fairhaven Fuel,Van diesel,Vehicle Fuel,Credit Card,-96.40
+2026-08-27,Journal Entry,JE-118,,Depreciation on van,Depreciation,Accumulated Depreciation,-210.00
