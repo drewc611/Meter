@@ -34,5 +34,14 @@ module.exports = {
       env: { node: true },
       parserOptions: { sourceType: 'script' },
     },
+    {
+      // entry-server.jsx is the one src/ file that never ships to the
+      // browser -- it's compiled by `vite build --ssr` into a Node-runnable
+      // bundle and executed by scripts/prerender-content.mjs at build time
+      // (see its own header comment). It needs process.cwd() to find
+      // src/content/entries/ on disk, so it needs the Node env too.
+      files: ['frontend/src/content/entry-server.jsx'],
+      env: { node: true },
+    },
   ],
 };

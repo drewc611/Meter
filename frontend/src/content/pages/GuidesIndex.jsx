@@ -6,57 +6,28 @@ export const meta = {
   description: "General guides on doing AI work well, from the team building Merit AC — governed agentic DevSecOps, and independent field guides on AI systems engineering.",
 };
 
-const SECTIONS = [
-  {
+const SECTION_LABELS = {
+  devsecops: {
     label: "Governed agentic DevSecOps",
     meta: "Adapted from our own Enterprise Agentic DevSecOps Handbook",
-    guides: [
-      {
-        href: "/guides/ten-disciplines-of-governed-agentic-devsecops",
-        title: "The ten disciplines of governed agentic DevSecOps",
-        meta: "The recurring control points for running Claude Code safely at enterprise scale",
-      },
-      {
-        href: "/guides/fourteen-domains-of-the-governed-agentic-platform",
-        title: "Fourteen domains of the governed agentic platform",
-        meta: "A map from platform operating model to GovCloud, with the service reference table",
-      },
-      {
-        href: "/guides/four-control-boundaries",
-        title: "Four control boundaries for agentic DevSecOps",
-        meta: "Code generation is the easy part — the short version, in four boundaries",
-      },
-    ],
   },
-  {
+  "systems-engineering": {
     label: "AI systems & engineering",
     meta: "Independent field guides — how AI systems actually work, break, and get evaluated",
-    guides: [
-      {
-        href: "/guides/ai-system-design-patterns",
-        title: "AI system design patterns",
-        meta: "Twelve archetypes, six complex agent patterns, and the ML/AI software landscape",
-      },
-      {
-        href: "/guides/ai-evaluation-methods",
-        title: "AI evaluation methods",
-        meta: "Rubrics, LLM-as-judge, and benchmarks — when to use which, and how judges fail",
-      },
-      {
-        href: "/guides/rag-failure-modes",
-        title: "RAG failure modes",
-        meta: "A debugging field guide — retrieval failure, lost-in-the-middle, reranking, chunking",
-      },
-      {
-        href: "/guides/context-engineering",
-        title: "Context engineering",
-        meta: "What actually competes for space in the context window, and how to manage it",
-      },
-    ],
   },
-];
+};
+const SECTION_ORDER = ["devsecops", "systems-engineering"];
 
-export default function GuidesIndex() {
+// AISystemPatterns.jsx keeps its own hand-built diagrams -- it stays a JSX page
+// rather than markdown, so it isn't in `entries`. This is its one manual tile,
+// spliced in first (its historical position in this group).
+const AI_SYSTEM_PATTERNS_TILE = {
+  href: "/guides/ai-system-design-patterns",
+  title: "AI system design patterns",
+  meta: "Twelve archetypes, six complex agent patterns, and the ML/AI software landscape",
+};
+
+export default function GuidesIndex({ entries }) {
   return (
     <ContentLayout active="guides">
       <span className="kicker">Content</span>
@@ -72,20 +43,27 @@ export default function GuidesIndex() {
         <a href="/claude-architecture">building with Claude</a>? Those moved to their own sections.
       </p>
 
-      {SECTIONS.map((section) => (
-        <section key={section.label}>
-          <h2>{section.label}</h2>
-          <p>{section.meta}</p>
-          <div className="grid">
-            {section.guides.map((g) => (
-              <a key={g.href} className="tile" href={g.href}>
-                <span className="tile-title">{g.title}</span>
-                <span className="tile-meta">{g.meta}</span>
-              </a>
-            ))}
-          </div>
-        </section>
-      ))}
+      {SECTION_ORDER.map((group) => {
+        const section = SECTION_LABELS[group];
+        const guides = entries
+          .filter((e) => e.group === group)
+          .map((e) => ({ href: `/guides/${e.slug}`, title: e.title, meta: e.tileMeta }));
+        if (group === "systems-engineering") guides.unshift(AI_SYSTEM_PATTERNS_TILE);
+        return (
+          <section key={group}>
+            <h2>{section.label}</h2>
+            <p>{section.meta}</p>
+            <div className="grid">
+              {guides.map((g) => (
+                <a key={g.href} className="tile" href={g.href}>
+                  <span className="tile-title">{g.title}</span>
+                  <span className="tile-meta">{g.meta}</span>
+                </a>
+              ))}
+            </div>
+          </section>
+        );
+      })}
 
       <div className="card">
         <p>

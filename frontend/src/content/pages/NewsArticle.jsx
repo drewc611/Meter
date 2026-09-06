@@ -15,9 +15,7 @@ export default function NewsArticle({ entry }) {
       <h1>{entry.title}</h1>
       <p className="lead">{entry.dek}</p>
 
-      {entry.body.map((block, i) =>
-        block.type === "h2" ? <h2 key={i}>{block.text}</h2> : <p key={i}>{block.text}</p>
-      )}
+      <div dangerouslySetInnerHTML={{ __html: entry.html }} />
 
       {entry.corrections && entry.corrections.length > 0 && (
         <div className="card">
