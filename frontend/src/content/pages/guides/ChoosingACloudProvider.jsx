@@ -213,6 +213,22 @@ language or console clicks              targets multiple providers`}</Code>
         requirement in a way it wasn't in scenario one.
       </p>
       <p>
+        <b>A third, messier scenario</b> is worth naming because it's arguably the most common one
+        in practice: a team that started as scenario one and, over time, is turning into scenario
+        two. The CRUD app that shipped fast on a simple provider now has a product team asking for
+        real analytics on user behavior, and a machine-learning feature is on the roadmap. This
+        isn't a moment to panic-migrate everything at once, and it isn't a moment to ignore the
+        shift either. It's exactly where section 3's switching-cost logic and section 4's
+        portability logic earn their keep: if the original build leaned on reasonably portable
+        choices, adding a second provider narrowly for the new analytics or ML need — the "one
+        cloud plus satellites" pattern described in our{" "}
+        <a href="/guides/multi-cloud-and-hybrid-cloud-architecture">
+          multi-cloud and hybrid cloud guide
+        </a>{" "}
+        — is usually more realistic than a full migration, and often more realistic than forcing
+        the new need onto a provider chosen for a different job entirely.
+      </p>
+      <p>
         Neither scenario has a universally correct provider — they have a correct provider
         <em>for that scenario</em>, arrived at by actually running the checklist rather than
         defaulting to whichever provider is most talked about. That's the entire method: the same
@@ -240,6 +256,24 @@ language or console clicks              targets multiple providers`}</Code>
         by a decision rather than by an incident. That habit — checking the fit on purpose, rather
         than only when something breaks — is itself part of running infrastructure well, and it's
         the same habit this framework is built around applying in the first place.
+      </p>
+      <div className="card">
+        <p className="kicker" style={{ marginBottom: "8px" }}>
+          Framework recap
+        </p>
+        <ul style={{ marginBottom: 0 }}>
+          <li>Start from the workload's actual needs, not a generic ranking of providers</li>
+          <li>Run all four checklist inputs honestly, and check them, don't poll for them</li>
+          <li>Weight the checklist by which factor carries the most risk if it's wrong</li>
+          <li>Favor portable choices early, while the workload's real needs are still unclear</li>
+          <li>Treat deep lock-in as a real, ongoing cost of a decision, not a one-time event</li>
+          <li>Revisit the fit on a schedule — durable is not the same as permanent</li>
+        </ul>
+      </div>
+      <p>
+        For what the providers themselves actually are before you run this checklist against
+        them, start with{" "}
+        <a href="/guides/cloud-providers-compared">Cloud providers compared</a>.
       </p>
     </ContentLayout>
   );
