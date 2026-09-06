@@ -119,10 +119,10 @@ error**. Treat any change to the news pipeline's code or automation as
 incomplete, not just improvable, if it ships without all of the following
 already working:
 
-- Every entry in `frontend/src/content/data/news.js` supports a
-  `corrections` array, and `NewsArticle.jsx` renders it visibly on the
-  article whenever it's non-empty — not hidden behind a click, not a
-  silent diff to the original body text.
+- Every entry under `frontend/src/content/entries/news/*.md` supports a
+  `corrections` array in its frontmatter, and `NewsArticle.jsx` renders it
+  visibly on the article whenever it's non-empty — not hidden behind a
+  click, not a silent diff to the original body text.
 - The automation that publishes has a real, exercised path for *appending*
   a correction to an already-published article (a dated entry, a note),
   distinct from and never substituting for editing the original claim in

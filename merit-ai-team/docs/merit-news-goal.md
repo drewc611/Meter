@@ -11,7 +11,8 @@ rubber stamp as throughput grows.
 content goal's own 60-day pattern).
 **Measure:** Not raw published count. Two numbers, read together: (1)
 published articles per week, and (2) post-hoc corrections needed per
-published article, from the `corrections` field in `news.js` and the
+published article, from the `corrections` field in each article's own
+`frontend/src/content/entries/news/<slug>.md` frontmatter and the
 verdict breakdown in `merit-news-judge-log.md`. A week that publishes
 more but corrects more isn't progress. Rejections logged in the Judge
 log are a healthy sign of the pass actually working, not a shortfall
@@ -20,8 +21,8 @@ against volume.
 other two goals' copy. Every published claim needs a real, checkable
 source. Publishing is autonomous (see below) — the constraint that
 replaces human review is the Judge-tier pass plus the visible
-corrections trail on every article (`corrections` field in `news.js`,
-rendered on the article itself).
+corrections trail on every article (`corrections` field in that article's
+markdown frontmatter, rendered on the article itself).
 **Set:** 2026-08-22, proposed. **Confirmed by the founder: 2026-09-04**,
 per the 2026-09-04 CEO brief's recommendation (score accuracy, not
 volume) and the founder's direct instruction to act on it.

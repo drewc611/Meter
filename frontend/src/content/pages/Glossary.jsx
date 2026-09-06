@@ -1,5 +1,4 @@
 import ContentLayout from "../components/ContentLayout.jsx";
-import { GLOSSARY } from "../data/glossary.js";
 
 export const meta = {
   outFile: "glossary.html",
@@ -7,8 +6,8 @@ export const meta = {
   description: "Plain-English definitions for AI terms -- no jargon left unexplained.",
 };
 
-export default function Glossary() {
-  const sorted = [...GLOSSARY].sort((a, b) => a.term.localeCompare(b.term));
+export default function Glossary({ entries }) {
+  const sorted = [...entries].sort((a, b) => a.term.localeCompare(b.term));
 
   return (
     <ContentLayout active="glossary">
@@ -20,14 +19,14 @@ export default function Glossary() {
         works from, not a separate marketing gloss.
       </p>
 
-      {sorted.map((entry) => (
-        <div key={entry.slug} id={entry.slug} className="card" style={{ margin: "0 0 12px" }}>
-          <p className="tile-title" style={{ marginBottom: "6px" }}>
-            {entry.term}
-          </p>
-          <p style={{ marginBottom: 0 }}>{entry.definition}</p>
-        </div>
-      ))}
+      <div className="grid">
+        {sorted.map((entry) => (
+          <a key={entry.slug} id={entry.slug} className="tile" href={`#${entry.slug}`}>
+            <span className="tile-title">{entry.term}</span>
+            <span dangerouslySetInnerHTML={{ __html: entry.html }} />
+          </a>
+        ))}
+      </div>
     </ContentLayout>
   );
 }

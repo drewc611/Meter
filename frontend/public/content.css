@@ -19,6 +19,7 @@
   --card: rgba(255, 255, 255, 0.04);
   --card-hover: rgba(255, 255, 255, 0.07);
   --code-bg: rgba(0, 0, 0, 0.28);
+  --shadow-tile: 0 12px 24px -12px rgba(0, 0, 0, 0.45);
 
   /* 4px spacing scale */
   --sp-1: 4px;
@@ -513,7 +514,7 @@ th {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: var(--sp-4);
   margin: var(--sp-6) 0;
 }
@@ -525,13 +526,14 @@ th {
   padding: var(--sp-5);
   color: var(--ink);
   background: var(--card);
-  transition: border-color 0.18s var(--ease-out), transform 0.18s var(--ease-out), background 0.18s var(--ease-out);
+  transition: border-color 0.18s var(--ease-out), transform 0.18s var(--ease-out), background 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
 }
 .grid a.tile:hover,
 .grid a.tile:focus-visible {
   border-color: var(--brand-soft);
   background: var(--card-hover);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-tile);
 }
 .grid a.tile .tile-title {
   font-weight: 650;
@@ -541,6 +543,37 @@ th {
 .grid a.tile .tile-meta {
   font-size: 13px;
   color: var(--muted);
+}
+
+/* A small per-item category label -- distinct from .badge, which is a single
+   glowing-dot status marker used once per page, not repeated per tile. */
+.chip {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--brand-pale);
+  background: rgba(124, 116, 244, 0.14);
+  border: 1px solid rgba(124, 116, 244, 0.28);
+  border-radius: 999px;
+  padding: 3px 9px;
+  margin-bottom: var(--sp-2);
+}
+
+/* A markdown callout (`> ...`) reads as the same styled aside every guide's
+   .card blocks already use -- same surface, so a guide written from a
+   rendered page and one authored straight in markdown look identical. */
+.content blockquote {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--brand-soft);
+  border-radius: var(--radius);
+  padding: var(--sp-5) var(--sp-6);
+  margin: var(--sp-5) 0;
+}
+.content blockquote > *:last-child {
+  margin-bottom: 0;
 }
 
 /* ---------- archetype flow diagrams ---------- */

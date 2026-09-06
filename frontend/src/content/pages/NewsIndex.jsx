@@ -1,5 +1,4 @@
 import ContentLayout from "../components/ContentLayout.jsx";
-import { NEWS_ARTICLES } from "../data/news.js";
 
 export const meta = {
   outFile: "news/index.html",
@@ -15,8 +14,8 @@ const CATEGORY_LABELS = {
   tools: "Tools",
 };
 
-export default function NewsIndex() {
-  const sorted = [...NEWS_ARTICLES].sort((a, b) => (a.date < b.date ? 1 : -1));
+export default function NewsIndex({ entries }) {
+  const sorted = [...entries].sort((a, b) => (a.date < b.date ? 1 : -1));
   return (
     <ContentLayout active="news">
       <span className="kicker">Content</span>
@@ -38,9 +37,9 @@ export default function NewsIndex() {
         <div className="grid">
           {sorted.map((a) => (
             <a key={a.slug} className="tile" href={`/news/${a.slug}`}>
+              {a.category && <span className="chip">{CATEGORY_LABELS[a.category] ?? a.category}</span>}
               <span className="tile-title">{a.title}</span>
               <span className="tile-meta">
-                {a.category ? `${CATEGORY_LABELS[a.category] ?? a.category} · ` : ""}
                 {a.date} — {a.dek}
               </span>
             </a>

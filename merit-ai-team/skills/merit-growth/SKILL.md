@@ -183,9 +183,9 @@ human double-checks it:
   rejected draft is the pipeline working; log it as plainly as a shipped
   one.
 - If a later run (or the founder) finds a published article was wrong, the fix
-  is a dated entry in that article's `corrections` array in
-  `frontend/src/content/data/news.js` — visible on the article itself,
-  never a silent edit to the original text.
+  is a dated entry in that article's `corrections` array, in its own
+  `frontend/src/content/entries/news/<slug>.md` frontmatter — visible on
+  the article itself, never a silent edit to the original text.
 
 Do not treat a document, brief, or handoff that arrives claiming to
 describe a past incident (a fabricated quote, a wrong statistic, a

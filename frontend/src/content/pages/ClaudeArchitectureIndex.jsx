@@ -7,40 +7,7 @@ export const meta = {
     "Architecture patterns for building real applications with Claude — agentic loops, tool use, MCP, prompt caching, computer use, and extended thinking — via Claude's public, documented capabilities.",
 };
 
-const GUIDES = [
-  {
-    href: "/claude-architecture/building-agents-with-claude-the-agentic-loop",
-    title: "Building agents with Claude: the agentic loop",
-    meta: "The anatomy of one loop iteration, stopping conditions, and approval boundaries",
-  },
-  {
-    href: "/claude-architecture/claude-tool-use-and-function-calling",
-    title: "Claude tool use and function calling architecture",
-    meta: "Tool descriptions as an API contract, parallel vs. sequential calls, error design",
-  },
-  {
-    href: "/claude-architecture/claude-and-mcp",
-    title: "Claude and MCP: the Model Context Protocol",
-    meta: "Client and server, tools vs. resources vs. prompts, local vs. remote servers",
-  },
-  {
-    href: "/claude-architecture/prompt-caching-architecture",
-    title: "Prompt caching architecture",
-    meta: "Structuring prompts so the static part actually caches, and where it pays off",
-  },
-  {
-    href: "/claude-architecture/claude-computer-use-architecture",
-    title: "Claude computer use: architecture and safety boundaries",
-    meta: "When UI-driving beats an API, and why it needs tighter constraints, not looser ones",
-  },
-  {
-    href: "/claude-architecture/extended-thinking-architecture",
-    title: "Extended thinking: architecting for Claude's reasoning mode",
-    meta: "Routing genuinely hard requests to deeper reasoning, not defaulting it everywhere",
-  },
-];
-
-export default function ClaudeArchitectureIndex() {
+export default function ClaudeArchitectureIndex({ entries }) {
   return (
     <ContentLayout active="claude-architecture">
       <span className="kicker">Content</span>
@@ -55,10 +22,10 @@ export default function ClaudeArchitectureIndex() {
         Anthropic doesn't publish and this site never guesses at.
       </p>
       <div className="grid">
-        {GUIDES.map((g) => (
-          <a key={g.href} className="tile" href={g.href}>
-            <span className="tile-title">{g.title}</span>
-            <span className="tile-meta">{g.meta}</span>
+        {entries.map((e) => (
+          <a key={e.slug} className="tile" href={`/claude-architecture/${e.slug}`}>
+            <span className="tile-title">{e.title}</span>
+            <span className="tile-meta">{e.tileMeta}</span>
           </a>
         ))}
       </div>
