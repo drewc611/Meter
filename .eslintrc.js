@@ -7,8 +7,15 @@ module.exports = {
     'eslint:recommended',
   ],
   // frontend/dist/ is Vite's build output (minified bundles) -- not source,
-  // never worth linting.
-  ignorePatterns: ['frontend/dist/'],
+  // never worth linting. operator-os/ is a second, independent product
+  // vendored into this repo (see CLAUDE.md) -- its own JS (e.g.
+  // demo/engine.js) wasn't written to this app's lint conventions and has
+  // its own correctness gate (operator-os/tests/, notably test_parity.py,
+  // which checks this exact engine byte-for-byte against the Python one).
+  // Applying this app's ESLint rules to it would mean "fixing" findings by
+  // editing already-tested vendored code, which risks the kind of drift
+  // that test suite exists to catch -- not a fix this app should be making.
+  ignorePatterns: ['frontend/dist/', 'operator-os/'],
   parserOptions: {
     ecmaVersion: 12,
     // frontend/src/**/*.jsx is an ES module app (Vite + React) — import/
