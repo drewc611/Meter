@@ -94,6 +94,8 @@ EXPECTED_SNIFF = [
     ("quickbooks-ledger.csv", "quickbooks-csv"),
     ("work-week.ics", "calendar-ics"),
     ("inbox.mbox", "mailbox-mbox"),
+    ("paypal-activity.csv", "paypal-csv"),
+    ("square-transactions.csv", "square-csv"),
 ]
 
 
@@ -121,7 +123,10 @@ def test_pull_writes_nothing():
                         ("stripe-csv", "stripe-balance.csv"),
                         ("quickbooks-csv", "quickbooks-ledger.csv"),
                         ("calendar-ics", "work-week.ics"),
-                        ("mailbox-mbox", "inbox.mbox")]:
+                        ("mailbox-mbox", "inbox.mbox"),
+                        ("paypal-csv", "paypal-activity.csv"),
+                        ("square-csv", "square-transactions.csv"),
+                        ("generic-csv", "generic-expenses.csv")]:
         proposals = A.pull(name, sample(fname))
         check(len(proposals) >= 0, "{} pulled {} proposals".format(name, len(proposals)))
     after = snapshot()
@@ -275,6 +280,79 @@ def test_calendar_only_proposes_matched_projects():
           "every time entry has real minutes")
 
 
+def test_paypal_and_square_match_open_invoices():
+    section("PayPal and Square gross payments match open invoices, same as a bank credit")
+    fresh()
+    open_totals = {D.cents(i["total"]): i for i in D.load("invoices")
+                   if D.invoice_open_cents(i) > 0}
+
+    for name, fname, total in [("paypal-csv", "paypal-activity.csv", "210.00"),
+                               ("square-csv", "square-transactions.csv", "480.00")]:
+        target = open_totals.get(D.cents(total))
+        check(target is not None, "{}: the sample workspace has an unpaid {} invoice".format(
+            name, total))
+        proposals = A.pull(name, sample(fname))
+        hits = [p for p in proposals if p["entity"] == "invoices" and p["action"] == "match"]
+        check(len(hits) == 1, "{}: exactly one gross payment matched an invoice".format(name),
+              "got {}".format(len(hits)))
+        if hits and target:
+            check(hits[0]["match_id"] == target["id"],
+                  "{}: it matched {}".format(name, target["id"]),
+                  "matched {}".format(hits[0]["match_id"]))
+        fees = [p for p in proposals if p["entity"] == "expenses" and p["action"] == "create"]
+        check(len(fees) >= 1 and all(f["row"]["vendor"] in ("PayPal", "Square") for f in fees),
+              "{}: its own fee is proposed as a fee-vendor expense".format(name))
+        skips = [p for p in proposals if p["action"] == "ignore" and p["entity"] == "expenses"]
+        check(len(skips) == 1, "{}: the internal-transfer line is skipped, not imported".format(name),
+              "got {}".format(len(skips)))
+
+
+def test_new_adapters_apply_is_idempotent():
+    section("apply twice imports nothing the second time, for the three new adapters")
+    for name, fname in [("paypal-csv", "paypal-activity.csv"),
+                        ("square-csv", "square-transactions.csv"),
+                        ("generic-csv", "generic-expenses.csv")]:
+        fresh()
+        first = A.apply(name, A.pull(name, sample(fname)))
+        check(len(first["created"]) > 0, "{}: first run created rows".format(name),
+              "created {}".format(len(first["created"])))
+        second = A.apply(name, A.pull(name, sample(fname)))
+        check(len(second["created"]) == 0, "{}: second run created nothing".format(name))
+        check(len(second["matched"]) == 0, "{}: second run matched nothing again".format(name))
+        check(len(second["skipped"]) == len(first["created"]) + len(first["matched"]),
+              "{}: second run skipped exactly what the first run imported".format(name))
+        import events as E
+        causes = {e.get("cause") for e in E.read()}
+        check("imported from {}".format(name) in causes,
+              "{}: the event log carries the right cause".format(name), sorted(causes))
+
+
+def test_generic_csv_is_conservative():
+    section("generic-csv only proposes what it can actually be sure of")
+    fresh()
+    scored = A.sniff_all(sample("generic-expenses.csv"))
+    best, score, _title = scored[0]
+    check(best == "generic-csv" and score == 0.4,
+          "generic-expenses.csv falls through to generic-csv, capped at 0.4",
+          "got {} at {:.2f}, full scores {}".format(best, score, scored))
+    runner_up = scored[1][1] if len(scored) > 1 else 0.0
+    check(runner_up < score,
+          "no named adapter recognises this file either",
+          "runner-up scored {:.2f}".format(runner_up))
+    proposals = A.pull("generic-csv", sample("generic-expenses.csv"))
+    check(len(proposals) == 4, "exactly 4 proposals, the parenthesized-negative row skipped",
+          "got {}".format(len(proposals)))
+    check(all(p["entity"] == "expenses" for p in proposals),
+          "every proposal is an expense, never an invoice guess")
+    check(all(p["confidence"] == 0.5 for p in proposals if p["action"] == "create"),
+          "every create is confidence 0.5, honestly less certain than a named adapter")
+    creates = [p for p in proposals if p["action"] == "create"]
+    check(creates and all(p["row"]["category"] == "uncategorized" for p in creates),
+          "every created row is filed uncategorized rather than guessed")
+    check(all("unrecognised" in p["why"] for p in proposals),
+          "every reason says plainly that the format was not recognised")
+
+
 def test_network_is_refused():
     section("an adapter that wants the network is refused")
     fresh()
@@ -355,6 +433,9 @@ TESTS = [
     test_mbox_skips_do_not_contact,
     test_matcher_finds_a_duplicate,
     test_calendar_only_proposes_matched_projects,
+    test_paypal_and_square_match_open_invoices,
+    test_new_adapters_apply_is_idempotent,
+    test_generic_csv_is_conservative,
     test_network_is_refused,
     test_forget_lets_an_import_be_redone,
     test_bad_proposals_are_rejected,

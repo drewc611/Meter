@@ -4,10 +4,10 @@ The whole business, on your machine, in files you own.
 
 Nine CSV files, an engine that does the money math the same way every time, an
 event log that makes every change reversible, real double entry books, a query
-language, a cash simulation with the odds attached, five import adapters, a
-plugin SDK, an agent layer that runs the whole thing on a schedule, twenty tools,
-five encoded businesses to start from, and a workbook covering every step on Mac
-and Windows.
+language, a cash simulation with the odds attached, eight import adapters, a
+plugin SDK, an agent layer that runs the whole thing on a schedule, thirty-five
+tools, eight encoded businesses to start from, and a workbook covering every
+step on Mac and Windows.
 
 No account, no server, no subscription, nothing to log into. Python 3.9 and an
 optional git install are the entire dependency list, on purpose.
@@ -54,7 +54,7 @@ os ticks / tick / reconcile
 os validate          every row and every link, checked
 ```
 
-`os help` lists all forty one. `os help <group>` narrows it.
+`os help` lists all forty three. `os help <group>` narrows it.
 
 ## Why files
 
@@ -68,11 +68,11 @@ concurrency, which does not matter when the business is one person.
 |---|---|
 | `data/` | your business. Back this up. Nothing else matters. |
 | `manual/` | the control plane, 00 through 14. Start with `00_START_HERE.md`. |
-| `tools/` | 20 tools, written to be read by a person and loaded by an assistant |
+| `tools/` | 35 tools, written to be read by a person and loaded by an assistant |
 | `workbook/` | nine modules, every step and every prompt, Mac and Windows |
-| `workspaces/` | five encoded businesses, dates always current |
-| `adapters/` | bank, Stripe, QuickBooks, calendar, mailbox |
-| `plugins/` | the SDK and two working examples |
+| `workspaces/` | eight encoded businesses, dates always current |
+| `adapters/` | bank, Stripe, PayPal, Square, QuickBooks, calendar, mailbox, generic CSV |
+| `plugins/` | the SDK and four working examples |
 | `agents/` | the routing table, the roster, and five scheduled runs |
 | `lib/` `scripts/` `migrations/` | the engine, the launcher, the upgrades |
 | `console/` | a local dashboard. Open the html file. No server. |

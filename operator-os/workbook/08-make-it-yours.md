@@ -21,11 +21,15 @@ real to report about a run you recorded.
 ./os rates
 ```
 
-Two examples ship. `example-quotes-pdf` declares `commands` and `tools` and turns
+Four examples ship. `example-quotes-pdf` declares `commands` and `tools` and turns
 a quote into a printable HTML page. `example-trade-rates` declares `commands` and
 `migrations`, and its migration creates `data/rates.csv` and adds `os rates`. It
-extends the data layer without a line changing in `lib/`. Read both folders. They
-are short and they are meant to be copied.
+extends the data layer without a line changing in `lib/`. `example-recurring-
+reminders` declares `commands` and `tools` and adds a read-only `os reminders`
+over `recurring.csv`. `example-expense-rules` declares `commands` and
+`migrations`, and its migration creates `data/rules.csv` and adds `os rules`,
+which flags expenses that disagree with a keyword rule instead of rewriting
+them. Read all four folders. They are short and they are meant to be copied.
 
 `os plugin verify` checks the manifest, the version range, that every declared
 capability is real, that the entry module imports, that the shipped folders match

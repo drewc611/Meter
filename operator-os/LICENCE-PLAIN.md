@@ -37,11 +37,11 @@ and it is not expensive.
 
 - the full repository, every file, on day one
 - the written workbook, nine modules, Mac and Windows
-- twenty tools and forty one commands
-- five import adapters and the contract for writing your own
-- the plugin SDK, with two working examples
+- thirty-five tools and forty three commands
+- eight import adapters and the contract for writing your own
+- the plugin SDK, with four working examples
 - the agent layer: routing table, roster, and five scheduled runs
-- five encoded workspaces with personas
+- eight encoded workspaces with personas
 - the local console
 - updates to this major version, for at least twelve months from purchase
 

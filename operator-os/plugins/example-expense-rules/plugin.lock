@@ -1,0 +1,5 @@
+# example-expense-rules 1.0.0 file checksums. Rerun `os plugin lock example-expense-rules` after any edit.
+40834e4cfc6302c2ac9e90d8a7105642afbc2b6e2e1cbfdb5559ce88307793bf  README.md
+7e66a1bdf30a8d9d30cd5880a16248bc18457584a0420edecd4132b6df26f64a  migrations/001_rules.py
+f342f57ee4ba20f4cefcaed9258a6b799ca8c365396e9cb3c5077e225ca8a2cd  plugin.json
+65258d4f29355931ef29486db1c4e17f5a9e43401c99796e8f0796e1d8e505b4  plugin.py

@@ -1,0 +1,4 @@
+Date,Time,Description,Gross Sales,Fees,Net Total,Transaction ID,Event Type,Card Brand,PAN Suffix
+2026-08-11,08:30:00,Callout job,480.00,-14.24,465.76,sq0_9F3K2L1M0N,Payment,Visa,4242
+2026-08-13,17:05:12,,-1500.00,0.00,-1500.00,sq0_2P8Q7R6S5T,Deposit,,
+2026-08-18,13:22:45,New client job,725.00,-21.31,703.69,sq0_6U5V4W3X2Y,Payment,Mastercard,9911

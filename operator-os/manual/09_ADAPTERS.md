@@ -21,17 +21,20 @@ os imports --forget <id>         let one record be imported again
 `os pull` without `--apply` writes nothing at all. It says so at the end, with
 the row count, so the claim is checkable rather than trusted.
 
-## The five that ship
+## The eight that ship
 
 | Adapter | Reads | Proposes |
 |---|---|---|
 | `bank-csv` | expenses, invoices | money out as expenses, money in as invoice matches |
 | `stripe-csv` | expenses, invoices | the fee as a cost, the gross as an invoice match |
+| `paypal-csv` | expenses, invoices | the fee as a cost, the gross as an invoice match |
+| `square-csv` | expenses, invoices | the fee as a cost, the gross as an invoice match |
 | `quickbooks-csv` | expenses | expenses, bills, checks and card charges |
 | `calendar-ics` | time | hours against projects whose names match the event |
 | `mailbox-mbox` | contacts | senders who are not in your contacts yet |
+| `generic-csv` | expenses | a conservative, low-confidence fallback for a date/amount/description CSV that matches no named platform |
 
-Sample files for all five are in `adapters/samples/`. They are fictional, with
+Sample files for all eight are in `adapters/samples/`. They are fictional, with
 555 numbers and example.com addresses, and the tests and the workbook use them.
 
 ## The contract

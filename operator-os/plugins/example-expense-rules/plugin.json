@@ -1,0 +1,12 @@
+{
+  "name": "example-expense-rules",
+  "version": "1.0.0",
+  "title": "Expense category rules",
+  "description": "Keyword to category mapping rules, kept in the plugin's own table, that flag an expense row whose category disagrees with the rule instead of silently rewriting it.",
+  "author": "Operator OS",
+  "licence": "Same as the product",
+  "requires": {"operator_os": ">=1.0"},
+  "capabilities": ["commands", "migrations"],
+  "entry": "plugin.py",
+  "enabled": true
+}

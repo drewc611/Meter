@@ -1,8 +1,8 @@
 # 03 Tools
 
-Twenty tools. Each is a folder under `tools/` with one `SKILL.md`. They are
-written to be loaded by an assistant, and to be read by a human. Both audiences
-matter.
+Thirty-five tools. Each is a folder under `tools/` with one `SKILL.md`. They
+are written to be loaded by an assistant, and to be read by a human. Both
+audiences matter.
 
 ## The contract
 
@@ -21,7 +21,7 @@ does not is broken.
 The refusals are the load bearing part. A tool that will do anything you ask is
 not a tool, it is a risk.
 
-## The twenty
+## The thirty-five
 
 **Money**
 
@@ -33,6 +33,11 @@ not a tool, it is a risk.
 | `cashflow` | the date you run out |
 | `taxset` | the part of the balance that is not yours |
 | `pricing` | the margin, after your own hours are paid |
+| `retainer` | recurring revenue quietly left at last year's price |
+| `writeoff-review` | old unpaid invoices nobody has decided about |
+| `vendor-audit` | recurring costs creeping up unnoticed |
+| `subcontractor-cost` | subcontracted work not logged against the job it belongs to |
+| `deposit-request` | new work started before any money is committed |
 
 **Work**
 
@@ -43,6 +48,8 @@ not a tool, it is a risk.
 | `time` | the hours, including the unpaid ones |
 | `schedule` | the order things get done in |
 | `capacity` | the one real constraint |
+| `scope-check` | hours quietly passing the estimate mid-project |
+| `forward-capacity` | pipeline landing on weeks already spoken for |
 
 **Demand**
 
@@ -53,6 +60,17 @@ not a tool, it is a risk.
 | `quote` | prices built from cost, with an expiry |
 | `followup` | the loops that close themselves in silence |
 | `content` | next month, built during this month |
+| `referral-ask` | a paid, happy client who was never actually asked |
+| `discovery-call` | a sales call walked into cold |
+| `proposal-draft` | scope written down nowhere before work starts |
+
+**Lifecycle**
+
+| Tool | Protects |
+|---|---|
+| `onboarding` | a new client starting with nothing written down |
+| `handoff` | a finished project with no clean close |
+| `client-health-check` | a contact quietly going stale between deals |
 
 **Control**
 
@@ -62,12 +80,17 @@ not a tool, it is a risk.
 | `week` | the Friday close |
 | `reaper` | removing the dead so the live is visible |
 | `doctor` | the install and the machine |
+| `year-end-review` | a tax handoff assembled from memory in a panic |
+| `loose-ends` | `os validate` warnings nobody ever comes back to |
 
 ## The rhythm they fit into
 
 Daily `day`. Weekly `chase`, `pipeline`, `followup`, `week`. Monthly `pricing`,
-`taxset`, `reaper`. Everything else runs on an event: work won, work done,
-receipt arrived, hours logged.
+`taxset`, `reaper`, `vendor-audit`, `writeoff-review`. Yearly `year-end-review`.
+Everything else runs on an event: work won (`onboarding`, `deposit-request`),
+work done (`handoff`, `referral-ask`), a retainer coming up for renewal
+(`retainer`), a sales call on the calendar (`discovery-call`,
+`proposal-draft`), receipt arrived, hours logged.
 
 ## Adding your own
 
