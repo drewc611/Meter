@@ -22,22 +22,24 @@ import AISystemPatterns, { meta as aiSystemPatternsMeta } from "./pages/guides/A
 import AIEvaluationMethods, { meta as aiEvaluationMethodsMeta } from "./pages/guides/AIEvaluationMethods.jsx";
 import RagFailureModes, { meta as ragFailureModesMeta } from "./pages/guides/RagFailureModes.jsx";
 import ContextEngineering, { meta as contextEngineeringMeta } from "./pages/guides/ContextEngineering.jsx";
-import MultiCloudHybridArchitecture, { meta as multiCloudMeta } from "./pages/guides/MultiCloudHybridArchitecture.jsx";
-import ServerlessArchitecturePatterns, { meta as serverlessMeta } from "./pages/guides/ServerlessArchitecturePatterns.jsx";
-import MicroservicesVsMonolith, { meta as microservicesMeta } from "./pages/guides/MicroservicesVsMonolith.jsx";
-import EventDrivenArchitecture, { meta as eventDrivenMeta } from "./pages/guides/EventDrivenArchitecture.jsx";
-import CloudNetworkingFundamentals, { meta as cloudNetworkingMeta } from "./pages/guides/CloudNetworkingFundamentals.jsx";
-import DisasterRecoveryMultiRegion, { meta as disasterRecoveryMeta } from "./pages/guides/DisasterRecoveryMultiRegion.jsx";
-import CloudSecurityZeroTrust, { meta as cloudSecurityMeta } from "./pages/guides/CloudSecurityZeroTrust.jsx";
-import CloudCostOptimization, { meta as cloudCostMeta } from "./pages/guides/CloudCostOptimization.jsx";
-import CloudProvidersCompared, { meta as cloudProvidersMeta } from "./pages/guides/CloudProvidersCompared.jsx";
-import ChoosingACloudProvider, { meta as choosingCloudProviderMeta } from "./pages/guides/ChoosingACloudProvider.jsx";
-import AgenticLoopWithClaude, { meta as agenticLoopMeta } from "./pages/guides/AgenticLoopWithClaude.jsx";
-import ClaudeToolUse, { meta as claudeToolUseMeta } from "./pages/guides/ClaudeToolUse.jsx";
-import ClaudeAndMCP, { meta as claudeMcpMeta } from "./pages/guides/ClaudeAndMCP.jsx";
-import PromptCachingArchitecture, { meta as promptCachingMeta } from "./pages/guides/PromptCachingArchitecture.jsx";
-import ClaudeComputerUse, { meta as claudeComputerUseMeta } from "./pages/guides/ClaudeComputerUse.jsx";
-import ExtendedThinkingArchitecture, { meta as extendedThinkingMeta } from "./pages/guides/ExtendedThinkingArchitecture.jsx";
+import CloudArchitectureIndex, { meta as cloudArchitectureIndexMeta } from "./pages/CloudArchitectureIndex.jsx";
+import MultiCloudHybridArchitecture, { meta as multiCloudMeta } from "./pages/cloud-architecture/MultiCloudHybridArchitecture.jsx";
+import ServerlessArchitecturePatterns, { meta as serverlessMeta } from "./pages/cloud-architecture/ServerlessArchitecturePatterns.jsx";
+import MicroservicesVsMonolith, { meta as microservicesMeta } from "./pages/cloud-architecture/MicroservicesVsMonolith.jsx";
+import EventDrivenArchitecture, { meta as eventDrivenMeta } from "./pages/cloud-architecture/EventDrivenArchitecture.jsx";
+import CloudNetworkingFundamentals, { meta as cloudNetworkingMeta } from "./pages/cloud-architecture/CloudNetworkingFundamentals.jsx";
+import DisasterRecoveryMultiRegion, { meta as disasterRecoveryMeta } from "./pages/cloud-architecture/DisasterRecoveryMultiRegion.jsx";
+import CloudSecurityZeroTrust, { meta as cloudSecurityMeta } from "./pages/cloud-architecture/CloudSecurityZeroTrust.jsx";
+import CloudCostOptimization, { meta as cloudCostMeta } from "./pages/cloud-architecture/CloudCostOptimization.jsx";
+import CloudProvidersCompared, { meta as cloudProvidersMeta } from "./pages/cloud-architecture/CloudProvidersCompared.jsx";
+import ChoosingACloudProvider, { meta as choosingCloudProviderMeta } from "./pages/cloud-architecture/ChoosingACloudProvider.jsx";
+import ClaudeArchitectureIndex, { meta as claudeArchitectureIndexMeta } from "./pages/ClaudeArchitectureIndex.jsx";
+import AgenticLoopWithClaude, { meta as agenticLoopMeta } from "./pages/claude-architecture/AgenticLoopWithClaude.jsx";
+import ClaudeToolUse, { meta as claudeToolUseMeta } from "./pages/claude-architecture/ClaudeToolUse.jsx";
+import ClaudeAndMCP, { meta as claudeMcpMeta } from "./pages/claude-architecture/ClaudeAndMCP.jsx";
+import PromptCachingArchitecture, { meta as promptCachingMeta } from "./pages/claude-architecture/PromptCachingArchitecture.jsx";
+import ClaudeComputerUse, { meta as claudeComputerUseMeta } from "./pages/claude-architecture/ClaudeComputerUse.jsx";
+import ExtendedThinkingArchitecture, { meta as extendedThinkingMeta } from "./pages/claude-architecture/ExtendedThinkingArchitecture.jsx";
 import PromptLibrary, { meta as promptLibraryMeta } from "./pages/PromptLibrary.jsx";
 import PromptDay, { promptMeta } from "./pages/PromptDay.jsx";
 import { PROMPTS } from "./data/prompts.js";
@@ -60,6 +62,7 @@ const PAGES = [
   [AIEvaluationMethods, aiEvaluationMethodsMeta],
   [RagFailureModes, ragFailureModesMeta],
   [ContextEngineering, contextEngineeringMeta],
+  [CloudArchitectureIndex, cloudArchitectureIndexMeta],
   [MultiCloudHybridArchitecture, multiCloudMeta],
   [ServerlessArchitecturePatterns, serverlessMeta],
   [MicroservicesVsMonolith, microservicesMeta],
@@ -70,6 +73,7 @@ const PAGES = [
   [CloudCostOptimization, cloudCostMeta],
   [CloudProvidersCompared, cloudProvidersMeta],
   [ChoosingACloudProvider, choosingCloudProviderMeta],
+  [ClaudeArchitectureIndex, claudeArchitectureIndexMeta],
   [AgenticLoopWithClaude, agenticLoopMeta],
   [ClaudeToolUse, claudeToolUseMeta],
   [ClaudeAndMCP, claudeMcpMeta],

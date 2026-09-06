@@ -3,7 +3,7 @@ import Toc from "../../components/Toc.jsx";
 import Code from "../../components/Code.jsx";
 
 export const meta = {
-  outFile: "guides/serverless-architecture-patterns.html",
+  outFile: "cloud-architecture/serverless-architecture-patterns.html",
   title: "Serverless Architecture Patterns — Merit AC Guides",
   description:
     "What serverless actually buys you, the cold-start and state tradeoffs that come with it, and how to tell whether a workload belongs on it or on something steadier.",
@@ -11,7 +11,7 @@ export const meta = {
 
 export default function ServerlessArchitecturePatterns() {
   return (
-    <ContentLayout active="guides" wide>
+    <ContentLayout active="cloud-architecture" wide>
       <span className="kicker">Guide · infrastructure architecture</span>
       <h1>Serverless architecture patterns</h1>
       <p className="lead">

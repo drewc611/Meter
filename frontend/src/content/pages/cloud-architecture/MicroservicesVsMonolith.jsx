@@ -3,7 +3,7 @@ import Toc from "../../components/Toc.jsx";
 import Code from "../../components/Code.jsx";
 
 export const meta = {
-  outFile: "guides/microservices-vs-monolith.html",
+  outFile: "cloud-architecture/microservices-vs-monolith.html",
   title: "Microservices vs. Monolith: Choosing Cloud Architecture — Merit AC Guides",
   description:
     "A framework for choosing between a monolith and microservices based on actual forcing functions — team topology, deploy cadence, and scaling need — rather than fashion.",
@@ -11,7 +11,7 @@ export const meta = {
 
 export default function MicroservicesVsMonolith() {
   return (
-    <ContentLayout active="guides" wide>
+    <ContentLayout active="cloud-architecture" wide>
       <span className="kicker">Guide · cloud architecture</span>
       <h1>Microservices vs. monolith: choosing cloud architecture</h1>
       <p className="lead">

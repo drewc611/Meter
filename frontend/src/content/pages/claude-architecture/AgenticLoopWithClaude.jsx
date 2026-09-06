@@ -3,7 +3,7 @@ import Toc from "../../components/Toc.jsx";
 import Code from "../../components/Code.jsx";
 
 export const meta = {
-  outFile: "guides/building-agents-with-claude-the-agentic-loop.html",
+  outFile: "claude-architecture/building-agents-with-claude-the-agentic-loop.html",
   title: "Building Agents with Claude: The Agentic Loop — Merit AC Guides",
   description:
     "What actually makes a system agentic, the anatomy of one loop iteration with Claude, and the stopping conditions, approval gates, and observability a real agent loop needs.",
@@ -11,7 +11,7 @@ export const meta = {
 
 export default function AgenticLoopWithClaude() {
   return (
-    <ContentLayout active="guides" wide>
+    <ContentLayout active="claude-architecture" wide>
       <span className="kicker">Guide · architecture</span>
       <h1>Building agents with Claude: the agentic loop</h1>
       <p className="lead">
@@ -320,7 +320,7 @@ loop:
         For the tool-level design decisions this example glosses over — how to write the tool
         descriptions that shape which call the model picks, and how to handle a tool call that fails —
         see{" "}
-        <a href="/guides/claude-tool-use-and-function-calling">
+        <a href="/claude-architecture/claude-tool-use-and-function-calling">
           Claude tool use and function calling architecture
         </a>
         .

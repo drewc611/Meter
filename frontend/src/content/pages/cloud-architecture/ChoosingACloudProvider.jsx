@@ -3,7 +3,7 @@ import Toc from "../../components/Toc.jsx";
 import Code from "../../components/Code.jsx";
 
 export const meta = {
-  outFile: "guides/choosing-a-cloud-provider.html",
+  outFile: "cloud-architecture/choosing-a-cloud-provider.html",
   title: "Choosing a Cloud Provider: A Decision Framework — Merit AC Guides",
   description:
     "A decision framework for choosing a cloud provider based on what a specific workload and team actually need, rather than which provider is generically 'best.'",
@@ -11,12 +11,12 @@ export const meta = {
 
 export default function ChoosingACloudProvider() {
   return (
-    <ContentLayout active="guides" wide>
+    <ContentLayout active="cloud-architecture" wide>
       <span className="kicker">Guide · infrastructure architecture</span>
       <h1>Choosing a cloud provider: a decision framework</h1>
       <p className="lead">
         Our companion guide,{" "}
-        <a href="/guides/cloud-providers-compared">Cloud providers compared</a>, lays out what
+        <a href="/cloud-architecture/cloud-providers-compared">Cloud providers compared</a>, lays out what
         the major providers actually are and what each one is generally used for. This guide is
         about a different question: given that landscape, how does a specific team actually
         decide? Not which provider wins in the abstract — there isn't a stable answer to that —
@@ -222,7 +222,7 @@ language or console clicks              targets multiple providers`}</Code>
         portability logic earn their keep: if the original build leaned on reasonably portable
         choices, adding a second provider narrowly for the new analytics or ML need — the "one
         cloud plus satellites" pattern described in our{" "}
-        <a href="/guides/multi-cloud-and-hybrid-cloud-architecture">
+        <a href="/cloud-architecture/multi-cloud-and-hybrid-cloud-architecture">
           multi-cloud and hybrid cloud guide
         </a>{" "}
         — is usually more realistic than a full migration, and often more realistic than forcing
@@ -273,7 +273,7 @@ language or console clicks              targets multiple providers`}</Code>
       <p>
         For what the providers themselves actually are before you run this checklist against
         them, start with{" "}
-        <a href="/guides/cloud-providers-compared">Cloud providers compared</a>.
+        <a href="/cloud-architecture/cloud-providers-compared">Cloud providers compared</a>.
       </p>
     </ContentLayout>
   );

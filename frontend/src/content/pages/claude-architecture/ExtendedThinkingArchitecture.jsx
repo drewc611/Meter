@@ -3,7 +3,7 @@ import Toc from "../../components/Toc.jsx";
 import Code from "../../components/Code.jsx";
 
 export const meta = {
-  outFile: "guides/extended-thinking-architecture.html",
+  outFile: "claude-architecture/extended-thinking-architecture.html",
   title: "Extended Thinking: Architecting for Claude's Reasoning Mode — Merit AC Guides",
   description:
     "Extended thinking is a real latency and cost tradeoff, not a free accuracy upgrade — how to decide which requests actually warrant it, and where it fits inside an agent loop.",
@@ -32,7 +32,7 @@ function RoutingTable() {
 
 export default function ExtendedThinkingArchitecture() {
   return (
-    <ContentLayout active="guides" wide>
+    <ContentLayout active="claude-architecture" wide>
       <span className="kicker">Guide · reasoning architecture</span>
       <h1>Extended thinking: architecting for Claude's reasoning mode</h1>
       <p className="lead">

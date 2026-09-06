@@ -2,7 +2,7 @@ import ContentLayout from "../../components/ContentLayout.jsx";
 import Toc from "../../components/Toc.jsx";
 
 export const meta = {
-  outFile: "guides/disaster-recovery-and-multi-region-architecture.html",
+  outFile: "cloud-architecture/disaster-recovery-and-multi-region-architecture.html",
   title: "Disaster Recovery and Multi-Region Architecture — Merit AC Guides",
   description:
     "Why 'we need multi-region' isn't a requirement until you've set an RTO and RPO — and how those two numbers determine which DR tier, replication strategy, and failover design actually fit.",
@@ -10,7 +10,7 @@ export const meta = {
 
 export default function DisasterRecoveryMultiRegion() {
   return (
-    <ContentLayout active="guides" wide>
+    <ContentLayout active="cloud-architecture" wide>
       <span className="kicker">Guide · infrastructure fundamentals</span>
       <h1>Disaster recovery and multi-region architecture</h1>
       <p className="lead">

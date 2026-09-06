@@ -3,7 +3,7 @@ import Toc from "../../components/Toc.jsx";
 import Code from "../../components/Code.jsx";
 
 export const meta = {
-  outFile: "guides/claude-tool-use-and-function-calling.html",
+  outFile: "claude-architecture/claude-tool-use-and-function-calling.html",
   title: "Claude Tool Use and Function Calling Architecture — Merit AC Guides",
   description:
     "A design-level look at tool use with Claude — writing tool descriptions that actually work, parallel versus sequential calls, error contracts, authorization, and structured output.",
@@ -11,7 +11,7 @@ export const meta = {
 
 export default function ClaudeToolUse() {
   return (
-    <ContentLayout active="guides" wide>
+    <ContentLayout active="claude-architecture" wide>
       <span className="kicker">Guide · architecture</span>
       <h1>Claude tool use and function calling architecture</h1>
       <p className="lead">
@@ -323,7 +323,7 @@ def get_forecast(city):
         For how these individual tool calls fit into a full agent loop — including where in the loop an
         approval gate belongs, and how tool-execution logs support the stopping-condition logic this
         guide's error-handling section leans on — see{" "}
-        <a href="/guides/building-agents-with-claude-the-agentic-loop">
+        <a href="/claude-architecture/building-agents-with-claude-the-agentic-loop">
           Building agents with Claude: the agentic loop
         </a>
         .

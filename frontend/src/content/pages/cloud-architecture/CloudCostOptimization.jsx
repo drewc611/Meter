@@ -3,7 +3,7 @@ import Toc from "../../components/Toc.jsx";
 import Code from "../../components/Code.jsx";
 
 export const meta = {
-  outFile: "guides/cloud-cost-optimization.html",
+  outFile: "cloud-architecture/cloud-cost-optimization.html",
   title: "Cloud Cost Optimization: Architecture Patterns That Actually Save Money — Merit AC Guides",
   description:
     "Why cloud spend is mostly decided at design time, not on a billing dashboard afterward — the pricing, transfer, sizing, and storage decisions that actually move the number.",
@@ -11,7 +11,7 @@ export const meta = {
 
 export default function CloudCostOptimization() {
   return (
-    <ContentLayout active="guides" wide>
+    <ContentLayout active="cloud-architecture" wide>
       <span className="kicker">Guide · cloud architecture</span>
       <h1>Cloud cost optimization: architecture patterns that actually save money</h1>
       <p className="lead">

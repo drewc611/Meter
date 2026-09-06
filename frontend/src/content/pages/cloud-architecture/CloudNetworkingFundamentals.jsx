@@ -3,7 +3,7 @@ import Toc from "../../components/Toc.jsx";
 import Code from "../../components/Code.jsx";
 
 export const meta = {
-  outFile: "guides/cloud-networking-fundamentals.html",
+  outFile: "cloud-architecture/cloud-networking-fundamentals.html",
   title: "Cloud Networking Fundamentals: VPCs, Subnets, and Peering — Merit AC Guides",
   description:
     "A working mental model for cloud networking — VPCs, subnets, gateways, security groups, peering, and on-prem connectivity — traced through one request's actual path.",
@@ -11,7 +11,7 @@ export const meta = {
 
 export default function CloudNetworkingFundamentals() {
   return (
-    <ContentLayout active="guides" wide>
+    <ContentLayout active="cloud-architecture" wide>
       <span className="kicker">Guide · infrastructure fundamentals</span>
       <h1>Cloud networking fundamentals: VPCs, subnets, and peering</h1>
       <p className="lead">

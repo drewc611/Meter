@@ -3,7 +3,7 @@ import Toc from "../../components/Toc.jsx";
 import Code from "../../components/Code.jsx";
 
 export const meta = {
-  outFile: "guides/claude-computer-use-architecture.html",
+  outFile: "claude-architecture/claude-computer-use-architecture.html",
   title: "Claude Computer Use: Architecture and Safety Boundaries — Merit AC Guides",
   description:
     "When letting a model see a screen and drive a mouse and keyboard is the right architecture, and the containment, logging, and approval gates it needs that ordinary tool use doesn't.",
@@ -11,7 +11,7 @@ export const meta = {
 
 export default function ClaudeComputerUse() {
   return (
-    <ContentLayout active="guides" wide>
+    <ContentLayout active="claude-architecture" wide>
       <span className="kicker">Guide · agent architecture</span>
       <h1>Claude computer use: architecture and safety boundaries</h1>
       <p className="lead">
@@ -100,7 +100,7 @@ export default function ClaudeComputerUse() {
         It's worth stating the ordering explicitly, because the failure mode here isn't misusing
         computer use on a task it can't handle — it's reaching for it on a task a narrow tool would
         handle better. See{" "}
-        <a href="/guides/claude-tool-use-and-function-calling">
+        <a href="/claude-architecture/claude-tool-use-and-function-calling">
           Claude tool use and function calling
         </a>{" "}
         for the fuller case for typed tools generally; the short version that matters here is this: if a
@@ -308,7 +308,7 @@ export default function ClaudeComputerUse() {
         architecture around it, not just the capability itself, is what determines whether it's a
         contained, auditable part of a system or an unscoped one. Pair it with the tool-design principles
         in{" "}
-        <a href="/guides/claude-tool-use-and-function-calling">
+        <a href="/claude-architecture/claude-tool-use-and-function-calling">
           Claude tool use and function calling
         </a>{" "}
         to decide when it's actually warranted, and with the containment, logging, and approval patterns

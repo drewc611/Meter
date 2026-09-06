@@ -3,7 +3,7 @@ import Toc from "../../components/Toc.jsx";
 import Code from "../../components/Code.jsx";
 
 export const meta = {
-  outFile: "guides/prompt-caching-architecture.html",
+  outFile: "claude-architecture/prompt-caching-architecture.html",
   title: "Prompt Caching Architecture for Claude Applications — Merit AC Guides",
   description:
     "Why prompt caching is a prompt-structure decision, not a flag you flip — and how to design the static-versus-dynamic split so an application built on Claude actually gets the latency and cost benefit in practice.",
@@ -11,7 +11,7 @@ export const meta = {
 
 export default function PromptCachingArchitecture() {
   return (
-    <ContentLayout active="guides" wide>
+    <ContentLayout active="claude-architecture" wide>
       <span className="kicker">Guide · application architecture</span>
       <h1>Prompt caching architecture for Claude applications</h1>
       <p className="lead">

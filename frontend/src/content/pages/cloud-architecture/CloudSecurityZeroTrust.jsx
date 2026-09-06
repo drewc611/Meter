@@ -3,7 +3,7 @@ import Toc from "../../components/Toc.jsx";
 import Code from "../../components/Code.jsx";
 
 export const meta = {
-  outFile: "guides/cloud-security-architecture-zero-trust.html",
+  outFile: "cloud-architecture/cloud-security-architecture-zero-trust.html",
   title: "Cloud Security Architecture: Shared Responsibility and Zero Trust — Merit AC Guides",
   description:
     "How the shared responsibility model, identity-centric access control, and zero trust fit together as one architecture — and the specific misconfigurations that actually cause cloud security incidents.",
@@ -11,7 +11,7 @@ export const meta = {
 
 export default function CloudSecurityZeroTrust() {
   return (
-    <ContentLayout active="guides" wide>
+    <ContentLayout active="cloud-architecture" wide>
       <span className="kicker">Guide · cloud architecture</span>
       <h1>Cloud security architecture: shared responsibility and zero trust</h1>
       <p className="lead">

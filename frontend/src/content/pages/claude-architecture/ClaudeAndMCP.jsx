@@ -3,7 +3,7 @@ import Toc from "../../components/Toc.jsx";
 import Code from "../../components/Code.jsx";
 
 export const meta = {
-  outFile: "guides/claude-and-mcp.html",
+  outFile: "claude-architecture/claude-and-mcp.html",
   title: "Claude and MCP: The Model Context Protocol — Merit AC Guides",
   description:
     "How the Model Context Protocol standardizes the wiring between Claude and external tools and data — and the real architectural decision of when a custom integration is enough versus when a reusable MCP server is worth building.",
@@ -11,7 +11,7 @@ export const meta = {
 
 export default function ClaudeAndMCP() {
   return (
-    <ContentLayout active="guides" wide>
+    <ContentLayout active="claude-architecture" wide>
       <span className="kicker">Guide · agent architecture</span>
       <h1>Claude and MCP: the Model Context Protocol as an integration pattern</h1>
       <p className="lead">

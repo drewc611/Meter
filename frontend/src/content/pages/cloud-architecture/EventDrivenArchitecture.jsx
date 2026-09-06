@@ -3,7 +3,7 @@ import Toc from "../../components/Toc.jsx";
 import Code from "../../components/Code.jsx";
 
 export const meta = {
-  outFile: "guides/event-driven-architecture.html",
+  outFile: "cloud-architecture/event-driven-architecture.html",
   title: "Event-Driven Architecture on the Cloud — Merit AC Guides",
   description:
     "How publish-subscribe actually changes a system's coupling and failure modes, the three event patterns that build on it, and the problems — schema evolution, dual writes, debugging fan-out — specific to this style.",
@@ -11,7 +11,7 @@ export const meta = {
 
 export default function EventDrivenArchitecture() {
   return (
-    <ContentLayout active="guides" wide>
+    <ContentLayout active="cloud-architecture" wide>
       <span className="kicker">Guide · cloud architecture</span>
       <h1>Event-driven architecture on the cloud</h1>
       <p className="lead">

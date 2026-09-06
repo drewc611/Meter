@@ -3,7 +3,7 @@ import Toc from "../../components/Toc.jsx";
 import Code from "../../components/Code.jsx";
 
 export const meta = {
-  outFile: "guides/multi-cloud-and-hybrid-cloud-architecture.html",
+  outFile: "cloud-architecture/multi-cloud-and-hybrid-cloud-architecture.html",
   title: "Multi-Cloud and Hybrid Cloud Architecture — Merit AC Guides",
   description:
     "What multi-cloud and hybrid cloud actually mean in practice, the real costs behind the vendor-neutral pitch, and a framework for deciding whether either is worth it for your org.",
@@ -11,7 +11,7 @@ export const meta = {
 
 export default function MultiCloudHybridArchitecture() {
   return (
-    <ContentLayout active="guides" wide>
+    <ContentLayout active="cloud-architecture" wide>
       <span className="kicker">Guide · infrastructure architecture</span>
       <h1>Multi-cloud and hybrid cloud architecture</h1>
       <p className="lead">

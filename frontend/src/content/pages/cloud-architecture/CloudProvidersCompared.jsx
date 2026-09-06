@@ -48,7 +48,7 @@ function CategoryTable() {
 }
 
 export const meta = {
-  outFile: "guides/cloud-providers-compared.html",
+  outFile: "cloud-architecture/cloud-providers-compared.html",
   title: "Cloud Providers Compared: AWS, Azure, GCP, and Beyond — Merit AC Guides",
   description:
     "A reference guide to what actually distinguishes AWS, Microsoft Azure, and Google Cloud from each other and from the specialized, developer-focused, and edge-first providers around them.",
@@ -56,7 +56,7 @@ export const meta = {
 
 export default function CloudProvidersCompared() {
   return (
-    <ContentLayout active="guides" wide>
+    <ContentLayout active="cloud-architecture" wide>
       <span className="kicker">Guide · infrastructure architecture</span>
       <h1>Cloud providers compared: AWS, Azure, GCP, and beyond</h1>
       <p className="lead">
@@ -66,7 +66,7 @@ export default function CloudProvidersCompared() {
         a question with no stable answer; "what does this provider's positioning actually mean
         for a team like mine" is a question this guide can help with. For the follow-up question —
         how to actually decide, for a specific workload — see{" "}
-        <a href="/guides/choosing-a-cloud-provider">
+        <a href="/cloud-architecture/choosing-a-cloud-provider">
           Choosing a cloud provider: a decision framework
         </a>
         .
@@ -331,11 +331,11 @@ export default function CloudProvidersCompared() {
         differ, that answer legitimately differs too. A guide that claimed otherwise would be
         selling something. For a structured way to work through that question for your own
         situation, see{" "}
-        <a href="/guides/choosing-a-cloud-provider">
+        <a href="/cloud-architecture/choosing-a-cloud-provider">
           Choosing a cloud provider: a decision framework
         </a>
         , and for the specific question of running across more than one provider at once, see{" "}
-        <a href="/guides/multi-cloud-and-hybrid-cloud-architecture">
+        <a href="/cloud-architecture/multi-cloud-and-hybrid-cloud-architecture">
           Multi-cloud and hybrid cloud architecture
         </a>
         .
