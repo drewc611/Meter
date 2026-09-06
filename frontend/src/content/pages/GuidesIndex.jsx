@@ -164,9 +164,9 @@ export default function GuidesIndex() {
       </p>
 
       {SECTIONS.map((section) => (
-        <div key={section.label}>
+        <section key={section.label}>
           <h2>{section.label}</h2>
-          <p className="section-meta">{section.meta}</p>
+          <p>{section.meta}</p>
           <div className="grid">
             {section.guides.map((g) => (
               <a key={g.href} className="tile" href={g.href}>
@@ -175,7 +175,7 @@ export default function GuidesIndex() {
               </a>
             ))}
           </div>
-        </div>
+        </section>
       ))}
 
       <div className="card">

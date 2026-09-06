@@ -1,6 +1,5 @@
 import ContentLayout from "../../components/ContentLayout.jsx";
 import Toc from "../../components/Toc.jsx";
-import Code from "../../components/Code.jsx";
 
 export const meta = {
   outFile: "guides/disaster-recovery-and-multi-region-architecture.html",

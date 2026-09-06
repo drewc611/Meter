@@ -9,6 +9,27 @@ export const meta = {
     "Extended thinking is a real latency and cost tradeoff, not a free accuracy upgrade — how to decide which requests actually warrant it, and where it fits inside an agent loop.",
 };
 
+const ROUTING_TABLE = [
+  ["Cheap upfront classifier", "High request volume, complexity hard to infer from metadata alone", "Adds latency/cost to every request; only as good as the classifier"],
+  ["Fixed rule by request type", "Request categories already correlate well with complexity", "Under-serves the occasional hard case hiding in an easy category"],
+  ["Two-pass, escalate on failure", "Most requests are easy and a fast first attempt is cheap", "Worst case pays first-pass cost plus escalation; needs reliable failure/low-confidence detection"],
+];
+
+function RoutingTable() {
+  return (
+    <table>
+      <thead>
+        <tr><th>Approach</th><th>Fits best when</th><th>Main cost</th></tr>
+      </thead>
+      <tbody>
+        {ROUTING_TABLE.map((row) => (
+          <tr key={row[0]}><td>{row[0]}</td><td>{row[1]}</td><td>{row[2]}</td></tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 export default function ExtendedThinkingArchitecture() {
   return (
     <ContentLayout active="guides" wide>
@@ -95,6 +116,17 @@ export default function ExtendedThinkingArchitecture() {
           token budget where it buys something, and skips it everywhere else.
         </p>
       </div>
+      <p>
+        This is also, in practice, a measurement problem, not just a design principle to state once and
+        move on from. "Does this request actually benefit" isn't self-evident from the request alone — it
+        has to be checked against outcomes: does routing a given slice of traffic through extended
+        thinking measurably improve the metric that matters (fewer follow-up corrections, a higher pass
+        rate on a downstream check, fewer escalations to a human) enough to justify what it costs in
+        latency and tokens on that slice. A system that turns extended thinking on for a category of
+        request and never checks whether the accuracy gain shows up is making the same mistake as a team
+        that ships a change and never checks whether it helped — the tradeoff in section 2 is only worth
+        making where the evidence says it pays for itself.
+      </p>
 
       <h2 id="routing-problem">3. The routing problem: deciding what qualifies</h2>
       <p>
@@ -140,6 +172,18 @@ export default function ExtendedThinkingArchitecture() {
         requests a classifier might have misjudged. Which one fits depends on how expensive a wrong
         routing decision is in either direction for the specific system, and how much the request types
         already correlate with actual complexity.
+      </p>
+      <RoutingTable />
+      <p>
+        It's worth naming the failure mode each approach produces when it gets the routing decision
+        wrong, because the three don't fail the same way. A classifier that under-flags complexity sends
+        a genuinely hard request down the fast path, where it comes back with a confidently wrong answer
+        and no indication anything was skipped — the same silent-failure shape ordinary tool-use mistakes
+        have, just applied to a routing decision instead of a tool call. A fixed rule that mis-categorizes
+        a request fails the same way, quietly, for every request in the mis-categorized slice rather than
+        occasionally. A two-pass approach fails more visibly by comparison — its worst case is slow, not
+        silently wrong — which is often the more recoverable failure mode to have in a system that's
+        still being tuned, even though it's the more expensive one at the tail.
       </p>
 
       <h2 id="agentic-loops">4. Extended thinking inside agentic loops</h2>
