@@ -89,7 +89,7 @@ python3 tests/test_agentops.py    routing refuses, and reconcile sorts risk befo
 ./os books check                  the books tie to the reports
 ```
 
-## The five workspaces
+## The eight workspaces
 
 Pick by failure mode, not by trade.
 
@@ -100,6 +100,9 @@ Pick by failure mode, not by trade.
 | `03-design-studio` | hours past estimate, revisions given away |
 | `04-maker-brand` | cash tied up in stock, wholesale priced off retail |
 | `05-coach-practice` | the hours ceiling, and unpaid time between sessions |
+| `06-recurring-services` | a signed price nobody revisits while real cost creeps up under it |
+| `07-event-production` | vendor cash out weeks before client cash in |
+| `08-agency-subcontractor` | subcontractor cost quietly eating a project's margin |
 
 ## What it will not do
 

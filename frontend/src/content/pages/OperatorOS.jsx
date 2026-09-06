@@ -26,6 +26,9 @@ const WORKSPACES = [
   { name: "03-design-studio", leak: "Hours past estimate, revisions given away" },
   { name: "04-maker-brand", leak: "Cash tied up in stock, wholesale priced off retail" },
   { name: "05-coach-practice", leak: "The hours ceiling, and unpaid time between sessions" },
+  { name: "06-recurring-services", leak: "A signed price nobody revisits while real cost creeps up under it" },
+  { name: "07-event-production", leak: "Vendor cash out weeks before client cash in" },
+  { name: "08-agency-subcontractor", leak: "Subcontractor cost quietly eating a project's margin" },
 ];
 
 const BOUNDARIES = [
@@ -84,7 +87,7 @@ export default function OperatorOS() {
         ))}
       </div>
 
-      <h2>The five workspaces</h2>
+      <h2>The eight workspaces</h2>
       <p>Encoded starting businesses, picked by the failure mode they teach, not by trade:</p>
       <div className="grid">
         {WORKSPACES.map((w) => (
