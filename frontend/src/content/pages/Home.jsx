@@ -9,6 +9,8 @@ export const meta = {
 
 const EXPLORE = [
   { href: "/architecture", title: "Architecture", meta: "How Merit AC is built and hosted" },
+  { href: "/cloud-architecture", title: "Cloud architecture", meta: "Patterns and providers — multi-cloud, serverless, networking, security" },
+  { href: "/claude-architecture", title: "Claude architecture", meta: "Building real applications with Claude — agents, tool use, MCP, caching" },
   { href: "/setup/react", title: "Setup guides", meta: "Wire your AI usage in — React, Python, Node, TensorFlow/Pyro" },
   { href: "/news", title: "News", meta: "Sourced commentary on AI news that actually matters" },
   { href: "/models", title: "Models & tools", meta: "A directory of AI models and tools — verified and dated" },

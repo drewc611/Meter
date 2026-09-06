@@ -5,6 +5,8 @@
 // to hydrate and no risk of a blank-until-JS-runs page.
 const NAV_ITEMS = [
   { key: "architecture", href: "/architecture", label: "Architecture" },
+  { key: "cloud-architecture", href: "/cloud-architecture", label: "Cloud Architecture" },
+  { key: "claude-architecture", href: "/claude-architecture", label: "Claude Architecture" },
   { key: "setup", href: "/setup/react", label: "Setup" },
   { key: "news", href: "/news", label: "News" },
   { key: "models", href: "/models", label: "Models" },
