@@ -102,6 +102,18 @@ export default function ChoosingACloudProvider() {
         calculator unless it's specifically built to model them. Model the workload's real shape
         before comparing headline numbers.
       </p>
+      <div className="card">
+        <p style={{ marginBottom: "8px" }}>
+          <b>Common mistake:</b> running the checklist once, informally, in a kickoff meeting.
+        </p>
+        <p style={{ marginBottom: 0 }}>
+          Each of the four inputs above is a question with an actual, checkable answer — not a
+          gut-check to poll the room on. "Does anyone know if their managed Postgres offering is
+          any good" produces a different, weaker answer than actually reading that provider's
+          documentation and support history for the specific engine version the workload needs.
+          The checklist is only as useful as the effort put into answering each item honestly.
+        </p>
+      </div>
 
       <h2 id="switching-cost-trap">3. The switching-cost trap</h2>
       <p>
@@ -124,6 +136,19 @@ export default function ChoosingACloudProvider() {
         original choice deserves more weight than teams initially tend to give it — not because
         every decision needs a six-month evaluation process, but because the true cost of the
         decision includes a cost that won't be visible until well after the decision is made.
+      </p>
+      <p>
+        It's worth being precise about what actually creates the lock-in, because it isn't simply
+        "using a cloud provider" — it's depth of dependency on that provider's proprietary layer
+        specifically. A workload running ordinary virtual machines, a standard database engine,
+        and object storage through a provider's basic APIs is comparatively easy to move, because
+        those are close to commodity capabilities available in similar form elsewhere. The same
+        workload rebuilt around a provider's proprietary event-driven serverless model, its
+        proprietary database with a query dialect no other engine speaks, and its identity system
+        wired into every service boundary is a fundamentally harder thing to move, even though
+        both started as "just a cloud deployment." Lock-in is a spectrum determined by which
+        specific services got adopted, not a binary switch that flips the moment a provider is
+        chosen.
       </p>
 
       <h2 id="start-simple">4. Start simple, keep options open</h2>

@@ -1,6 +1,52 @@
 import ContentLayout from "../../components/ContentLayout.jsx";
 import Toc from "../../components/Toc.jsx";
 
+const CATEGORY_TABLE = [
+  [
+    "Hyperscaler",
+    "AWS, Microsoft Azure, Google Cloud Platform",
+    "Largest breadth of managed services and global footprint; general-purpose default",
+  ],
+  [
+    "Specialized enterprise",
+    "Oracle Cloud Infrastructure, IBM Cloud, Alibaba Cloud",
+    "A specific installed base, region, or existing vendor relationship, not general-purpose breadth",
+  ],
+  [
+    "Developer-focused",
+    "DigitalOcean, Linode / Akamai",
+    "Smaller catalog, simpler pricing, aimed at small teams and conventional workloads",
+  ],
+  [
+    "Edge / CDN-first",
+    "Cloudflare, Fly.io",
+    "Compute distributed close to users by default, grown outward from an edge-network origin",
+  ],
+];
+
+function CategoryTable() {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Examples</th>
+          <th>What actually distinguishes it</th>
+        </tr>
+      </thead>
+      <tbody>
+        {CATEGORY_TABLE.map((row) => (
+          <tr key={row[0]}>
+            <td>{row[0]}</td>
+            <td>{row[1]}</td>
+            <td>{row[2]}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
 export const meta = {
   outFile: "guides/cloud-providers-compared.html",
   title: "Cloud Providers Compared: AWS, Azure, GCP, and Beyond — Merit AC Guides",
@@ -53,6 +99,8 @@ export default function CloudProvidersCompared() {
         infrastructure at the scale these three companies already operate it at for their own
         products.
       </p>
+      <p>The table below is a rough map of the categories this guide covers, before going into each one individually.</p>
+      <CategoryTable />
       <p>
         That breadth creates a gravitational pull that's worth naming directly, because it's the
         thing every other section of this guide sits downstream of. Once an organization has
@@ -126,6 +174,17 @@ export default function CloudProvidersCompared() {
         data-and-ML-heavy startups and less common as a default for large legacy enterprises
         migrating from on-premises infrastructure — though that gap is not a fixed rule, just a
         general pattern in how the three are typically discussed.
+      </p>
+      <p>
+        It's worth naming the risk of over-indexing on any one provider's origin story, including
+        this one. "Google built it for itself, so it must be technically best" is a marketing
+        narrative as much as an engineering conclusion — GCP's Kubernetes lineage explains why the
+        service exists and why Google's engineers have deep institutional familiarity with the
+        underlying orchestration model, not that a workload automatically runs better on GCP than
+        on a mature managed Kubernetes offering from another hyperscaler. Lineage explains
+        positioning; it doesn't substitute for checking a specific service's actual current
+        maturity, which is exactly the first item in the decision checklist covered in the
+        companion guide.
       </p>
 
       <h2 id="second-tier">5. The specialized second tier</h2>
@@ -244,6 +303,16 @@ export default function CloudProvidersCompared() {
           platform is technically preferable in the abstract.
         </li>
       </ul>
+      <p>
+        None of these four factors is individually decisive in every case, and they sometimes
+        point in different directions for the same decision — a compliance requirement might
+        favor one provider while the team's existing expertise favors another. When that happens,
+        the resolution isn't a formula that spits out a single correct answer; it's an honest
+        conversation about which factor actually carries more risk if it's wrong. A compliance
+        miss can be an existential problem. A team spending an extra few weeks ramping up on an
+        unfamiliar console usually isn't. Weigh accordingly rather than averaging the factors as
+        if they were equally consequential.
+      </p>
 
       <h2 id="wrong-question">9. Why "which is best" is the wrong question</h2>
       <p>
