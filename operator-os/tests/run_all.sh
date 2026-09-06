@@ -22,8 +22,8 @@ CMDS=("validate --errors-only" "brief" "week" "cash 90" "aging" "margin" "tax" "
       "books post" "books check" "books pnl" "books balance" "books accounts"
       "sim --trials=400" "whatfirst --trials=300" "anomalies" "console"
       "log 5" "drift" "routing" "ticks" "tick money-tick" "reconcile" "work"
-      "adapters" "imports" "plugin list" "plugin verify" "rates" "find a"
-      "query select id from invoices limit 2")
+      "adapters" "imports" "plugin list" "plugin verify" "rates" "reminders"
+      "rules" "find a" "query select id from invoices limit 2")
 for w in workspaces/*/; do
   w="$(basename "$w")"
   export OPERATOR_OS_DATA="/tmp/verify-$w"; rm -rf "$OPERATOR_OS_DATA"

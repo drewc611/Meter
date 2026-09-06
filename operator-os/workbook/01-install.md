@@ -9,7 +9,7 @@ your own numbers, on your own machine.
 
 ## Do this
 
-1. Look at the five encoded businesses before you build yours. Twenty minutes
+1. Look at the eight encoded businesses before you build yours. Twenty minutes
    here saves an hour later, because you will see the shape of a filled in system
    instead of guessing at an empty one.
 

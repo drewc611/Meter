@@ -277,20 +277,29 @@ def test_enable_disable():
     check("it is off again", not P.find("switchy")["enabled"])
 
 
+SHIPPED_EXAMPLES = (
+    "example-quotes-pdf",
+    "example-trade-rates",
+    "example-recurring-reminders",
+    "example-expense-rules",
+)
+
+
 def test_shipped_examples():
-    head("The two example plugins verify against the real plugins folder")
+    head("The four example plugins verify against the real plugins folder")
     real = dict(os.environ)
     os.environ.pop("OPERATOR_OS_PLUGINS")
     try:
         names = [p["name"] for p in P.all()]
-        check("example-quotes-pdf is installed", "example-quotes-pdf" in names, str(names))
-        check("example-trade-rates is installed", "example-trade-rates" in names, str(names))
-        for name in ("example-quotes-pdf", "example-trade-rates"):
+        for name in SHIPPED_EXAMPLES:
+            check("{} is installed".format(name), name in names, str(names))
+        for name in SHIPPED_EXAMPLES:
             plug = P.find(name)
             if plug is None:
                 continue
             problems = [p for p in P.verify(plug)
-                        if "rates.csv is not there" not in p]
+                        if "rates.csv is not there" not in p
+                        and "rules.csv is not there" not in p]
             check("{} verifies".format(name), not problems, str(problems))
             check("{} declares only real capabilities".format(name),
                   all(c in P.CAPABILITIES for c in plug["capabilities"]))

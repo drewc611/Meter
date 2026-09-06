@@ -48,11 +48,11 @@ export default function OperatorOS() {
       <p className="lead">
         Nine CSV files, an engine that does the money math the same way every time, an event log
         that makes every change reversible, real double-entry books, a query language, a cash
-        simulation with the odds attached, five import adapters, a plugin SDK, an agent layer that
-        runs the whole thing on a schedule, twenty tools, five encoded businesses to start from, and
-        a workbook covering every step on Mac and Windows. No account, no server, no subscription,
-        nothing to log into -- Python 3.9 and an optional git install are the entire dependency
-        list, on purpose.
+        simulation with the odds attached, eight import adapters, a plugin SDK, an agent layer that
+        runs the whole thing on a schedule, thirty-five tools, eight encoded businesses to start
+        from, and a workbook covering every step on Mac and Windows. No account, no server, no
+        subscription, nothing to log into -- Python 3.9 and an optional git install are the entire
+        dependency list, on purpose.
       </p>
 
       <h2>Five minutes to something real</h2>
@@ -70,7 +70,7 @@ export default function OperatorOS() {
       </p>
 
       <h2>What it does</h2>
-      <p>Forty-one commands in total (<code>os help</code> lists them, <code>os help &lt;group&gt;</code> narrows it). The core ones:</p>
+      <p>Forty-three commands in total (<code>os help</code> lists them, <code>os help &lt;group&gt;</code> narrows it). The core ones:</p>
       <div className="grid">
         {COMMANDS.map((c) => (
           <div key={c.cmd} className="card" style={{ margin: 0 }}>
