@@ -41,6 +41,7 @@ import PromptCachingArchitecture, { meta as promptCachingMeta } from "./pages/cl
 import ClaudeComputerUse, { meta as claudeComputerUseMeta } from "./pages/claude-architecture/ClaudeComputerUse.jsx";
 import ExtendedThinkingArchitecture, { meta as extendedThinkingMeta } from "./pages/claude-architecture/ExtendedThinkingArchitecture.jsx";
 import PromptLibrary, { meta as promptLibraryMeta } from "./pages/PromptLibrary.jsx";
+import OperatorOS, { meta as operatorOsMeta } from "./pages/OperatorOS.jsx";
 import PromptDay, { promptMeta } from "./pages/PromptDay.jsx";
 import { PROMPTS } from "./data/prompts.js";
 import NewsIndex, { meta as newsIndexMeta } from "./pages/NewsIndex.jsx";
@@ -82,6 +83,7 @@ const PAGES = [
   [ExtendedThinkingArchitecture, extendedThinkingMeta],
   [PromptsIndex, promptsMeta],
   [PromptLibrary, promptLibraryMeta],
+  [OperatorOS, operatorOsMeta],
   [Challenge, challengeMeta],
   [Community, communityMeta],
   [NewsIndex, newsIndexMeta],

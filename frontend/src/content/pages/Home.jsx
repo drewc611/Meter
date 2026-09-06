@@ -19,6 +19,7 @@ const EXPLORE = [
   { href: "/prompts", title: "Prompts", meta: "A 30-day AI prompt archive" },
   { href: "/challenge", title: "The 30-day challenge", meta: "Build a governed agentic delivery platform, free" },
   { href: "/community", title: "Community", meta: "Not open yet — join the interest list" },
+  { href: "/operator-os", title: "Operator OS", meta: "A file-based business OS — books, cash forecasting, and agents on your own machine" },
 ];
 
 export default function Home() {
