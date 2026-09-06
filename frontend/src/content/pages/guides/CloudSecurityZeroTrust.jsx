@@ -1,0 +1,403 @@
+import ContentLayout from "../../components/ContentLayout.jsx";
+import Toc from "../../components/Toc.jsx";
+import Code from "../../components/Code.jsx";
+
+export const meta = {
+  outFile: "guides/cloud-security-architecture-zero-trust.html",
+  title: "Cloud Security Architecture: Shared Responsibility and Zero Trust — Merit AC Guides",
+  description:
+    "How the shared responsibility model, identity-centric access control, and zero trust fit together as one architecture — and the specific misconfigurations that actually cause cloud security incidents.",
+};
+
+export default function CloudSecurityZeroTrust() {
+  return (
+    <ContentLayout active="guides" wide>
+      <span className="kicker">Guide · cloud architecture</span>
+      <h1>Cloud security architecture: shared responsibility and zero trust</h1>
+      <p className="lead">
+        Almost every serious cloud security incident traces back to one of two things: a team
+        assumed the provider was covering something that was actually theirs to secure, or a
+        system trusted a request because of where it came from instead of verifying what it was
+        actually allowed to do. Shared responsibility and zero trust are the two ideas that, taken
+        together, prevent both. Neither is a product you buy — they're a way of drawing the lines
+        of a system before you decide what to secure and how.
+      </p>
+
+      <Toc
+        items={[
+          { href: "#shared-responsibility", label: "1. The shared responsibility model" },
+          { href: "#identity-perimeter", label: "2. Identity as the real perimeter" },
+          { href: "#least-privilege", label: "3. Least privilege in practice" },
+          { href: "#zero-trust", label: "4. Zero trust as architecture philosophy" },
+          { href: "#encryption-keys", label: "5. Encryption and key management" },
+          { href: "#failure-modes", label: "6. The failure modes that actually happen" },
+          { href: "#worked-example", label: "7. Worked example: threat-modeling a workload" },
+        ]}
+      />
+
+      <h2 id="shared-responsibility">1. The shared responsibility model</h2>
+      <p>
+        Every major cloud provider draws the same basic line, even though the exact wording
+        differs: the provider is responsible for the security <em>of</em> the cloud, and the
+        customer is responsible for security <em>in</em> the cloud. "Of the cloud" means the
+        physical data centers — badge access, cameras, generators, the concrete and steel — the
+        host hardware those data centers run, and the virtualization or container-isolation layer
+        that keeps one customer's workload from touching another's on shared infrastructure. The
+        provider patches the hypervisor. The provider secures the physical rack. The provider
+        makes sure a bug in the isolation layer doesn't let one tenant read another tenant's
+        memory.
+      </p>
+      <p>
+        Everything above that line is the customer's job: the data you store, how you configure
+        the services you provision, who and what has identity and access to touch them, the code
+        you deploy, and the network rules you write around it. The provider gives you a storage
+        bucket with sane defaults; whether that bucket is world-readable six months later because
+        someone added a permissive policy during a debugging session is entirely on you. The
+        provider gives you an identity and access management system with enormous expressive
+        power; whether a role has exactly the permissions it needs or a wildcard that was faster
+        to write is entirely on you.
+      </p>
+      <p>
+        Where the line actually falls shifts by service model, and that shift is worth naming
+        explicitly because it's where confusion breeds. In infrastructure-as-a-service, the
+        provider secures physical infrastructure and virtualization, and the customer secures
+        everything from the guest operating system up — patching, network configuration, identity,
+        data, application code. In platform-as-a-service, the provider additionally manages the
+        operating system and runtime, so the customer's remaining surface narrows to
+        application-level configuration, identity, and data. In software-as-a-service, the
+        provider runs essentially the whole stack, and the customer's responsibility narrows
+        further to how they configure the application, who they grant access to within it, and
+        what data they choose to put there. The shape of the boundary moves; the fact that a
+        boundary exists, and that everything on the customer's side of it is unambiguously theirs
+        to secure, does not.
+      </p>
+      <div className="card">
+        <p style={{ marginBottom: 0 }}>
+          <b>The single most common real-world failure:</b> a team treats a cloud service as
+          "secure by default" in a way the provider never actually promised. A managed database
+          with encryption at rest doesn't mean the database is unreachable from the internet — that's
+          a network configuration the customer chose. A storage bucket provisioned through infrastructure
+          code doesn't mean its access policy was reviewed — that's a line in a template someone
+          wrote, and templates get copied from examples more often than anyone would like to admit.
+          The provider secured what it promised to secure. The customer skipped the part that was
+          always theirs.
+        </p>
+      </div>
+      <p>
+        The practical fix is less a technology and more a habit: for every service you provision,
+        write down explicitly what the provider secures and what you're responsible for, before you
+        configure it — not after an audit asks. If you can't answer "who is responsible for this
+        specific control" for a given service in under a few seconds, that's the gap where an
+        incident is most likely to originate, because it's the gap nobody is deliberately watching.
+      </p>
+
+      <h2 id="identity-perimeter">2. Identity as the real perimeter</h2>
+      <p>
+        On-premises security architecture spent decades built around a network perimeter: a
+        firewall at the edge, a trusted internal network behind it, and a working assumption that
+        traffic already inside the building had earned some measure of trust simply by being
+        inside. That assumption made a certain amount of sense when "inside" meant a physical
+        office network reachable only by someone who had badged into the building or plugged into
+        a wall jack.
+      </p>
+      <p>
+        Cloud architecture erases that assumption without asking permission. A managed database
+        sits on infrastructure the provider operates, reachable over the same public internet
+        backbone as everything else, distinguished from a public service mainly by network rules
+        and access policy rather than physical separation. A serverless function invoked by an
+        event has no "network segment" in any meaningful sense — it spins up, runs, and
+        disappears. Two services in the same cloud account might be sitting in entirely different
+        physical regions, communicating over infrastructure neither team controls end to end. The
+        network perimeter that used to be a meaningful trust boundary is, in a cloud architecture,
+        porous at best and simply absent at worst.
+      </p>
+      <p>
+        What replaces it is identity. The question that actually determines whether a request
+        should succeed is no longer "did this arrive from inside the trusted network" but "who —
+        or what — is this principal, and what has it been explicitly granted permission to do."
+        Every workload, every service, every human user, every automated pipeline becomes a
+        principal with an identity, and that identity carries a set of permissions that travel with
+        it regardless of network path. A request from a compromised machine inside your cloud
+        account is exactly as unauthorized as one from outside it, if the identity making the
+        request doesn't have permission to do what it's asking — network location tells you
+        nothing about that.
+      </p>
+      <p>
+        This is why identity and access management ends up being the single most consequential
+        system in a cloud architecture, disproportionate to how much attention it typically gets
+        during initial design. A misconfigured firewall rule limits what can reach a service. A
+        misconfigured identity policy limits what an already-authenticated principal can do once
+        it's there — and because so much of a cloud environment is reachable by design (that's the
+        point of a managed service), identity policy is very often the only control actually
+        standing between a compromised credential and a serious breach. Treat the identity system
+        with the level of design rigor that used to go into perimeter firewall rules, because it
+        has inherited that firewall's job.
+      </p>
+
+      <h2 id="least-privilege">3. Least privilege in practice</h2>
+      <p>
+        Least privilege is easy to state and consistently hard to hold onto: a principal should
+        have exactly the permissions it needs to do its job, no more. The theory is uncontroversial.
+        The practice fights against every incentive present during normal development work.
+      </p>
+      <p>
+        The disciplined version starts from zero. When a new service or role is created, it begins
+        with no permissions at all, and permissions get added one at a time, each one justified by
+        an actual, observed need — this function needs to read from this specific queue, so it gets
+        read access to that queue and nothing else. It's slower. Every new capability the service
+        needs during development means stopping to add a permission, which means an access-denied
+        error interrupts you mid-task more often than anyone finds pleasant.
+      </p>
+      <p>
+        The anti-pattern starts from the other end, and it's overwhelmingly the more common
+        starting point in practice, because it removes that friction: attach a broad managed
+        policy — often one the provider ships as a convenience, scoped to an entire service rather
+        than a specific action or resource — and move on. Development goes faster because nothing
+        ever blocks on a missing permission. The cost is deferred, not eliminated: that role now
+        has far more reach than the workload actually uses, and "far more reach than needed" is
+        exactly the property that turns a contained mistake into an uncontained one. A single
+        server-side request-forgery bug in an application, or a single leaked credential, is
+        limited in its damage by what the identity behind it can do — and a role given broad
+        access "to save time" turns a narrow bug into an account-wide incident.
+      </p>
+      <p>
+        The part of the anti-pattern that does the most damage isn't the initial broad grant — it's
+        that the permissions are almost never narrowed later. Nobody schedules time to revisit a
+        working system's permissions and take things away; there's no obvious trigger for it, and
+        removing a permission carries real risk of breaking something that quietly depended on it.
+        So the broad grant made under deadline pressure during week one becomes the permanent shape
+        of that role, discovered — if it's discovered at all — only during an incident
+        investigation or a compliance audit years later, at which point nobody on the team can
+        confidently say which of those permissions are actually load-bearing.
+      </p>
+      <p>
+        The practical version of least privilege that actually survives contact with a real
+        organization treats permission review as a recurring practice with a schedule, not a
+        one-time design decision: periodically look at what a role's permissions actually allow
+        against what its access logs show it actually uses, and narrow the gap. Cloud providers
+        generally expose exactly this kind of usage data — which permissions granted to a role have
+        actually been exercised over some window — specifically because this gap is common enough
+        to be a known, named problem.
+      </p>
+
+      <h2 id="zero-trust">4. Zero trust as architecture philosophy</h2>
+      <p>
+        Zero trust is often described as a product category, which undersells it. At its core it's
+        a single architectural principle: never trust, always verify — every request authenticates
+        and authorizes on its own merits, regardless of whether it originated inside or outside a
+        traditional network boundary, and regardless of whether the requester has been granted
+        trust before. There is no privileged network segment where a request gets a pass because of
+        where it came from.
+      </p>
+      <p>
+        Contrast that with perimeter-based security's implicit model: authenticate once at the
+        edge, and everything inside the perimeter is trusted more or less by default, because
+        getting past the edge was assumed to be hard. The failure mode that model produces is
+        specific and well understood — once an attacker gets past the perimeter, by any means, lateral
+        movement inside the trusted zone is comparatively easy, because internal systems were
+        designed assuming their neighbors were already vetted. A single compromised credential or a
+        single vulnerable internal service becomes a foothold from which most of the internal
+        environment is reachable, because nothing inside was built to distrust its neighbors.
+      </p>
+      <p>
+        Zero trust architecture removes that implicit trust at every hop, not just at the edge.
+        A service calling another internal service authenticates that call the same way it would
+        authenticate a call from outside — with its own identity, checked against its own
+        authorization policy for that specific action, every time, rather than being waved through
+        because the calling service already passed some earlier gate. In practice this looks like
+        mutual authentication between services, short-lived credentials instead of long-lived ones
+        that widen the window a leaked credential stays useful, and authorization decisions made
+        per-request against current policy rather than cached from an earlier check.
+      </p>
+      <p>
+        It's worth being precise about what zero trust doesn't mean, because the name invites a
+        reading that goes too far. It doesn't mean no trust exists anywhere in the system — a
+        request that authenticates correctly and is authorized for the action it's requesting does
+        proceed. It means trust is never assumed from context (network location, "it's an internal
+        service," "it already got past the login screen") and is always established explicitly, for
+        the specific request being made, at the point the request is made. The verification moves
+        from a one-time event at the edge to a continuous property enforced throughout the system.
+      </p>
+      <p>
+        Adopting this philosophy in a cloud architecture is less about buying a specific product
+        labeled "zero trust" and more about a design habit: whenever you're tempted to grant an
+        implicit trust because a request is coming from "inside," from a service you already trust,
+        or from a network range you consider safe, ask instead what explicit identity and
+        authorization check would let you remove that assumption. Every implicit trust relationship
+        you remove is one fewer place a single compromise can spread through unchecked.
+      </p>
+
+      <h2 id="encryption-keys">5. Encryption and key management</h2>
+      <p>
+        Encryption at rest and in transit is table stakes at this point — every major cloud
+        provider makes it easy to enable, and most services default to it. Data written to disk is
+        encrypted before it hits the platter; data moving between services over the network is
+        wrapped in transport-layer encryption. If your architecture isn't doing at least this much
+        by default in 2026, that's worth fixing immediately, but it's also not where the interesting
+        design decisions live anymore.
+      </p>
+      <p>
+        The subtler question, and the one that actually varies by organization and by workload, is
+        key management: who holds the keys that do the encrypting and decrypting. The default in
+        most managed cloud services is that the provider generates, stores, and rotates the
+        encryption keys on your behalf, transparently, as part of the service. This is genuinely
+        convenient — you get real encryption with zero operational overhead — and for a large share
+        of workloads it's entirely sufficient. The data is encrypted, the keys are managed by an
+        organization whose entire business depends on managing keys correctly, and you've spent
+        no engineering time on it.
+      </p>
+      <p>
+        Whether that default is acceptable for a specific workload depends on two things: data
+        sensitivity and compliance posture. Provider-managed keys mean the provider's own
+        infrastructure, and by extension the provider's own access controls and personnel
+        practices, sit in the trust chain for decrypting your data — for most data, that's a
+        perfectly reasonable trust to extend to a provider you've already trusted with hosting the
+        data in the first place. For a narrower set of workloads — regulated data with a compliance
+        framework that specifically requires customer control over key material, or data sensitive
+        enough that the organization wants the ability to revoke provider access to it entirely by
+        revoking key access, independent of the provider's own controls — that trust extension isn't
+        acceptable, and customer-managed keys become a real requirement rather than a nice-to-have.
+      </p>
+      <p>
+        Customer-managed keys shift real operational weight onto the customer: you generate, store,
+        rotate, and control access to the key material, typically through a dedicated key
+        management service, and every service that needs to encrypt or decrypt data now has a
+        dependency on that key infrastructure being available and correctly authorized. That's a
+        real cost — a misconfigured key policy can lock you out of your own data as effectively as
+        it locks out an attacker, and key rotation now needs its own operational process. The
+        decision isn't "customer-managed keys are more secure" in the abstract; it's a tradeoff
+        between operational simplicity and the specific control guarantee your compliance posture
+        and data sensitivity actually require. Make that decision deliberately, per data
+        classification, rather than defaulting one way for an entire organization regardless of
+        what's actually being stored.
+      </p>
+
+      <h2 id="failure-modes">6. The failure modes that actually happen</h2>
+      <p>
+        Cloud security incidents are, in the overwhelming majority of well-documented cases,
+        remarkably unglamorous. They are rarely the result of a novel cryptographic break or an
+        exotic zero-day in provider infrastructure. They are almost always one of a small number of
+        well-known configuration and hygiene failures, repeated across organizations and years,
+        because the underlying pressures that produce them — deadlines, convenience, the gap
+        between "works" and "is configured correctly" — are constant.
+      </p>
+      <p>
+        <b>Publicly exposed storage.</b> A storage bucket or equivalent object store gets an access
+        policy that's broader than intended — often "public" when the intent was "accessible to a
+        specific set of internal services," set that way during testing and never tightened, or set
+        that way because a permissive policy was the fastest way to get a demo working. Because
+        these systems are designed to be internet-accessible by nature (that's the point of managed
+        object storage), a misconfiguration here doesn't require an attacker to breach anything —
+        it requires only that someone, or some automated scanner, requests the resource. This is
+        one of the single most common categories of real cloud data exposure, precisely because the
+        barrier between "correctly configured" and "silently exposed" is one policy field.
+      </p>
+      <p>
+        <b>Overly permissive IAM roles.</b> Covered above as the least-privilege anti-pattern, and
+        worth repeating here as a failure mode in its own right: a role with far more access than
+        the workload behind it actually uses turns any compromise of that workload — a code
+        vulnerability, a leaked credential, a supply-chain compromise in a dependency — into a
+        compromise of everything that role can reach, rather than a contained incident.
+      </p>
+      <p>
+        <b>Unrotated long-lived credentials.</b> An access key or API credential generated once,
+        embedded in a configuration file or a deployment pipeline, and never rotated because
+        rotating it means finding and updating every place it's used — which nobody tracked. The
+        longer a credential lives unrotated, the larger the window during which a leak of that
+        credential (through a log, a misdirected error message, a compromised laptop) remains
+        exploitable. Short-lived, automatically rotated credentials shrink that window by design;
+        long-lived static credentials are a liability that grows, silently, the longer they exist
+        unchanged.
+      </p>
+      <p>
+        <b>Secrets in source code and container images.</b> A database password, an API key, or a
+        signing certificate gets hardcoded into application source during development — often for
+        entirely understandable reasons, like getting something running locally without setting up
+        a secrets manager — and then gets committed to version control, or baked into a container
+        image layer, and ships. Removing it from the latest commit doesn't remove it from git
+        history, and removing it from the final image layer doesn't remove it from an earlier layer
+        an attacker can still inspect. This category is especially persistent because the secret
+        often keeps working for a long time after it's committed — nothing forces the leak to
+        surface, so it can sit exposed in a repository or a public image registry for a long time
+        before anyone finds it, whether that's a security team's own scanning or someone else's.
+      </p>
+      <div className="card">
+        <p style={{ marginBottom: 0 }}>
+          <b>The common thread:</b> none of these four requires a sophisticated attacker. Each one is
+          discoverable through freely available scanning — public buckets get found by automated
+          internet scanners within a short time of being exposed, and public code repositories get
+          scanned for credential patterns continuously by opportunistic actors and researchers
+          alike. Assume that anything misconfigured this way will eventually be found, not that it
+          might be.
+        </p>
+      </div>
+
+      <h2 id="worked-example">7. Worked example: threat-modeling a workload</h2>
+      <p>
+        Take a concrete, common shape: a public-facing web application backed by an API layer,
+        which reads and writes to a managed database, and which calls out to a third-party payment
+        processor. Threat-modeling it means walking through each layer — identity, network, data,
+        application — and naming which controls belong where, rather than treating "security" as
+        one undifferentiated concern applied uniformly.
+      </p>
+      <p>
+        <b>Identity layer.</b> The web application and the API layer are separate principals, each
+        with its own workload identity rather than sharing one service account — the web tier
+        should not be able to do anything the API tier can do just because they're part of the same
+        product. The API layer's identity is granted exactly the database permissions its queries
+        require: read and write on the specific tables it uses, nothing at the database-instance
+        administrative level. The credential used to call the payment processor is a distinct
+        secret, scoped to that one integration, stored in a secrets manager rather than in
+        application configuration, and rotated on a schedule independent of any code deployment.
+      </p>
+      <p>
+        <b>Network layer.</b> The database sits in a network segment that accepts connections only
+        from the API layer's identity and network location, not from the public internet and not
+        even from the web tier directly — the web tier never talks to the database. The API layer
+        is the only component with a route to it. Traffic between the web tier and the API layer,
+        and between the API layer and the database, is encrypted in transit even though it's
+        "internal" traffic, consistent with the zero trust principle that internal network position
+        earns no exemption from verification.
+      </p>
+      <p>
+        <b>Data layer.</b> Data at rest in the database is encrypted; whether that's provider-managed
+        or customer-managed keys depends on what's actually being stored — if the database holds
+        anything subject to a compliance framework with explicit key-control requirements, that
+        decision gets made deliberately rather than defaulting. Backups of the database inherit the
+        same encryption and access-control posture as the primary data — a backup that's
+        encrypted-at-rest in production but exported unencrypted to a less-guarded location is a
+        data layer control that got half-implemented.
+      </p>
+      <p>
+        <b>Application layer.</b> The application code that talks to the payment processor never
+        logs the raw credential or payment details it receives — output that lands in a log
+        aggregation system is a leak surface that's easy to forget because log access is often
+        governed more loosely than the systems the logs are about. Input from the public-facing web
+        tier is validated and treated as untrusted at the API boundary — the API layer doesn't
+        extend the web tier any special trust just because the request path looks internal to the
+        product, consistent, again, with verifying every request on its own merits rather than by
+        origin.
+      </p>
+      <Code wrap>{`Layer        Control                                            Failure it prevents
+Identity     Separate workload identity per component,          Compromise of one component
+             scoped to least privilege                          doesn't grant reach into others
+Network      Database reachable only from API layer;             Public exposure; lateral movement
+             internal traffic still encrypted                    from a compromised web tier
+Data         Encryption at rest with a deliberate key-           Backup or export bypassing the
+             management choice; backups inherit the same         primary system's protections
+             posture as the primary data
+Application  Untrusted input validated at every boundary;        Injected requests trusted by
+             secrets never logged                                origin; credentials leaked via logs`}</Code>
+      <p>
+        No single layer in this walkthrough is doing the whole job, and that's the point of
+        threat-modeling by layer rather than reaching for one big control and calling the workload
+        secure. A perfect network configuration doesn't help if the API identity has database-admin
+        permissions it doesn't need. Airtight encryption at rest doesn't help if the payment
+        credential is sitting in application logs. The shared responsibility model tells you which
+        of these are yours to build in the first place; identity-centric, zero trust design tells
+        you how to build them so that no single failure at any one layer becomes the whole
+        incident.
+      </p>
+    </ContentLayout>
+  );
+}
