@@ -36,3 +36,21 @@ export function loadEntries(dir) {
 export function tocFromHeadings(headings) {
   return headings.filter((h) => h.level === 2).map((h) => ({ href: `#${h.id}`, label: h.text }));
 }
+
+// A single-pass `<[^>]+>` strip can be bypassed by a crafted nested tag
+// (e.g. "<<script>script>" survives one pass as "<script>"), which is
+// exactly the "incomplete multi-character sanitization" class CodeQL flags.
+// Looping until a pass makes no further change closes that gap. This is
+// only ever used to derive short plain-text (a meta description, a
+// frontmatter field) from content this team authored, not to sanitize
+// untrusted input for safe rendering -- if that need ever comes up, use a
+// real HTML parser instead of a regex.
+export function stripTags(html) {
+  let prev;
+  let result = html;
+  do {
+    prev = result;
+    result = result.replace(/<[^>]+>/g, "");
+  } while (result !== prev);
+  return result;
+}

@@ -1,10 +1,11 @@
 import ContentLayout from "../components/ContentLayout.jsx";
+import { stripTags } from "../lib/loadEntries.js";
 
 export function modelMeta(entry) {
   return {
     outFile: `models/${entry.slug}.html`,
     title: `${entry.name} — Merit AC Models & Tools`,
-    description: entry.html.replace(/<[^>]+>/g, "").slice(0, 200),
+    description: stripTags(entry.html).slice(0, 200),
   };
 }
 

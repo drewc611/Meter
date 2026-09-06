@@ -12,6 +12,7 @@ import { gfm } from "turndown-plugin-gfm";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { stripTags } from "../src/content/lib/loadEntries.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, "..");
@@ -150,8 +151,7 @@ const GUIDE_FILES = [
 
 function clean(text) {
   if (!text) return text;
-  return text
-    .replace(/<[^>]+>/g, "")
+  return stripTags(text)
     .replace(/&quot;/g, '"')
     .replace(/&#x27;|&#39;/g, "'")
     .replace(/&lt;/g, "<")
