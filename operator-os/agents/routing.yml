@@ -1,0 +1,48 @@
+# Which tier of model does which kind of work.
+#
+# Written down here, once, so the choice is auditable later. Deciding it in the
+# moment is how a cheap model ends up setting a price.
+#
+# probe    collects facts, runs commands, reads files. No judgment. Cheapest.
+# analyst  bounded analysis against a stated rubric. Drafts things a human reads
+#          before anyone else does.
+# judge    anything hard to reverse, anything that costs money, anything that
+#          goes out under the operator's name. Most capable, used least.
+# never    no agent does this at any tier. Not a preference. A wall.
+
+tiers:
+  probe: collects facts, runs commands, no judgment
+  analyst: bounded analysis against a stated rubric, drafts only
+  judge: hard to reverse, costs money, or goes out in the operator's name
+  never: no agent, no tier, no exception
+
+routes:
+  # facts
+  collect_facts: probe
+  read_registry: probe
+  check_data: probe
+
+  # bounded analysis
+  summarise: analyst
+  rank_work: analyst
+  draft_note: analyst
+  # A draft that carries a number, a date or a consequence goes out under the
+  # operator's name and gets pasted unread. That is the judge test, not the
+  # analyst one, whatever the word "draft" suggests.
+  draft_money_message: judge
+  check_claims: analyst
+  propose_removal: analyst
+
+  # judgment
+  set_price: judge
+  close_a_deal: judge
+  write_off: judge
+  update_registry: judge
+  change_config: judge
+
+  # the wall
+  send_anything: never
+  pay_anything: never
+  delete_a_row: never
+  sign_anything: never
+  give_professional_advice: never

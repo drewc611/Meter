@@ -1,0 +1,12 @@
+{
+  "name": "example-trade-rates",
+  "version": "1.0.0",
+  "title": "Trade rate card",
+  "description": "A rate card in its own table, created by the plugin's own migration.",
+  "author": "Operator OS",
+  "licence": "Same as the product",
+  "requires": {"operator_os": ">=1.0"},
+  "capabilities": ["commands", "migrations"],
+  "entry": "plugin.py",
+  "enabled": true
+}

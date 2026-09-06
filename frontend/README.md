@@ -13,8 +13,8 @@ live at `/coming-soon.html` — it just isn't linked from anywhere in the
 site's navigation.
 
 The content-site pages (`/`, `/architecture`, `/setup/*`, `/news`,
-`/models`, `/glossary`, `/guides`, `/prompts`, `/challenge`, `/community`)
-are real React components under `src/content/` — but they
+`/models`, `/glossary`, `/guides`, `/prompts`, `/challenge`, `/community`,
+`/operator-os`) are real React components under `src/content/` — but they
 **prerender to plain static HTML at build time**, not client-rendered SPA
 routes, so each one ships as a real, crawlable file at its clean path
 instead of an empty shell that would 404 on a direct request (the

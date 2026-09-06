@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Merit AC is a hub for AI — news, a directory of models and tools, and a
 glossary — anchored by a flagship spend/value tracker that tells a company
 what it spends on AI, who's spending it, and whether that spend is producing
-real work or slop. Early prototype status. Three parts:
+real work or slop. Early prototype status. Four parts:
 
 - `backend/` — a runnable FastAPI + SQLite reference implementation of the
   tracking/scoring pipeline. This is where almost all the logic lives.
@@ -16,11 +16,23 @@ real work or slop. Early prototype status. Three parts:
   running. It's deployed at `/app`, not the site root — the root (`/`) and
   the rest of the content arm (`/architecture`, `/setup/*`, `/news`,
   `/models`, `/glossary`, `/guides`, `/prompts`, `/challenge`,
-  `/community`) are React components under `src/content/` that prerender
-  to plain static HTML at build time, so they stay crawlable rather than
-  404ing as client-only SPA routes, and so an anonymous visitor lands on a
-  real landing page instead of an auth-gated dashboard. See
+  `/community`, `/operator-os`) are React components under `src/content/`
+  that prerender to plain static HTML at build time, so they stay crawlable
+  rather than 404ing as client-only SPA routes, and so an anonymous visitor
+  lands on a real landing page instead of an auth-gated dashboard. See
   `frontend/README.md`.
+- `operator-os/` — a second, independent product: a file-based business
+  operating system (double-entry books, cash forecasting, import adapters,
+  a scheduled agent layer), distributed as a standalone Python CLI, not a
+  web app. It shares this repo but not its codebase or its license with
+  Merit AC's own product — see `operator-os/README.md` and
+  `operator-os/LICENCE-PLAIN.md`. `frontend/src/content/pages/OperatorOS.jsx`
+  is its one integration point with the rest of the site: a spotlight page
+  at `/operator-os` linking back here. Because this repository is public
+  and Operator OS's own license describes a paid, per-business product,
+  putting its full source here trades a stricter access model for shipping
+  it inside this repo — a tradeoff worth revisiting before treating it as
+  the product's real distribution channel.
 - `merit-ai-team/` — skills for the internal AI team that runs Merit AC's own
   product/growth/eng/infra loop (not part of the shipped product). Its own
   context and working rules live in

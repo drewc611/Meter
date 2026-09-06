@@ -1,0 +1,31 @@
+name: close-tick
+when: "monthly, first working day"
+goal: Close the month. What each job made, what is not yours, what is dead, and what the registry now says.
+guardrails:
+  - drafts only, never sends
+  - stops if os validate reports broken data
+  - moving the tax money is the operator's transfer, never the agent's
+  - reaper changes status, it never deletes a row
+steps:
+  - id: margin
+    task_class: collect_facts
+    run: "os margin"
+    finish_line: "every project has a profit figure and a margin percent"
+  - id: pricing
+    task_class: set_price
+    tool: pricing
+    finish_line: "the losing jobs share a named pattern, and the price options are laid out with a recommendation the operator can refuse"
+  - id: taxset
+    task_class: summarise
+    tool: taxset
+    finish_line: "the set aside figure is written down with today's date and the account it belongs in"
+  - id: dead
+    task_class: propose_removal
+    tool: reaper
+    finish_line: "every proposed removal is listed with its reason, in batches, unconfirmed"
+  - id: close_dead
+    task_class: close_a_deal
+    finish_line: "each dead deal is lost with a lost_reason, or explicitly kept"
+  - id: registry
+    task_class: update_registry
+    finish_line: "manual/01_REGISTRY.md carries this month's date and its tables match os brief"

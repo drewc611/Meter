@@ -1,0 +1,12 @@
+# Your business. Uncomment the next line ONLY if you want history of it in git.
+# Most operators should keep it tracked. It is the whole point.
+# data/
+
+data.before-*/
+data.rebuilt/
+backups/
+console/data.json
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

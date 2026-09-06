@@ -1,0 +1,102 @@
+OPERATOR OS SOFTWARE LICENCE
+Version 1.0
+
+DRAFT FOR REVIEW. This document has not been reviewed by a lawyer. Have counsel
+in your jurisdiction review it before you sell anything under it. Terms marked
+[SET] are commercial decisions the publisher must make.
+
+Publisher: [SET: legal name and address]
+Product: Operator OS, comprising software, documentation, workbook and workspace
+content distributed in this repository.
+Governing law: [SET: jurisdiction]
+
+1. GRANT
+Subject to payment and to this licence, the publisher grants the purchaser a
+perpetual, non exclusive, non transferable licence to install and use the product
+for the internal business operations of one business owned or operated by the
+purchaser, on any number of devices the purchaser personally controls.
+
+2. PERMITTED USE
+The purchaser may modify the product, create derivative tools, workspaces and
+commands for their own use, and retain those modifications. The purchaser may
+retain and use any version received, indefinitely, whether or not the publisher
+continues to distribute or support the product.
+
+2A. EXTENSIONS BY THE PURCHASER
+Plugins, adapters, workspaces, tools, commands and migrations authored by the
+purchaser are the exclusive property of the purchaser, whether or not they depend
+on the product's interfaces, and may be distributed or sold by the purchaser
+without further permission. This clause does not permit distribution of any part
+of the product itself.
+
+2B. THIRD PARTY EXTENSIONS
+Extensions authored by parties other than the publisher are not part of the
+product, are not warranted by the publisher, and are used at the purchaser's own
+risk. The publisher makes no representation about their behaviour, security or
+fitness. The verification facilities in the product check declared metadata and
+checksums only, and do not constitute an assurance of safety.
+
+3. RESTRICTIONS
+The purchaser may not: distribute, sell, sublicense, lease, or publish the
+product or any derivative of it; offer the product or a derivative as a hosted or
+managed service to third parties; operate the product on behalf of another
+business for a fee without a separate written agreement; or remove licence or
+attribution files from any copy.
+
+4. PURCHASER DATA
+All content created by the purchaser under the data directory is the exclusive
+property of the purchaser. The product operates entirely on the purchaser's own
+devices. The publisher does not receive, store, transmit or process purchaser
+data, and has no access to it. No account is created and no telemetry is
+collected.
+
+5. UPDATES
+The publisher will make updates to the current major version available to the
+purchaser for a minimum of twelve months from the date of purchase. The publisher
+is not obliged to publish updates beyond that period. No update requires the
+purchaser to replace or surrender their data.
+
+6. SUPPORT
+Support is provided by email with a target response time of two working days, and
+covers installation, defects, and the intended operation of the product. It does
+not include accounting, tax, legal, pricing or business advice.
+
+7. REFUND
+The purchaser may request a full refund within thirty days of purchase for any
+reason. No return or deletion of files is required as a condition of refund.
+
+8. NO PROFESSIONAL ADVICE
+The product performs arithmetic over data supplied by the purchaser and presents
+the result. It does not provide accounting, tax, legal, financial or regulatory
+advice. Figures described as tax set aside are a planning percentage chosen by
+the purchaser applied to cash receipts recorded by the purchaser, and are not a
+computation of any liability. The purchaser is responsible for verifying all
+figures and for their own compliance obligations.
+
+9. WARRANTY
+The product is provided as is. To the maximum extent permitted by law the
+publisher disclaims all implied warranties, including merchantability, fitness
+for a particular purpose, and non infringement. Nothing in this licence excludes
+liability which cannot lawfully be excluded, including for fraud or for death or
+personal injury caused by negligence.
+
+10. LIABILITY
+To the maximum extent permitted by law, the publisher's total aggregate liability
+arising out of or in connection with this licence is limited to the amount paid
+by the purchaser for the product. The publisher is not liable for loss of profit,
+loss of business, loss of data, or indirect or consequential loss.
+
+11. TERMINATION
+This licence terminates automatically if the purchaser breaches section 3. On
+termination the purchaser must cease use and destroy all copies of the product.
+Purchaser data is unaffected and remains the property of the purchaser.
+
+12. ASSIGNMENT AND SURVIVAL
+The publisher may assign this licence in connection with a sale or transfer of
+the product. The purchaser's rights under sections 1, 2 and 4 survive any such
+transfer and any discontinuation of the product.
+
+13. ENTIRE AGREEMENT
+This licence, together with the plain writing summary distributed as
+LICENCE-PLAIN.md, is the entire agreement between the parties. Where the two
+differ, the plain writing summary reflects the intended meaning.

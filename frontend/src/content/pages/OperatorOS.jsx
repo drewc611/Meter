@@ -42,7 +42,7 @@ export default function OperatorOS() {
     <ContentLayout>
       <span className="kicker">Product spotlight</span>
       <span className="badge">
-        <i /> Runs entirely on your machine -- not yet publicly released
+        <i /> Runs entirely on your machine -- source in this repo
       </span>
       <h1>Operator OS: the whole business, on your machine, in files you own.</h1>
       <p className="lead">
@@ -125,9 +125,12 @@ export default function OperatorOS() {
 
       <div className="card">
         <p style={{ marginBottom: 0 }}>
-          Operator OS doesn't have a public site or download link yet -- this page describes what's
-          in the current build, sourced directly from its own README and manual, not marketing copy
-          written ahead of the product. Check back for a link once it ships.
+          The source lives in this repository, under{" "}
+          <a href="https://github.com/drewc611/Meter/tree/main/operator-os">
+            <code>operator-os/</code>
+          </a>{" "}
+          -- this page describes what's actually in that build, sourced directly from its own README
+          and manual, not marketing copy written ahead of the product.
         </p>
       </div>
     </ContentLayout>
