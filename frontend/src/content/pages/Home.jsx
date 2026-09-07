@@ -25,23 +25,25 @@ const EXPLORE = [
 export default function Home() {
   return (
     <ContentLayout wide>
-      <span className="badge">
-        <i /> Pre-launch prototype
-      </span>
-      <h1>AI moves fast, is full of hype, and hard to make sense of.</h1>
-      <p className="lead">
-        Merit AC is one place to follow it — news without the noise, a directory of the models and
-        tools actually worth knowing, and a glossary that skips the jargon. At the center: our own
-        tracker that checks if the work behind an ROI number is <b>real</b>, or wearing a good number
-        to hide slop.
-      </p>
-      <div className="cta-row">
-        <a className="btn btn-primary" href="/app">
-          Sign in / sign up
-        </a>
-        <a className="btn btn-secondary" href="/architecture">
-          See how it&apos;s built
-        </a>
+      <div className="hero-wash">
+        <span className="badge">
+          <i /> Pre-launch prototype
+        </span>
+        <h1>AI moves fast, is full of hype, and hard to make sense of.</h1>
+        <p className="lead">
+          Merit AC is one place to follow it — news without the noise, a directory of the models
+          and tools actually worth knowing, and a glossary that skips the jargon. At the center:
+          our own tracker that checks if the work behind an ROI number is <b>real</b>, or wearing a
+          good number to hide slop.
+        </p>
+        <div className="cta-row">
+          <a className="btn btn-primary" href="/app">
+            Sign in / sign up
+          </a>
+          <a className="btn btn-secondary" href="/architecture">
+            See how it&apos;s built
+          </a>
+        </div>
       </div>
 
       <h2>Explore</h2>
