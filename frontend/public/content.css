@@ -7,6 +7,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
 
 :root {
+  /* Light-only by design -- no dark theme built for the content site (the
+     dashboard app has its own real one). Without this, some browsers'
+     forced-dark heuristics repaint an unstyled-looking page as dark,
+     which mangles a hand-tuned light palette rather than helping it. */
+  color-scheme: light;
+
   /* neutrals -- a cool, faintly blue-tinted ramp, not flat grey */
   --paper: #ffffff;
   --paper-2: #f6f7fb;
