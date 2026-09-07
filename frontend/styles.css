@@ -34,8 +34,8 @@
   --bad:#c22b2b;  --bad-soft:#fdeaea;  --bad-text:#a01f1f;
 
   /* ---- elevation: 3-step scale, cards rest at sm, float to md on hover ---- */
-  --shadow-sm:0 1px 2px rgba(16,17,38,.06);
-  --shadow-md:0 2px 4px rgba(16,17,38,.05),0 8px 24px rgba(16,17,38,.08);
+  --shadow-sm:0 1px 2px rgba(16,17,38,.05),0 8px 20px -16px rgba(16,17,38,.16);
+  --shadow-md:0 2px 4px rgba(16,17,38,.05),0 12px 28px -8px rgba(16,17,38,.12);
   --shadow-lg:0 8px 16px rgba(16,17,38,.08),0 24px 48px rgba(16,17,38,.14);
 
   /* ---- radius ---- */

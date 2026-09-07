@@ -33,8 +33,13 @@ export function loadEntries(dir) {
 // The `<Toc>` component wants `{href, label}` pairs -- built from the H2s
 // GFM-heading-id already assigned real ids to during the parse above, so the
 // anchors it links to and the ids the rendered HTML actually has always agree.
+// Use `h.raw`, not `h.text` -- `text` is the heading's *rendered* inline HTML
+// (an apostrophe comes back as the literal string "&#39;"), while `raw` is
+// the actual markdown source text. <Toc> renders label as plain React text
+// (no dangerouslySetInnerHTML), so `text` would show those five characters
+// literally on the page instead of an apostrophe.
 export function tocFromHeadings(headings) {
-  return headings.filter((h) => h.level === 2).map((h) => ({ href: `#${h.id}`, label: h.text }));
+  return headings.filter((h) => h.level === 2).map((h) => ({ href: `#${h.id}`, label: h.raw }));
 }
 
 // A single-pass `<[^>]+>` strip can be bypassed by a crafted nested tag

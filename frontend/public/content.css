@@ -32,10 +32,11 @@
   --shadow-tile: 0 1px 2px rgba(19, 21, 46, 0.04), 0 16px 32px -16px rgba(19, 21, 46, 0.16);
   --shadow-pop: 0 2px 4px rgba(19, 21, 46, 0.04), 0 24px 48px -20px rgba(19, 21, 46, 0.22);
 
-  /* the one gradient move -- a soft aurora wash, used sparingly */
-  --gradient-aurora: radial-gradient(60% 55% at 18% 0%, rgba(79, 70, 229, 0.16), transparent 65%),
-    radial-gradient(50% 50% at 85% 8%, rgba(236, 72, 153, 0.13), transparent 65%),
-    radial-gradient(55% 60% at 60% 100%, rgba(6, 182, 212, 0.1), transparent 65%);
+  /* the one gradient move -- one hue family (indigo/violet), one light
+     source from the top-right, used sparingly. Not a multi-hue pastel
+     blob -- restraint is what reads as deliberate rather than generated. */
+  --gradient-aurora: radial-gradient(65% 60% at 88% -10%, rgba(79, 70, 229, 0.20), transparent 60%),
+    radial-gradient(45% 50% at 15% 15%, rgba(109, 99, 234, 0.10), transparent 65%);
 
   /* 4px spacing scale */
   --sp-1: 4px;
@@ -343,8 +344,38 @@ main.content.wide > .grid {
   margin: calc(var(--sp-12) * -1) calc(var(--sp-10) * -1) var(--sp-10);
   padding: var(--sp-16) var(--sp-10) var(--sp-10);
 }
-.hero-wash > * {
+.hero-wash > *:not(.hero-preview) {
   max-width: 720px;
+}
+
+/* A framed screenshot of the actual dashboard -- real product, not a mockup
+   or an illustration, so the homepage shows what the flagship tracker looks
+   like instead of only describing it. */
+.hero-preview {
+  margin: var(--sp-10) 0 0;
+  border-radius: var(--radius-lg);
+  background: #e9eaf3;
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-pop);
+  overflow: hidden;
+}
+.hero-preview-bar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 10px 14px;
+}
+.hero-preview-bar i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+.hero-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-top: 1px solid var(--line);
 }
 
 .kicker {
@@ -624,7 +655,7 @@ nav.toc a:hover {
   border-radius: var(--radius);
   padding: var(--sp-5) var(--sp-6);
   margin: var(--sp-5) 0;
-  box-shadow: 0 1px 2px rgba(19, 21, 46, 0.03);
+  box-shadow: 0 1px 2px rgba(19, 21, 46, 0.03), 0 10px 24px -18px rgba(19, 21, 46, 0.18);
 }
 .card > *:last-child {
   margin-bottom: 0;
@@ -658,6 +689,20 @@ th {
   gap: var(--sp-4);
   margin: var(--sp-6) 0;
 }
+/* A labeled sub-section within a .grid-group wrapper -- for grids that need
+   real categories instead of one undifferentiated wall of tiles. */
+.grid-group + .grid-group {
+  margin-top: var(--sp-8);
+}
+.grid-group-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  margin: 0 0 var(--sp-3);
+}
 .grid a.tile {
   display: block;
   text-decoration: none;
@@ -666,6 +711,7 @@ th {
   padding: var(--sp-5);
   color: var(--ink);
   background: var(--card);
+  box-shadow: 0 1px 2px rgba(19, 21, 46, 0.03), 0 8px 20px -16px rgba(19, 21, 46, 0.16);
   transition: border-color 0.18s var(--ease-out), transform 0.18s var(--ease-out), background 0.18s var(--ease-out),
     box-shadow 0.18s var(--ease-out);
 }
