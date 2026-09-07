@@ -40,6 +40,16 @@ def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
 
+# A real bcrypt hash, at the same cost as hash_password() above, that no
+# actual account will ever match. login() below checks a submitted password
+# against this whenever the email doesn't resolve to a real user, so that
+# path costs the same bcrypt work as a wrong password on a real account --
+# otherwise a nonexistent email returns near-instantly while a real one takes
+# ~100ms, and that timing gap alone lets an attacker enumerate which emails
+# have accounts even though both cases return the same error message.
+DUMMY_PASSWORD_HASH = hash_password("not-a-real-password-timing-decoy")
+
+
 def verify_password(password: str, password_hash: str) -> bool:
     try:
         return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))

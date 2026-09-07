@@ -148,6 +148,38 @@ def test_writes_capability():
     print("        refusal: {}".format(refused))
 
 
+def test_table_name_cannot_traverse_out_of_data():
+    head("ctx.table() cannot be tricked into a core registry or a path outside data/")
+    plug = make("writer", {"capabilities": ["writes"]}, PLAIN.format(cmd="writer"))
+    ctx = P.context(plug)
+
+    def refused_with(name):
+        try:
+            ctx.table(name, ["id"]).write([{"id": "x"}])
+            return None
+        except (ValueError, P.CapabilityError) as exc:
+            return str(exc)
+
+    r1 = refused_with("foo/../invoices")
+    check("a '../' name that resolves to a core registry is refused",
+          bool(r1), "no exception raised, wrote " + os.path.join(DATA, "invoices.csv"))
+    check("invoices.csv itself was not touched",
+          not any(r.get("id") == "x" for r in P.D.load("invoices")))
+
+    r2 = refused_with("../../../../tmp/operator-os-escape")
+    check("a name that resolves outside data/ entirely is refused", bool(r2), r2)
+    check("nothing was written outside data/",
+          not os.path.exists("/tmp/operator-os-escape.csv"))
+
+    r3 = refused_with("Invoices")
+    check("a case-variant of a core registry name is refused too", bool(r3), r3)
+
+    t = ctx.table("a-legit-table", ["id", "note"])
+    t.write([{"id": "1", "note": "fine"}])
+    check("an ordinary plugin-owned table name still works",
+          t.read() == [{"id": "1", "note": "fine"}], t.read())
+
+
 def test_broken_entry_does_not_break_help():
     head("A plugin whose entry raises on import does not stop os help")
     make("boom", {"capabilities": ["commands"]},
@@ -314,6 +346,7 @@ def main():
     print("  data:    {}".format(DATA))
     for fn in (test_no_capabilities_no_command,
                test_writes_capability,
+               test_table_name_cannot_traverse_out_of_data,
                test_broken_entry_does_not_break_help,
                test_duplicate_command_refused,
                test_manifest_missing_field,

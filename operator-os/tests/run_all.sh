@@ -52,6 +52,8 @@ export OPERATOR_OS_DATA=/tmp/verify-refuse; rm -rf "$OPERATOR_OS_DATA"
 ./os add contacts name="Nope" status=not_a_status >/dev/null 2>&1
 ./os validate --errors-only >/tmp/v.log 2>&1
 grep -q "expected one of" /tmp/v.log && ok "a bad status is caught by validate" || bad "validate missed a bad status"
+./os use ../../../../tmp/os-use-escape >/tmp/use.log 2>&1
+grep -q "is not a workspace name" /tmp/use.log && ok "os use refuses a path outside workspaces/" || bad "os use took a traversal path"
 
 line "No leaked personal or employer content"
 if grep -rniE "usps|everforth|ecs federal|andrew|clark|charleston|govcloud|drewc611|843-697|abhishek|citadel" \

@@ -95,6 +95,10 @@ def cmd_use(args):
         print("  os use <name> --empty    keep its config, drop every row\n")
         return 0
     name = args[0]
+    clean = os.path.basename(str(name).strip())
+    if not clean or clean != name or clean in (".", ".."):
+        print("'{}' is not a workspace name. Run `os use` to list them.".format(name))
+        return 1
     src_dir = os.path.join(wdir, name)
     seed_path = os.path.join(src_dir, "seed.json")
     if not os.path.exists(seed_path):

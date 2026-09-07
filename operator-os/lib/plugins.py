@@ -53,6 +53,11 @@ CAPABILITY_NOTES = {
 
 REQUIRED_FIELDS = ("name", "version", "title", "description", "entry", "capabilities")
 
+# A table name is a bare identifier: no path separators, no "..", nothing that
+# could turn os.path.join(D.DATA, name + ".csv") into a path outside data/ or
+# into a core registry's own file.
+TABLE_NAME_RE = re.compile(r"^[A-Za-z0-9_-]+$")
+
 # Folders a plugin may ship, and the capability each one needs.
 SHIPPED = (
     ("tools", "tools"),
@@ -455,7 +460,11 @@ class Table(object):
 
     @property
     def path(self):
-        return os.path.join(D.DATA, self.name + ".csv")
+        p = os.path.join(D.DATA, self.name + ".csv")
+        data_root = os.path.abspath(D.DATA)
+        if os.path.abspath(p) != os.path.join(data_root, self.name + ".csv"):
+            raise ValueError("table name '{}' resolves outside data/".format(self.name))
+        return p
 
     def exists(self):
         return os.path.exists(self.path)
@@ -518,12 +527,17 @@ class Context(object):
         return D.config()
 
     def table(self, name, cols):
-        if name in D.SCHEMA:
+        raw = str(name)
+        if not TABLE_NAME_RE.match(raw):
+            raise ValueError(
+                "table name must be letters, digits, '_' or '-' only, no path "
+                "separators or '..', got '{}'".format(name))
+        if raw.lower() in D.SCHEMA:
             raise CapabilityError(
                 "plugin {} tried to open the core registry {} as its own table. Core "
                 "registries go through ctx.data and need the 'writes' capability".format(
-                    self.name, name))
-        return Table(self.plugin, name, cols)
+                    self.name, raw))
+        return Table(self.plugin, raw, cols)
 
     def out_path(self, filename):
         """A path under data/out/. Rendered output, not the data layer. Anything

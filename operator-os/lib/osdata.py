@@ -13,7 +13,7 @@ import csv
 import os
 import re
 from datetime import date, datetime, timedelta
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.environ.get("OPERATOR_OS_DATA", os.path.join(ROOT, "data"))
@@ -21,6 +21,15 @@ DATA = os.environ.get("OPERATOR_OS_DATA", os.path.join(ROOT, "data"))
 # ---------------------------------------------------------------- schema
 
 MONEY_COLS = {"value", "subtotal", "tax", "total", "amount", "budget", "rate"}
+
+# Non-money columns that are still plain numbers, parsed with int()/float()
+# elsewhere -- never quote these, a leading apostrophe would break that parse.
+NUMERIC_COLS = MONEY_COLS | {"confidence", "minutes", "estimate_min", "hours_estimate"}
+
+# A cell starting with one of these opens as a formula in Excel/Sheets rather
+# than as text. Adapters copy vendor/description text straight out of a bank,
+# PayPal, or Square export, so a hostile export line can land here.
+_FORMULA_LEAD = ("=", "+", "-", "@", "\t", "\r")
 
 SCHEMA = {
     "contacts": {
@@ -127,7 +136,10 @@ DATE_HINTS = ("_on", "date", "due", "issued", "expires", "start", "opened",
 # ---------------------------------------------------------------- money
 
 def cents(value):
-    """Parse a money string or number to integer cents. Blank becomes 0."""
+    """Parse a money string or number to integer cents. Blank, and anything
+    that still doesn't parse as a plain decimal after stripping (a garbled
+    cell from a messy import), becomes 0 rather than raising -- one bad
+    number in an import should not abort the whole thing."""
     if value is None:
         return 0
     if isinstance(value, int):
@@ -138,7 +150,10 @@ def cents(value):
     s = re.sub(r"[^0-9.\-]", "", s)
     if not s or s in {"-", ".", "-."}:
         return 0
-    q = Decimal(s).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    try:
+        q = Decimal(s).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    except InvalidOperation:
+        return 0
     return int(q * 100)
 
 
@@ -238,14 +253,31 @@ def load(name):
     return clean
 
 
+def _csv_safe(value):
+    """Prefix a leading formula-trigger character with a quote, so a
+    spreadsheet reads this cell as text rather than running it as a formula.
+    Only ever adds a leading character; never changes anything else."""
+    s = str(value)
+    return "'" + s if s.startswith(_FORMULA_LEAD) else s
+
+
 def save(name, rows):
     cols = SCHEMA[name]["cols"]
+    schema = SCHEMA[name]
+    free_text = [c for c in cols
+                 if c != "id" and c not in NUMERIC_COLS
+                 and c not in schema.get("enums", {}) and c not in schema.get("refs", {})
+                 and not c.endswith(DATE_HINTS)]
     os.makedirs(DATA, exist_ok=True)
     with open(path_for(name), "w", encoding="utf-8", newline="") as fh:
         w = csv.DictWriter(fh, fieldnames=cols, extrasaction="ignore")
         w.writeheader()
         for r in rows:
-            w.writerow({c: r.get(c, "") for c in cols})
+            row = {c: r.get(c, "") for c in cols}
+            for c in free_text:
+                if row[c]:
+                    row[c] = _csv_safe(row[c])
+            w.writerow(row)
 
 
 def next_id(name, rows=None):

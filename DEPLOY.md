@@ -155,6 +155,13 @@ Still open:
 "unset = open" convention `MERIT_API_KEY` uses. Once it's set, visitors need
 a real account (password or Google) to see live data.
 
+On Fly this isn't just a warning: `create_app()` detects a real deployment
+via `FLY_APP_NAME` (set automatically by the Fly runtime) and refuses to
+boot at all if `MERIT_JWT_SECRET` is missing or under 32 characters, since
+that token is what every tenant boundary in this app rests on. Set the
+secret below before the first deploy that needs login, or the app won't
+start.
+
 1. **Generate a strong signing secret and set it as a Fly secret:**
    ```bash
    openssl rand -hex 32

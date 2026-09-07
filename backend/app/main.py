@@ -36,16 +36,29 @@ def create_app() -> FastAPI:
     if not os.environ.get("MERIT_API_KEY"):
         logger.warning("MERIT_API_KEY is unset -- /ingest/* has no auth enforced while at most one org exists.")
     jwt_secret = os.environ.get("MERIT_JWT_SECRET")
+    # FLY_APP_NAME is set by the Fly.io runtime itself on every real deploy
+    # (see fly.toml/DEPLOY.md) -- it is not something local dev, docker
+    # compose, or the test suite ever set, so it is a reliable signal that
+    # this process is a live deployment rather than someone's laptop.
+    # MERIT_ENV=production is the explicit override for any other host.
+    in_production = (
+        bool(os.environ.get("FLY_APP_NAME")) or os.environ.get("MERIT_ENV", "").strip().lower() == "production"
+    )
+    weak_secret_msg = (
+        "MERIT_JWT_SECRET {} -- a guessable secret lets anyone forge a session "
+        "token for any user in any organization, since every tenant boundary in this app "
+        "rests on that token. Set it to a long random value (secrets.token_urlsafe(48))."
+    )
     if not jwt_secret:
+        if in_production:
+            raise RuntimeError(weak_secret_msg.format("is unset in production"))
         logger.warning("MERIT_JWT_SECRET is unset -- /api/* and /admin/* have no login enforced, anyone can read data.")
     elif len(jwt_secret) < 32:
-        # Anyone who guesses this secret can forge a session token for any
-        # user, so a short one is barely better than none -- same "loud in
-        # `fly logs`, don't refuse to boot" treatment as the unset case.
-        logger.warning(
-            "MERIT_JWT_SECRET is shorter than 32 characters -- a guessable secret lets anyone forge a session "
-            "token for any user. Rotate it to a long random value (secrets.token_urlsafe(48))."
-        )
+        if in_production:
+            raise RuntimeError(weak_secret_msg.format("is shorter than 32 characters in production"))
+        # Local/dev only: loud in the log, but don't block someone poking at
+        # the app on their own machine with a throwaway secret.
+        logger.warning(weak_secret_msg.format("is shorter than 32 characters"))
 
     # /openapi.json, /docs, and /redoc publish the full admin and ingest
     # endpoint surface to anyone who looks -- harmless in local dev, but on
