@@ -1,5 +1,51 @@
+import { Fragment } from "react";
 import ContentLayout from "../components/ContentLayout.jsx";
 import Code from "../components/Code.jsx";
+
+// Several sources feed the same command line, which is the only thing that
+// ever touches the data -- and always through the event log first. Reuses
+// the .arch-* diagram classes from content.css (see guides/AISystemPatterns.jsx
+// for the same pattern elsewhere on this site).
+function PipelineDiagram({ spokes, chain, note }) {
+  return (
+    <div className="arch-hub">
+      <div className="arch-spokes">
+        {spokes.map((s) => (
+          <div className="arch-step" key={s.label}>
+            <span className="arch-step-label">{s.label}</span>
+            {s.note && <span className="arch-step-note">{s.note}</span>}
+          </div>
+        ))}
+      </div>
+      {chain.map((step) => (
+        <Fragment key={step.label}>
+          <span className="arch-arrow" aria-hidden="true">
+            ↓
+          </span>
+          <div className="arch-step">
+            <span className="arch-step-label">{step.label}</span>
+            {step.note && <span className="arch-step-note">{step.note}</span>}
+          </div>
+        </Fragment>
+      ))}
+      {note && <p className="arch-hub-note">{note}</p>}
+    </div>
+  );
+}
+
+const PIPELINE_SPOKES = [
+  { label: "Workbook", note: "written steps, Mac & Windows" },
+  { label: "Tools (35)", note: "SKILL.md, no code — composes commands" },
+  { label: "Adapters (8)", note: "bank, Stripe, PayPal, Square, QuickBooks…" },
+  { label: "Plugins (4)", note: "capability-gated extensions" },
+];
+
+const PIPELINE_CHAIN = [
+  { label: "os — the command line", note: "scripts/os.py" },
+  { label: "Engine — lib/osdata.py", note: "the one place that reads or writes data" },
+  { label: "Event log — data/events.jsonl", note: "hash-chained, written before the file" },
+  { label: "Data — data/*.csv + business.yml", note: "9 plain registries, git-trackable, Excel-openable" },
+];
 
 export const meta = {
   outFile: "operator-os.html",
@@ -86,6 +132,23 @@ export default function OperatorOS() {
           </div>
         ))}
       </div>
+
+      <h2>Architecture</h2>
+      <p>
+        Four sources feed the same command line, and it is the only thing that ever touches the
+        data — always through the event log first:
+      </p>
+      <PipelineDiagram
+        spokes={PIPELINE_SPOKES}
+        chain={PIPELINE_CHAIN}
+        note="Workspaces (8 encoded businesses) seed this data directly via os use — a shortcut into the same files, not a separate path."
+      />
+      <p>
+        Everything above the event log is replaceable — write your own tool, adapter, or plugin, or
+        fork a workspace. What never changes is that a mutation is logged before it is saved, which
+        is what makes <code>os undo</code>, <code>os rebuild</code>, and <code>os drift</code>{" "}
+        trustworthy no matter what put the row there.
+      </p>
 
       <h2>The eight workspaces</h2>
       <p>Encoded starting businesses, picked by the failure mode they teach, not by trade:</p>

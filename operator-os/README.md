@@ -62,6 +62,33 @@ You can open every one of them in Excel. Git gives you version history for free.
 Nothing proprietary means nothing to migrate away from. The cost is no
 concurrency, which does not matter when the business is one person.
 
+## How it fits together
+
+```mermaid
+flowchart TD
+    WB["Workbook<br/>written steps, Mac &amp; Windows"]
+    TL["Tools (35)<br/>SKILL.md, no code -- composes commands"]
+    AD["Adapters (8)<br/>bank, Stripe, PayPal, Square,<br/>QuickBooks, calendar, mailbox, generic CSV"]
+    PL["Plugins (4)<br/>capability-gated extensions"]
+
+    WB --> CLI
+    TL --> CLI
+    AD --> CLI
+    PL --> CLI
+
+    CLI["os -- the command line<br/>scripts/os.py"] --> ENG
+    ENG["Engine -- lib/osdata.py<br/>the one place that reads or writes data"] --> LOG
+    LOG["Event log -- data/events.jsonl<br/>hash-chained, written before the file"] --> DATA
+    DATA["Data -- data/*.csv + business.yml<br/>9 plain registries, git-trackable, Excel-openable"]
+
+    WS["Workspaces (8)<br/>encoded starting businesses"] -.->|os use| DATA
+```
+
+Everything upstream of the event log is replaceable -- write your own tool, adapter,
+or plugin, or fork a workspace. What never changes is that a mutation is logged
+before it is saved, which is what makes `os undo`, `os rebuild`, and `os drift`
+trustworthy no matter what put the row there.
+
 ## What is in the repo
 
 | Folder | What it holds |
