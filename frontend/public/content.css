@@ -1,48 +1,51 @@
 /* Shared styles for the static content-site pages (architecture, setup guides,
-   guides, prompts, challenge). Light theme, one accent, a soft gradient wash
-   reserved for the hero and a handful of marked surfaces, and a persistent
-   left-hand section nav in the Stripe-docs vein. Design tokens below are a
-   real scale (4px spacing unit, a 1.333 type ratio) rather than picked-by-eye
-   values, per the product's own dashboard design system. */
+   guides, prompts, challenge). Dark theme, one bright indigo accent, a
+   gradient bloom reserved for the hero and a handful of marked surfaces,
+   and a persistent left-hand section nav in the Stripe-docs vein. Design
+   tokens below are a real scale (4px spacing unit, a 1.333 type ratio)
+   rather than picked-by-eye values, per the product's own dashboard design
+   system -- the color values below are the same ones the dashboard app's
+   own dark theme already uses (styles.css), so the two surfaces read as one
+   product rather than two differently-tuned dark palettes. */
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
 
 :root {
-  /* Light-only by design -- no dark theme built for the content site (the
-     dashboard app has its own real one). Without this, some browsers'
-     forced-dark heuristics repaint an unstyled-looking page as dark,
-     which mangles a hand-tuned light palette rather than helping it. */
-  color-scheme: light;
+  /* Dark-only by design -- matches the dashboard app's own dark theme,
+     never the light one. Declaring this explicitly stops a browser's
+     forced-*light* heuristics from repainting an unstyled-looking page. */
+  color-scheme: dark;
 
-  /* neutrals -- a cool, faintly blue-tinted ramp, not flat grey */
-  --paper: #ffffff;
-  --paper-2: #f6f7fb;
-  --paper-3: #eef0f9;
-  --ink: #13152e;
-  --muted: #5b5f7e;
-  --muted-2: #82869e;
-  --line: #e6e7f0;
-  --line-strong: #d3d5e6;
+  /* neutrals -- near-black with a blue-indigo tint, not flat grey */
+  --paper: #0a0c1c;
+  --paper-2: #12152c;
+  --paper-3: #1a1f42;
+  --ink: #f0f1f8;
+  --muted: #9b9fc0;
+  --muted-2: #6b6f92;
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.18);
 
   /* one accent, doing real work */
-  --brand: #4f46e5;
-  --brand-soft: #6a61ea;
-  --brand-dark: #3730a3;
-  --brand-pale: #eeecfd;
-  --brand-pale-strong: #ded9fb;
-  --good: #16a34a;
-  --good-pale: #e7f7ed;
+  --brand: #7c74f4;
+  --brand-soft: #8f87f6;
+  --brand-dark: #9b93f7;
+  --brand-pale: rgba(124, 116, 244, 0.16);
+  --brand-pale-strong: rgba(124, 116, 244, 0.32);
+  --good: #4ade9c;
+  --good-pale: rgba(74, 222, 156, 0.14);
 
-  --card: #ffffff;
-  --card-hover: #fbfbff;
-  --code-bg: #f4f4fa;
-  --shadow-tile: 0 1px 2px rgba(19, 21, 46, 0.04), 0 16px 32px -16px rgba(19, 21, 46, 0.16);
-  --shadow-pop: 0 2px 4px rgba(19, 21, 46, 0.04), 0 24px 48px -20px rgba(19, 21, 46, 0.22);
+  --card: rgba(255, 255, 255, 0.04);
+  --card-hover: rgba(255, 255, 255, 0.07);
+  --code-bg: rgba(0, 0, 0, 0.35);
+  --shadow-tile: 0 1px 2px rgba(0, 0, 0, 0.3), 0 16px 32px -16px rgba(0, 0, 0, 0.5);
+  --shadow-pop: 0 2px 4px rgba(0, 0, 0, 0.3), 0 24px 48px -20px rgba(0, 0, 0, 0.6);
 
   /* the one gradient move -- one hue family (indigo/violet), one light
-     source from the top-right, used sparingly. Not a multi-hue pastel
-     blob -- restraint is what reads as deliberate rather than generated. */
-  --gradient-aurora: radial-gradient(65% 60% at 88% -10%, rgba(79, 70, 229, 0.20), transparent 60%),
-    radial-gradient(45% 50% at 15% 15%, rgba(109, 99, 234, 0.10), transparent 65%);
+     source from the top-right, used sparingly. On a near-black surface
+     this reads as a deliberate bloom, the same technique Stripe's own
+     dark marketing sections use, not a random pastel blob. */
+  --gradient-aurora: radial-gradient(65% 60% at 88% -10%, rgba(124, 116, 244, 0.28), transparent 60%),
+    radial-gradient(45% 50% at 15% 15%, rgba(109, 99, 234, 0.14), transparent 65%);
 
   /* 4px spacing scale */
   --sp-1: 4px;
@@ -105,7 +108,7 @@ header.site {
   z-index: 20;
   height: var(--topbar-h);
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.86);
+  background: rgba(10, 12, 28, 0.82);
   backdrop-filter: blur(10px);
 }
 .site-inner {
@@ -191,7 +194,7 @@ nav.site-nav a.nav-cta:focus-visible {
   color: #fff;
   background: var(--brand-dark);
   transform: translateY(-1px);
-  box-shadow: 0 8px 16px -8px rgba(79, 70, 229, 0.55);
+  box-shadow: 0 8px 16px -8px rgba(124, 116, 244, 0.55);
 }
 
 /* ---------- mobile nav (CSS-only checkbox toggle, no JS) ---------- */
@@ -360,7 +363,7 @@ main.content.wide > .grid {
 .hero-preview {
   margin: var(--sp-10) 0 0;
   border-radius: var(--radius-lg);
-  background: #e9eaf3;
+  background: var(--paper-3);
   border: 1px solid var(--line-strong);
   box-shadow: var(--shadow-pop);
   overflow: hidden;
@@ -413,11 +416,11 @@ main.content.wide > .grid {
   height: 7px;
   border-radius: 50%;
   background: var(--good);
-  box-shadow: 0 0 8px rgba(22, 163, 74, 0.5);
+  box-shadow: 0 0 8px rgba(74, 222, 156, 0.5);
 }
 .badge.pending i {
   background: var(--brand);
-  box-shadow: 0 0 8px rgba(79, 70, 229, 0.5);
+  box-shadow: 0 0 8px rgba(124, 116, 244, 0.5);
 }
 
 h1,
@@ -530,7 +533,7 @@ pre.pre-wrap {
 .btn-primary {
   background: var(--brand);
   color: #fff;
-  box-shadow: 0 1px 2px rgba(79, 70, 229, 0.2), 0 12px 24px -12px rgba(79, 70, 229, 0.5);
+  box-shadow: 0 1px 2px rgba(79, 70, 229, 0.2), 0 12px 24px -12px rgba(124, 116, 244, 0.5);
 }
 .btn-primary:hover,
 .btn-primary:focus-visible {
