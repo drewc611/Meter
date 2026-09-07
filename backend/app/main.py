@@ -44,21 +44,31 @@ def create_app() -> FastAPI:
     in_production = (
         bool(os.environ.get("FLY_APP_NAME")) or os.environ.get("MERIT_ENV", "").strip().lower() == "production"
     )
-    weak_secret_msg = (
-        "MERIT_JWT_SECRET {} -- a guessable secret lets anyone forge a session "
-        "token for any user in any organization, since every tenant boundary in this app "
-        "rests on that token. Set it to a long random value (secrets.token_urlsafe(48))."
-    )
+    # Every tenant boundary in this app rests on this token, so a missing or
+    # short one is refused outright in production rather than merely logged --
+    # neither branch below ever logs the secret's own value, only that it's
+    # missing or too short.
     if not jwt_secret:
         if in_production:
-            raise RuntimeError(weak_secret_msg.format("is unset in production"))
+            raise RuntimeError(
+                "MERIT_JWT_SECRET is unset in production -- refusing to start. Set it to a long "
+                "random value (secrets.token_urlsafe(48)) before deploying."
+            )
         logger.warning("MERIT_JWT_SECRET is unset -- /api/* and /admin/* have no login enforced, anyone can read data.")
     elif len(jwt_secret) < 32:
         if in_production:
-            raise RuntimeError(weak_secret_msg.format("is shorter than 32 characters in production"))
+            raise RuntimeError(
+                "MERIT_JWT_SECRET is shorter than 32 characters in production -- refusing to start. "
+                "A guessable secret lets anyone forge a session token for any user in any organization. "
+                "Set it to a long random value (secrets.token_urlsafe(48))."
+            )
         # Local/dev only: loud in the log, but don't block someone poking at
         # the app on their own machine with a throwaway secret.
-        logger.warning(weak_secret_msg.format("is shorter than 32 characters"))
+        logger.warning(
+            "MERIT_JWT_SECRET is shorter than 32 characters -- a guessable secret lets anyone forge a "
+            "session token for any user in any organization. Rotate it to a long random value "
+            "(secrets.token_urlsafe(48))."
+        )
 
     # /openapi.json, /docs, and /redoc publish the full admin and ingest
     # endpoint surface to anyone who looks -- harmless in local dev, but on
