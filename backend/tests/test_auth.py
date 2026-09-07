@@ -182,6 +182,59 @@ def test_login_rejects_unknown_email(client, monkeypatch):
     assert r.status_code == 401
 
 
+def test_login_pays_the_same_bcrypt_cost_for_an_unknown_email(client, monkeypatch):
+    """An unknown email must still run a real bcrypt check, against
+    DUMMY_PASSWORD_HASH, so it costs the same as a wrong password on a real
+    account -- otherwise the timing gap alone reveals which emails have
+    accounts, even though both return the identical 401."""
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    from app.services import auth as auth_service
+
+    calls = []
+    real_verify = auth_service.verify_password
+
+    def spy(password, password_hash):
+        calls.append(password_hash)
+        return real_verify(password, password_hash)
+
+    monkeypatch.setattr("app.routers.auth.auth_service.verify_password", spy)
+    r = client.post("/auth/login", json={"email": "nobody@example.com", "password": "hunter22"})
+    assert r.status_code == 401
+    assert calls == [auth_service.DUMMY_PASSWORD_HASH]
+
+
+def test_login_pays_the_same_bcrypt_cost_for_a_google_only_account(client, monkeypatch):
+    """A real account with no password set (Google-only) must also check
+    against DUMMY_PASSWORD_HASH, not skip the bcrypt call entirely."""
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    from app import models
+    from app.database import SessionLocal
+    from app.services import auth as auth_service
+
+    # Simplest reliable way to get a real user row with no password: sign up
+    # normally, then clear the password hash to model a Google-only account.
+    client.post("/auth/signup", json={"email": "google-only@example.com", "password": "hunter22", "name": "Ada"})
+    db = SessionLocal()
+    try:
+        user = db.query(models.DashboardUser).filter_by(email="google-only@example.com").one()
+        user.password_hash = None
+        db.commit()
+    finally:
+        db.close()
+
+    calls = []
+    real_verify = auth_service.verify_password
+
+    def spy(password, password_hash):
+        calls.append(password_hash)
+        return real_verify(password, password_hash)
+
+    monkeypatch.setattr("app.routers.auth.auth_service.verify_password", spy)
+    r = client.post("/auth/login", json={"email": "google-only@example.com", "password": "hunter22"})
+    assert r.status_code == 401
+    assert calls == [auth_service.DUMMY_PASSWORD_HASH]
+
+
 # --------------------------------------------------------------- oversized passwords (bcrypt's 72-byte limit)
 
 

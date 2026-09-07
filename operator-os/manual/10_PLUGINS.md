@@ -179,7 +179,7 @@ so a rerun does nothing.
 They may add files and columns. They may not rewrite a core registry, and
 `os validate` is the check that says so.
 
-## The two examples
+## The four examples
 
 `plugins/example-quotes-pdf` declares `commands` and `tools`. It adds
 `os quote-sheet <quote_id>`, which renders one row of `quotes.csv` into a self
@@ -193,7 +193,20 @@ it adds `os rates` and `os rates set <code> <rate>`. It extends the data layer
 without a line changing in `lib/osdata.py`. It does not ask for `writes` either,
 because the only table it writes is the one it created.
 
-Both are meant to be copied. Read them before you write your own.
+`plugins/example-recurring-reminders` declares `commands` and `tools`. It adds
+`os reminders [days]`, a read-only view over `recurring.csv` split into
+overdue, due-soon and no-`next_date` sections, and ships
+`tools/renewal-reminder/SKILL.md`. It only reads through `ctx.data`, so it does
+not ask for `writes` either.
+
+`plugins/example-expense-rules` declares `commands` and `migrations`. Its
+migration creates `data/rules.csv` with keyword, category and notes, and it
+adds `os rules`, `os rules add <keyword> <category>` and `os rules check`.
+`check` reads `expenses.csv` and prints where a rule disagrees with a row's
+own category; it never rewrites `expenses.csv` itself, which is why it does
+not ask for `writes` despite touching two files.
+
+All four are meant to be copied. Read them before you write your own.
 
 ## The commands
 

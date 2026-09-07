@@ -24,7 +24,7 @@ business is the files, not the software.
 ```
 os doctor                 does this machine have what it needs
 os migrate                set up the books and the rest of the schema
-os use                    look at the five encoded businesses
+os use                    look at the eight encoded businesses
 os use 01-field-service   load the closest one and look around
 os brief                  see what a live business looks like
 os sim                    the same question, with the odds attached
@@ -43,13 +43,13 @@ name and your own numbers, you are installed.
 |---|---|
 | `data/` | your business. Back this up. Nothing else matters. |
 | `manual/` | this control plane, 00 through 14 |
-| `tools/` | 20 tools, one folder each |
+| `tools/` | 35 tools, one folder each |
 | `lib/` `scripts/` | the engine, the kernel, and the command line |
-| `adapters/` | five ways to bring outside data in |
-| `plugins/` | the extension point, with two working examples |
+| `adapters/` | eight ways to bring outside data in |
+| `plugins/` | the extension point, with four working examples |
 | `agents/` | the routing table and the scheduled runs |
 | `migrations/` | numbered, applied once, backed up first |
-| `workspaces/` | five encoded businesses to start from |
+| `workspaces/` | eight encoded businesses to start from |
 | `workbook/` | every step and every prompt, Mac and Windows |
 | `console/` | a local dashboard. Open the html file. No server. |
 | `tests/` | the proofs. Run them yourself. |
@@ -62,8 +62,8 @@ name and your own numbers, you are installed.
 |---|---|
 | 01 Registry | the human index of the business |
 | 02 Data model | nine registries, one config, what the columns mean |
-| 03 Tools | the twenty tools and the contract they all follow |
-| 04 Workspaces | the five encoded businesses |
+| 03 Tools | the thirty-five tools and the contract they all follow |
+| 04 Workspaces | the eight encoded businesses |
 | 05 Rhythm | the cadence, about ninety minutes a week |
 | 06 Money | every calculation, so you can check it |
 | 07 Boundaries | what the system will not do |

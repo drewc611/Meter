@@ -133,7 +133,14 @@ def signup(body: schemas.SignupIn, db: Session = Depends(get_db)):
 @router.post("/login", response_model=schemas.TokenOut)
 def login(body: schemas.LoginIn, db: Session = Depends(get_db)):
     user = db.query(models.DashboardUser).filter_by(email=body.email).one_or_none()
-    if user is None or not user.password_hash or not auth_service.verify_password(body.password, user.password_hash):
+    # Always run a real bcrypt check, even when there's no user or no
+    # password_hash to check against -- against the account's own hash if it
+    # has one, against DUMMY_PASSWORD_HASH otherwise. Both branches then cost
+    # the same ~100ms of bcrypt work, so a timing side-channel doesn't tell a
+    # guesser which emails have accounts (see DUMMY_PASSWORD_HASH's comment).
+    real_hash = user.password_hash if user and user.password_hash else None
+    password_ok = auth_service.verify_password(body.password, real_hash or auth_service.DUMMY_PASSWORD_HASH)
+    if user is None or not real_hash or not password_ok:
         # Same message either way -- confirming "that email exists" to a
         # guesser is its own small leak.
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")

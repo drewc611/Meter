@@ -43,6 +43,21 @@ be an account-existence oracle, since an unknown email short-circuits to
 401 without ever hashing anything while a known one reached bcrypt and
 raised.
 
+`/auth/login` also runs a real bcrypt check against a fixed decoy hash
+(`services/auth.DUMMY_PASSWORD_HASH`) whenever the email doesn't resolve to
+an account with a password set, so that path costs the same ~100ms of
+bcrypt work as a wrong password on a real account. Without this, a
+nonexistent email returned near-instantly while a real one didn't — same
+401 either way, but the timing gap alone let an attacker enumerate which
+emails have accounts.
+
+`MERIT_JWT_SECRET` being unset or under 32 characters is only ever logged,
+not enforced, when running locally — but `create_app()` refuses to start
+at all if it detects a real deployment (`FLY_APP_NAME` set by the Fly.io
+runtime itself, or `MERIT_ENV=production` set explicitly) and the secret is
+missing or weak, since every tenant boundary in this app rests on that
+token being unguessable.
+
 `/openapi.json`, `/docs`, and `/redoc` are disabled in production via
 `MERIT_DISABLE_API_DOCS=true` (set in `fly.toml`) — every route still
 works, only the schema/UI that lists the full admin and ingest surface is

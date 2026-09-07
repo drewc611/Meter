@@ -1,0 +1,5 @@
+# example-recurring-reminders 1.0.0 file checksums. Rerun `os plugin lock example-recurring-reminders` after any edit.
+cfae68598beadb14e464e9391695d54d6a15bd49abd1faaba680b97954340f7c  README.md
+d4c91dd731d3f4f66970919dfea6d634aea0cd307dad379fdec87d019634ed7f  plugin.json
+a3f7449a588b33d4e064efb247f2b2b3d77bf0d15c248ee12b75ac219cfc858f  plugin.py
+cee125182bbee726088dd629b9821c4c82576c581ed1e16ac18f307988d2df59  tools/renewal-reminder/SKILL.md

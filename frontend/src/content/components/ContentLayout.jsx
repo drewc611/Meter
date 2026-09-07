@@ -2,7 +2,10 @@
 // setup guides, guides, prompts, challenge). These render at build time via
 // entry-server.jsx + scripts/prerender-content.mjs into plain static HTML --
 // this component itself never ships any client-side JS, so there's nothing
-// to hydrate and no risk of a blank-until-JS-runs page.
+// to hydrate and no risk of a blank-until-JS-runs page. The persistent
+// left-hand section nav below is the same "never ships client-side JS"
+// contract: it's a plain <aside>, no collapse state, just hidden under the
+// mobile breakpoint where nav.site-nav's checkbox toggle takes over instead.
 const NAV_ITEMS = [
   { key: "architecture", href: "/architecture", label: "Architecture" },
   { key: "cloud-architecture", href: "/cloud-architecture", label: "Cloud Architecture" },
@@ -14,6 +17,7 @@ const NAV_ITEMS = [
   { key: "guides", href: "/guides", label: "Guides" },
   { key: "prompts", href: "/prompts", label: "Prompts" },
   { key: "challenge", href: "/challenge", label: "Challenge" },
+  { key: "operator-os", href: "/operator-os", label: "Operator OS" },
   { key: "community", href: "/community", label: "Community" },
 ];
 
@@ -24,7 +28,7 @@ export default function ContentLayout({ active, wide, children }) {
         <div className="site-inner">
           <a className="brand-mark" href="/">
             <span className="bars" aria-hidden="true">
-              <i style={{ height: "10px", background: "var(--brand-pale)" }} />
+              <i style={{ height: "10px", background: "var(--brand-pale-strong)" }} />
               <i style={{ height: "15px", background: "var(--brand-soft)" }} />
               <i style={{ height: "18px", background: "var(--brand)" }} />
             </span>
@@ -52,7 +56,17 @@ export default function ContentLayout({ active, wide, children }) {
           </nav>
         </div>
       </header>
-      <main className={wide ? "content wide" : "content"}>{children}</main>
+      <div className="site-body">
+        <aside className="section-nav" aria-label="Sections">
+          <span className="section-nav-label">Merit AC</span>
+          {NAV_ITEMS.map((item) => (
+            <a key={item.key} href={item.href} aria-current={item.key === active ? "page" : undefined}>
+              {item.label}
+            </a>
+          ))}
+        </aside>
+        <main className={wide ? "content wide" : "content"}>{children}</main>
+      </div>
       <footer className="site">
         <div className="footer-inner">
           <span>Merit AC is a labeled prototype — the dashboard runs on illustrative demo data until you connect your own.</span>

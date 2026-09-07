@@ -1,8 +1,8 @@
 # 04 Workspaces
 
-Five businesses, encoded. Each is a persona plus a full set of live data, and the
-data is anchored to relative dates so it looks current whenever you load it. No
-demo ever reads as stale.
+Eight businesses, encoded. Each is a persona plus a full set of live data, and
+the data is anchored to relative dates so it looks current whenever you load
+it. No demo ever reads as stale.
 
 | Workspace | Shape | The leak it teaches |
 |---|---|---|
@@ -11,6 +11,9 @@ demo ever reads as stale.
 | `03-design-studio` | fixed price project work | hours past the estimate, revisions given away |
 | `04-maker-brand` | physical product, direct and wholesale | cash tied up in stock, wholesale priced off retail |
 | `05-coach-practice` | sells time in blocks | the ceiling, and unpaid hours between sessions |
+| `06-recurring-services` | flat-rate recurring contracts, subcontracted delivery | a signed price nobody revisits while the real cost creeps up underneath it |
+| `07-event-production` | vendor-heavy project work with deposits both ways | vendor cash out weeks before client cash in, even when the client always pays |
+| `08-agency-subcontractor` | sells the strategy, subcontracts the production | subcontractor cost pass-through quietly eating a project's margin |
 
 ## How to use them
 

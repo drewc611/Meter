@@ -4,10 +4,10 @@ The whole business, on your machine, in files you own.
 
 Nine CSV files, an engine that does the money math the same way every time, an
 event log that makes every change reversible, real double entry books, a query
-language, a cash simulation with the odds attached, five import adapters, a
-plugin SDK, an agent layer that runs the whole thing on a schedule, twenty tools,
-five encoded businesses to start from, and a workbook covering every step on Mac
-and Windows.
+language, a cash simulation with the odds attached, eight import adapters, a
+plugin SDK, an agent layer that runs the whole thing on a schedule, thirty-five
+tools, eight encoded businesses to start from, and a workbook covering every
+step on Mac and Windows.
 
 No account, no server, no subscription, nothing to log into. Python 3.9 and an
 optional git install are the entire dependency list, on purpose.
@@ -54,7 +54,7 @@ os ticks / tick / reconcile
 os validate          every row and every link, checked
 ```
 
-`os help` lists all forty one. `os help <group>` narrows it.
+`os help` lists all forty three. `os help <group>` narrows it.
 
 ## Why files
 
@@ -62,17 +62,44 @@ You can open every one of them in Excel. Git gives you version history for free.
 Nothing proprietary means nothing to migrate away from. The cost is no
 concurrency, which does not matter when the business is one person.
 
+## How it fits together
+
+```mermaid
+flowchart TD
+    WB["Workbook<br/>written steps, Mac &amp; Windows"]
+    TL["Tools (35)<br/>SKILL.md, no code -- composes commands"]
+    AD["Adapters (8)<br/>bank, Stripe, PayPal, Square,<br/>QuickBooks, calendar, mailbox, generic CSV"]
+    PL["Plugins (4)<br/>capability-gated extensions"]
+
+    WB --> CLI
+    TL --> CLI
+    AD --> CLI
+    PL --> CLI
+
+    CLI["os -- the command line<br/>scripts/os.py"] --> ENG
+    ENG["Engine -- lib/osdata.py<br/>the one place that reads or writes data"] --> LOG
+    LOG["Event log -- data/events.jsonl<br/>hash-chained, written before the file"] --> DATA
+    DATA["Data -- data/*.csv + business.yml<br/>9 plain registries, git-trackable, Excel-openable"]
+
+    WS["Workspaces (8)<br/>encoded starting businesses"] -.->|os use| DATA
+```
+
+Everything upstream of the event log is replaceable -- write your own tool, adapter,
+or plugin, or fork a workspace. What never changes is that a mutation is logged
+before it is saved, which is what makes `os undo`, `os rebuild`, and `os drift`
+trustworthy no matter what put the row there.
+
 ## What is in the repo
 
 | Folder | What it holds |
 |---|---|
 | `data/` | your business. Back this up. Nothing else matters. |
 | `manual/` | the control plane, 00 through 14. Start with `00_START_HERE.md`. |
-| `tools/` | 20 tools, written to be read by a person and loaded by an assistant |
+| `tools/` | 35 tools, written to be read by a person and loaded by an assistant |
 | `workbook/` | nine modules, every step and every prompt, Mac and Windows |
-| `workspaces/` | five encoded businesses, dates always current |
-| `adapters/` | bank, Stripe, QuickBooks, calendar, mailbox |
-| `plugins/` | the SDK and two working examples |
+| `workspaces/` | eight encoded businesses, dates always current |
+| `adapters/` | bank, Stripe, PayPal, Square, QuickBooks, calendar, mailbox, generic CSV |
+| `plugins/` | the SDK and four working examples |
 | `agents/` | the routing table, the roster, and five scheduled runs |
 | `lib/` `scripts/` `migrations/` | the engine, the launcher, the upgrades |
 | `console/` | a local dashboard. Open the html file. No server. |
@@ -89,7 +116,7 @@ python3 tests/test_agentops.py    routing refuses, and reconcile sorts risk befo
 ./os books check                  the books tie to the reports
 ```
 
-## The five workspaces
+## The eight workspaces
 
 Pick by failure mode, not by trade.
 
@@ -100,6 +127,9 @@ Pick by failure mode, not by trade.
 | `03-design-studio` | hours past estimate, revisions given away |
 | `04-maker-brand` | cash tied up in stock, wholesale priced off retail |
 | `05-coach-practice` | the hours ceiling, and unpaid time between sessions |
+| `06-recurring-services` | a signed price nobody revisits while real cost creeps up under it |
+| `07-event-production` | vendor cash out weeks before client cash in |
+| `08-agency-subcontractor` | subcontractor cost quietly eating a project's margin |
 
 ## What it will not do
 

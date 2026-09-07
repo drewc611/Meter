@@ -15,13 +15,13 @@ own disk. No SaaS login. No data held hostage. No chat scroll to lose.
 ```
   WORKBOOK        written steps and exact prompts, Mac and Windows
       |
-  TOOLS           20 skills that read and write the data layer
+  TOOLS           35 skills that read and write the data layer
       |
   ENGINE          deterministic python: money math, aging, forecast, validate
       |
   DATA            plain CSV plus one YAML config, git tracked, Excel openable
       |
-  WORKSPACES      5 encoded businesses to fork from, personas included
+  WORKSPACES      8 encoded businesses to fork from, personas included
 ```
 
 Judgment lives in the tools. Arithmetic lives in the engine. Truth lives in the
@@ -63,14 +63,19 @@ an id reference validated by `os validate`.
 Notes live as markdown under `data/notes/` named by record id, so a contact's
 history is a file you can read without any tool at all.
 
-## The 20 tools
+## The 35 tools
 
-Grouped by what they protect.
+Grouped by what they protect. Full list and the six-section contract every
+one of them follows: `manual/03_TOOLS.md`.
 
-**Money (6)** invoice, chase, expenses, cashflow, taxset, pricing
-**Work (5)** projects, tasks, time, schedule, capacity
-**Demand (5)** crm, pipeline, quote, followup, content
-**Control (4)** day, week, reaper, doctor
+**Money (11)** invoice, chase, expenses, cashflow, taxset, pricing, retainer,
+writeoff-review, vendor-audit, subcontractor-cost, deposit-request
+**Work (7)** projects, tasks, time, schedule, capacity, scope-check,
+forward-capacity
+**Demand (8)** crm, pipeline, quote, followup, content, referral-ask,
+discovery-call, proposal-draft
+**Lifecycle (3)** onboarding, handoff, client-health-check
+**Control (6)** day, week, reaper, doctor, year-end-review, loose-ends
 
 Every tool follows the same contract, documented in `manual/03_TOOLS.md`:
 it names its inputs, it names the exact files it writes, it ends with a finish
@@ -100,9 +105,9 @@ operator-os/
   LICENSE                the legal version
   brand.json             the one name file
   manual/               the control plane, 00 through 08
-  tools/                 20 skills
+  tools/                 35 skills
   lib/  scripts/         the engine and the installers
-  workspaces/            5 encoded businesses with personas
+  workspaces/            8 encoded businesses with personas
   workbook/              every step, every prompt, Mac and Windows
   console/               a local dashboard, no server, no account
   data/                  yours, created at install, git ignored by default

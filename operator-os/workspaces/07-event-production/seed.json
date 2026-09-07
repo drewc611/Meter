@@ -1,0 +1,128 @@
+{
+  "config": {
+    "business_name": "Harlow Bay Events",
+    "operator": "Jess Calloway",
+    "trade": "event production and planning, weddings and corporate",
+    "currency": "USD",
+    "currency_symbol": "$",
+    "hourly_rate": "65.00",
+    "target_margin_pct": "32",
+    "tax_rate_pct": "0",
+    "tax_set_aside_pct": "25",
+    "invoice_terms_days": "15",
+    "capacity_hours_per_week": "40",
+    "opening_cash": "1850.00",
+    "week_starts": "monday",
+    "quiet_hours": "19:00-08:00"
+  },
+  "contacts": [
+    {"id":"c0001","name":"Denise Okoro","company":"Calder & Wills LLP","role":"marketing director","email":"denise@example.com","phone":"555-0311","source":"referral","status":"active","tags":"corporate,slow-pay","first_contact":"T-400","last_contact":"T-8","notes":"AP takes six to seven weeks no matter what the invoice says. Budget around it, not on it."},
+    {"id":"c0002","name":"Priya Anand","company":"","role":"bride","email":"priya@example.com","phone":"555-0327","source":"referral","status":"active","tags":"wedding","first_contact":"T-150","last_contact":"T-10","notes":"Wedding in three weeks. Easy client, pays by card the same day."},
+    {"id":"c0003","name":"Meg Botsford","company":"","role":"bride","email":"meg@example.com","phone":"555-0344","source":"instagram","status":"lead","tags":"wedding","first_contact":"T-20","last_contact":"T-6","notes":"Wants the same florist as the Anand wedding."},
+    {"id":"c0004","name":"Owen Castellan","company":"Halberd Financial","role":"events coordinator","email":"owen@example.com","phone":"555-0358","source":"referral","status":"active","tags":"corporate,repeat","first_contact":"T-600","last_contact":"T-70","notes":"Second event with us. Pays fast once it is approved. Approval is the slow part, not payment."},
+    {"id":"c0005","name":"Fatima Idris","company":"Riverside Arts Alliance","role":"development director","email":"fatima@example.com","phone":"555-0369","source":"referral","status":"active","tags":"nonprofit,gala","first_contact":"T-260","last_contact":"T-25","notes":"Pays in progress installments, reliably."},
+    {"id":"c0006","name":"Callum Reyes","company":"Northgate Ventures","role":"office manager","email":"callum@example.com","phone":"555-0372","source":"referral","status":"lead","tags":"corporate","first_contact":"T-14","last_contact":"T-14","notes":"Product launch, still deciding on venue."},
+    {"id":"c0007","name":"Bea Whitcombe","company":"","role":"homeowner","email":"bea@example.com","phone":"555-0385","source":"referral","status":"past","tags":"","first_contact":"T-320","last_contact":"T-180","notes":"Backyard fortieth birthday. One and done."},
+    {"id":"c0008","name":"Iris Dunmore","company":"Dunmore & Pratt","role":"office director","email":"iris@example.com","phone":"555-0391","source":"referral","status":"dormant","tags":"corporate","first_contact":"T-450","last_contact":"T-95","notes":"Events budget cut for the year."},
+    {"id":"c0009","name":"Owen Marsh","company":"","role":"groom","email":"owenm@example.com","phone":"555-0398","source":"referral","status":"active","tags":"wedding","first_contact":"T-90","last_contact":"T-15","notes":""},
+    {"id":"c0010","name":"Nadia Solberg","company":"Solberg PR","role":"event lead","email":"nadia@example.com","phone":"555-0402","source":"referral","status":"lead","tags":"corporate","first_contact":"T-5","last_contact":"T-5","notes":""}
+  ],
+  "deals": [
+    {"id":"d0001","contact_id":"c0006","title":"Northgate product launch, 200 guests","value":"14200.00","stage":"quoted","confidence":"55","opened":"T-14","expected_close":"T+16","next_action":"Follow up before the quote expires","next_action_due":"T-1","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0002","contact_id":"c0003","title":"Botsford wedding, 120 guests","value":"21800.00","stage":"negotiating","confidence":"60","opened":"T-20","expected_close":"T+25","next_action":"Send the florist package Meg asked about","next_action_due":"T+2","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0003","contact_id":"c0010","title":"Solberg PR product event","value":"9800.00","stage":"new","confidence":"40","opened":"T-5","expected_close":"T+30","next_action":"","next_action_due":"","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0004","contact_id":"c0004","title":"Halberd Financial holiday party","value":"26400.00","stage":"won","confidence":"100","opened":"T-100","expected_close":"T-72","next_action":"","next_action_due":"","status":"won","closed_on":"T-70","lost_reason":""},
+    {"id":"d0005","contact_id":"c0001","title":"Calder & Wills winter gala","value":"38500.00","stage":"won","confidence":"100","opened":"T-100","expected_close":"T-96","next_action":"","next_action_due":"","status":"won","closed_on":"T-95","lost_reason":""},
+    {"id":"d0006","contact_id":"c0008","title":"Dunmore and Pratt spring mixer","value":"12000.00","stage":"lost","confidence":"0","opened":"T-140","expected_close":"T-100","next_action":"","next_action_due":"","status":"lost","closed_on":"T-95","lost_reason":"Board cut the events budget for the year"}
+  ],
+  "quotes": [
+    {"id":"q0001","deal_id":"d0001","contact_id":"c0006","number":"Q-9021","issued":"T-13","expires":"T+3","subtotal":"14200.00","tax":"0.00","total":"14200.00","status":"sent","decided_on":"","notes":""},
+    {"id":"q0002","deal_id":"d0002","contact_id":"c0003","number":"Q-9024","issued":"T-18","expires":"T+7","subtotal":"21800.00","tax":"0.00","total":"21800.00","status":"sent","decided_on":"","notes":"Includes two planning meetings and the florist package."},
+    {"id":"q0003","deal_id":"d0005","contact_id":"c0001","number":"Q-8890","issued":"T-99","expires":"T-85","subtotal":"38500.00","tax":"0.00","total":"38500.00","status":"accepted","decided_on":"T-96","notes":"30 percent deposit at signing, balance two weeks before the event."},
+    {"id":"q0004","deal_id":"d0004","contact_id":"c0004","number":"Q-8850","issued":"T-102","expires":"T-88","subtotal":"26400.00","tax":"0.00","total":"26400.00","status":"accepted","decided_on":"T-100","notes":""}
+  ],
+  "projects": [
+    {"id":"p0001","contact_id":"c0001","deal_id":"d0005","name":"Calder & Wills LLP - Winter Gala","status":"active","start":"T-90","due":"T+18","budget":"38500.00","hours_estimate":"130","health":"amber","next_milestone":"Final headcount to the caterer","closed_on":""},
+    {"id":"p0002","contact_id":"c0001","deal_id":"","name":"Calder & Wills - Summer Reception","status":"done","start":"T-400","due":"T-372","budget":"6400.00","hours_estimate":"24","health":"green","next_milestone":"","closed_on":"T-370"},
+    {"id":"p0003","contact_id":"c0002","deal_id":"","name":"Anand wedding","status":"active","start":"T-70","due":"T+21","budget":"24800.00","hours_estimate":"90","health":"green","next_milestone":"Confirm the final floor plan with the venue","closed_on":""},
+    {"id":"p0004","contact_id":"c0004","deal_id":"d0004","name":"Halberd Financial holiday party","status":"done","start":"T-100","due":"T-72","budget":"26400.00","hours_estimate":"96","health":"green","next_milestone":"","closed_on":"T-71"},
+    {"id":"p0005","contact_id":"c0005","deal_id":"","name":"Riverside Arts Alliance spring gala","status":"active","start":"T-40","due":"T+35","budget":"31500.00","hours_estimate":"100","health":"green","next_milestone":"Silent auction vendor contracts","closed_on":""},
+    {"id":"p0006","contact_id":"c0009","deal_id":"","name":"Marsh wedding","status":"planned","start":"T+40","due":"T+55","budget":"18600.00","hours_estimate":"60","health":"","next_milestone":"Sign contract, deposit invoice not sent yet","closed_on":""},
+    {"id":"p0007","contact_id":"c0007","deal_id":"","name":"Whitcombe fortieth birthday","status":"done","start":"T-190","due":"T-178","budget":"5200.00","hours_estimate":"20","health":"green","next_milestone":"","closed_on":"T-177"}
+  ],
+  "tasks": [
+    {"id":"t0001","project_id":"p0001","title":"Confirm final headcount with the caterer","due":"T-1","priority":"now","status":"todo","estimate_min":"30","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0002","project_id":"p0001","title":"Send Calder and Wills the balance reminder","due":"T+2","priority":"high","status":"todo","estimate_min":"15","done_on":"","blocked_by":"","notes":"Balance is out. Their AP takes six weeks regardless."},
+    {"id":"t0003","project_id":"p0001","title":"Walk the ballroom floor plan with the AV vendor","due":"T+5","priority":"normal","status":"todo","estimate_min":"60","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0004","project_id":"p0001","title":"Confirm florist delivery window","due":"T+16","priority":"high","status":"todo","estimate_min":"20","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0005","project_id":"p0003","title":"Confirm the final floor plan with the venue","due":"T+3","priority":"high","status":"todo","estimate_min":"45","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0006","project_id":"p0003","title":"Chase the last two vendor confirmations","due":"T+7","priority":"normal","status":"todo","estimate_min":"30","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0007","project_id":"p0005","title":"Line up silent auction vendor contracts","due":"T+6","priority":"normal","status":"todo","estimate_min":"90","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0008","project_id":"p0005","title":"Send Riverside the second progress invoice","due":"T-3","priority":"high","status":"todo","estimate_min":"15","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0009","project_id":"p0006","title":"Send Marsh the contract and deposit invoice","due":"T+5","priority":"high","status":"todo","estimate_min":"30","done_on":"","blocked_by":"","notes":"Nothing collected yet, event is not for ten weeks, no rush."},
+    {"id":"t0010","project_id":"","title":"Follow up on the Northgate quote before it expires","due":"T-1","priority":"now","status":"todo","estimate_min":"15","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0011","project_id":"","title":"Send Meg Botsford the florist package","due":"T+2","priority":"high","status":"todo","estimate_min":"30","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0012","project_id":"","title":"Reconcile the vendor deposit ledger against open invoices","due":"T-4","priority":"high","status":"todo","estimate_min":"60","done_on":"","blocked_by":"","notes":"How much is out the door right now for events that have not paid us yet."},
+    {"id":"t0013","project_id":"p0002","title":"Archive the summer reception files","due":"T-360","priority":"low","status":"done","estimate_min":"20","done_on":"T-359","blocked_by":"","notes":""},
+    {"id":"t0014","project_id":"p0004","title":"Send Halberd the post-event recap","due":"T-65","priority":"normal","status":"done","estimate_min":"30","done_on":"T-64","blocked_by":"","notes":""},
+    {"id":"t0015","project_id":"p0007","title":"Return the rented linens","due":"T-176","priority":"low","status":"done","estimate_min":"15","done_on":"T-176","blocked_by":"","notes":""}
+  ],
+  "time": [
+    {"id":"h0001","date":"T-88","project_id":"p0001","task_id":"","minutes":"480","billable":"yes","rate":"65.00","notes":"Kickoff, vendor selection"},
+    {"id":"h0002","date":"T-60","project_id":"p0001","task_id":"","minutes":"300","billable":"yes","rate":"65.00","notes":"Tasting and menu lock"},
+    {"id":"h0003","date":"T-25","project_id":"p0001","task_id":"","minutes":"360","billable":"yes","rate":"65.00","notes":"Run of show draft"},
+    {"id":"h0004","date":"T-65","project_id":"p0003","task_id":"","minutes":"360","billable":"yes","rate":"65.00","notes":"Venue walkthrough"},
+    {"id":"h0005","date":"T-20","project_id":"p0003","task_id":"","minutes":"300","billable":"yes","rate":"65.00","notes":"Vendor confirmations"},
+    {"id":"h0006","date":"T-390","project_id":"p0002","task_id":"","minutes":"480","billable":"yes","rate":"65.00","notes":"Full production, summer reception"},
+    {"id":"h0007","date":"T-95","project_id":"p0004","task_id":"","minutes":"600","billable":"yes","rate":"65.00","notes":"Full production, holiday party"},
+    {"id":"h0008","date":"T-35","project_id":"p0005","task_id":"","minutes":"420","billable":"yes","rate":"65.00","notes":"Sponsor package build"},
+    {"id":"h0009","date":"T-10","project_id":"p0005","task_id":"","minutes":"180","billable":"yes","rate":"65.00","notes":"Auction vendor calls"},
+    {"id":"h0010","date":"T-185","project_id":"p0007","task_id":"","minutes":"240","billable":"yes","rate":"65.00","notes":"Backyard production day"}
+  ],
+  "invoices": [
+    {"id":"i0001","project_id":"p0001","contact_id":"c0001","number":"INV-7701","issued":"T-95","due":"T-81","subtotal":"11550.00","tax":"0.00","total":"11550.00","status":"paid","paid_on":"T-88","method":"transfer","notes":"Deposit, 30 percent, paid at signing."},
+    {"id":"i0002","project_id":"p0002","contact_id":"c0001","number":"INV-7402","issued":"T-380","due":"T-366","subtotal":"6400.00","tax":"0.00","total":"6400.00","status":"paid","paid_on":"T-330","method":"transfer","notes":"Summer reception, final bill. Fifty days to land."},
+    {"id":"i0003","project_id":"p0001","contact_id":"c0001","number":"INV-7745","issued":"T-5","due":"T+10","subtotal":"26950.00","tax":"0.00","total":"26950.00","status":"sent","paid_on":"","method":"","notes":"Balance, due before the event. Their AP has never once paid inside terms."},
+    {"id":"i0004","project_id":"p0003","contact_id":"c0002","number":"INV-7730","issued":"T-2","due":"T+13","subtotal":"9200.00","tax":"0.00","total":"9200.00","status":"sent","paid_on":"","method":"","notes":"Balance, wedding in three weeks."},
+    {"id":"i0005","project_id":"p0003","contact_id":"c0002","number":"INV-7690","issued":"T-68","due":"T-54","subtotal":"15600.00","tax":"0.00","total":"15600.00","status":"paid","paid_on":"T-60","method":"card","notes":"Deposit."},
+    {"id":"i0006","project_id":"p0004","contact_id":"c0004","number":"INV-7688","issued":"T-72","due":"T-58","subtotal":"26400.00","tax":"0.00","total":"26400.00","status":"paid","paid_on":"T-62","method":"transfer","notes":"Paid inside two weeks, once it was approved."},
+    {"id":"i0007","project_id":"p0005","contact_id":"c0005","number":"INV-7715","issued":"T-38","due":"T-24","subtotal":"12000.00","tax":"0.00","total":"12000.00","status":"paid","paid_on":"T-20","method":"transfer","notes":"First progress payment."},
+    {"id":"i0008","project_id":"p0005","contact_id":"c0005","number":"INV-7748","issued":"T-3","due":"T+12","subtotal":"9500.00","tax":"0.00","total":"9500.00","status":"sent","paid_on":"","method":"","notes":"Second progress payment."},
+    {"id":"i0009","project_id":"p0007","contact_id":"c0007","number":"INV-7180","issued":"T-178","due":"T-164","subtotal":"5200.00","tax":"0.00","total":"5200.00","status":"paid","paid_on":"T-150","method":"card","notes":""},
+    {"id":"i0010","project_id":"","contact_id":"c0004","number":"INV-7250","issued":"T-260","due":"T-246","subtotal":"4100.00","tax":"0.00","total":"4100.00","status":"paid","paid_on":"T-250","method":"transfer","notes":"Smaller event, before the holiday party. Fast payer once approved."}
+  ],
+  "expenses": [
+    {"id":"e0001","date":"T-85","vendor":"Grand Meridian Ballroom","category":"venue","amount":"8500.00","project_id":"p0001","billable":"no","method":"transfer","receipt":"yes","notes":"Venue deposit, 50 percent"},
+    {"id":"e0002","date":"T-60","vendor":"Thistle & Thyme Catering","category":"catering","amount":"6200.00","project_id":"p0001","billable":"no","method":"transfer","receipt":"yes","notes":"Catering deposit"},
+    {"id":"e0003","date":"T-40","vendor":"Wren House Florals","category":"florals","amount":"2100.00","project_id":"p0001","billable":"no","method":"card","receipt":"yes","notes":"Florals and decor deposit"},
+    {"id":"e0004","date":"T-20","vendor":"Highline AV Rentals","category":"av-rentals","amount":"3400.00","project_id":"p0001","billable":"no","method":"card","receipt":"yes","notes":"Staging and AV deposit"},
+    {"id":"e0005","date":"T-8","vendor":"Grand Meridian Ballroom","category":"venue","amount":"8500.00","project_id":"p0001","billable":"no","method":"transfer","receipt":"yes","notes":"Venue balance, due before load-in - paid weeks before the client balance is expected."},
+    {"id":"e0006","date":"T-98","vendor":"Vantage Point Venue","category":"venue","amount":"9000.00","project_id":"p0004","billable":"no","method":"transfer","receipt":"yes","notes":"Venue deposit"},
+    {"id":"e0007","date":"T-90","vendor":"Copper Kettle Catering","category":"catering","amount":"5400.00","project_id":"p0004","billable":"no","method":"transfer","receipt":"yes","notes":"Catering deposit"},
+    {"id":"e0008","date":"T-80","vendor":"Wren House Florals","category":"florals","amount":"1600.00","project_id":"p0004","billable":"no","method":"card","receipt":"yes","notes":""},
+    {"id":"e0009","date":"T-75","vendor":"Highline AV Rentals","category":"av-rentals","amount":"2800.00","project_id":"p0004","billable":"no","method":"card","receipt":"yes","notes":"All four vendor deposits landed before the client invoice was even paid."},
+    {"id":"e0010","date":"T-65","vendor":"Willowmere Venue","category":"venue","amount":"4200.00","project_id":"p0003","billable":"no","method":"transfer","receipt":"yes","notes":"Venue deposit"},
+    {"id":"e0011","date":"T-45","vendor":"Copper Kettle Catering","category":"catering","amount":"3100.00","project_id":"p0003","billable":"no","method":"transfer","receipt":"yes","notes":"Catering deposit"},
+    {"id":"e0012","date":"T-15","vendor":"Wren House Florals","category":"florals","amount":"1450.00","project_id":"p0003","billable":"no","method":"card","receipt":"yes","notes":"Florals deposit"},
+    {"id":"e0013","date":"T-38","vendor":"Cascade Hall","category":"venue","amount":"5200.00","project_id":"p0005","billable":"no","method":"transfer","receipt":"yes","notes":"Venue deposit"},
+    {"id":"e0014","date":"T-22","vendor":"Thistle & Thyme Catering","category":"catering","amount":"3600.00","project_id":"p0005","billable":"no","method":"transfer","receipt":"yes","notes":"Catering deposit"},
+    {"id":"e0015","date":"T-398","vendor":"Copper Kettle Catering","category":"catering","amount":"2200.00","project_id":"p0002","billable":"no","method":"transfer","receipt":"yes","notes":""},
+    {"id":"e0016","date":"T-390","vendor":"Wren House Florals","category":"florals","amount":"600.00","project_id":"p0002","billable":"no","method":"card","receipt":"yes","notes":""},
+    {"id":"e0017","date":"T-188","vendor":"Backyard Bloom Co","category":"florals","amount":"480.00","project_id":"p0007","billable":"no","method":"card","receipt":"yes","notes":""},
+    {"id":"e0018","date":"T-185","vendor":"Rental Row Linens","category":"rentals","amount":"320.00","project_id":"p0007","billable":"no","method":"card","receipt":"yes","notes":""},
+    {"id":"e0019","date":"T-9","vendor":"EventPro Software Co","category":"software","amount":"95.00","project_id":"","billable":"no","method":"card","receipt":"yes","notes":""},
+    {"id":"e0020","date":"T-4","vendor":"Harborview Insurance","category":"insurance","amount":"260.00","project_id":"","billable":"no","method":"transfer","receipt":"yes","notes":"Liability, monthly"},
+    {"id":"e0021","date":"T-30","vendor":"Riverside Studio Suites","category":"rent","amount":"900.00","project_id":"","billable":"no","method":"transfer","receipt":"yes","notes":"Studio rent"}
+  ],
+  "recurring": [
+    {"id":"r0001","label":"Studio rent","type":"cost","amount":"900.00","cadence":"monthly","next_date":"T+2","category":"rent","notes":""},
+    {"id":"r0002","label":"Planning software subscription","type":"cost","amount":"95.00","cadence":"monthly","next_date":"T+3","category":"software","notes":""},
+    {"id":"r0003","label":"Part-time coordinator retainer","type":"cost","amount":"1200.00","cadence":"monthly","next_date":"T+4","category":"payroll","notes":""},
+    {"id":"r0004","label":"Liability and event insurance","type":"cost","amount":"260.00","cadence":"monthly","next_date":"T+16","category":"insurance","notes":""},
+    {"id":"r0005","label":"Riverside Arts Alliance sponsorship coordination retainer","type":"income","amount":"400.00","cadence":"monthly","next_date":"T+11","category":"retainer","notes":"The one thing that arrives without waiting on a client's AP department."}
+  ],
+  "notes": {
+    "c0001.md": "# Denise Okoro / Calder & Wills LLP\n\nGreat client, fixed process. Their AP runs invoices through a monthly approval\ncycle no amount of following up moves. Two data points so far: fifty days on\nthe last big invoice, seven on the deposit (that one got hand-approved by\nDenise directly). Budget on the fifty.\n\n- Never call this a collections problem. They pay in full, every time.\n- The real risk is ours: every vendor for their events gets a deposit within\n  days of booking, months before their balance clears.\n- Do not schedule another large event's vendor deposits to land in the same\n  week as this one's balance is still outstanding.\n",
+    "p0001.md": "# Calder & Wills LLP - Winter Gala\n\nAmber, not because anything is wrong with the client - because of timing.\nVenue, catering, florals and AV deposits are all already paid, five figures\nout the door between eighty-five and twenty days ago, plus the venue balance\npaid this week. The client's own balance invoice, 26,950, is not expected to\nclear for another six or seven weeks given their history.\n\nThat gap is why cash is thin right now, not any one bad decision. Watch\n`os cash 90` on this one, not `os aging` - aging will just say Calder is fine,\nwhich is true and beside the point.\n"
+  }
+}
