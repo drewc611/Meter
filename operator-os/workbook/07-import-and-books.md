@@ -195,7 +195,11 @@ settles an invoice is not, because being wrong is expensive and quiet.
 
 ## Check it
 
+Applying the import just changed invoices and expenses, which means the
+journal you posted earlier is now stale -- post again before you check.
+
 ```
+./os books post
 ./os books check
 ./os drift
 ```
