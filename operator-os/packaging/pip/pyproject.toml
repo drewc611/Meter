@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "operator-os"
+version = "1.0.0"
+description = "Scaffolds a new Operator OS business folder -- a file-based business operating system that runs entirely on your own machine."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [{ name = "Operator OS" }]
+keywords = ["bookkeeping", "small-business", "cli", "double-entry", "local-first"]
+classifiers = [
+  "Environment :: Console",
+  "Intended Audience :: Other Audience",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Topic :: Office/Business :: Financial :: Accounting",
+]
+
+[project.urls]
+Homepage = "https://usemeritai.com/operator-os"
+Source = "https://github.com/drewc611/Meter/tree/main/operator-os"
+
+# This package installs ONE thing: an `operator-os` command whose only job is
+# `operator-os new <folder>`, which unpacks a fresh copy of the real tool (the
+# same tree `git clone` gives you) into a target folder. Everything after that
+# -- `./os doctor`, `./os brief`, all 43 commands -- runs exactly as documented
+# in operator-os/README.md, unmodified. This package does not turn Operator OS
+# itself into an importable library; the engine's own import style (sys.path
+# manipulation in scripts/os.py) is unchanged on purpose -- rewriting it to be
+# pip-importable would touch load-bearing code in a bookkeeping tool, which is
+# out of scope for a packaging change.
+[project.scripts]
+operator-os = "operator_os_installer.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+# _bundle/ is populated by scripts/build_bundle.sh immediately before building
+# an sdist/wheel -- see packaging/pip/README.md. It is not checked into git
+# (packaging/pip/.gitignore excludes it) since it's a generated copy of the
+# same tracked files `git archive` already knows about; keeping one source of
+# truth avoids the bundle silently drifting out of sync with the real tool.
+"operator_os_installer" = ["_bundle/**/*"]
