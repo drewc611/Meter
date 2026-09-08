@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Operator OS</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <button id="open-btn" class="primary">Open business folder&hellip;</button>
+  <div>
+    <div id="biz-name" class="name empty">No folder open</div>
+    <div id="biz-path" class="path"></div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="commands" id="commands" aria-label="Reports"></nav>
+  <main>
+    <div id="empty-state" class="empty-state">
+      <h2>Open a business folder to begin</h2>
+      <p>
+        This is a cockpit for a business folder you already set up --
+        via <code>pip install operator-os &amp;&amp; operator-os new</code>,
+        or the original <code>git clone</code> + <code>scripts/install.sh</code>.
+        It doesn't create a new one.
+      </p>
+      <p>
+        Read-only in this release: it runs the same reporting commands
+        <code>./os</code> would (brief, cash, aging, margin, books&hellip;),
+        nothing that changes a row. Edits still go through the terminal.
+      </p>
+    </div>
+    <pre id="output" class="output" hidden></pre>
+  </main>
+</div>
+
+<div class="statusbar" id="statusbar"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

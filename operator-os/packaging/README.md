@@ -30,41 +30,76 @@ isn't published. Same for a Debian/apt package, which additionally needs
 real repository hosting infrastructure to be reachable via `apt install`,
 not just a `.deb` file.
 
-## App stores (Apple App Store / Google Play / Microsoft Store)
+## `desktop/` -- a real native GUI app (built, tested, not yet signed or submitted)
 
-Not started, and deliberately not templated the way the above is -- this
-isn't a packaging problem, it's a different product. Operator OS is a
-terminal CLI with no GUI; none of the three stores accept that shape of
-software (sandboxed filesystem, no shell execution, review requires a real
-native UI). Getting Operator OS onto them for real means:
+A genuine Tauri desktop app now exists at `desktop/` -- not a mockup. It
+opens an existing Operator OS business folder and runs the same read-only
+reporting commands (`brief`, `cash`, `aging`, `margin`, `books check`, etc.)
+in a native window, styled to match `console/`'s existing ledger design.
+Verified this session, not just written: `cargo check` and `cargo clippy`
+clean, a real `cargo run` launched and rendered correctly under a virtual
+display (screenshotted), and a Rust test suite exercises the actual bridge
+logic against a real scaffolded business folder -- including confirming
+that write commands (`set`, `pull --apply`, etc.) are rejected by the
+allowlist, not just assumed safe. See `desktop/README.md` for the full
+picture, including exactly what it doesn't do yet (any mutation) and why.
 
-1. **Building an actual GUI.** The closest existing asset is `console/` (a
-   local, no-server HTML dashboard) -- a real desktop app would likely wrap
-   that plus a way to invoke the engine, e.g. via Tauri (small binary,
-   Rust-based, reuses the existing HTML/JS) or Electron (heavier, more
-   precedent). This is weeks of real engineering, not a config file.
-2. **Developer accounts under the founder's own identity** -- Apple
-   Developer Program, Google Play Console, Microsoft Partner Center. Each
-   needs payment info and, in Apple's case, real identity/business
-   verification. Nothing here can be created by an agent session.
-3. **A real answer to the in-app-purchase question.** The founder chose to
-   keep Operator OS's permanent per-business license (not a subscription),
-   sold directly, not through store commerce. Apple's App Store Review
-   Guideline 3.1.1 generally requires In-App Purchase for unlocking paid
-   functionality, with narrow exceptions (reader apps, certain B2B/
-   enterprise distribution models). Whether Operator OS's specific shape
-   qualifies for an exception is a real legal/business-development question,
-   not something to guess at in code -- get an actual answer (from Apple's
-   own developer relations, or counsel) before investing in the GUI build,
-   since it decides whether app-store distribution is even viable under the
-   current licensing model.
-4. Operator OS's own `LICENSE` file states on its first page that it's a
-   draft that "has not been reviewed by a lawyer." That's fine for a
-   file-based tool sold directly off one's own site; it stops being fine
-   the moment real money moves through a formal app-store commerce
-   agreement under the founder's name. Get it reviewed before this track
-   goes any further, not after.
+`.github/workflows/operator-os-desktop.yml` cross-builds macOS/Windows/
+Linux installers from one tag push, via GitHub's own runners -- this
+sandbox can only ever produce a Linux build itself (Tauri doesn't
+cross-compile a `.dmg` or `.msi` from Linux, same as no framework does).
+It's on manual/tag-triggered dispatch, not every push, since a three-OS
+matrix build costs real CI minutes.
 
-This track needs the founder's go-ahead and account setup before any
-engineering starts -- see the session summary that pointed here for the
-specific open questions.
+**Still blocked on the founder, unavoidably:**
+
+1. `brand.json`'s `author` and `support_email` are still the literal string
+   `REPLACE_ME` -- every store requires a real support contact.
+2. Real icon/brand design -- what's in `desktop/src-tauri/icons/` right now
+   is a placeholder geometric mark generated this session, not considered
+   identity work.
+3. Code-signing certificates (Apple Developer Program + a Windows
+   code-signing cert) for the GitHub Actions workflow's secrets. Without
+   them the app still builds and runs, it just launches with an OS-level
+   "unidentified developer" warning -- fine for testing, a hard blocker for
+   real store distribution.
+4. **The in-app-purchase question**, unresolved and unresolvable from here:
+   the founder kept Operator OS's permanent per-business license rather
+   than a subscription. Apple's App Store Review Guideline 3.1.1 generally
+   requires In-App Purchase for unlocking paid functionality, with narrow
+   exceptions (reader apps, certain B2B/enterprise models). Whether
+   Operator OS's shape qualifies is a real legal/business-development
+   question -- get an actual answer (Apple's own developer relations, or
+   counsel) before submitting, since it decides whether this app can be
+   sold through the store at all under the current model, independent of
+   how well it's built.
+5. Operator OS's own `LICENSE` file states on its first page that it's a
+   draft that "has not been reviewed by a lawyer." Fine for direct sales
+   off the founder's own site; not fine once real money moves through a
+   formal Apple/Google/Microsoft commerce agreement under the founder's
+   name. Get it reviewed before submitting anywhere, not after.
+6. Actual Apple Developer Program / Google Play Console / Microsoft
+   Partner Center accounts -- payment info and, for Apple, real identity/
+   business verification. Nothing here can be created by an agent session.
+
+Google Play and the Microsoft Store are the two realistic near-term
+targets once 1-6 above are resolved (Android is closer to viable than iOS
+in principle, though Operator OS's filesystem model still needs real
+adaptation work -- see "Mobile" below; Windows via the Microsoft Store is
+close to just "sign the existing build"). The Mac App Store carries the
+extra sandboxing and 3.1.1 questions above on top of the same signing
+requirement.
+
+## Mobile (iOS/Android)
+
+Not attempted for iOS, and not recommended as this product is currently
+designed. Operator OS's whole model -- pick any folder on disk, read/write
+plain CSV files there, shell out to a Python interpreter -- doesn't fit
+iOS's sandboxing at all, and Apple prohibits bundling/invoking an
+interpreter like this outright. Android is less categorically blocked
+(more filesystem flexibility, no prohibition on bundling an interpreter)
+but still needs real design work most CLI-to-mobile ports skip: a bundled
+Python runtime (Chaquopy or similar), a real document-picker-based storage
+model instead of a fixed folder path, and a touch-first redesign of a UI
+built around dense report text. That's a genuinely separate project from
+what shipped this session, not a smaller version of it.
