@@ -1,5 +1,12 @@
 # Merit AC&trade;
 
+[![CI](https://github.com/drewc611/Meter/actions/workflows/ci.yml/badge.svg)](https://github.com/drewc611/Meter/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/drewc611/Meter/actions/workflows/codeql.yml/badge.svg)](https://github.com/drewc611/Meter/actions/workflows/codeql.yml)
+[![ESLint](https://github.com/drewc611/Meter/actions/workflows/eslint.yml/badge.svg)](https://github.com/drewc611/Meter/actions/workflows/eslint.yml)
+[![Secret scanning](https://github.com/drewc611/Meter/actions/workflows/gitleaks.yml/badge.svg)](https://github.com/drewc611/Meter/actions/workflows/gitleaks.yml)
+[![Docker build](https://github.com/drewc611/Meter/actions/workflows/docker-build.yml/badge.svg)](https://github.com/drewc611/Meter/actions/workflows/docker-build.yml)
+[![License](https://img.shields.io/badge/license-custom-blue)](LICENSE)
+
 A hub for AI — sourced news, a directory of models and tools, a glossary,
 and a governed-agentic-DevSecOps content arm — anchored by a flagship
 spend/value tracker built around the question spend-attribution tools

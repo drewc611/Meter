@@ -1,0 +1,32 @@
+name: Operator OS tests
+
+# Everything operator-os/README.md's "The proofs" section claims, actually
+# checked on every change -- previously only ever run by hand. Zero-dependency
+# by design (see operator-os/README.md), so this needs nothing but Python.
+on:
+  push:
+    branches: [main, Develop]
+    paths:
+      - "operator-os/**"
+      - "!operator-os/packaging/**"
+  pull_request:
+    paths:
+      - "operator-os/**"
+      - "!operator-os/packaging/**"
+
+permissions:
+  contents: read
+
+jobs:
+  proofs:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: operator-os
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.11"
+      - name: Every proof this repo makes (tests/run_all.sh)
+        run: bash tests/run_all.sh
