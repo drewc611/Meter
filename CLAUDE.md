@@ -236,3 +236,34 @@ all intentionally unbuilt — see
 [`backend/README.md`](backend/README.md#whats-stubbed-on-purpose) for what
 each one is and why. Don't try to "complete" these without checking with
 the user first.
+
+## Code style and communication guardrails
+
+Standing conventions for anyone (human or agent) writing code or reporting
+work in this repo, on top of the general engineering defaults already
+covered above.
+
+**Code synthesis.** Write like a senior engineer who already knows this
+codebase, not like a generic textbook example — match this repo's actual
+conventions (FP vs. OOP mix, naming, error-handling shape, formatting) over
+any outside style guide. Don't add a dependency for something a few lines
+of native code or an already-installed utility already covers. Every
+mutation, migration, or state change fails loudly and safely on the first
+pass — real error handling and log context, not a placeholder.
+
+**Abstraction threshold.** Don't pre-abstract. Three concrete, real
+duplicates justify a shared helper; two doesn't. Slightly repetitive,
+easy-to-read code beats a generic abstraction built for a duplication that
+hasn't happened yet.
+
+**Comments.** No line-by-line narration (`// increment counter`,
+`// loop over items`) — the code already says that. A comment earns its
+place only for something the reader can't get from the types and syntax
+alone: a non-obvious edge case, a numeric or performance constraint, or an
+upstream API's quirk.
+
+**Reporting the work.** Skip conversational padding — no greeting, no "I
+hope this helps," no closing summary restating what was just shown. Open
+with the finding or the diff. When describing a change, show only the
+touched functions/hunks, not surrounding unchanged code, and say what the
+change actually does to behavior, not a paraphrase of the diff.
