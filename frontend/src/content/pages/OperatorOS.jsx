@@ -111,6 +111,7 @@ export default function OperatorOS() {
 ./os use 01-field-service        # load a real business
 ./os brief                       # see it running
 ./os sim                         # the same question, with the odds
+./os books post                  # derive the journal from your registries
 ./os books check                 # three proofs that the numbers tie`}</Code>
       <p>
         Then make it yours: <code>./os use 01-field-service --empty</code>, <code>./os setup</code>,{" "}
