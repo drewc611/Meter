@@ -1,6 +1,5 @@
 # Operator OS
 
-[![Operator OS tests](https://github.com/drewc611/Meter/actions/workflows/operator-os-tests.yml/badge.svg)](https://github.com/drewc611/Meter/actions/workflows/operator-os-tests.yml)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](#five-minutes-to-something-real)
 [![Zero dependencies](https://img.shields.io/badge/dependencies-zero-brightgreen)](#why-files)
 [![License](https://img.shields.io/badge/license-custom-blue)](LICENSE)
