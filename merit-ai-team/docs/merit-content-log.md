@@ -23,6 +23,37 @@ for the content goal's progress count — never estimate it from memory.
 
 **Goal:** content goal is still PROPOSED (see `merit-content-goal.md`) — this run shipped site skeleton and real setup docs, not progress against a metric that doesn't exist yet.
 
+### 2026-09-08
+
+**Published this run:** none authored this run — this entry catches up the
+log for what shipped 2026-09-05 through 2026-09-07 without a matching
+entry:
+- Guides: `ai-evaluation-methods`, `rag-failure-modes`,
+  `context-engineering` (PR #95).
+- `/cloud-architecture` (new section, 10 entries): `choosing-a-cloud-provider`,
+  `cloud-cost-optimization`, `cloud-networking-fundamentals`,
+  `cloud-providers-compared`, `cloud-security-architecture-zero-trust`,
+  `disaster-recovery-and-multi-region-architecture`,
+  `event-driven-architecture`, `microservices-vs-monolith`,
+  `multi-cloud-and-hybrid-cloud-architecture`,
+  `serverless-architecture-patterns` (PR #96).
+- `/claude-architecture` (new section, 6 entries):
+  `building-agents-with-claude-the-agentic-loop`, `claude-and-mcp`,
+  `claude-computer-use-architecture`,
+  `claude-tool-use-and-function-calling`, `extended-thinking-architecture`,
+  `prompt-caching-architecture` (PR #96).
+- News: 25 more articles since the 09-04 count of 23 (49 total live now).
+
+**Drafted, awaiting deploy:** none.
+
+**Stack coverage so far:** unchanged from prompts (react/python/node/
+tensorflow-pyro all covered) — this run's additions were guides/news, not
+stack-tagged prompts.
+
+**Goal:** 30-day challenge run with paid conversions · 43 days left ·
+volume healthy, real measure still zero (Payment Link not created — see
+`merit-growth-log.md` and `merit-exec-brief.md`).
+
 ### 2026-09-04
 
 **Shipped this run:** 130 new composed prompts added to `/architecture`'s

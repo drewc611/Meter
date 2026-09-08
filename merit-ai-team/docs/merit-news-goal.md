@@ -101,3 +101,15 @@ track regardless of publish volume.
 - No change to the measure or deadline set on 2026-09-04 — published
   volume was never the thing being scored, and a faster check-in cadence
   doesn't change that.
+
+### 2026-09-08 — weekly score: on track
+- **On track**, and the 2026-09-04 rubber-stamp concern is resolved by the
+  actual log, not just assumed clean: `merit-news-judge-log.md` now shows
+  **6 rejected out of 54 total verdicts** since the goal was confirmed (49
+  articles live, up from 23 on 2026-09-04) — the Judge-tier pass is
+  demonstrably saying no, not just passing everything through. Zero
+  post-hoc `corrections` entries on any published article, same as
+  2026-09-04 — still can't distinguish "nothing's been wrong yet" from "the
+  append-a-correction path has never been tested," per
+  `merit-eng-log.md`'s 2026-09-08 finding; that's a standing watch item,
+  not a goal-status problem. 56 days left to 2026-11-03.

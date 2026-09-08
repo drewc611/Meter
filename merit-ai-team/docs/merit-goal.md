@@ -29,3 +29,14 @@ act on it.
   tenants, demo data only. The founder confirmed the goal as written the same
   day. No measured progress yet — that's the honest number, not a gap in
   reporting.
+
+### 2026-09-08 — weekly score: off
+- **Off.** 114 days left, measure still 0 real tenants — unchanged since
+  confirmation. Sixteen PRs landed since 2026-09-04 (content volume,
+  Operator OS, a full site redesign and revert, security fixes) and not one
+  of them touched real ingestion, a real tenant, or anything on the path to
+  a design partner. Not a criticism of what shipped — the security fixes in
+  particular were real and needed — but this is the second consecutive
+  check where the headline goal had zero attention while other arms moved.
+  Recommend: this goal needs its own explicit weekly action, not "whatever
+  falls out of other work," or it will still read 0/10 in December.

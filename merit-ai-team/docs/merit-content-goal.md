@@ -30,7 +30,7 @@ average the two into a single status.
 | Stripe Payment Link actually created | the founder | **open** — `frontend/src/content/data/paidTrack.js`'s `PAID_TRACK_PAYMENT_LINK` is still a placeholder; until it's set, `/challenge#paid-track` shows a "coming soon" badge plus a real email-capture form (`source=challenge-paid-track` in `waitlist_signups`, viewable via `GET /admin/waitlist?source=challenge-paid-track`) so interest isn't lost while Stripe isn't wired up |
 | Funnel direction decided (content → `/setup/*` vs. separate audience) | the founder | open |
 | `/community` page | merit-growth | done — interest-capture only (`source=community-interest`); platform and price both open, same as the paid track |
-| Site interactivity — propose and ship 2-3 concrete features | merit-growth | **open** — new ask from the founder, 2026-09-05; see `merit-growth`'s SKILL.md "Site interactivity" section for the constraints any proposal has to fit |
+| Site interactivity — propose and ship 2-3 concrete features | merit-growth | **partially open** — 3 concrete, scoped proposals drafted and ranked 2026-09-08 (see `merit-growth-log.md`), none built yet; top pick (challenge day-tracker checklist) needs the founder's go-ahead before it touches `Challenge.jsx` |
 
 ## Progress log
 
@@ -160,6 +160,17 @@ average the two into a single status.
 - The directory and glossary are one-time-authored-then-periodically-
   revisited content, not continuously autonomous-published like `/news` —
   no new goal file for this; it's scored as part of this content goal.
+
+### 2026-09-08 — weekly score: off
+- **Off**, same reason as every prior check: the real measure (signups ×
+  paid-conversion) is 0 because `PAID_TRACK_PAYMENT_LINK` in
+  `frontend/src/content/data/paidTrack.js` is still empty — confirmed again
+  this run. 43 days left on the 60-day clock. Content volume is not the
+  problem: 22 more guide articles and 25 more news articles shipped since
+  the last check, on top of what was already live. No amount of further
+  content moves this goal's actual measure until the two-minute Stripe step
+  happens — this is now the fourth time this exact blocker has been named
+  across `merit-exec-brief.md`'s 2026-09-04 entry and every log since.
 
 ### 2026-09-05 — site interactivity assigned to growth
 - The founder asked directly for the site to be "more interactive." No

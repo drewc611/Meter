@@ -5,6 +5,92 @@ never blended. Append each week's brief as a new dated section.
 
 ## Log
 
+### 2026-09-08 — second brief, first full team run (infra + eng + growth in one pass)
+
+**Design-partner goal.** Off. 0 real tenants, 114 days left, unchanged since
+confirmation on 2026-09-04. Sixteen PRs landed in the four days since the
+last brief — content, Operator OS, a full redesign and revert, real
+security fixes — and not one touched ingestion, a real tenant, or anything
+on the path to a design partner. Second straight check with zero targeted
+work on the actual headline goal.
+
+**Content/challenge goal.** Off. Real measure (signups × paid-conversion)
+still 0. 43 days left. Content volume isn't the issue — 22 more guide
+articles and 25 more news articles shipped since 09-04 — the entire measure
+is gated on one Stripe Payment Link the founder hasn't created, flagged
+for the fourth time now.
+
+**News goal.** On track. 49 articles live (up from 23), and the
+rubber-stamp worry from the last brief is resolved by the actual log: 6 of
+54 Judge-tier verdicts were rejections, not zero. Corrections trail exists
+and renders correctly but has never actually been used — can't yet tell if
+it works under real conditions, just that it's wired up. 56 days left.
+
+**The three things.**
+
+1. **The design-partner goal is going stale from neglect, not difficulty.**
+   Nothing this week was aimed at it specifically — it's not that partners
+   were pursued and lost, it's that no session pointed at this goal at all
+   while sixteen PRs shipped elsewhere. At this rate December arrives at
+   0/10 not because the goal was hard, but because nobody worked it.
+2. **Ingestion events have no idempotency key** — `UsageEvent`,
+   `OutcomeEvent`, and `QualitySignal` have no unique constraint tying a
+   row to a specific source event. A retried `/ingest/usage` call (a normal
+   failure mode for any billing proxy or webhook) creates a duplicate row
+   and silently double-counts spend. Harmless today because there's no real
+   tenant data yet — but it needs a decision and a migration before the
+   design-partner goal above ever produces its first real customer, not
+   after their numbers already look wrong once.
+3. **The sitemap was actively wrong for two and a half weeks**, listing 9
+   of the site's 130+ real routes while `/news`, `/models`, `/glossary`,
+   `/operator-os`, and ~120 individual content pages shipped without ever
+   reaching a crawler through it. Fixed this session — it's now generated
+   from the same page list the build already prerenders from, so it can't
+   drift out of sync again — but it's worth naming that growth's own
+   standing #1 priority ("the site is invisible to crawlers") was quietly
+   failing for weeks by the team's own count, not a hypothetical risk.
+
+**Decisions owed.**
+
+- **Create the Stripe Payment Link.** Still two minutes, still open, still
+  the only thing blocking the content goal's real measure. Recommend: this
+  week, before shipping any more content that can't move the number either.
+- **Pick the ingestion idempotency key's shape.** A required client-supplied
+  `event_id` per ingest call, or a derived natural key
+  (`identity_id`+`source_system`+`occurred_at`+`tool`). Recommend the
+  client-supplied `event_id` — it's the only version that survives a retry
+  with slightly different field values (a rounded cost, a re-serialized
+  timestamp) still being recognized as the same event.
+- **Confirm `MERIT_JWT_SECRET` is actually strong on Fly.** PR #100 made the
+  app refuse to boot on a weak secret in production — the site is up right
+  now, which is consistent with the secret already being fine, but that's
+  inferred from uptime, not confirmed. Recommend: one `fly secrets list -a
+  meter` check, cheap insurance against the next deploy being the one that
+  finds out the hard way.
+- **Greenlight (or reject) the challenge day-tracker checklist.** One of
+  three site-interactivity proposals drafted this run (full list in
+  `merit-growth-log.md`) — a per-day checkbox on the challenge pages,
+  localStorage only, no server change. Recommend: build this one, skip the
+  other two for now — it's the only proposal that plausibly moves the
+  content goal's actual measure (a visitor who can see progress has a
+  reason to finish, and finishing is the precondition for ever reaching the
+  paid-track CTA).
+- **Assign the design-partner goal explicit weekly work.** Recommend one
+  concrete lever picked and worked every week — a named prospect list with
+  outreach sent, or a real ingestion path built and demoed to one specific
+  company — rather than treating it as whatever's left over from content
+  and infra work.
+
+**Dropped.** Nothing declined outright this session, but two things were
+done at reduced depth and should be named rather than presented as
+complete: the competitive scan was one search, not the fuller sweep a
+dedicated growth week would do, and outreach/waitlist volume couldn't be
+checked at all (`/admin/*` is off-limits to every merit-* skill by design —
+only the founder can pull that number). Also not fixed, deliberately: the
+`Float` money columns (`cost_usd`, `spend_usd`, `value_per_dollar`) flagged
+in `merit-eng-log.md` — real, but Medium, and the idempotency gap above is
+the more urgent version of the same "trust the numbers" concern.
+
 ### 2026-09-04 — first brief ever run
 
 This file has never been written to. Everything below is the first real

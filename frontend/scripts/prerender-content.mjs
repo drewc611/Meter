@@ -34,11 +34,31 @@ ${bodyHtml}
 `;
 }
 
-for (const { meta, html } of renderAll()) {
+const pages = renderAll();
+
+for (const { meta, html } of pages) {
   const outPath = join(distDir, meta.outFile);
   mkdirSync(dirname(outPath), { recursive: true });
   writeFileSync(outPath, documentFor(meta, html));
   console.log(`prerendered ${meta.outFile}`);
 }
+
+// sitemap.xml used to be a hand-maintained file in public/ -- it drifted the
+// moment a page shipped without someone remembering to also touch it (see
+// merit-ai-team's infra-check log). Generating it from the same outFile list
+// above means every prerendered page is in the sitemap by construction.
+function urlFor(outFile) {
+  if (outFile === "index.html") return "https://usemeritai.com/";
+  const path = outFile.endsWith("/index.html") ? outFile.slice(0, -"index.html".length) : outFile.replace(/\.html$/, "");
+  return `https://usemeritai.com/${path}`;
+}
+
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${pages.map(({ meta }) => `  <url><loc>${urlFor(meta.outFile)}</loc></url>`).join("\n")}
+</urlset>
+`;
+writeFileSync(join(distDir, "sitemap.xml"), sitemap);
+console.log(`generated sitemap.xml (${pages.length} urls)`);
 
 rmSync(ssrOutDir, { recursive: true, force: true });
