@@ -107,6 +107,7 @@ touches your `merit.db`. Ruff/pytest config lives in `pyproject.toml`.
 | POST | `/ingest/quality-signal` | Record a revert, rewrite, regeneration loop, etc. |
 | POST | `/admin/identity-mapping` | Wire a new external id to an existing person (scoped to the caller's org) |
 | POST | `/admin/recompute-scores` | Trigger the nightly scoring job for the caller's own org on demand |
+| GET | `/admin/shadow-ai-candidates` | Unmapped external ids seen this period (§5.5) — real, measured shadow-AI candidates, grouped from `UnmappedIdentityEvent` |
 | GET | `/admin/org` | The caller's own `Organization`, including its `ingest_token` — how a self-signed-up individual discovers the credential for `personal.py` or a proxy |
 | POST | `/admin/notify-waitlist?dry_run=false` | One-off "the site is live" email to every unnotified waitlist signup — see [Outbound email](#outbound-email) below |
 | GET | `/api/overview` | Everything the Overview page needs, one call |
@@ -280,9 +281,25 @@ github_sync.py       whole-repo GitHub PR/CI sync for a company's own deployment
 
 - **Tier 3 calibration** (`scoring.calibrate_weights`) — needs real
   `RubricGrade` volume to be worth building; not faked here.
-- **Shadow-AI detection** (§5.5 of the spec) — the recoverable-spend estimate
-  includes a placeholder line for it, clearly labeled as an estimate, but the
-  actual detection (reconciling sanctioned spend against observed AI activity)
-  isn't implemented.
 - **The scheduler** — `/admin/recompute-scores` is the job's entry point; wiring
-  it to cron/Airflow/a queue is a deployment decision, not a code one.
+  it to cron/Airflow/a queue is a deployment decision, not a code one. Already
+  solved operationally for the reference Fly deployment by
+  `.github/workflows/nightly-recompute.yml` (see `DEPLOY.md`).
+
+## Shadow-AI detection (§5.5 of the spec)
+
+Every `/ingest/*` call whose external id has no `IdentityMapping` gets recorded
+as an `UnmappedIdentityEvent` (in `services.ingest.resolve_identity`) before the
+422 is raised, instead of the calling integration having to build its own
+"unmapped" queue. `GET /admin/shadow-ai-candidates` groups those by
+`(source_system, external_id)` for one period — attempt count, known cost (only
+ever populated on the usage path; outcome/quality-signal attempts don't carry a
+dollar figure), first/last seen. Each candidate resolves the moment it's mapped
+via `POST /admin/identity-mapping`.
+
+`GET /api/overview`'s `recoverable_breakdown` uses this directly: once an org
+has at least one recorded unmapped *usage* attempt in the period, the
+"Shadow-AI consolidated" line is that measured cost, annualized — not the flat
+`SHADOW_AI_RATE` heuristic. `SHADOW_AI_RATE` (`constants.py`) is now only a
+cold-start fallback, used (and the line labeled "(est.)") only for an org with
+zero recorded unmapped activity yet.

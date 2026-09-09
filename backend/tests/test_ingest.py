@@ -2,20 +2,46 @@ from datetime import datetime
 
 import pytest
 
-from app.models import OutcomeEvent, QualitySignal, UsageEvent
+from app.models import OutcomeEvent, QualitySignal, UnmappedIdentityEvent, UsageEvent
 from app.services import ingest
 from app.services.ingest import UnresolvedIdentityError
 
 
 def test_resolve_identity_maps_external_id(db, org, person):
     p = person(name="Grace Hopper")
-    resolved = ingest.resolve_identity(db, org.id, "anthropic_api", f"key_{p.id}")
+    resolved = ingest.resolve_identity(db, org.id, "anthropic_api", f"key_{p.id}", ingest_path="usage")
     assert resolved.id == p.id
 
 
 def test_unresolved_external_id_raises(db, org):
     with pytest.raises(UnresolvedIdentityError):
-        ingest.resolve_identity(db, org.id, "anthropic_api", "key_does_not_exist")
+        ingest.resolve_identity(db, org.id, "anthropic_api", "key_does_not_exist", ingest_path="usage")
+
+
+def test_unresolved_external_id_records_shadow_ai_event(db, org):
+    with pytest.raises(UnresolvedIdentityError):
+        ingest.resolve_identity(db, org.id, "anthropic_api", "key_does_not_exist", ingest_path="usage", cost_usd=4.25)
+    row = db.query(UnmappedIdentityEvent).one()
+    assert row.org_id == org.id
+    assert row.source_system == "anthropic_api"
+    assert row.external_id == "key_does_not_exist"
+    assert row.ingest_path == "usage"
+    assert row.cost_usd == 4.25
+
+
+def test_unresolved_outcome_records_shadow_ai_event_with_no_cost(db, org):
+    with pytest.raises(UnresolvedIdentityError):
+        ingest.ingest_outcome_event(
+            db,
+            org.id,
+            source_system="github",
+            external_id="ghost",
+            source="github",
+            outcome_type="pr_merged",
+        )
+    row = db.query(UnmappedIdentityEvent).one()
+    assert row.ingest_path == "outcome"
+    assert row.cost_usd is None
 
 
 def test_ingest_usage_attributes_to_person(db, org, person):

@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from .. import models, schemas
 from ..dependencies import get_current_user, get_db, require_operator, resolve_org_id
 from ..periods import current_period
-from ..services import email, scoring
+from ..services import analytics, email, scoring
 from ..time_utils import utcnow
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -87,6 +87,28 @@ def recompute(
     org_id = resolve_org_id(db, user)
     n = scoring.recompute_all(db, org_id, start, end)
     return schemas.RecomputeResult(period_start=start, period_end=end, people_scored=n)
+
+
+@router.get("/shadow-ai-candidates", response_model=schemas.ShadowAiCandidatesOut)
+def shadow_ai_candidates(
+    start: datetime | None = None,
+    end: datetime | None = None,
+    db: Session = Depends(get_db),
+    user: models.DashboardUser | None = Depends(get_current_user),
+):
+    """§5.5 of the spec, made real: every external id that hit /ingest/*
+    during this period with no IdentityMapping yet -- someone's using a
+    tool nobody's provisioned through SCIM. Each one resolves the moment
+    it's mapped via POST /admin/identity-mapping using the same
+    source_system/external_id shown here.
+    """
+    if start is None or end is None:
+        start, end = current_period()
+    org_id = resolve_org_id(db, user)
+    candidates = analytics.get_shadow_ai_candidates(db, org_id, start, end)
+    return schemas.ShadowAiCandidatesOut(
+        period_start=start, period_end=end, candidate_count=len(candidates), candidates=candidates
+    )
 
 
 @router.get("/org", response_model=schemas.OrgOut)

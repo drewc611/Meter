@@ -70,6 +70,30 @@ def test_ingest_unmapped_id_returns_422(client, db):
     assert r.status_code == 422
 
 
+def test_ingest_unmapped_id_surfaces_as_shadow_ai_candidate(client, db):
+    _bootstrap_person(db)
+    now = datetime(*current_period()[0].timetuple()[:3], 10)  # a day inside the current period
+    r = client.post(
+        "/ingest/usage",
+        json={
+            "source_system": "anthropic_api",
+            "external_id": "totally_unknown",
+            "tool": "anthropic_api",
+            "cost_usd": 5.0,
+            "occurred_at": now.isoformat(),
+        },
+    )
+    assert r.status_code == 422
+
+    candidates = client.get("/admin/shadow-ai-candidates")
+    assert candidates.status_code == 200
+    body = candidates.json()
+    assert body["candidate_count"] == 1
+    assert body["candidates"][0]["source_system"] == "anthropic_api"
+    assert body["candidates"][0]["external_id"] == "totally_unknown"
+    assert body["candidates"][0]["known_cost_usd"] == 5.0
+
+
 def test_unknown_outcome_type_without_weight_returns_400(client, db):
     _bootstrap_person(db)
     r = client.post(

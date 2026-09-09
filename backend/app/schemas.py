@@ -180,6 +180,22 @@ class NotifyWaitlistResult(BaseModel):
     dry_run: bool
 
 
+class ShadowAiCandidateOut(BaseModel):
+    source_system: str
+    external_id: str
+    attempt_count: int
+    known_cost_usd: float
+    first_seen_at: datetime
+    last_seen_at: datetime
+
+
+class ShadowAiCandidatesOut(BaseModel):
+    period_start: datetime
+    period_end: datetime
+    candidate_count: int
+    candidates: list[ShadowAiCandidateOut]
+
+
 class HealthOut(BaseModel):
     status: str = "ok"
 

@@ -23,7 +23,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 from ..constants import OUTCOME_VALUE_WEIGHTS, QUALITY_SIGNAL_WEIGHTS
-from ..models import Identity, IdentityMapping, OutcomeEvent, QualitySignal, UsageEvent
+from ..models import Identity, IdentityMapping, OutcomeEvent, QualitySignal, UnmappedIdentityEvent, UsageEvent
 from ..time_utils import utcnow
 
 # A reverted PR is both a negative Tier-1 outcome and a Tier-2 quality signal;
@@ -32,18 +32,41 @@ _AUTO_QUALITY_FROM_OUTCOME = {"pr_reverted": "code_reverted"}
 
 
 class UnresolvedIdentityError(Exception):
-    """Raised when an external id has no IdentityMapping row yet.
-    Callers should route this to a 'shadow AI / unmapped user' queue
-    (§5.5 of the spec) rather than dropping the event."""
+    """Raised when an external id has no IdentityMapping row yet. The
+    caller gets a 422, not a silent drop -- resolve_identity() has already
+    recorded the attempt as an UnmappedIdentityEvent (§5.5 of the spec,
+    "shadow AI") before raising, so it shows up in
+    analytics.get_shadow_ai_candidates() even if the integration itself
+    does nothing further with the error."""
 
 
-def resolve_identity(db: Session, org_id: int | None, source_system: str, external_id: str) -> Identity:
+def resolve_identity(
+    db: Session,
+    org_id: int | None,
+    source_system: str,
+    external_id: str,
+    *,
+    ingest_path: str,
+    cost_usd: float | None = None,
+    occurred_at: datetime | None = None,
+) -> Identity:
     mapping = (
         db.query(IdentityMapping)
         .filter_by(org_id=org_id, source_system=source_system, external_id=external_id)
         .one_or_none()
     )
     if mapping is None:
+        db.add(
+            UnmappedIdentityEvent(
+                org_id=org_id,
+                source_system=source_system,
+                external_id=external_id,
+                ingest_path=ingest_path,
+                cost_usd=cost_usd,
+                occurred_at=occurred_at or utcnow(),
+            )
+        )
+        db.commit()
         raise UnresolvedIdentityError(
             f"No identity mapped for {source_system}:{external_id}. "
             f"Provision via SCIM sync or map manually before usage can be attributed."
@@ -64,7 +87,9 @@ def ingest_usage_event(
     tokens_out: int = 0,
     occurred_at: datetime | None = None,
 ) -> UsageEvent:
-    identity = resolve_identity(db, org_id, source_system, external_id)
+    identity = resolve_identity(
+        db, org_id, source_system, external_id, ingest_path="usage", cost_usd=cost_usd, occurred_at=occurred_at
+    )
     event = UsageEvent(
         identity_id=identity.id,
         tool=tool,
@@ -92,7 +117,7 @@ def ingest_outcome_event(
     external_ref: str | None = None,
     value_weight: float | None = None,
 ) -> OutcomeEvent:
-    identity = resolve_identity(db, org_id, source_system, external_id)
+    identity = resolve_identity(db, org_id, source_system, external_id, ingest_path="outcome", occurred_at=occurred_at)
     weight = value_weight if value_weight is not None else OUTCOME_VALUE_WEIGHTS.get(outcome_type, 0.0)
     event = OutcomeEvent(
         identity_id=identity.id,
@@ -135,7 +160,9 @@ def ingest_quality_signal(
     external_ref: str | None = None,
     severity: float | None = None,
 ) -> QualitySignal:
-    identity = resolve_identity(db, org_id, source_system, external_id)
+    identity = resolve_identity(
+        db, org_id, source_system, external_id, ingest_path="quality_signal", occurred_at=occurred_at
+    )
     sev = severity if severity is not None else QUALITY_SIGNAL_WEIGHTS.get(signal_type, 0.5)
     signal = QualitySignal(
         identity_id=identity.id,

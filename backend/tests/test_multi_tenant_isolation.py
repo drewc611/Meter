@@ -65,6 +65,34 @@ def test_ingested_usage_stays_within_its_own_org(client, monkeypatch):
     assert people_b == []  # org B sees none of org A's data
 
 
+def test_shadow_ai_candidates_stay_within_their_own_org(client, monkeypatch):
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    a = _signup(client, "a@example.com", "Ada")
+    b = _signup(client, "b@example.com", "Bea")
+    token_a, token_b = a["access_token"], b["access_token"]
+    ingest_token_a = _ingest_token(client, token_a)
+
+    now = datetime(*current_period()[0].timetuple()[:3], 10)
+    r = client.post(
+        "/ingest/usage",
+        json={
+            "source_system": "anthropic_api",
+            "external_id": "unmapped_key",
+            "tool": "anthropic_api",
+            "cost_usd": 17.0,
+            "occurred_at": now.isoformat(),
+        },
+        headers=_headers(ingest_token_a),
+    )
+    assert r.status_code == 422  # unmapped -- still recorded as a shadow-AI candidate for org A only
+
+    candidates_a = client.get("/admin/shadow-ai-candidates", headers=_headers(token_a)).json()["candidates"]
+    candidates_b = client.get("/admin/shadow-ai-candidates", headers=_headers(token_b)).json()["candidates"]
+    assert len(candidates_a) == 1
+    assert candidates_a[0]["external_id"] == "unmapped_key"
+    assert candidates_b == []  # org B sees none of org A's unmapped activity
+
+
 def test_ingest_token_only_authenticates_its_own_org(client, monkeypatch):
     """Org A's token can't be used to write into org B, and vice versa --
     a token resolves to exactly one org, never "whichever org matches the
