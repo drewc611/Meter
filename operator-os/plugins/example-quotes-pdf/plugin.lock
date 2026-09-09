@@ -1,0 +1,5 @@
+# example-quotes-pdf 1.0.0 file checksums. Rerun `os plugin lock example-quotes-pdf` after any edit.
+48c8b32ff5dc4bf1b291aa0b07dba045b4517728afbfae641fb5a20f7eb8febd  README.md
+3aca4a2b75507f7fdefe2b051c17955c112eb7bde352616a8f2e60ef6b34d65f  plugin.json
+0136e0acb5c96fe48cdccae1329284a7c40b965737b3a3953ff4d4d0da19d63e  plugin.py
+b58ace6a4bb99a59c6dd7468925fbea1057c633a39b2b5eb03d1d13c85f4ef81  tools/quote-sheet/SKILL.md

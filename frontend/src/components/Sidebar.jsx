@@ -76,7 +76,7 @@ export function SourceBadge({ style }) {
   return (
     <div className={`sb-badge ${live ? "live" : "demo"}`} style={style}>
       <i />
-      {live ? "LIVE · Merit API" : "DEMO DATA · API offline"}
+      {live ? "LIVE · Merit AC API" : "DEMO DATA · API offline"}
     </div>
   );
 }
@@ -143,7 +143,7 @@ export default function Sidebar({ view, onSelect }) {
           <SourceBadge />
           <ThemeToggle />
         </div>
-        Merit
+        Merit AC
         <br />
         illustrative prototype
         {hasSession && (

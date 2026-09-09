@@ -6,8 +6,8 @@ Employees don't call the Anthropic/OpenAI API directly with a shared org key —
 they call a thin internal proxy. The proxy issues each employee (or each
 service account) their own logical key, forwards the request to the real
 provider, reads the token usage back off the response, prices it, and fires
-a UsageEvent at Merit — all before the response reaches the caller. This is
-the same pattern LiteLLM's proxy uses; the only Merit-specific part is the
+a UsageEvent at Merit AC — all before the response reaches the caller. This is
+the same pattern LiteLLM's proxy uses; the only Merit AC-specific part is the
 POST at the bottom.
 
 Point your team's ANTHROPIC_BASE_URL (or OPENAI_BASE_URL) at this proxy
@@ -33,7 +33,7 @@ PRICING = {
     "claude-sonnet-5": (3.00, 15.00),
 }
 
-# Maps the proxy key each employee was issued to the external_id Merit expects.
+# Maps the proxy key each employee was issued to the external_id Merit AC expects.
 # In production this is a DB lookup (or comes straight from IdentityMapping via
 # a shared table/service) — hardcoded here for illustration only.
 PROXY_KEY_TO_EXTERNAL_ID = {
@@ -41,7 +41,7 @@ PROXY_KEY_TO_EXTERNAL_ID = {
     "proxy-key-marcus-def456": "key_2",
 }
 
-app = FastAPI(title="Merit usage-attributing LLM proxy (reference)")
+app = FastAPI(title="Merit AC usage-attributing LLM proxy (reference)")
 
 
 @app.post("/v1/messages")
@@ -69,7 +69,7 @@ async def proxy_anthropic_messages(request: Request, x_merit_proxy_key: str = He
     cost_usd = (tokens_in / 1_000_000) * price_in + (tokens_out / 1_000_000) * price_out
 
     # Fire-and-forget in production (a background task / queue) so a slow
-    # Merit ingest call never adds latency to the employee's actual request.
+    # Merit AC ingest call never adds latency to the employee's actual request.
     async with httpx.AsyncClient() as client:
         await client.post(
             MERIT_INGEST_URL,

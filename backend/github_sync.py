@@ -1,5 +1,5 @@
 """
-Pulls merged PRs (and CI status) from a GitHub repo straight into Merit --
+Pulls merged PRs (and CI status) from a GitHub repo straight into Merit AC --
 for a team without webhook infrastructure set up yet, this is a lower-
 friction way to get real Tier 1/2 signal than standing up a GitHub App.
 Safe to run repeatedly (see app.services.github_ingest.sync_repo for the

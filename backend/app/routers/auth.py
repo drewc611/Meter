@@ -7,6 +7,7 @@ needs an authenticated user to answer "who am I."
 """
 
 import os
+import secrets
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
@@ -38,7 +39,11 @@ def _frontend_url() -> str:
 
 def _check_signup_code(provided: str | None) -> None:
     expected = os.environ.get("MERIT_SIGNUP_CODE")
-    if expected and provided != expected:
+    # compare_digest, not != -- a plain string compare short-circuits on the
+    # first differing byte, which leaks the code one character at a time to
+    # anyone timing the responses. Compared as bytes since compare_digest
+    # rejects non-ASCII str.
+    if expected and not (provided and secrets.compare_digest(provided.encode("utf-8"), expected.encode("utf-8"))):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid or missing signup code")
 
 
@@ -78,7 +83,7 @@ def _provision_org_for_signup(db: Session, name: str, email: str) -> tuple[model
             db.add(org)
             db.flush()
         return org, False
-    org = models.Organization(name=f"{name}'s Merit", plan="personal")
+    org = models.Organization(name=f"{name}'s Merit AC", plan="personal")
     db.add(org)
     db.flush()
     return org, True
@@ -140,15 +145,16 @@ def signup(body: schemas.SignupIn, db: Session = Depends(get_db)):
 @router.post("/login", response_model=schemas.TokenOut)
 def login(body: schemas.LoginIn, db: Session = Depends(get_db)):
     user = db.query(models.DashboardUser).filter_by(email=body.email).one_or_none()
-    if user is None or not user.password_hash:
+    # Always run a real bcrypt check, even when there's no user or no
+    # password_hash to check against -- against the account's own hash if it
+    # has one, against DUMMY_PASSWORD_HASH otherwise. Both branches then cost
+    # the same ~100ms of bcrypt work, so a timing side-channel doesn't tell a
+    # guesser which emails have accounts (see DUMMY_PASSWORD_HASH's comment).
+    real_hash = user.password_hash if user and user.password_hash else None
+    password_ok = auth_service.verify_password(body.password, real_hash or auth_service.DUMMY_PASSWORD_HASH)
+    if user is None or not real_hash or not password_ok:
         # Same message either way -- confirming "that email exists" to a
-        # guesser is its own small leak. The message alone isn't enough,
-        # though: returning here without hashing anything answered in ~4ms
-        # where a real account took ~300ms, which told a guesser the same
-        # thing the wording withholds. Burn the comparable time first.
-        auth_service.dummy_verify(body.password)
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
-    if not auth_service.verify_password(body.password, user.password_hash):
+        # guesser is its own small leak.
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
     try:
         token = auth_service.issue_token(user)
@@ -200,8 +206,8 @@ def google_callback(code: str, state: str = "-", db: Session = Depends(get_db)):
         token = auth_service.issue_token(user)
     except (auth_service.AuthError, HTTPException) as e:
         detail = e.detail if isinstance(e, HTTPException) else str(e)
-        return RedirectResponse(f"{_frontend_url()}/?auth_error={detail}")
-    return RedirectResponse(f"{_frontend_url()}/?token={token}")
+        return RedirectResponse(f"{_frontend_url()}/app?auth_error={detail}")
+    return RedirectResponse(f"{_frontend_url()}/app?token={token}")
 
 
 @router.get("/me", response_model=schemas.UserOut)

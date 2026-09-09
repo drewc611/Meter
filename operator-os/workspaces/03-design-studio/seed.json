@@ -1,0 +1,119 @@
+{
+  "config": {
+    "business_name": "Blackpine Studio",
+    "operator": "Ivo Restrepo",
+    "trade": "brand identity and website design",
+    "currency": "USD",
+    "currency_symbol": "$",
+    "hourly_rate": "85.00",
+    "target_margin_pct": "45",
+    "tax_rate_pct": "0",
+    "tax_set_aside_pct": "30",
+    "invoice_terms_days": "14",
+    "capacity_hours_per_week": "28",
+    "opening_cash": "9200.00",
+    "week_starts": "monday",
+    "quiet_hours": "18:00-09:00"
+  },
+  "contacts": [
+    {"id":"c0001","name":"Marguerite Okoye","company":"Okoye Ferments","role":"founder","email":"marg@example.com","phone":"555-0128","source":"referral","status":"active","tags":"brand,ecommerce","first_contact":"T-104","last_contact":"T-3","notes":"Warm, decisive in the room, changes her mind by email two days later."},
+    {"id":"c0002","name":"Ana Kowal","company":"Kowal Dev","role":"contract developer","email":"ana@example.com","phone":"555-0146","source":"trade","status":"active","tags":"subcontractor","first_contact":"T-620","last_contact":"T-6","notes":"Builds the front end. Quotes fixed price, hits it, needs three weeks notice."},
+    {"id":"c0003","name":"Theo Marsh","company":"","role":"illustrator","email":"theo@example.com","phone":"555-0173","source":"trade","status":"active","tags":"subcontractor","first_contact":"T-410","last_contact":"T-18","notes":"Fast and cheap. Redraws without complaining, which is how the redraws stop getting billed."},
+    {"id":"c0004","name":"Denise Whitaker","company":"Harbourline Physio","role":"clinic owner","email":"denise@example.com","phone":"555-0102","source":"referral","status":"active","tags":"web","first_contact":"T-96","last_contact":"T-5","notes":"Pays fast. Slow to send copy. Two practitioner bios still missing."},
+    {"id":"c0005","name":"Paul Grigg","company":"Grigg and Sons Roofing","role":"owner","email":"paul@example.com","phone":"555-0167","source":"google","status":"lead","tags":"","first_contact":"T-13","last_contact":"T-9","notes":"Wants the site to look like the competitor's. Has not read the quote yet."},
+    {"id":"c0006","name":"Simone Adeyemi","company":"Northfield Legal","role":"partner","email":"simone@example.com","phone":"555-0184","source":"referral","status":"active","tags":"","first_contact":"T-190","last_contact":"T-44","notes":"Approved the stationery, then stopped answering. Owes 1450."},
+    {"id":"c0007","name":"Bex Turnbull","company":"Turnbull Coffee Roasters","role":"owner","email":"bex@example.com","phone":"555-0159","source":"instagram","status":"active","tags":"packaging,care-plan","first_contact":"T-150","last_contact":"T-5","notes":"Only client on a monthly care plan. Wants four label SKUs next."},
+    {"id":"c0008","name":"Colin Vance","company":"Riverbend Trust","role":"program director","email":"colin@example.com","phone":"555-0131","source":"referral","status":"active","tags":"nonprofit","first_contact":"T-115","last_contact":"T-7","notes":"Board decides, so everything takes three weeks longer than he says it will."},
+    {"id":"c0009","name":"Hana Lindqvist","company":"Lindqvist Bookkeeping","role":"owner","email":"hana@example.com","phone":"555-0115","source":"past-client","status":"active","tags":"","first_contact":"T-330","last_contact":"T-40","notes":"Copy refresh stalled. She writes the pages herself and never does."},
+    {"id":"c0010","name":"Marcus Deyoung","company":"Deyoung Cycles","role":"owner","email":"marcus@example.com","phone":"555-0198","source":"referral","status":"dormant","tags":"","first_contact":"T-400","last_contact":"T-40","notes":"Built the shop site two years ago. Talks about a refresh every spring."}
+  ],
+  "deals": [
+    {"id":"d0001","contact_id":"c0005","title":"Roofing site rebuild, 12 pages","value":"7800.00","stage":"quoted","confidence":"55","opened":"T-13","expected_close":"T+10","next_action":"Call Paul, the quote dies in five days","next_action_due":"T-2","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0002","contact_id":"c0008","title":"Brand refresh and report template","value":"9600.00","stage":"negotiating","confidence":"65","opened":"T-24","expected_close":"T+21","next_action":"Send the two option version, 9600 and 6400","next_action_due":"T+3","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0003","contact_id":"c0007","title":"Label design, four SKUs","value":"3200.00","stage":"new","confidence":"40","opened":"T-5","expected_close":"T+30","next_action":"","next_action_due":"","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0004","contact_id":"c0010","title":"Shop site refresh","value":"4200.00","stage":"qualified","confidence":"30","opened":"T-40","expected_close":"T+55","next_action":"Ask whether the refresh budget survived the year","next_action_due":"T+6","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0005","contact_id":"c0001","title":"Identity and store build","value":"12500.00","stage":"won","confidence":"100","opened":"T-104","expected_close":"T-80","next_action":"","next_action_due":"","status":"won","closed_on":"T-88","lost_reason":""},
+    {"id":"d0006","contact_id":"c0006","title":"Full site rebuild, 40 pages","value":"14000.00","stage":"lost","confidence":"0","opened":"T-190","expected_close":"T-150","next_action":"","next_action_due":"","status":"lost","closed_on":"T-148","lost_reason":"Agency could start in a week and Blackpine could not"}
+  ],
+  "quotes": [
+    {"id":"q0001","deal_id":"d0001","contact_id":"c0005","number":"Q-3104","issued":"T-9","expires":"T+5","subtotal":"7800.00","tax":"0.00","total":"7800.00","status":"sent","decided_on":"","notes":"Two rounds of revisions written in. First quote to say so."},
+    {"id":"q0002","deal_id":"d0002","contact_id":"c0008","number":"Q-3107","issued":"T-20","expires":"T+10","subtotal":"9600.00","tax":"0.00","total":"9600.00","status":"sent","decided_on":"","notes":"Board meets on the 14th. Nothing happens before that."},
+    {"id":"q0003","deal_id":"d0005","contact_id":"c0001","number":"Q-3071","issued":"T-96","expires":"T-66","subtotal":"12500.00","tax":"0.00","total":"12500.00","status":"accepted","decided_on":"T-88","notes":"52 hours of studio time assumed. Nobody wrote that down anywhere binding."},
+    {"id":"q0004","deal_id":"d0006","contact_id":"c0006","number":"Q-3038","issued":"T-176","expires":"T-146","subtotal":"14000.00","tax":"0.00","total":"14000.00","status":"declined","decided_on":"T-148","notes":"Lost on start date, not price."}
+  ],
+  "projects": [
+    {"id":"p0001","contact_id":"c0001","deal_id":"d0005","name":"Okoye identity and store","status":"active","start":"T-86","due":"T+6","budget":"12500.00","hours_estimate":"52","health":"red","next_milestone":"Round five label files, then launch","closed_on":""},
+    {"id":"p0002","contact_id":"c0004","deal_id":"","name":"Harbourline booking site","status":"active","start":"T-24","due":"T+12","budget":"5400.00","hours_estimate":"38","health":"amber","next_milestone":"Front end handoff to Ana","closed_on":""},
+    {"id":"p0003","contact_id":"c0006","deal_id":"","name":"Northfield landing page","status":"done","start":"T-124","due":"T-104","budget":"2800.00","hours_estimate":"18","health":"green","next_milestone":"","closed_on":"T-103"},
+    {"id":"p0004","contact_id":"c0007","deal_id":"","name":"Turnbull menu boards","status":"done","start":"T-42","due":"T-34","budget":"1600.00","hours_estimate":"12","health":"green","next_milestone":"","closed_on":"T-33"},
+    {"id":"p0005","contact_id":"c0008","deal_id":"","name":"Riverbend report layout","status":"planned","start":"T+18","due":"T+46","budget":"3400.00","hours_estimate":"26","health":"","next_milestone":"Confirm the photo library actually exists","closed_on":""},
+    {"id":"p0006","contact_id":"c0009","deal_id":"","name":"Lindqvist copy refresh","status":"blocked","start":"T-56","due":"T+25","budget":"1400.00","hours_estimate":"10","health":"red","next_milestone":"Hana owes copy for three pages","closed_on":""}
+  ],
+  "tasks": [
+    {"id":"t0001","project_id":"p0001","title":"Send Okoye the round five label files","due":"T-3","priority":"now","status":"todo","estimate_min":"120","done_on":"","blocked_by":"","notes":"She is waiting. Launch is Friday."},
+    {"id":"t0002","project_id":"p0001","title":"Write the change order for rounds three to five","due":"T-6","priority":"high","status":"todo","estimate_min":"45","done_on":"","blocked_by":"","notes":"48 hours of free work. Six days on this list."},
+    {"id":"t0003","project_id":"p0001","title":"Rebuild the label system in the corrected green","due":"T+2","priority":"high","status":"todo","estimate_min":"1440","done_on":"","blocked_by":"","notes":"Round five. Not in the original scope."},
+    {"id":"t0004","project_id":"p0001","title":"Load the last 40 products into the store","due":"T+5","priority":"normal","status":"todo","estimate_min":"600","done_on":"","blocked_by":"","notes":"The client agreed to do this in the kickoff."},
+    {"id":"t0005","project_id":"p0001","title":"Approve Theo's final label artwork","due":"T-8","priority":"high","status":"done","estimate_min":"45","done_on":"T-7","blocked_by":"","notes":""},
+    {"id":"t0006","project_id":"p0002","title":"Booking flow wireframes","due":"T","priority":"high","status":"todo","estimate_min":"900","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0007","project_id":"p0002","title":"Front end handoff pack for Ana","due":"T+4","priority":"high","status":"todo","estimate_min":"300","done_on":"","blocked_by":"","notes":"She needs three weeks notice and has had none."},
+    {"id":"t0008","project_id":"p0002","title":"Chase Harbourline for the practitioner bios","due":"T+2","priority":"normal","status":"blocked","estimate_min":"45","done_on":"","blocked_by":"client copy","notes":"Two of five bios missing."},
+    {"id":"t0009","project_id":"p0002","title":"Build the responsive templates","due":"T+11","priority":"normal","status":"todo","estimate_min":"960","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0010","project_id":"","title":"Follow up on the Grigg quote","due":"T-2","priority":"now","status":"todo","estimate_min":"15","done_on":"","blocked_by":"","notes":"7800. Expires in five days."},
+    {"id":"t0011","project_id":"","title":"Send Riverbend the two option version","due":"T+3","priority":"high","status":"todo","estimate_min":"150","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0012","project_id":"","title":"Chase INV-3082, Northfield, 38 days out","due":"T-9","priority":"high","status":"todo","estimate_min":"10","done_on":"","blocked_by":"","notes":"Simone approved the work and went quiet."},
+    {"id":"t0013","project_id":"","title":"Rewrite the revision clause in the contract","due":"T+12","priority":"high","status":"todo","estimate_min":"180","done_on":"","blocked_by":"","notes":"Two rounds included. Round three onward billed hourly."},
+    {"id":"t0014","project_id":"","title":"Put three case studies on the studio site","due":"T+20","priority":"low","status":"todo","estimate_min":"480","done_on":"","blocked_by":"","notes":"Last inbound lead from the site was nine weeks ago."}
+  ],
+  "time": [
+    {"id":"h0001","date":"T-84","project_id":"p0001","task_id":"","minutes":"600","billable":"yes","rate":"85.00","notes":"Discovery and naming audit"},
+    {"id":"h0002","date":"T-78","project_id":"p0001","task_id":"","minutes":"540","billable":"yes","rate":"85.00","notes":"Two identity routes, first presentation"},
+    {"id":"h0003","date":"T-64","project_id":"p0001","task_id":"","minutes":"480","billable":"yes","rate":"85.00","notes":"Round two, route B refined"},
+    {"id":"h0004","date":"T-52","project_id":"p0001","task_id":"","minutes":"720","billable":"no","rate":"85.00","notes":"Round three, she wanted the wordmark redrawn"},
+    {"id":"h0005","date":"T-41","project_id":"p0001","task_id":"","minutes":"660","billable":"no","rate":"85.00","notes":"Round four, colour changed after the print test"},
+    {"id":"h0006","date":"T-27","project_id":"p0001","task_id":"","minutes":"600","billable":"no","rate":"85.00","notes":"Label system rebuilt in the new green"},
+    {"id":"h0007","date":"T-14","project_id":"p0001","task_id":"","minutes":"480","billable":"no","rate":"85.00","notes":"Store setup and product entry, not in scope"},
+    {"id":"h0008","date":"T-4","project_id":"p0001","task_id":"t0001","minutes":"420","billable":"no","rate":"85.00","notes":"Round five, packaging tweaks"},
+    {"id":"h0009","date":"T-20","project_id":"p0002","task_id":"","minutes":"480","billable":"yes","rate":"85.00","notes":"Sitemap and content model"},
+    {"id":"h0010","date":"T-9","project_id":"p0002","task_id":"","minutes":"420","billable":"yes","rate":"85.00","notes":"Homepage and booking screens"},
+    {"id":"h0011","date":"T-112","project_id":"p0003","task_id":"","minutes":"540","billable":"yes","rate":"85.00","notes":"Landing page design and build"},
+    {"id":"h0012","date":"T-38","project_id":"p0004","task_id":"","minutes":"360","billable":"yes","rate":"85.00","notes":"Two menu boards, one round"}
+  ],
+  "invoices": [
+    {"id":"i0001","project_id":"p0001","contact_id":"c0001","number":"INV-3072","issued":"T-88","due":"T-74","subtotal":"6250.00","tax":"0.00","total":"6250.00","status":"paid","paid_on":"T-70","method":"transfer","notes":"Deposit, half on signature."},
+    {"id":"i0002","project_id":"p0001","contact_id":"c0001","number":"INV-3091","issued":"T-16","due":"T-2","subtotal":"6250.00","tax":"0.00","total":"6250.00","status":"sent","paid_on":"","method":"","notes":"Balance. She asked for round five the day after it went out."},
+    {"id":"i0003","project_id":"p0002","contact_id":"c0004","number":"INV-3088","issued":"T-22","due":"T-8","subtotal":"2700.00","tax":"0.00","total":"2700.00","status":"paid","paid_on":"T-11","method":"card","notes":"Deposit."},
+    {"id":"i0004","project_id":"p0003","contact_id":"c0006","number":"INV-3061","issued":"T-103","due":"T-89","subtotal":"2800.00","tax":"0.00","total":"2800.00","status":"paid","paid_on":"T-87","method":"transfer","notes":""},
+    {"id":"i0005","project_id":"","contact_id":"c0006","number":"INV-3082","issued":"T-52","due":"T-38","subtotal":"1450.00","tax":"0.00","total":"1450.00","status":"sent","paid_on":"","method":"","notes":"Stationery set. No reminder sent yet."},
+    {"id":"i0006","project_id":"p0004","contact_id":"c0007","number":"INV-3070","issued":"T-33","due":"T-19","subtotal":"1600.00","tax":"0.00","total":"1600.00","status":"paid","paid_on":"T-20","method":"card","notes":""},
+    {"id":"i0007","project_id":"p0006","contact_id":"c0009","number":"INV-3095","issued":"T-2","due":"T+12","subtotal":"700.00","tax":"0.00","total":"700.00","status":"draft","paid_on":"","method":"","notes":"Deposit drafted and never sent. Project has not moved in eight weeks."},
+    {"id":"i0008","project_id":"","contact_id":"c0010","number":"INV-3044","issued":"T-140","due":"T-126","subtotal":"2400.00","tax":"0.00","total":"2400.00","status":"paid","paid_on":"T-118","method":"transfer","notes":"Last work Deyoung commissioned."},
+    {"id":"i0009","project_id":"","contact_id":"c0004","number":"INV-3055","issued":"T-70","due":"T-56","subtotal":"950.00","tax":"0.00","total":"950.00","status":"paid","paid_on":"T-62","method":"card","notes":"Logo tidy up before the site job."},
+    {"id":"i0010","project_id":"","contact_id":"c0007","number":"INV-3093","issued":"T-9","due":"T+5","subtotal":"480.00","tax":"0.00","total":"480.00","status":"part_paid","paid_on":"T-4","method":"card","notes":"Paid half. Said the rest at month end."}
+  ],
+  "expenses": [
+    {"id":"e0001","date":"T-80","vendor":"Kowal Dev","category":"subcontract","amount":"4800.00","project_id":"p0001","billable":"no","method":"transfer","receipt":"yes","notes":"Store build, fixed price"},
+    {"id":"e0002","date":"T-72","vendor":"Foundry Type Co","category":"licences","amount":"420.00","project_id":"p0001","billable":"no","method":"card","receipt":"yes","notes":"Typeface licence, five seats"},
+    {"id":"e0003","date":"T-60","vendor":"Halden Photo","category":"subcontract","amount":"780.00","project_id":"p0001","billable":"no","method":"transfer","receipt":"yes","notes":"Product shots for the store"},
+    {"id":"e0004","date":"T-49","vendor":"Theo Marsh","category":"subcontract","amount":"1600.00","project_id":"p0001","billable":"no","method":"transfer","receipt":"yes","notes":"Label illustration, four SKUs"},
+    {"id":"e0005","date":"T-18","vendor":"Theo Marsh","category":"subcontract","amount":"380.00","project_id":"p0001","billable":"no","method":"transfer","receipt":"yes","notes":"Redraw after the colour change. Absorbed, not billed on."},
+    {"id":"e0006","date":"T-14","vendor":"Kowal Dev","category":"subcontract","amount":"1200.00","project_id":"p0002","billable":"no","method":"transfer","receipt":"yes","notes":"Booking integration, first stage"},
+    {"id":"e0007","date":"T-6","vendor":"Stock Library","category":"assets","amount":"180.00","project_id":"p0002","billable":"yes","method":"card","receipt":"yes","notes":"Clinic photography, rebilled at cost"},
+    {"id":"e0008","date":"T-36","vendor":"Proof House","category":"print","amount":"120.00","project_id":"p0004","billable":"no","method":"card","receipt":"yes","notes":"Menu board proofs"},
+    {"id":"e0009","date":"T-11","vendor":"Design Software Co","category":"software","amount":"96.00","project_id":"","billable":"no","method":"card","receipt":"yes","notes":""},
+    {"id":"e0010","date":"T-25","vendor":"Coworking Desk","category":"premises","amount":"310.00","project_id":"","billable":"no","method":"transfer","receipt":"yes","notes":"Monthly desk"},
+    {"id":"e0011","date":"T-3","vendor":"Bright Line Accounting","category":"professional","amount":"220.00","project_id":"","billable":"no","method":"transfer","receipt":"yes","notes":"Quarterly bookkeeping"},
+    {"id":"e0012","date":"T-40","vendor":"Host and Domain Co","category":"hosting","amount":"168.00","project_id":"","billable":"no","method":"card","receipt":"yes","notes":"Client staging servers, annual"}
+  ],
+  "recurring": [
+    {"id":"r0001","label":"Coworking desk","type":"cost","amount":"310.00","cadence":"monthly","next_date":"T+12","category":"premises","notes":""},
+    {"id":"r0002","label":"Design software","type":"cost","amount":"96.00","cadence":"monthly","next_date":"T+7","category":"software","notes":""},
+    {"id":"r0003","label":"Hosting and domains","type":"cost","amount":"58.00","cadence":"monthly","next_date":"T+19","category":"hosting","notes":"Staging and client sites"},
+    {"id":"r0004","label":"Health insurance","type":"cost","amount":"420.00","cadence":"monthly","next_date":"T+2","category":"insurance","notes":""},
+    {"id":"r0005","label":"Turnbull care plan","type":"income","amount":"180.00","cadence":"monthly","next_date":"T+9","category":"retainer","notes":"The only money that arrives without a project attached."}
+  ],
+  "notes": {
+    "c0001.md": "# Marguerite Okoye\n\nGood client, expensive habits. Decides fast in a meeting and reverses it by email\ntwo days later, which is how a 52 hour job turned into 75.\n\n- Rounds one and two were scope. Three, four and five were not.\n- The change order is written and unsent. It is worth about 4000.\n- She has already offered to introduce two other founders. Ask after launch, not\n  during the change order conversation.\n",
+    "p0001.md": "# Okoye identity and store\n\nRed. Fixed at 12500. Ana took 4800, Theo took 1980, photography and type took\n1200. Studio time is 75 hours against 52 quoted.\n\nCosted at the studio rate this job loses money. It felt like the best work of the\nyear while it was happening, which is the point.\n\nWhat changes on the next one:\n\n- Two rounds in the quote, in writing, with a number attached to round three.\n- Subcontractor quotes locked before the client price, not after.\n- Product entry is the client's job or it is a line item.\n"
+  }
+}

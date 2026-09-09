@@ -9,23 +9,23 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from .. import models, schemas
-from ..dependencies import get_current_user, get_db, resolve_org_id
+from ..dependencies import get_current_user, get_db, require_operator, resolve_org_id
 from ..periods import current_period
 from ..services import email, scoring
 from ..time_utils import utcnow
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
-_NOTIFY_SUBJECT = "Merit is live — see what your AI spend is actually producing"
+_NOTIFY_SUBJECT = "Merit AC is live — see what your AI spend is actually producing"
 
 _NOTIFY_TEXT = """\
 Hi,
 
-Thanks for joining the Merit waitlist. The site's live at https://usemeritai.com \
+Thanks for joining the Merit AC waitlist. The site's live at https://usemeritai.com \
 -- including a free calculator that estimates your AI ROI (licensing cost, \
-estimated rework, net value, Merit Score) in about 30 seconds.
+estimated rework, net value, Merit AC Score) in about 30 seconds.
 
-Merit measures whether AI coding tools are actually producing value, not just \
+Merit AC measures whether AI coding tools are actually producing value, not just \
 tracking what they cost -- spend, outcomes, and rework, rolled into one score.
 
 Take a look: https://usemeritai.com
@@ -33,22 +33,22 @@ Take a look: https://usemeritai.com
 Reply to this email any time with questions, or if you'd like early access to \
 the full dashboard.
 
--- Merit
+-- Merit AC
 """
 
 _NOTIFY_HTML = """\
 <p>Hi,</p>
-<p>Thanks for joining the Merit waitlist. The site's live at
+<p>Thanks for joining the Merit AC waitlist. The site's live at
 <a href="https://usemeritai.com">usemeritai.com</a> &mdash; including a free
 calculator that estimates your AI ROI (licensing cost, estimated rework, net
-value, Merit Score) in about 30 seconds.</p>
-<p>Merit measures whether AI coding tools are actually producing value, not
+value, Merit AC Score) in about 30 seconds.</p>
+<p>Merit AC measures whether AI coding tools are actually producing value, not
 just tracking what they cost &mdash; spend, outcomes, and rework, rolled into
 one score.</p>
 <p><a href="https://usemeritai.com">Take a look</a></p>
 <p>Reply to this email any time with questions, or if you'd like early access
 to the full dashboard.</p>
-<p>&mdash; Merit</p>
+<p>&mdash; Merit AC</p>
 """
 
 
@@ -102,12 +102,35 @@ def get_org(db: Session = Depends(get_db), user: models.DashboardUser | None = D
     return org
 
 
-@router.post("/notify-waitlist", response_model=schemas.NotifyWaitlistResult)
+@router.get("/waitlist", response_model=schemas.WaitlistListOut, dependencies=[Depends(require_operator)])
+def list_waitlist(source: str | None = None, db: Session = Depends(get_db)):
+    """Every lead-capture signup, newest first. Pass ?source=challenge-paid-track
+    (or any other source string used by a "notify me" form on the site) to see
+    just that list; omit it to see everything.
+
+    Operator-only (require_operator), not merely is_admin like the rest of
+    this router: waitlist rows belong to no Organization, so a self-signup
+    admin of their own brand-new org has no business reading other people's
+    leads. See dependencies.require_operator."""
+    query = db.query(models.WaitlistSignup)
+    if source:
+        query = query.filter_by(source=source)
+    entries = query.order_by(models.WaitlistSignup.created_at.desc()).all()
+    return schemas.WaitlistListOut(count=len(entries), entries=entries)
+
+
+@router.post("/notify-waitlist", response_model=schemas.NotifyWaitlistResult, dependencies=[Depends(require_operator)])
 def notify_waitlist(dry_run: bool = False, db: Session = Depends(get_db)):
     """
-    Emails every waitlist signup that hasn't been notified yet (see
-    WaitlistSignup.notified_at) with a single fixed announcement -- a
-    one-off "the site is live" send, not a campaign tool.
+    Operator-only (require_operator), same reasoning as GET /waitlist above
+    -- this one also sends mail through the deployment's own SMTP identity,
+    so is_admin alone would hand any self-signup a send-to-every-lead button.
+
+    Emails every coming-soon waitlist signup that hasn't been notified yet
+    (see WaitlistSignup.notified_at) with a single fixed "the site is live"
+    announcement -- a one-off send, not a campaign tool. Scoped to
+    source="coming-soon" specifically, so signups from other interest lists
+    (e.g. the /challenge paid-track form) never get this unrelated message.
 
     Requires MERIT_SMTP_HOST + MERIT_FROM_EMAIL (see services/email.py),
     503 if unset. dry_run=true skips the actual sends, so you can see the
@@ -119,7 +142,11 @@ def notify_waitlist(dry_run: bool = False, db: Session = Depends(get_db)):
             detail="Email isn't configured -- set MERIT_SMTP_HOST and MERIT_FROM_EMAIL (see backend/README.md).",
         )
 
-    pending = db.query(models.WaitlistSignup).filter(models.WaitlistSignup.notified_at.is_(None)).all()
+    pending = (
+        db.query(models.WaitlistSignup)
+        .filter(models.WaitlistSignup.notified_at.is_(None), models.WaitlistSignup.source == "coming-soon")
+        .all()
+    )
     sent = failed = 0
     for signup in pending:
         if dry_run:
@@ -128,17 +155,24 @@ def notify_waitlist(dry_run: bool = False, db: Session = Depends(get_db)):
         try:
             email.send_email(signup.email, _NOTIFY_SUBJECT, _NOTIFY_HTML, _NOTIFY_TEXT)
         except (OSError, smtplib.SMTPException, MessageError, ValueError):
-            # Deliberately wider than smtplib.SMTPException, which missed the
-            # two most likely failures outright. An unreachable mail server
-            # raises ConnectionRefusedError/socket.timeout -- OSError, and
-            # SMTPException is itself an OSError subclass, so this covers both.
-            # An address containing a control character raises HeaderParseError
-            # while *building* the message, before SMTP is reached at all.
-            # Either one used to escape as a 500 that aborted the whole run and
-            # lost every notified_at in the batch, so the next attempt
-            # re-emailed everyone already sent to. Schemas now reject such
-            # addresses at the door, but rows predating that fix are still in
-            # the table, and a mail server being briefly down always will be.
+            # Catching SMTPException only -- what this used to do -- missed the
+            # two likeliest failures outright:
+            #   * an unreachable mail server raises ConnectionRefusedError or
+            #     socket.timeout, plain OSErrors that are not SMTPExceptions;
+            #   * an address holding a control character raises
+            #     HeaderParseError while *building* the message, before SMTP is
+            #     reached at all.
+            # Either escaped as a 500 that aborted the whole run and lost every
+            # notified_at in the batch, so the next attempt re-emailed everyone
+            # already sent to. Schemas now reject such addresses at the door,
+            # but rows predating that fix are still in the table, and a mail
+            # server being briefly down always will be.
+            #
+            # smtplib.SMTPException is listed explicitly for readers, though it
+            # is redundant: the stdlib declares `class SMTPException(OSError)`,
+            # so OSError already covers it. Keep OSError -- dropping it in
+            # favour of the narrower name reintroduces the connection-refused
+            # bug.
             failed += 1
             continue
         signup.notified_at = utcnow()

@@ -1,0 +1,30 @@
+name: prove-tick
+when: "weekly, friday, after the week close"
+goal: Reread what the OS claims about itself and list the claims the data no longer supports.
+guardrails:
+  - lists what is no longer true, never rewrites it
+  - quotes the file and the line for every claim it fails
+  - a claim it cannot check is reported as unchecked, not as true
+  - never edits the manual, the tools, or the routing table
+steps:
+  - id: data
+    task_class: check_data
+    run: "os validate"
+    finish_line: "the error and warning counts are printed"
+  - id: hand_edits
+    task_class: collect_facts
+    run: "os drift"
+    finish_line: "every row edited outside the tools is named, or the log and the files agree"
+  - id: log_holds
+    task_class: collect_facts
+    run: "os rebuild"
+    finish_line: "the rebuild from the log alone matches the live data, or the difference is named"
+  - id: registry_claims
+    task_class: check_claims
+    finish_line: "every row in manual/01_REGISTRY.md is marked true, stale, or gone, against the CSVs"
+  - id: tick_claims
+    task_class: check_claims
+    finish_line: "every finish line in agents/ticks and tools is marked checkable or not checkable, with the ones that are not named"
+  - id: contradictions
+    task_class: summarise
+    finish_line: "a dated list of claims the data no longer supports, each with its file, left for the operator to settle"

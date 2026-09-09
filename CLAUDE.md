@@ -4,15 +4,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Merit is an AI spend tracker: it tells a company what it spends on AI, who's
-spending it, and whether that spend is producing real work or slop. Early
-prototype status. Two parts:
+Merit AC is a hub for AI — news, a directory of models and tools, and a
+glossary — anchored by a flagship spend/value tracker that tells a company
+what it spends on AI, who's spending it, and whether that spend is producing
+real work or slop. Early prototype status. Four parts:
 
 - `backend/` — a runnable FastAPI + SQLite reference implementation of the
   tracking/scoring pipeline. This is where almost all the logic lives.
 - `frontend/` — a Vite + React dashboard that reads from the backend API,
   with an embedded fallback dataset so it renders even when the API isn't
-  running.
+  running. It's deployed at `/app`, not the site root — the root (`/`) and
+  the rest of the content arm (`/architecture`, `/setup/*`, `/news`,
+  `/models`, `/glossary`, `/guides`, `/prompts`, `/challenge`,
+  `/community`, `/operator-os`) are React components under `src/content/`
+  that prerender to plain static HTML at build time, so they stay crawlable
+  rather than 404ing as client-only SPA routes, and so an anonymous visitor
+  lands on a real landing page instead of an auth-gated dashboard. See
+  `frontend/README.md`.
+- `operator-os/` — a second, independent product: a file-based business
+  operating system (double-entry books, cash forecasting, import adapters,
+  a scheduled agent layer), distributed as a standalone Python CLI, not a
+  web app. It shares this repo but not its codebase or its license with
+  Merit AC's own product — see `operator-os/README.md` and
+  `operator-os/LICENCE-PLAIN.md`. `frontend/src/content/pages/OperatorOS.jsx`
+  is its one integration point with the rest of the site: a spotlight page
+  at `/operator-os` linking back here. Because this repository is public
+  and Operator OS's own license describes a paid, per-business product,
+  putting its full source here trades a stricter access model for shipping
+  it inside this repo — a tradeoff worth revisiting before treating it as
+  the product's real distribution channel.
+- `merit-ai-team/` — skills for the internal AI team that runs Merit AC's own
+  product/growth/eng/infra loop (not part of the shipped product). Its own
+  context and working rules live in
+  `merit-ai-team/skills/merit-context/SKILL.md`; don't duplicate that here.
 
 Branches: `main` (stable), `Develop` (active development).
 
@@ -57,11 +81,15 @@ npm run preview   # serve the dist/ build locally
 
 It tries `http://localhost:8000` first and falls back to
 `src/lib/fallbackData.js`'s embedded snapshot if the API is unreachable
-(900ms timeout) — the sidebar badge shows which mode it's in. The built
-`dist/` output is what's deployed at the production site root (see
-DEPLOY.md — Cloudflare's Build command runs `npm run build`).
-`frontend/coming-soon.html` is the old pre-launch placeholder, still
-reachable but no longer served at `/` — see `frontend/README.md`.
+(900ms timeout) — the sidebar badge shows which mode it's in. The dashboard
+itself is deployed at `/app`, not the site root — see "Site content" in
+CLAUDE.md's own product description above and `frontend/README.md`; the
+built `dist/` output (Cloudflare's Build command runs `npm run build`)
+covers the whole domain, dashboard and content pages alike.
+`frontend/coming-soon.html` is the old pre-launch placeholder — it's still
+a Vite build input, so it ships to `dist/coming-soon.html` and is reachable
+live at `/coming-soon.html`; it just isn't linked from anywhere in the
+site's navigation — see `frontend/README.md`.
 
 `styles.css` is shared, unchanged, referenced via a plain `<link>` tag in
 both HTML entries — Vite processes `<link rel="stylesheet">` tags in any
@@ -208,3 +236,34 @@ all intentionally unbuilt — see
 [`backend/README.md`](backend/README.md#whats-stubbed-on-purpose) for what
 each one is and why. Don't try to "complete" these without checking with
 the user first.
+
+## Code style and communication guardrails
+
+Standing conventions for anyone (human or agent) writing code or reporting
+work in this repo, on top of the general engineering defaults already
+covered above.
+
+**Code synthesis.** Write like a senior engineer who already knows this
+codebase, not like a generic textbook example — match this repo's actual
+conventions (FP vs. OOP mix, naming, error-handling shape, formatting) over
+any outside style guide. Don't add a dependency for something a few lines
+of native code or an already-installed utility already covers. Every
+mutation, migration, or state change fails loudly and safely on the first
+pass — real error handling and log context, not a placeholder.
+
+**Abstraction threshold.** Don't pre-abstract. Three concrete, real
+duplicates justify a shared helper; two doesn't. Slightly repetitive,
+easy-to-read code beats a generic abstraction built for a duplication that
+hasn't happened yet.
+
+**Comments.** No line-by-line narration (`// increment counter`,
+`// loop over items`) — the code already says that. A comment earns its
+place only for something the reader can't get from the types and syntax
+alone: a non-obvious edge case, a numeric or performance constraint, or an
+upstream API's quirk.
+
+**Reporting the work.** Skip conversational padding — no greeting, no "I
+hope this helps," no closing summary restating what was just shown. Open
+with the finding or the diff. When describing a change, show only the
+touched functions/hunks, not surrounding unchanged code, and say what the
+change actually does to behavior, not a paraphrase of the diff.

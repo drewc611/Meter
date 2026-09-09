@@ -12,7 +12,11 @@ import { chromium } from "playwright";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = path.resolve(__dirname, "../../docs/screenshots");
-const BASE_URL = process.env.SCREENSHOT_BASE_URL || "http://localhost:4173";
+// The dashboard moved to /app (app.html) when the site root became the
+// marketing/content landing page -- vite preview serves that entry at its
+// literal filename, unlike production's Cloudflare routing which resolves
+// the extensionless /app.
+const BASE_URL = process.env.SCREENSHOT_BASE_URL || "http://localhost:4173/app.html";
 
 const VIEWS = [
   { label: "Overview", file: "overview.png" },

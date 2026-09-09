@@ -1,0 +1,5 @@
+# example-trade-rates 1.0.0 file checksums. Rerun `os plugin lock example-trade-rates` after any edit.
+9e84e5d8ee2e7944d28af8617ee8c88347a28cec2683f79cf7bff82835ff42f5  README.md
+a66ab9dc730b2891b197cc273232d06284315d8ff1044e0b0b0616ce61be8b9c  migrations/001_rates.py
+26a04f9232ce624beedd5eb0a554493e776e7348f5f205524172b3d9df913941  plugin.json
+a176fea278aa1a7ec897258d2b59d24c9dd01e50b2108a6beb9a38bdd09742ca  plugin.py

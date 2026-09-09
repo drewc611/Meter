@@ -1,4 +1,4 @@
-// Tries the live Merit API first, falls back to the fallbackData.js
+// Tries the live Merit AC API first, falls back to the fallbackData.js
 // snapshot if it's not reachable -- the sidebar badge shows which mode
 // it's in.
 //

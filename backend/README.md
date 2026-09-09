@@ -1,7 +1,7 @@
-# Merit backend — reference implementation
+# Merit AC backend — reference implementation
 
 This is a working implementation of the tracking pipeline described in the
-Merit product spec (§6–§8): how AI spend actually gets attributed to a
+Merit AC product spec (§6–§8): how AI spend actually gets attributed to a
 person, how "value produced" and "slop risk" get computed, and what the
 dashboard reads. It's built to be run, not just read — see **Quickstart**.
 
@@ -77,8 +77,9 @@ Then, in `../frontend`: `npm install && npm run dev` (see
 [`frontend/README.md`](../frontend/README.md)). It tries
 `http://localhost:8000` first and falls back to an embedded snapshot if the
 API isn't reachable, so it works either way — the sidebar badge tells you
-which mode it's in. The built `dist/` output is what's deployed at the
-production site root — see `../DEPLOY.md`.
+which mode it's in. In production it's deployed at `/app`, not the site
+root (that's a separate marketing/content landing page) — see
+`../DEPLOY.md`.
 
 Or run the whole stack in Docker instead — see [the root README](../README.md#running-with-docker)
 (`docker compose up --build` from the repo root). `Dockerfile` here builds this
@@ -178,7 +179,7 @@ token by definition.
 `/auth/google/login` redirects to Google's OAuth consent screen; the
 callback verifies the returned ID token against Google's public keys
 (not just decodes it), finds-or-creates a `DashboardUser` by Google's
-stable per-account id, and redirects back to the frontend with a Merit
+stable per-account id, and redirects back to the frontend with a Merit AC
 session token attached. A user can have a password, a linked Google
 account, or both on the same row — `services/auth.py` links by email on
 first Google login if a password account with that email already exists.
@@ -194,7 +195,7 @@ MERIT_JWT_SECRET=...              # required to turn login on at all -- openssl 
 GOOGLE_CLIENT_ID=...               # optional -- omit and "Sign in with Google" just won't work
 GOOGLE_CLIENT_SECRET=...
 GOOGLE_REDIRECT_URI=https://api.usemeritai.com/auth/google/callback
-MERIT_FRONTEND_URL=https://usemeritai.com   # where /auth/google/callback sends the browser back to
+MERIT_FRONTEND_URL=https://usemeritai.com   # /auth/google/callback appends /app?token=... to this
 MERIT_SIGNUP_CODE=...              # optional -- gates *new* account creation (password or Google) so
                                     # not anyone who finds the URL can sign up and see your spend data
 MERIT_ADMIN_EMAILS=...              # optional, comma-separated -- these emails get is_admin (required

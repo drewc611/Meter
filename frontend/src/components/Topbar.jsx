@@ -5,7 +5,7 @@ const VIEW_TITLES = {
   overview: ["Overview", "AI spend, value, and rework risk — by team, with person-level detail when you need it"],
   people: ["People", "Every AI-active person — search, filter, sort"],
   teams: ["Teams & Roles", "Spend and value rolled up above the individual"],
-  alerts: ["Alerts", "What Merit thinks needs a look this period"],
+  alerts: ["Alerts", "What Merit AC thinks needs a look this period"],
   integrations: ["Integrations", "How spend, outcomes, and quality signals get in"],
 };
 

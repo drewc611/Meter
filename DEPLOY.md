@@ -1,4 +1,4 @@
-# Deploying Merit to usemeritai.com
+# Deploying Merit AC to usemeritai.com
 
 Two pieces, deployed separately, both from this repo — no separate repo
 needed:
@@ -68,7 +68,7 @@ In the Cloudflare dashboard: **Workers & Pages → Create → Import a
 repository** (this deploys as a Worker with static assets, not the older
 "Pages" product — same dashboard section, different underlying flow).
 
-1. Select the `drewc611/Meter` repo, branch `main`.
+1. Select the `drewc611/merit-ac` repo, branch `main`.
 2. Root/working directory: `frontend`.
 3. **Build command:** `npm run build`. **Build output directory:** `dist`.
    The dashboard is a Vite/React app (see `frontend/src/`) — this is what
@@ -103,16 +103,18 @@ where you expected LIVE.
 ## 4. Verify
 
 - `https://api.usemeritai.com/healthz` — should return `{"status":"ok"}`.
-- `https://usemeritai.com` — shows the real dashboard. The old "coming
-  soon" placeholder is still around at `frontend/coming-soon.html`, just no
-  longer served at the site root.
+- `https://usemeritai.com` — shows the marketing/content landing page (see
+  README.md's "Site content"). The dashboard is at `https://usemeritai.com/app`.
+  The old "coming soon" placeholder (`frontend/coming-soon.html`) is still
+  built and served, at `https://usemeritai.com/coming-soon.html` — it just
+  isn't linked from anywhere in the site's navigation.
 
 ## Production status
 
 Live: the ingestion token (`MERIT_API_KEY`) is generated, set, and enforced
-on `/ingest/*`; the real dashboard is at the site root
-(`frontend/coming-soon.html` is the old placeholder, no longer served
-there); per-user login (`MERIT_JWT_SECRET`, Google OAuth,
+on `/ingest/*`; the real dashboard is at `/app`
+(`frontend/coming-soon.html` is the old placeholder, still built and served
+at `/coming-soon.html` but unlinked); per-user login (`MERIT_JWT_SECRET`, Google OAuth,
 `MERIT_SIGNUP_CODE`) is on, see "Turning on dashboard login" below; and
 [`TRADEMARK.md`](TRADEMARK.md)'s events table has its first-use-in-commerce
 date recorded.
@@ -153,6 +155,13 @@ Still open:
 "unset = open" convention `MERIT_API_KEY` uses. Once it's set, visitors need
 a real account (password or Google) to see live data.
 
+On Fly this isn't just a warning: `create_app()` detects a real deployment
+via `FLY_APP_NAME` (set automatically by the Fly runtime) and refuses to
+boot at all if `MERIT_JWT_SECRET` is missing or under 32 characters, since
+that token is what every tenant boundary in this app rests on. Set the
+secret below before the first deploy that needs login, or the app won't
+start.
+
 1. **Generate a strong signing secret and set it as a Fly secret:**
    ```bash
    openssl rand -hex 32
@@ -191,8 +200,8 @@ a real account (password or Google) to see live data.
    # -> {"status":"ok"} -- must stay open with no token, or Fly's own health
    #    check starts failing and the machine gets marked unhealthy.
    ```
-5. Sign up for your own account at `https://usemeritai.com` (or via the curl
-   above) and confirm the dashboard loads with the `LIVE · Merit API` badge.
+5. Sign up for your own account at `https://usemeritai.com/app` (or via the
+   curl above) and confirm the dashboard loads with the `LIVE · Merit AC API` badge.
    The first account ever created on a deployment automatically gets
    `is_admin` (needed for `/admin/recompute-scores` and
    `/admin/identity-mapping`) -- sign up before sharing the URL with anyone

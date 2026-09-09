@@ -16,9 +16,16 @@ router = APIRouter(prefix="/waitlist", tags=["waitlist"])
 
 @router.post("", status_code=201, response_model=schemas.WaitlistSignupOut)
 def join_waitlist(body: schemas.WaitlistSignupIn, db: Session = Depends(get_db)):
-    """Idempotent: signing up twice with the same email is a no-op, not an error."""
+    """Idempotent per email: re-submitting updates company/source in place
+    (the latest interest wins) rather than erroring or tracking duplicate
+    rows -- so someone already on the general waitlist who later signs up
+    for a specific interest list (e.g. the /challenge paid track) still
+    shows up under that source."""
     existing = db.query(models.WaitlistSignup).filter_by(email=body.email).one_or_none()
     if existing is None:
-        db.add(models.WaitlistSignup(email=body.email, company=body.company))
-        db.commit()
+        db.add(models.WaitlistSignup(email=body.email, company=body.company, source=body.source))
+    else:
+        existing.company = body.company or existing.company  # don't blank out a prior value with an empty form
+        existing.source = body.source
+    db.commit()
     return schemas.WaitlistSignupOut()

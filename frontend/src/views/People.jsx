@@ -14,7 +14,7 @@ const COLUMNS = [
   { key: "slop_risk", label: "Slop risk", sortable: true, num: true },
   { key: "confidence", label: "Confidence", sortable: true },
   { key: "tier", label: "Tier", sortable: true },
-  { key: null, label: "Merit says", sortable: false },
+  { key: null, label: "Merit AC says", sortable: false },
 ];
 
 export default function People({ active, presetFilter, onFilterConsumed }) {

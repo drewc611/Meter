@@ -1,0 +1,10 @@
+{
+  "product_name": "Operator OS",
+  "product_slug": "operator-os",
+  "tagline": "The whole business, on your machine, in files you own.",
+  "author": "REPLACE_ME",
+  "support_email": "REPLACE_ME",
+  "site": "https://usemeritai.com/operator-os",
+  "version": "2.0.0",
+  "note": "This file is the only place the product name lives. Run scripts/rename.py to change it everywhere."
+}

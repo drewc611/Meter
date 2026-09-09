@@ -1,0 +1,24 @@
+name: money-tick
+when: "weekly, monday morning"
+goal: Get money already earned into the account, and name the debt that is turning into a loss.
+guardrails:
+  - drafts only, never sends
+  - stops if os validate reports broken data
+  - never chases an invoice whose status is still draft
+  - never contacts anyone marked do_not_contact
+steps:
+  - id: aging
+    task_class: collect_facts
+    run: "os aging"
+    finish_line: "the outstanding total is printed"
+  - id: cash
+    task_class: collect_facts
+    run: "os cash 90"
+    finish_line: "the low point date and figure are printed"
+  - id: chase
+    task_class: draft_money_message
+    tool: chase
+    finish_line: "one draft exists per overdue invoice, or a note saying why not"
+  - id: writeoff
+    task_class: write_off
+    finish_line: "every invoice past 90 days has a decision written in its notes, or a stated reason it was left alone"

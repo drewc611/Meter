@@ -1,4 +1,4 @@
-# Merit frontend — Vite/React dashboard, built then served by nginx.
+# Merit AC frontend — Vite/React dashboard, built then served by nginx.
 #
 # Build:  docker build -t merit-frontend ./frontend
 # Run:    docker run -p 8080:80 merit-frontend

@@ -1,0 +1,128 @@
+{
+  "config": {
+    "business_name": "Fernbrook Marketing",
+    "operator": "Priya Sethna",
+    "trade": "marketing campaigns and content production, subcontracted delivery",
+    "currency": "USD",
+    "currency_symbol": "$",
+    "hourly_rate": "75.00",
+    "target_margin_pct": "35",
+    "tax_rate_pct": "0",
+    "tax_set_aside_pct": "27",
+    "invoice_terms_days": "30",
+    "capacity_hours_per_week": "35",
+    "opening_cash": "9600.00",
+    "week_starts": "monday",
+    "quiet_hours": "18:00-08:00"
+  },
+  "contacts": [
+    {"id":"c0001","name":"Talia Brandt","company":"Brandt & Fisk CPAs","role":"marketing director","email":"talia@example.com","phone":"555-0511","source":"referral","status":"active","tags":"retainer","first_contact":"T-300","last_contact":"T-20","notes":"Quarterly content retainer. Easy, mostly in-house delivery."},
+    {"id":"c0002","name":"Reuben Ostrander","company":"Ostrander Outdoor Gear","role":"founder","email":"reuben@example.com","phone":"555-0524","source":"referral","status":"active","tags":"campaign","first_contact":"T-130","last_contact":"T-15","notes":"Fast-moving founder, adds requests mid-project without thinking about cost."},
+    {"id":"c0003","name":"Nora Vance","company":"Vance Realty Group","role":"broker and owner","email":"nora@example.com","phone":"555-0537","source":"referral","status":"active","tags":"campaign","first_contact":"T-118","last_contact":"T-6","notes":"Great client, approves things fast, never asks what a reshoot costs."},
+    {"id":"c0004","name":"Jules Petrakis","company":"Jules Petrakis Productions","role":"contract videographer","email":"jules@example.com","phone":"555-0542","source":"trade","status":"active","tags":"subcontractor","first_contact":"T-500","last_contact":"T-9","notes":"Excellent work, bills for every extra round without complaint."},
+    {"id":"c0005","name":"Sasha Lindgren","company":"Sasha Lindgren Design","role":"contract designer","email":"sasha@example.com","phone":"555-0556","source":"trade","status":"active","tags":"subcontractor","first_contact":"T-420","last_contact":"T-12","notes":"Fast turnaround. Extra rounds are never written into the original quote."},
+    {"id":"c0006","name":"Marcus Deel","company":"Marcus Deel Media","role":"contract media buyer","email":"marcus@example.com","phone":"555-0569","source":"trade","status":"active","tags":"subcontractor","first_contact":"T-260","last_contact":"T-15","notes":"Sets up and manages the paid channels. Flat setup fee plus a monthly rate."},
+    {"id":"c0007","name":"Colin Ashby","company":"Ashby & Wren Law","role":"managing partner","email":"colin@example.com","phone":"555-0578","source":"referral","status":"lead","tags":"campaign,prospect","first_contact":"T-9","last_contact":"T-3","notes":"Wants a brand campaign before their twentieth anniversary event."},
+    {"id":"c0008","name":"Yasmin Farouk","company":"Farouk Dental Group","role":"practice manager","email":"yasmin@example.com","phone":"555-0583","source":"referral","status":"active","tags":"retainer","first_contact":"T-200","last_contact":"T-18","notes":"Small monthly social retainer, mostly in-house."},
+    {"id":"c0009","name":"Trent Whitlock","company":"Whitlock Motors","role":"general manager","email":"trent@example.com","phone":"555-0591","source":"referral","status":"past","tags":"","first_contact":"T-260","last_contact":"T-135","notes":"Hired a marketing person in-house instead of renewing."},
+    {"id":"c0010","name":"Ivy Castellano","company":"Ivy Castellano Copy","role":"contract copywriter","email":"ivy@example.com","phone":"555-0605","source":"trade","status":"active","tags":"subcontractor","first_contact":"T-340","last_contact":"T-6","notes":"Reliable, cheap, and the first person pulled in when a job runs long."}
+  ],
+  "deals": [
+    {"id":"d0001","contact_id":"c0007","title":"Ashby & Wren brand campaign","value":"16800.00","stage":"quoted","confidence":"50","opened":"T-9","expected_close":"T+21","next_action":"Follow up before the quote expires","next_action_due":"T+4","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0002","contact_id":"c0002","title":"Ostrander Outdoor Gear, fall product launch phase 2","value":"22400.00","stage":"negotiating","confidence":"60","opened":"T-16","expected_close":"T+18","next_action":"Lock the subcontractor budget into the price before sending the revised scope","next_action_due":"T+3","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0003","contact_id":"c0008","title":"Farouk Dental social retainer renewal","value":"7200.00","stage":"qualified","confidence":"55","opened":"T-6","expected_close":"T+30","next_action":"","next_action_due":"","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0004","contact_id":"c0003","title":"Vance Realty rebrand and campaign","value":"18600.00","stage":"won","confidence":"100","opened":"T-122","expected_close":"T-110","next_action":"","next_action_due":"","status":"won","closed_on":"T-110","lost_reason":""},
+    {"id":"d0005","contact_id":"c0001","title":"Brandt & Fisk annual content retainer","value":"18000.00","stage":"won","confidence":"100","opened":"T-208","expected_close":"T-200","next_action":"","next_action_due":"","status":"won","closed_on":"T-200","lost_reason":""},
+    {"id":"d0006","contact_id":"c0009","title":"Whitlock Motors spring campaign","value":"14000.00","stage":"lost","confidence":"0","opened":"T-160","expected_close":"T-140","next_action":"","next_action_due":"","status":"lost","closed_on":"T-135","lost_reason":"They hired a marketing person in-house instead"}
+  ],
+  "quotes": [
+    {"id":"q0001","deal_id":"d0001","contact_id":"c0007","number":"Q-2201","issued":"T-9","expires":"T+11","subtotal":"16800.00","tax":"0.00","total":"16800.00","status":"sent","decided_on":"","notes":""},
+    {"id":"q0002","deal_id":"d0002","contact_id":"c0002","number":"Q-2198","issued":"T-16","expires":"T+9","subtotal":"22400.00","tax":"0.00","total":"22400.00","status":"sent","decided_on":"","notes":"This time the subcontractor quotes are locked before the client price goes out."},
+    {"id":"q0003","deal_id":"d0003","contact_id":"c0008","number":"Q-2205","issued":"T-6","expires":"T+24","subtotal":"7200.00","tax":"0.00","total":"7200.00","status":"sent","decided_on":"","notes":""},
+    {"id":"q0004","deal_id":"d0004","contact_id":"c0003","number":"Q-2091","issued":"T-118","expires":"T-104","subtotal":"18600.00","tax":"0.00","total":"18600.00","status":"accepted","decided_on":"T-110","notes":"Subcontractor budget assumed at 9,400. Actuals came in at 14,500."},
+    {"id":"q0005","deal_id":"d0005","contact_id":"c0001","number":"Q-2015","issued":"T-205","expires":"T-191","subtotal":"18000.00","tax":"0.00","total":"18000.00","status":"accepted","decided_on":"T-200","notes":"Annual, billed quarterly at 4,500."},
+    {"id":"q0006","deal_id":"d0006","contact_id":"c0009","number":"Q-2077","issued":"T-160","expires":"T-146","subtotal":"14000.00","tax":"0.00","total":"14000.00","status":"declined","decided_on":"T-135","notes":""}
+  ],
+  "projects": [
+    {"id":"p0001","contact_id":"c0003","deal_id":"d0004","name":"Vance Realty rebrand and campaign","status":"done","start":"T-108","due":"T-45","budget":"18600.00","hours_estimate":"32","health":"red","next_milestone":"","closed_on":"T-44"},
+    {"id":"p0002","contact_id":"c0002","deal_id":"","name":"Ostrander Outdoor Gear - fall launch phase 1","status":"done","start":"T-60","due":"T-20","budget":"11200.00","hours_estimate":"16","health":"amber","next_milestone":"","closed_on":"T-19"},
+    {"id":"p0003","contact_id":"c0001","deal_id":"d0005","name":"Brandt & Fisk Q2 content retainer","status":"done","start":"T-95","due":"T-6","budget":"4500.00","hours_estimate":"24","health":"green","next_milestone":"","closed_on":"T-5"},
+    {"id":"p0004","contact_id":"c0008","deal_id":"","name":"Farouk Dental social content, Q2","status":"done","start":"T-90","due":"T-10","budget":"2600.00","hours_estimate":"12","health":"green","next_milestone":"","closed_on":"T-9"},
+    {"id":"p0005","contact_id":"c0003","deal_id":"","name":"Vance Realty rebrand and campaign, phase 2","status":"active","start":"T-14","due":"T+30","budget":"9300.00","hours_estimate":"14","health":"amber","next_milestone":"Lock the phase 2 subcontractor budget before booking anything else","closed_on":""},
+    {"id":"p0006","contact_id":"c0007","deal_id":"d0001","name":"Ashby & Wren pitch deck","status":"planned","start":"T+5","due":"T+20","budget":"16800.00","hours_estimate":"40","health":"","next_milestone":"Confirm the quote before starting anything","closed_on":""}
+  ],
+  "tasks": [
+    {"id":"t0001","project_id":"p0005","title":"Lock the phase 2 subcontractor budget before booking Jules or Sasha","due":"T-1","priority":"now","status":"todo","estimate_min":"45","done_on":"","blocked_by":"","notes":"Phase 1 came in at 8.3 percent margin. Do not repeat it."},
+    {"id":"t0002","project_id":"p0005","title":"Get Jules a fixed quote in writing, not a day rate","due":"T+3","priority":"high","status":"todo","estimate_min":"20","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0003","project_id":"","title":"Write the change order clause for extra creative rounds","due":"T-4","priority":"high","status":"todo","estimate_min":"60","done_on":"","blocked_by":"","notes":"So a reshoot or an extra round never again gets absorbed silently."},
+    {"id":"t0004","project_id":"","title":"Follow up on the Ashby and Wren quote before it expires","due":"T+2","priority":"high","status":"todo","estimate_min":"15","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0005","project_id":"p0006","title":"Confirm the quote before starting anything","due":"T+4","priority":"normal","status":"todo","estimate_min":"20","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0006","project_id":"","title":"Send Ostrander the revised phase 2 scope with subcontractor costs locked in","due":"T+3","priority":"high","status":"todo","estimate_min":"45","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0007","project_id":"","title":"Send Farouk Dental the renewal quote","due":"T+6","priority":"normal","status":"todo","estimate_min":"30","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0008","project_id":"p0001","title":"Close out the Vance Realty project files","due":"T-44","priority":"low","status":"done","estimate_min":"20","done_on":"T-43","blocked_by":"","notes":""},
+    {"id":"t0009","project_id":"p0002","title":"Send Ostrander the phase 1 wrap report","due":"T-19","priority":"normal","status":"done","estimate_min":"30","done_on":"T-18","blocked_by":"","notes":""},
+    {"id":"t0010","project_id":"","title":"Reconcile freelancer invoices against the Vance and Ostrander budgets","due":"T-7","priority":"high","status":"todo","estimate_min":"60","done_on":"","blocked_by":"","notes":"This is the number that should have been checked before either project closed."},
+    {"id":"t0011","project_id":"p0003","title":"Send Talia the Q3 retainer renewal note","due":"T+10","priority":"normal","status":"todo","estimate_min":"20","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0012","project_id":"p0004","title":"Schedule the Q3 photo shoot for Farouk Dental","due":"T+12","priority":"normal","status":"todo","estimate_min":"20","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0013","project_id":"","title":"Reconcile the card statement","due":"T-3","priority":"normal","status":"todo","estimate_min":"45","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0014","project_id":"p0005","title":"Kickoff call for phase 2","due":"T-13","priority":"normal","status":"done","estimate_min":"30","done_on":"T-13","blocked_by":"","notes":""}
+  ],
+  "time": [
+    {"id":"h0001","date":"T-107","project_id":"p0001","task_id":"","minutes":"480","billable":"yes","rate":"75.00","notes":"Kickoff, brand audit, subcontractor briefs"},
+    {"id":"h0002","date":"T-88","project_id":"p0001","task_id":"","minutes":"420","billable":"yes","rate":"75.00","notes":"Video shoot day, on-site direction"},
+    {"id":"h0003","date":"T-70","project_id":"p0001","task_id":"","minutes":"360","billable":"yes","rate":"75.00","notes":"Reshoot day, on-site direction"},
+    {"id":"h0004","date":"T-60","project_id":"p0001","task_id":"","minutes":"300","billable":"yes","rate":"75.00","notes":"Design review rounds with Sasha"},
+    {"id":"h0005","date":"T-52","project_id":"p0001","task_id":"","minutes":"240","billable":"yes","rate":"75.00","notes":"Media plan review with Marcus"},
+    {"id":"h0006","date":"T-48","project_id":"p0001","task_id":"","minutes":"240","billable":"yes","rate":"75.00","notes":"Client check-ins and status calls"},
+    {"id":"h0007","date":"T-58","project_id":"p0002","task_id":"","minutes":"360","billable":"yes","rate":"75.00","notes":"Kickoff and creative brief"},
+    {"id":"h0008","date":"T-45","project_id":"p0002","task_id":"","minutes":"300","billable":"yes","rate":"75.00","notes":"Shoot day direction"},
+    {"id":"h0009","date":"T-30","project_id":"p0002","task_id":"","minutes":"300","billable":"yes","rate":"75.00","notes":"Client review rounds"},
+    {"id":"h0010","date":"T-90","project_id":"p0003","task_id":"","minutes":"600","billable":"yes","rate":"75.00","notes":"Content calendar planning"},
+    {"id":"h0011","date":"T-60","project_id":"p0003","task_id":"","minutes":"480","billable":"yes","rate":"75.00","notes":"Client review calls"},
+    {"id":"h0012","date":"T-20","project_id":"p0003","task_id":"","minutes":"360","billable":"yes","rate":"75.00","notes":"Editing and QA of freelance copy"},
+    {"id":"h0013","date":"T-85","project_id":"p0004","task_id":"","minutes":"420","billable":"yes","rate":"75.00","notes":"Content shoot and photography"},
+    {"id":"h0014","date":"T-40","project_id":"p0004","task_id":"","minutes":"300","billable":"yes","rate":"75.00","notes":"Scheduling and client approval calls"},
+    {"id":"h0015","date":"T-13","project_id":"p0005","task_id":"t0014","minutes":"300","billable":"yes","rate":"75.00","notes":"Phase 2 kickoff"}
+  ],
+  "invoices": [
+    {"id":"i0001","project_id":"p0001","contact_id":"c0003","number":"INV-6201","issued":"T-108","due":"T-78","subtotal":"9300.00","tax":"0.00","total":"9300.00","status":"paid","paid_on":"T-95","method":"transfer","notes":"Deposit, half on signature."},
+    {"id":"i0002","project_id":"p0001","contact_id":"c0003","number":"INV-6238","issued":"T-45","due":"T-15","subtotal":"9300.00","tax":"0.00","total":"9300.00","status":"paid","paid_on":"T-30","method":"transfer","notes":"Final, on delivery."},
+    {"id":"i0003","project_id":"p0002","contact_id":"c0002","number":"INV-6250","issued":"T-20","due":"T+10","subtotal":"11200.00","tax":"0.00","total":"11200.00","status":"paid","paid_on":"T-4","method":"transfer","notes":""},
+    {"id":"i0004","project_id":"p0003","contact_id":"c0001","number":"INV-6244","issued":"T-6","due":"T+24","subtotal":"4500.00","tax":"0.00","total":"4500.00","status":"paid","paid_on":"T-1","method":"transfer","notes":"Q2 retainer."},
+    {"id":"i0005","project_id":"p0004","contact_id":"c0008","number":"INV-6239","issued":"T-10","due":"T+20","subtotal":"2600.00","tax":"0.00","total":"2600.00","status":"paid","paid_on":"T-3","method":"card","notes":"Q2 social content."},
+    {"id":"i0006","project_id":"p0005","contact_id":"c0003","number":"INV-6260","issued":"T-14","due":"T+16","subtotal":"9300.00","tax":"0.00","total":"9300.00","status":"sent","paid_on":"","method":"","notes":"Phase 2 deposit, half on signature."},
+    {"id":"i0007","project_id":"","contact_id":"c0009","number":"INV-6088","issued":"T-256","due":"T-226","subtotal":"3200.00","tax":"0.00","total":"3200.00","status":"paid","paid_on":"T-220","method":"transfer","notes":"Small job, before the spring campaign quote."},
+    {"id":"i0008","project_id":"","contact_id":"c0001","number":"INV-6180","issued":"T-96","due":"T-66","subtotal":"4200.00","tax":"0.00","total":"4200.00","status":"paid","paid_on":"T-91","method":"transfer","notes":"Q1 retainer, for reference."},
+    {"id":"i0009","project_id":"","contact_id":"c0008","number":"INV-6150","issued":"T-100","due":"T-70","subtotal":"2400.00","tax":"0.00","total":"2400.00","status":"paid","paid_on":"T-65","method":"card","notes":"Q1 social content."}
+  ],
+  "expenses": [
+    {"id":"e0001","date":"T-104","vendor":"Jules Petrakis Productions","category":"subcontract","amount":"5200.00","project_id":"p0001","billable":"no","method":"transfer","receipt":"yes","notes":"Video production, original scope"},
+    {"id":"e0002","date":"T-68","vendor":"Jules Petrakis Productions","category":"subcontract","amount":"2700.00","project_id":"p0001","billable":"no","method":"transfer","receipt":"yes","notes":"Reshoot day plus two extra edit rounds, not in the original quote"},
+    {"id":"e0003","date":"T-58","vendor":"Sasha Lindgren Design","category":"subcontract","amount":"3200.00","project_id":"p0001","billable":"no","method":"transfer","receipt":"yes","notes":"Brand refresh, full deliverable set"},
+    {"id":"e0004","date":"T-50","vendor":"Marcus Deel Media","category":"subcontract","amount":"2400.00","project_id":"p0001","billable":"no","method":"transfer","receipt":"yes","notes":"Paid media account setup and first month management"},
+    {"id":"e0005","date":"T-52","vendor":"Stockhaus Licensing","category":"assets","amount":"350.00","project_id":"p0001","billable":"no","method":"card","receipt":"yes","notes":"Stock photography and music bed licenses"},
+    {"id":"e0006","date":"T-47","vendor":"Ivy Castellano Copy","category":"subcontract","amount":"650.00","project_id":"p0001","billable":"no","method":"transfer","receipt":"yes","notes":"Rush copy for the reshoot script, added late"},
+    {"id":"e0007","date":"T-56","vendor":"Jules Petrakis Productions","category":"subcontract","amount":"5400.00","project_id":"p0002","billable":"no","method":"transfer","receipt":"yes","notes":"Product video, three variants"},
+    {"id":"e0008","date":"T-44","vendor":"Sasha Lindgren Design","category":"subcontract","amount":"2100.00","project_id":"p0002","billable":"no","method":"transfer","receipt":"yes","notes":"Launch graphics, paid social set"},
+    {"id":"e0009","date":"T-38","vendor":"Marcus Deel Media","category":"subcontract","amount":"2800.00","project_id":"p0002","billable":"no","method":"transfer","receipt":"yes","notes":"Paid media setup, two ad platforms"},
+    {"id":"e0010","date":"T-40","vendor":"Stockhaus Licensing","category":"assets","amount":"300.00","project_id":"p0002","billable":"no","method":"card","receipt":"yes","notes":"Music license"},
+    {"id":"e0011","date":"T-80","vendor":"Ivy Castellano Copy","category":"subcontract","amount":"600.00","project_id":"p0003","billable":"no","method":"transfer","receipt":"yes","notes":"Quarterly blog and newsletter copy"},
+    {"id":"e0012","date":"T-75","vendor":"Ivy Castellano Copy","category":"subcontract","amount":"300.00","project_id":"p0004","billable":"no","method":"transfer","receipt":"yes","notes":"Social captions, one quarter"},
+    {"id":"e0013","date":"T-11","vendor":"Jules Petrakis Productions","category":"subcontract","amount":"2600.00","project_id":"p0005","billable":"no","method":"transfer","receipt":"yes","notes":"Phase 2 video, in progress"},
+    {"id":"e0014","date":"T-8","vendor":"Sasha Lindgren Design","category":"subcontract","amount":"900.00","project_id":"p0005","billable":"no","method":"transfer","receipt":"yes","notes":"Phase 2 social templates"},
+    {"id":"e0015","date":"T-25","vendor":"Meridian Coworking","category":"premises","amount":"380.00","project_id":"","billable":"no","method":"transfer","receipt":"yes","notes":"Monthly desk"},
+    {"id":"e0016","date":"T-14","vendor":"Flowline PM Software","category":"software","amount":"120.00","project_id":"","billable":"no","method":"card","receipt":"yes","notes":""},
+    {"id":"e0017","date":"T-5","vendor":"Coastal Health Plans","category":"insurance","amount":"460.00","project_id":"","billable":"no","method":"transfer","receipt":"yes","notes":"Health insurance, monthly"}
+  ],
+  "recurring": [
+    {"id":"r0001","label":"Brandt & Fisk quarterly content retainer","type":"income","amount":"4500.00","cadence":"quarterly","next_date":"T+45","category":"retainer","notes":""},
+    {"id":"r0002","label":"Farouk Dental social retainer","type":"income","amount":"900.00","cadence":"monthly","next_date":"T+18","category":"retainer","notes":""},
+    {"id":"r0003","label":"Studio and co-working desk","type":"cost","amount":"380.00","cadence":"monthly","next_date":"T+10","category":"premises","notes":""},
+    {"id":"r0004","label":"Project management software","type":"cost","amount":"120.00","cadence":"monthly","next_date":"T+6","category":"software","notes":""},
+    {"id":"r0005","label":"Health insurance","type":"cost","amount":"460.00","cadence":"monthly","next_date":"T+20","category":"insurance","notes":""}
+  ],
+  "notes": {
+    "c0003.md": "# Nora Vance / Vance Realty Group\n\nGreat client. Approves things fast and never once asked what a reshoot or an\nextra design round actually cost - which is exactly why nobody checked either.\n\n- Phase 1 signed at 18,600. Subcontractor budget was assumed at 9,400 in the\n  quote. Actual freelancer invoices came to 14,500.\n- Margin on phase 1 came in at roughly 8 percent against a 35 percent target.\n- Phase 2 is already underway. Lock every subcontractor quote in writing\n  before booking anyone this time.\n",
+    "p0001.md": "# Vance Realty rebrand and campaign\n\nRed, closed. Revenue 18,600 - a real, solid contract by any deal-board\nmeasure. Subcontractor cost once everything was counted: 14,500 (Jules'\nreshoot and extra edit rounds, Sasha's brand set, Marcus's media setup, a\nrush copywriting fee that was never in the original scope). Priya's own time\ncost another 2,550 at the standard rate. Profit: about 1,550. Margin: 8.3\npercent against a 35 percent target.\n\nNothing about this project looked wrong while it was happening. The deal was\nwon, the client was happy, every invoice got paid. The leak was entirely in\nwhat delivery cost once it was subcontracted out, and nobody added it up\nuntil the job was already closed.\n"
+  }
+}

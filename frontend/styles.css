@@ -1,5 +1,16 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+
 :root{
   color-scheme:light;
+  /* ---- type: Manrope for headings/nav/labels (a distinctive display face,
+     not the Inter/Space-Grotesk default), Source Sans 3 for body copy, IBM
+     Plex Mono for anything tabular or code -- the same three-face system
+     the content site uses, so the dashboard and the marketing pages read
+     as one product rather than two. ---- */
+  --font-display:"Manrope",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-body:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+
   /* ---- neutrals ---- */
   --bg:#f5f6fa; --panel:#ffffff; --panel-alt:#fafbfd;
   --ink:#10121f; --muted:#5b5f74; --faint:#8b8fa3;
@@ -10,6 +21,10 @@
   --brand:#4f46e5; --brand-dark:#3d35c4; --brand-soft:#eef0fe;
   --brand-ring:rgba(79,70,229,.18);
 
+  /* ---- logo bars: same 3-step brand ramp on every theme, re-picked per
+     theme below so the lightest bar stays visible against its own panel ---- */
+  --logo-1:#b3bdf7; --logo-2:#7c74f4; --logo-3:#4f46e5;
+
   /* ---- status (value = good tier; slop risk = warn/bad tiers) ----
      Base tones are used for large text, bars, and chart marks (>=3:1
      large-text contrast); *-text variants are the same hues darkened for
@@ -18,12 +33,9 @@
   --warn:#b9660a; --warn-soft:#fdf1e2; --warn-text:#96530a;
   --bad:#c22b2b;  --bad-soft:#fdeaea;  --bad-text:#a01f1f;
 
-  /* ---- sidebar ---- */
-  --navy:#12152c; --navy2:#1a1f42;
-
   /* ---- elevation: 3-step scale, cards rest at sm, float to md on hover ---- */
-  --shadow-sm:0 1px 2px rgba(16,17,38,.06);
-  --shadow-md:0 2px 4px rgba(16,17,38,.05),0 8px 24px rgba(16,17,38,.08);
+  --shadow-sm:0 1px 2px rgba(16,17,38,.05),0 8px 20px -16px rgba(16,17,38,.16);
+  --shadow-md:0 2px 4px rgba(16,17,38,.05),0 12px 28px -8px rgba(16,17,38,.12);
   --shadow-lg:0 8px 16px rgba(16,17,38,.08),0 24px 48px rgba(16,17,38,.14);
 
   /* ---- radius ---- */
@@ -50,6 +62,7 @@
 
     --brand:#7c74f4; --brand-dark:#6a61e8; --brand-soft:rgba(124,116,244,.16);
     --brand-ring:rgba(124,116,244,.28);
+    --logo-1:#4a4694; --logo-2:#8f87f6; --logo-3:#a79cf7;
 
     --good:#4ade9c; --good-soft:rgba(74,222,156,.14); --good-text:#4ade9c;
     --warn:#f0b429; --warn-soft:rgba(240,180,41,.14); --warn-text:#f0b429;
@@ -69,6 +82,7 @@
 
   --brand:#7c74f4; --brand-dark:#6a61e8; --brand-soft:rgba(124,116,244,.16);
   --brand-ring:rgba(124,116,244,.28);
+  --logo-1:#4a4694; --logo-2:#8f87f6; --logo-3:#a79cf7;
 
   --good:#4ade9c; --good-soft:rgba(74,222,156,.14); --good-text:#4ade9c;
   --warn:#f0b429; --warn-soft:rgba(240,180,41,.14); --warn-text:#f0b429;
@@ -81,8 +95,16 @@
 
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-family:var(--font-body);
   -webkit-font-smoothing:antialiased;line-height:1.45;display:flex;min-height:100vh;overflow-x:hidden}
+/* Headings, nav, labels, and anything acting as UI chrome rather than
+   reading copy get the display face -- KPI figures and table numbers stay
+   on the mono face below for tabular alignment. */
+h1,h2,h3,h4,.sb-brand b,.sb-item,.kpi .lab,.card h2,.topbar .sub,
+button,.btn,.pill,.status,.sb-badge,th,.seg .t,.modal-head h2,.modal-stat .lab{
+  font-family:var(--font-display)}
+.roi-big,.kpi .val,.seg .n,.modal-stat .val,td.num,th.num{
+  font-family:var(--font-mono)}
 /* Toggling theme is rare (once per session at most), so a color
    transition on the surfaces it visibly repaints is worth the cost that
    would be wrong to pay on something frequent -- the alternative is every
@@ -95,39 +117,49 @@ body,.card,.kpi,.int-card,.alert,.sidebar,.auth-page,.auth-page-card{
    the DOM. */
 #root{display:contents}
 
-/* ---------- sidebar ---------- */
-.sidebar{width:228px;flex:none;background:linear-gradient(180deg,var(--navy),var(--navy2));color:#fff;
+/* ---------- sidebar ----------
+   A light surface that follows the same panel/line/ink tokens as every
+   other card, not a permanently-dark navy slab -- this is what makes the
+   dashboard read as the same product as the (also light, docs-style)
+   marketing site instead of a bolted-on admin panel. In dark theme,
+   --panel already resolves to a dark navy, so the sidebar still ends up
+   dark there -- just by inheriting the theme like everything else. */
+.sidebar{width:228px;flex:none;background:var(--panel);color:var(--ink);
+  border-right:1px solid var(--line);
   display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
 .sb-brand{display:flex;align-items:center;gap:9px;padding:20px 20px 16px}
 .sb-logo{display:flex;gap:2px;align-items:flex-end;height:20px}
 .sb-logo i{display:block;width:5px;border-radius:2px}
+.sb-logo i:nth-child(1){background:var(--logo-1)}
+.sb-logo i:nth-child(2){background:var(--logo-2)}
+.sb-logo i:nth-child(3){background:var(--logo-3)}
 .sb-brand b{font-size:15.5px;letter-spacing:.02em;font-weight:700}
 .sb-nav{margin-top:10px;padding:0 12px;flex:1}
 .sb-item{position:relative;display:flex;align-items:center;gap:10px;padding:9px 12px 9px 14px;
-  border-radius:var(--r-sm);color:#aab0d6;font-size:13.5px;font-weight:500;cursor:pointer;
+  border-radius:var(--r-sm);color:var(--muted);font-size:13.5px;font-weight:500;cursor:pointer;
   margin-bottom:2px;transition:background .12s,color .12s}
-.sb-item:hover{background:rgba(255,255,255,.06);color:#fff}
-.sb-item.active{background:rgba(124,116,244,.16);color:#fff}
+.sb-item:hover{background:var(--chip);color:var(--ink)}
+.sb-item.active{background:var(--brand-soft);color:var(--brand-dark)}
 .sb-item.active::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;
-  border-radius:0 3px 3px 0;background:#7c74f4}
-.sb-item:focus-visible{outline:2px solid #8b93f5;outline-offset:-2px}
+  border-radius:0 3px 3px 0;background:var(--brand)}
+.sb-item:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
 .sb-item svg{width:16px;height:16px;flex:none;opacity:.9}
-.sb-foot{padding:16px 20px 20px;font-size:11.5px;color:#7d84ad;border-top:1px solid rgba(255,255,255,.08)}
+.sb-foot{padding:16px 20px 20px;font-size:11.5px;color:var(--faint);border-top:1px solid var(--line)}
 .sb-logout{background:none;border:none;padding:0;margin-top:4px;font:inherit;color:inherit;
   text-decoration:underline;cursor:pointer}
-.sb-logout:hover,.sb-logout:focus-visible{color:#fff}
+.sb-logout:hover,.sb-logout:focus-visible{color:var(--ink)}
 .sb-foot-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
 .sb-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;padding:4px 9px;
   border-radius:20px;letter-spacing:.02em}
-.sb-badge.live{background:#0e3324;color:#4ade9c}
-.sb-badge.demo{background:#3a2e12;color:#f0b429}
+.sb-badge.live{background:var(--good-soft);color:var(--good-text)}
+.sb-badge.demo{background:var(--warn-soft);color:var(--warn-text)}
 .sb-badge i{width:6px;height:6px;border-radius:50%;background:currentColor}
 .sb-theme-toggle{background:none;border:none;padding:4px;margin:0;border-radius:var(--r-sm);
-  color:#aab0d6;cursor:pointer;display:flex;line-height:0;flex:none;
+  color:var(--muted);cursor:pointer;display:flex;line-height:0;flex:none;
   transition:background .12s,color .12s,transform .1s var(--ease-out)}
 .sb-theme-toggle svg{width:15px;height:15px}
-.sb-theme-toggle:hover{background:rgba(255,255,255,.08);color:#fff}
-.sb-theme-toggle:focus-visible{outline:2px solid #8b93f5;outline-offset:1px}
+.sb-theme-toggle:hover{background:var(--chip);color:var(--ink)}
+.sb-theme-toggle:focus-visible{outline:2px solid var(--brand);outline-offset:1px}
 .sb-theme-toggle:active{transform:scale(var(--press))}
 
 /* ---------- main ---------- */
@@ -207,7 +239,7 @@ table{width:100%;border-collapse:collapse;font-size:12.8px}
 th{text-align:left;font-size:10.5px;color:var(--faint);font-weight:700;letter-spacing:.04em;
   text-transform:uppercase;padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap;user-select:none}
 /* Only columns with a data-k are actually sortable (the People table) — a
-   pointer cursor on every th, including non-sortable ones like "Merit says"
+   pointer cursor on every th, including non-sortable ones like "Merit AC says"
    or the Teams/Roles columns, was a false affordance. */
 th[data-k]{cursor:pointer}
 th[data-k]:hover{color:var(--ink)}
@@ -273,12 +305,12 @@ tr:last-child td{border-bottom:none}
 .alert.clickable:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
 .alert-cta{display:inline-block;margin-top:7px;font-size:11.5px;font-weight:600;color:var(--brand)}
 
-code.tag{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;background:var(--chip);
+code.tag{font-family:var(--font-mono);font-size:11px;background:var(--chip);
   padding:1px 6px;border-radius:5px}
 
 .ingest-token-row{display:flex;align-items:center;gap:10px;background:var(--panel-alt);
   border:1px solid var(--line);border-radius:var(--r-sm);padding:9px 12px}
-.ingest-token-value{flex:1;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
+.ingest-token-value{flex:1;font-family:var(--font-mono);font-size:12.5px;
   color:var(--ink);overflow-x:auto;white-space:nowrap;user-select:all}
 .ingest-token-toggle{flex:none;background:none;border:1px solid var(--line);border-radius:var(--r-sm);
   padding:5px 11px;font-size:11.5px;font-weight:600;color:var(--muted);cursor:pointer;

@@ -1,0 +1,24 @@
+name: demand-tick
+when: "weekly, monday, after money-tick"
+goal: Every open deal has a next action with a date, and no quote is waiting in silence.
+guardrails:
+  - drafts only, never sends
+  - stops if os validate reports broken data
+  - never marks a deal won or lost without the operator saying so
+  - never quotes a number the pricing rubric did not produce
+steps:
+  - id: open_deals
+    task_class: read_registry
+    tool: pipeline
+    finish_line: "every open deal is listed with its next action and due date"
+  - id: stale
+    task_class: rank_work
+    finish_line: "deals with no next action are ranked by value times confidence"
+  - id: followup
+    task_class: draft_money_message
+    tool: followup
+    finish_line: "one draft exists per quote with no answer past its expiry"
+  - id: price
+    task_class: set_price
+    tool: quote
+    finish_line: "any quote needing a number has one built from cost, with an expiry date, waiting for the operator"

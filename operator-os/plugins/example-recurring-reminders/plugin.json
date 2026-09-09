@@ -1,0 +1,12 @@
+{
+  "name": "example-recurring-reminders",
+  "version": "1.0.0",
+  "title": "Recurring renewal reminders",
+  "description": "List recurring income and cost rows coming due soon, read-only, so a renewal or a rising cost never arrives as a surprise.",
+  "author": "Operator OS",
+  "licence": "Same as the product",
+  "requires": {"operator_os": ">=1.0"},
+  "capabilities": ["commands", "tools"],
+  "entry": "plugin.py",
+  "enabled": true
+}

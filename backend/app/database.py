@@ -26,6 +26,7 @@ Base = declarative_base()
 # ALTER TABLE instead.
 _COLUMN_BACKFILLS = [
     ("dashboard_users", "is_admin", "BOOLEAN NOT NULL DEFAULT FALSE"),
+    ("waitlist_signups", "source", "VARCHAR NOT NULL DEFAULT 'coming-soon'"),
 ]
 
 

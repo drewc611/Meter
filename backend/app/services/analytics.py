@@ -280,7 +280,7 @@ def get_tool_performance(db: Session, org_id: int | None, period_start: datetime
     person's overall score is attributed across the tools they used that
     period, weighted by how much they spent on each. Someone who splits spend
     evenly across two tools contributes half their score's weight to each.
-    This is a real, defensible rollup of data Merit already has -- it is not
+    This is a real, defensible rollup of data Merit AC already has -- it is not
     a claim that tool X caused outcome Y. Surface it in the UI with that
     caveat, not as a per-tool causal ranking.
     """

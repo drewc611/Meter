@@ -2,11 +2,22 @@
 
 from datetime import datetime
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from .services.auth import MAX_PASSWORD_BYTES
+# bcrypt hashes at most 72 *bytes* and raises ValueError past that, so both
+# password fields below are capped here -- an oversized password is then a
+# clean 422 at the validation layer instead of ever reaching bcrypt (where
+# it used to become a 500, and on /auth/login an account-existence oracle:
+# an unknown email short-circuits to 401 without hashing anything).
+# Field(max_length=...) counts characters, so _bcrypt_safe_password also
+# checks the encoded length for multibyte passwords.
+BCRYPT_MAX_PASSWORD_BYTES = 72
 
-# ------------------------------------------------------------- requests
+
+def _bcrypt_safe_password(v: str) -> str:
+    if len(v.encode("utf-8")) > BCRYPT_MAX_PASSWORD_BYTES:
+        raise ValueError(f"password must be at most {BCRYPT_MAX_PASSWORD_BYTES} bytes")
+    return v
 
 
 def _validated_email(v: str) -> str:
@@ -30,23 +41,19 @@ def _validated_email(v: str) -> str:
     return v
 
 
+# ------------------------------------------------------------- requests
+
+
 class WaitlistSignupIn(BaseModel):
     email: str
-    company: str | None = None
+    company: str | None = Field(default=None, max_length=200)
+    # e.g. "challenge-paid-track" for the /challenge interest form
+    source: str = Field(default="coming-soon", max_length=200)
 
     @field_validator("email")
     @classmethod
     def _basic_email_shape(cls, v: str) -> str:
         return _validated_email(v)
-
-    @field_validator("company")
-    @classmethod
-    def _bounded_company(cls, v: str | None) -> str | None:
-        # Unbounded free text on an unauthenticated endpoint is a row-size
-        # problem waiting to happen; nothing legitimate needs more.
-        if v is not None and len(v) > 200:
-            raise ValueError("company must be at most 200 characters")
-        return v
 
 
 class UsageEventIn(BaseModel):
@@ -87,7 +94,7 @@ class IdentityMappingIn(BaseModel):
 
 class SignupIn(BaseModel):
     email: str
-    password: str
+    password: str = Field(max_length=BCRYPT_MAX_PASSWORD_BYTES)
     name: str
     signup_code: str | None = None
 
@@ -98,21 +105,20 @@ class SignupIn(BaseModel):
 
     @field_validator("password")
     @classmethod
-    def _length(cls, v: str) -> str:
+    def _length_bounds(cls, v: str) -> str:
         if len(v) < 8:
             raise ValueError("password must be at least 8 characters")
-        # bcrypt refuses anything over 72 bytes outright (it does not
-        # truncate), so without this a password manager's 100-character
-        # output is a 500 rather than a validation error. Bytes, not
-        # characters -- non-ASCII costs more than one each.
-        if len(v.encode("utf-8")) > MAX_PASSWORD_BYTES:
-            raise ValueError(f"password must be at most {MAX_PASSWORD_BYTES} bytes")
-        return v
+        return _bcrypt_safe_password(v)
 
 
 class LoginIn(BaseModel):
     email: str
-    password: str
+    password: str = Field(max_length=BCRYPT_MAX_PASSWORD_BYTES)
+
+    @field_validator("password")
+    @classmethod
+    def _max_bytes(cls, v: str) -> str:
+        return _bcrypt_safe_password(v)
 
 
 # ------------------------------------------------------------- responses
@@ -120,6 +126,21 @@ class LoginIn(BaseModel):
 
 class WaitlistSignupOut(BaseModel):
     status: str = "joined"
+
+
+class WaitlistEntryOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)  # constructed from WaitlistSignup ORM rows, not a dict
+
+    email: str
+    company: str | None
+    source: str
+    created_at: datetime
+    notified_at: datetime | None
+
+
+class WaitlistListOut(BaseModel):
+    count: int
+    entries: list[WaitlistEntryOut]
 
 
 class UserOut(BaseModel):

@@ -15,8 +15,6 @@ Both env vars are read live, so these tests toggle with monkeypatch.setenv
 rather than touching Settings.
 """
 
-from app import models
-
 # --------------------------------------------------------------- MERIT_API_KEY
 
 
@@ -149,76 +147,6 @@ def test_signup_rejects_short_password(client, monkeypatch):
     assert r.status_code == 422
 
 
-def test_signup_rejects_password_over_bcrypt_limit(client, monkeypatch):
-    """bcrypt refuses anything over 72 bytes -- it raises rather than
-    truncating -- so an unbounded password was a 500, not a validation
-    error. A password manager's default output is routinely longer."""
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
-    r = client.post("/auth/signup", json={"email": "a@example.com", "password": "a" * 100, "name": "Ada"})
-    assert r.status_code == 422
-
-
-def test_signup_password_limit_counts_bytes_not_characters(client, monkeypatch):
-    """40 emoji is 160 bytes. Measuring len() in characters would let it
-    through to bcrypt, which counts bytes and would raise."""
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
-    r = client.post("/auth/signup", json={"email": "a@example.com", "password": "🔥" * 40, "name": "Ada"})
-    assert r.status_code == 422
-
-
-def test_login_with_overlong_password_is_401_not_500(client, monkeypatch):
-    """Unauthenticated: anyone could 500 the login endpoint for an account
-    they don't own just by sending a long password."""
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
-    client.post("/auth/signup", json={"email": "a@example.com", "password": "hunter22", "name": "Ada"})
-    r = client.post("/auth/login", json={"email": "a@example.com", "password": "a" * 100})
-    assert r.status_code == 401
-
-
-def test_login_burns_a_hash_for_an_unknown_account(client, monkeypatch):
-    """/auth/login returns the same message either way, but used to return it
-    ~70x faster for an address with no account, because bcrypt only ran when
-    there was a hash to check -- which told a guesser exactly what the
-    identical wording withholds.
-
-    Asserted through the endpoint, and by counting the work rather than
-    timing the clock: a stopwatch assertion would go flaky on a loaded CI
-    box, and asserting on the helper alone wouldn't prove /auth/login
-    actually calls it."""
-    from app.services import auth as auth_service
-
-    hashes_compared = []
-    real_verify = auth_service.verify_password
-    monkeypatch.setattr(auth_service, "verify_password", lambda pw, h: hashes_compared.append(h) or real_verify(pw, h))
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
-
-    r = client.post("/auth/login", json={"email": "nobody@example.com", "password": "hunter22"})
-    assert r.status_code == 401
-    assert hashes_compared, "an unknown account must still cost a bcrypt comparison"
-    assert hashes_compared[0].startswith("$2b$"), "must compare against a real bcrypt hash, not a stub"
-
-
-def test_login_costs_the_same_work_whether_or_not_the_account_exists(client, monkeypatch):
-    """The pair that matters: one bcrypt comparison either way."""
-    from app.services import auth as auth_service
-
-    counted = []
-    real_verify = auth_service.verify_password
-    monkeypatch.setattr(auth_service, "verify_password", lambda pw, h: counted.append(h) or real_verify(pw, h))
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
-    client.post("/auth/signup", json={"email": "real@example.com", "password": "hunter22", "name": "Ada"})
-
-    counted.clear()
-    client.post("/auth/login", json={"email": "real@example.com", "password": "wrong-password"})
-    known = len(counted)
-
-    counted.clear()
-    client.post("/auth/login", json={"email": "nobody@example.com", "password": "wrong-password"})
-    unknown = len(counted)
-
-    assert known == unknown == 1, f"known account did {known} comparison(s), unknown did {unknown}"
-
-
 def test_signup_requires_matching_code_when_set(client, monkeypatch):
     monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
     monkeypatch.setenv("MERIT_SIGNUP_CODE", "letmein")
@@ -226,6 +154,30 @@ def test_signup_requires_matching_code_when_set(client, monkeypatch):
     assert client.post("/auth/signup", json=body).status_code == 403
     assert client.post("/auth/signup", json={**body, "signup_code": "wrong"}).status_code == 403
     assert client.post("/auth/signup", json={**body, "signup_code": "letmein"}).status_code == 201
+
+
+def test_signup_code_never_adopts_someones_personal_org(client, db, monkeypatch):
+    """A deployment that ran public before being locked down has personal
+    orgs in the table. Picking "the oldest organization" as the shared one
+    put every later company signup inside an individual's private org, where
+    they could read that person's dashboard. The shared org must be a
+    company org -- created if there isn't one."""
+    from app import models
+
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.delenv("MERIT_SIGNUP_CODE", raising=False)
+    alice = client.post(
+        "/auth/signup", json={"email": "alice@example.com", "password": "hunter22", "name": "Alice"}
+    ).json()["user"]
+
+    monkeypatch.setenv("MERIT_SIGNUP_CODE", "letmein")
+    bob = client.post(
+        "/auth/signup",
+        json={"email": "bob@example.com", "password": "hunter22", "name": "Bob", "signup_code": "letmein"},
+    ).json()["user"]
+
+    assert bob["org_id"] != alice["org_id"], "company signup landed in a personal org"
+    assert db.query(models.Organization).filter_by(id=bob["org_id"]).one().plan == "company"
 
 
 # --------------------------------------------------------------- /auth/login
@@ -254,29 +206,101 @@ def test_login_rejects_unknown_email(client, monkeypatch):
     assert r.status_code == 401
 
 
-# ------------------------------------------------- org provisioning (tenancy)
-
-
-def test_signup_code_never_adopts_someones_personal_org(client, db, monkeypatch):
-    """A deployment that ran public before being locked down has personal
-    orgs in the table. Picking "the oldest organization" as the shared one
-    put every later company signup inside an individual's private org, where
-    they could read that person's dashboard. The shared org must be a
-    company org -- created if there isn't one."""
+def test_login_pays_the_same_bcrypt_cost_for_an_unknown_email(client, monkeypatch):
+    """An unknown email must still run a real bcrypt check, against
+    DUMMY_PASSWORD_HASH, so it costs the same as a wrong password on a real
+    account -- otherwise the timing gap alone reveals which emails have
+    accounts, even though both return the identical 401."""
     monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
-    monkeypatch.delenv("MERIT_SIGNUP_CODE", raising=False)
-    alice = client.post(
-        "/auth/signup", json={"email": "alice@example.com", "password": "hunter22", "name": "Alice"}
-    ).json()["user"]
+    from app.services import auth as auth_service
 
-    monkeypatch.setenv("MERIT_SIGNUP_CODE", "letmein")
-    bob = client.post(
-        "/auth/signup",
-        json={"email": "bob@example.com", "password": "hunter22", "name": "Bob", "signup_code": "letmein"},
-    ).json()["user"]
+    calls = []
+    real_verify = auth_service.verify_password
 
-    assert bob["org_id"] != alice["org_id"], "company signup landed in a personal org"
-    assert db.query(models.Organization).filter_by(id=bob["org_id"]).one().plan == "company"
+    def spy(password, password_hash):
+        calls.append(password_hash)
+        return real_verify(password, password_hash)
+
+    monkeypatch.setattr("app.routers.auth.auth_service.verify_password", spy)
+    r = client.post("/auth/login", json={"email": "nobody@example.com", "password": "hunter22"})
+    assert r.status_code == 401
+    assert calls == [auth_service.DUMMY_PASSWORD_HASH]
+
+
+def test_login_pays_the_same_bcrypt_cost_for_a_google_only_account(client, monkeypatch):
+    """A real account with no password set (Google-only) must also check
+    against DUMMY_PASSWORD_HASH, not skip the bcrypt call entirely."""
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    from app import models
+    from app.database import SessionLocal
+    from app.services import auth as auth_service
+
+    # Simplest reliable way to get a real user row with no password: sign up
+    # normally, then clear the password hash to model a Google-only account.
+    client.post("/auth/signup", json={"email": "google-only@example.com", "password": "hunter22", "name": "Ada"})
+    db = SessionLocal()
+    try:
+        user = db.query(models.DashboardUser).filter_by(email="google-only@example.com").one()
+        user.password_hash = None
+        db.commit()
+    finally:
+        db.close()
+
+    calls = []
+    real_verify = auth_service.verify_password
+
+    def spy(password, password_hash):
+        calls.append(password_hash)
+        return real_verify(password, password_hash)
+
+    monkeypatch.setattr("app.routers.auth.auth_service.verify_password", spy)
+    r = client.post("/auth/login", json={"email": "google-only@example.com", "password": "hunter22"})
+    assert r.status_code == 401
+    assert calls == [auth_service.DUMMY_PASSWORD_HASH]
+
+
+# --------------------------------------------------------------- oversized passwords (bcrypt's 72-byte limit)
+
+
+def test_oversized_password_is_422_on_signup_and_login(client, monkeypatch):
+    """bcrypt raises past 72 bytes. Rejecting at the validation layer keeps
+    that out of the handler entirely -- it used to surface as a 500."""
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    huge = "a" * 200
+    assert (
+        client.post("/auth/signup", json={"email": "a@example.com", "password": huge, "name": "Ada"}).status_code == 422
+    )
+    assert client.post("/auth/login", json={"email": "a@example.com", "password": huge}).status_code == 422
+    # Multibyte: 72 characters, 144 bytes -- the character-count cap alone
+    # would let this through to bcrypt.
+    multibyte = "é" * 72
+    assert (
+        client.post("/auth/signup", json={"email": "b@example.com", "password": multibyte, "name": "Bo"}).status_code
+        == 422
+    )
+    assert client.post("/auth/login", json={"email": "b@example.com", "password": multibyte}).status_code == 422
+
+
+def test_oversized_password_does_not_reveal_whether_the_account_exists(client, monkeypatch):
+    """The enumeration oracle this closes: an existing email used to crash
+    into a 500 while an unknown one cleanly 401'd, because `or` short-circuits
+    past verify_password. Both are the same status now."""
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    client.post("/auth/signup", json={"email": "real@example.com", "password": "hunter22", "name": "Ada"})
+    huge = "a" * 200
+    existing = client.post("/auth/login", json={"email": "real@example.com", "password": huge})
+    unknown = client.post("/auth/login", json={"email": "nobody@example.com", "password": huge})
+    assert existing.status_code == unknown.status_code == 422
+
+
+def test_verify_password_returns_false_for_oversized_input(monkeypatch):
+    """The backstop under the schema cap: verify_password itself never
+    raises, whatever reaches it."""
+    from app.services import auth as auth_service
+
+    hashed = auth_service.hash_password("hunter22")
+    assert auth_service.verify_password("a" * 200, hashed) is False
+    assert auth_service.verify_password("hunter22", hashed) is True
 
 
 # --------------------------------------------------------------- /auth/me
@@ -308,7 +332,7 @@ def test_me_returns_current_user(client, monkeypatch):
         "has_google": False,
         "is_admin": True,  # signup with no MERIT_SIGNUP_CODE always admins its own new org
         "org_id": 1,
-        "org_name": "Ada's Merit",
+        "org_name": "Ada's Merit AC",
     }
 
 
@@ -339,7 +363,7 @@ def test_google_callback_creates_new_user_and_redirects_with_token(client, monke
     )
     r = client.get("/auth/google/callback?code=fake-code", follow_redirects=False)
     assert r.status_code in (302, 307)
-    assert r.headers["location"].startswith("https://usemeritai.com/?token=")
+    assert r.headers["location"].startswith("https://usemeritai.com/app?token=")
 
 
 def test_google_callback_links_existing_password_account_by_email(client, monkeypatch, db):

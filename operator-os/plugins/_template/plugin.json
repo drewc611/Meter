@@ -1,0 +1,12 @@
+{
+  "name": "__PLUGIN_NAME__",
+  "version": "0.1.0",
+  "title": "__PLUGIN_TITLE__",
+  "description": "one line about what it does",
+  "author": "",
+  "licence": "",
+  "requires": {"operator_os": ">=1.0"},
+  "capabilities": ["commands"],
+  "entry": "plugin.py",
+  "enabled": false
+}

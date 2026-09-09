@@ -1,7 +1,7 @@
 [project]
 name = "merit-backend"
 version = "0.1.0"
-description = "Merit — AI spend & value tracking backend"
+description = "Merit AC — AI spend & value tracking backend"
 requires-python = ">=3.10"
 
 [tool.ruff]

@@ -1,9 +1,11 @@
-# Merit&trade;
+# Merit AC&trade;
 
-AI spend tracker built around the question spend-attribution tools don't
-ask: is the work behind that spend any good? Merit attributes AI spend to
-the person who generated it and correlates it against outcomes — table
-stakes now — then layers a quality-risk score on top (reverts, heavy
+A hub for AI — sourced news, a directory of models and tools, a glossary,
+and a governed-agentic-DevSecOps content arm — anchored by a flagship
+spend/value tracker built around the question spend-attribution tools
+don't ask: is the work behind that spend any good? Merit AC attributes AI
+spend to the person who generated it and correlates it against outcomes —
+table stakes now — then layers a quality-risk score on top (reverts, heavy
 rewrites, regeneration loops) so a clean "value per dollar" number can't
 hide slop.
 
@@ -17,11 +19,11 @@ dashboard UI.
 ## What it looks like
 
 Every screenshot below is the real dashboard, running against the live
-backend on seeded demo data (`python seed.py`) — nothing mocked up. Note:
-the public production site currently shows a "coming soon" placeholder
-instead of this dashboard (see [Quickstart](#quickstart) and
-[DEPLOY.md](DEPLOY.md)) — the dashboard itself is fully built and exactly
-what's pictured here, just not what's deployed to visitors yet.
+backend on seeded demo data (`python seed.py`) — nothing mocked up, and it's
+what's actually deployed at `/app` in production today (see
+[Quickstart](#quickstart) and [DEPLOY.md](DEPLOY.md)). The site root itself
+is a marketing/content landing page, not the dashboard — see
+[Site content](#site-content) below.
 
 **Overview** — spend, blended value/$, slop risk, seat utilization, and
 score coverage at a glance, plus the spend-vs-value scatter, the four-segment
@@ -31,7 +33,7 @@ a multi-month spend trend.
 ![Overview](docs/screenshots/overview.png)
 
 **People** — every AI-active person, searchable/filterable/sortable by
-spend, value/$, slop risk, confidence tier, and seat tier, each with Merit's
+spend, value/$, slop risk, confidence tier, and seat tier, each with Merit AC's
 recommendation.
 
 ![People](docs/screenshots/people.png)
@@ -41,7 +43,7 @@ individual.
 
 ![Teams & Roles](docs/screenshots/teams-roles.png)
 
-**Alerts** — what Merit thinks needs a look this period, each one linking
+**Alerts** — what Merit AC thinks needs a look this period, each one linking
 back into a pre-filtered People view.
 
 ![Alerts](docs/screenshots/alerts.png)
@@ -54,17 +56,59 @@ plus a live spend-by-tool-and-model breakdown.
 ## What's here
 
 ```
-backend/    FastAPI service: usage/outcome/quality-signal ingestion,
-            identity resolution, Tier-1/Tier-2 scoring, REST API.
-            See backend/README.md for the full architecture writeup.
-frontend/   Sidebar dashboard (Overview, People, Teams & Roles, Alerts,
-            Integrations), a Vite + React app under src/ -- what's built
-            and deployed at the production site root. Calls the backend
-            API at localhost:8000 and falls back to embedded demo data if
-            it's not running. See frontend/README.md.
-            coming-soon.html is the old pre-launch placeholder, no longer
-            served at `/`.
+backend/       FastAPI service: usage/outcome/quality-signal ingestion,
+               identity resolution, Tier-1/Tier-2 scoring, REST API.
+               See backend/README.md for the full architecture writeup.
+frontend/      Sidebar dashboard (Overview, People, Teams & Roles, Alerts,
+               Integrations), a Vite + React app under src/ -- deployed at
+               `/app` in production, not the site root. Calls the backend
+               API at localhost:8000 and falls back to embedded demo data if
+               it's not running. The site root and the rest of the content
+               arm (architecture, setup guides, news, models, glossary,
+               guides, prompts, challenge, community -- see "Site content"
+               below) are separate prerendered pages, not part of the
+               dashboard. See frontend/README.md.
+               coming-soon.html is the old pre-launch placeholder, no longer
+               served anywhere.
+merit-ai-team/ Skills for the internal AI team that runs Merit AC's own
+               product/growth/eng/infra loop -- not part of the shipped
+               product. See merit-ai-team/skills/merit-context/SKILL.md.
 ```
+
+## Site content
+
+The site root (`/`) is a marketing/content landing page, not the dashboard
+— it's a real React component (`frontend/src/content/pages/Home.jsx`) that
+prerenders to plain static HTML at build time, same as the rest of the
+content arm below, so it's a real crawlable file rather than a client-side
+route (see `frontend/README.md`). The dashboard itself lives at `/app`,
+linked from the "Sign in" button in the header.
+
+- `/architecture` -- purely the system/deployment writeup from
+  [`ARCHITECTURE.md`](ARCHITECTURE.md), reformatted for the public site: the
+  ingestion/scoring pipeline, data model, where it runs, and what's
+  deliberately not built yet
+- `/setup/react`, `/setup/python`, `/setup/node`, `/setup/tensorflow-pyro` --
+  how to wire your own AI usage into Merit AC's `/ingest/usage` endpoint
+- `/news` -- sourced AI news commentary, the one arm that publishes
+  autonomously with a Judge-tier fact-check pass as its review gate (see
+  `merit-ai-team/skills/merit-growth/SKILL.md`)
+- `/models` -- a directory of AI models and tools; every entry carries a
+  source and a `verifiedDate`, spot-checked rather than trusted indefinitely
+- `/glossary` -- plain-English AI term definitions
+- `/guides`, `/prompts`, `/challenge` -- a governed-agentic-DevSecOps
+  content arm adapted from an internal reference handbook: three long-form
+  guides, a 30-day prompt archive, and a free capstone project (build a
+  governed agentic delivery platform). `/guides` also carries a fourth,
+  independent guide -- a general field guide to AI system design (twelve
+  archetypes, six complex agent patterns, and the ML/AI software landscape),
+  not adapted from the handbook and not specific to this product.
+  `/prompts` links out to a separate composed-and-advanced prompt library
+  (235 prompts across 41 categories, each naming which of the guide's
+  patterns it combines) -- a different shape from the daily archive, so it
+  lives at its own URL rather than inside the 30-day calendar.
+- `/community` -- not open yet; an honest interest-list page rather than a
+  placeholder for a platform or price that hasn't been decided
 
 ## Quickstart
 

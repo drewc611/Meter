@@ -1,0 +1,24 @@
+name: work-tick
+when: "daily, first thing"
+goal: Say what has to be true by tonight, and name what is blocking the rest.
+guardrails:
+  - drafts only, never sends
+  - stops if os validate reports broken data
+  - three things for today, not a list of everything
+  - does not change a task status the operator has not seen
+steps:
+  - id: brief
+    task_class: collect_facts
+    run: "os brief"
+    finish_line: "overdue tasks, today's tasks and the cash line are printed"
+  - id: check
+    task_class: check_data
+    run: "os validate"
+    finish_line: "the error count is printed, and it is zero or the tick stops here"
+  - id: order
+    task_class: rank_work
+    tool: day
+    finish_line: "three tasks are named for today, in the order they get done"
+  - id: blocked
+    task_class: summarise
+    finish_line: "every blocked task names what it is blocked by and who owns the unblock"

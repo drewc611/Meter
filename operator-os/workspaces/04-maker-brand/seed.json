@@ -1,0 +1,120 @@
+{
+  "config": {
+    "business_name": "Tallow and Tin",
+    "operator": "Marta Quinn",
+    "trade": "small batch candles and balms, direct and wholesale",
+    "currency": "USD",
+    "currency_symbol": "$",
+    "hourly_rate": "32.00",
+    "target_margin_pct": "45",
+    "tax_rate_pct": "0",
+    "tax_set_aside_pct": "25",
+    "invoice_terms_days": "60",
+    "capacity_hours_per_week": "30",
+    "opening_cash": "1180.00",
+    "week_starts": "monday",
+    "quiet_hours": "18:00-08:00"
+  },
+  "contacts": [
+    {"id":"c0001","name":"Della Frame","company":"Willow Row Mercantile","role":"buyer","email":"della@example.com","phone":"555-0132","source":"trade show","status":"active","tags":"stockist,slow-pay","first_contact":"T-540","last_contact":"T-18","notes":"Biggest wholesale volume she has. Treats net 60 as net 120 and has never once apologised for it."},
+    {"id":"c0002","name":"Aaron Pilkey","company":"Northgate Provisions","role":"owner","email":"aaron@example.com","phone":"555-0148","source":"referral","status":"active","tags":"stockist","first_contact":"T-430","last_contact":"T-9","notes":"Pays early. Reorders without being asked. Do not lose him."},
+    {"id":"c0003","name":"Sunni Barlow","company":"Fern and Field Home","role":"buyer","email":"sunni@example.com","phone":"555-0176","source":"trade show","status":"active","tags":"stockist","first_contact":"T-300","last_contact":"T-8","notes":"Two locations. Wants exclusivity on the balm line and has not offered to pay for it."},
+    {"id":"c0004","name":"Georgia Nkemdi","company":"Blue Hour Apothecary","role":"owner","email":"georgia@example.com","phone":"555-0161","source":"instagram","status":"active","tags":"stockist,small","first_contact":"T-210","last_contact":"T-19","notes":"Orders forty units at a time. Good person, thin order, same packing time as a big one."},
+    {"id":"c0005","name":"Peter Lansdale","company":"Ridgeway Gift Barn","role":"buyer","email":"peter@example.com","phone":"555-0104","source":"market","status":"lead","tags":"stockist","first_contact":"T-12","last_contact":"T-12","notes":"Saw the Quarry Lane stall. Asked for a line sheet, then went quiet."},
+    {"id":"c0006","name":"Yuki Tomlin","company":"Hearth Collective","role":"buying manager","email":"yuki@example.com","phone":"555-0129","source":"cold email","status":"lead","tags":"stockist,multi-door","first_contact":"T-26","last_contact":"T-6","notes":"Six doors. Wants fifty five percent off retail and a 400 unit commitment. The whole holiday plan hangs on this one."},
+    {"id":"c0007","name":"Ivy Sandoval","company":"","role":"repeat customer","email":"ivy@example.com","phone":"555-0195","source":"storefront","status":"active","tags":"direct,repeat","first_contact":"T-380","last_contact":"T-11","notes":"Buys four candles every season and posts about it. Cheapest marketing in the business."},
+    {"id":"c0008","name":"Malcolm Reece","company":"Reece and Doyle Advisory","role":"office manager","email":"malcolm@example.com","phone":"555-0117","source":"referral","status":"active","tags":"direct,gifting","first_contact":"T-260","last_contact":"T-5","notes":"Corporate gifting twice a year. Pays at checkout like everyone else. Worth more than two stockists."},
+    {"id":"c0009","name":"Bree Halloran","company":"Cobbleside Trading Post","role":"owner","email":"bree@example.com","phone":"555-0183","source":"trade","status":"past","tags":"stockist,closed","first_contact":"T-620","last_contact":"T-210","notes":"Shop closed owing 640. Written off. Lesson was to stop shipping on a second unpaid invoice."},
+    {"id":"c0010","name":"Devon Ashby","company":"Little Anvil Home Goods","role":"owner","email":"devon@example.com","phone":"555-0158","source":"market","status":"dormant","tags":"stockist","first_contact":"T-400","last_contact":"T-98","notes":"Has not reordered since spring. Asked for a discount there was no room for."}
+  ],
+  "deals": [
+    {"id":"d0001","contact_id":"c0006","title":"Hearth Collective, 6 doors, holiday","value":"8600.00","stage":"negotiating","confidence":"55","opened":"T-26","expected_close":"T+18","next_action":"Send the six door price break priced off cost","next_action_due":"T+3","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0002","contact_id":"c0005","title":"Ridgeway opening order, 90 units","value":"1450.00","stage":"quoted","confidence":"70","opened":"T-12","expected_close":"T+9","next_action":"Call Peter, the line sheet has sat 12 days","next_action_due":"T-2","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0003","contact_id":"c0004","title":"Blue Hour balm add on, 90 tins","value":"630.00","stage":"new","confidence":"40","opened":"T-5","expected_close":"T+21","next_action":"","next_action_due":"","status":"open","closed_on":"","lost_reason":""},
+    {"id":"d0004","contact_id":"c0002","title":"Northgate autumn reorder","value":"2240.00","stage":"won","confidence":"100","opened":"T-88","expected_close":"T-70","next_action":"","next_action_due":"","status":"won","closed_on":"T-74","lost_reason":""},
+    {"id":"d0005","contact_id":"c0001","title":"Willow Row autumn order","value":"3120.00","stage":"won","confidence":"100","opened":"T-112","expected_close":"T-98","next_action":"","next_action_due":"","status":"won","closed_on":"T-99","lost_reason":""},
+    {"id":"d0006","contact_id":"c0010","title":"Little Anvil spring reorder","value":"880.00","stage":"lost","confidence":"0","opened":"T-140","expected_close":"T-104","next_action":"","next_action_due":"","status":"lost","closed_on":"T-98","lost_reason":"Wanted sixty percent off retail. There was nothing left at that number."}
+  ],
+  "quotes": [
+    {"id":"q0001","deal_id":"d0001","contact_id":"c0006","number":"LS-3018","issued":"T-20","expires":"T+10","subtotal":"8600.00","tax":"0.00","total":"8600.00","status":"sent","decided_on":"","notes":"400 units across six doors. Resale, no tax."},
+    {"id":"q0002","deal_id":"d0002","contact_id":"c0005","number":"LS-3021","issued":"T-12","expires":"T+18","subtotal":"1450.00","tax":"0.00","total":"1450.00","status":"sent","decided_on":"","notes":"Opening order, 90 units, six scents."},
+    {"id":"q0003","deal_id":"d0005","contact_id":"c0001","number":"LS-3009","issued":"T-114","expires":"T-84","subtotal":"3120.00","tax":"0.00","total":"3120.00","status":"accepted","decided_on":"T-99","notes":"Priced at half of retail. That is the whole problem in one line."}
+  ],
+  "projects": [
+    {"id":"p0001","contact_id":"","deal_id":"","name":"Autumn run, 240 units","status":"done","start":"T-86","due":"T-58","budget":"4200.00","hours_estimate":"30","health":"amber","next_milestone":"","closed_on":"T-56"},
+    {"id":"p0002","contact_id":"","deal_id":"","name":"Holiday run, 400 units","status":"active","start":"T-24","due":"T+22","budget":"7600.00","hours_estimate":"64","health":"amber","next_milestone":"Second pour, 160 vessels","closed_on":""},
+    {"id":"p0003","contact_id":"","deal_id":"","name":"Balm line, first 300 tins","status":"active","start":"T-32","due":"T+12","budget":"1900.00","hours_estimate":"20","health":"red","next_milestone":"Second batch, harder set point","closed_on":""},
+    {"id":"p0004","contact_id":"","deal_id":"","name":"Summer run, 180 units","status":"done","start":"T-154","due":"T-134","budget":"3100.00","hours_estimate":"16","health":"green","next_milestone":"","closed_on":"T-132"},
+    {"id":"p0005","contact_id":"","deal_id":"","name":"Winter refill run, 120 units","status":"planned","start":"T+34","due":"T+52","budget":"2300.00","hours_estimate":"18","health":"","next_milestone":"Lock the wax price before the order goes in","closed_on":""},
+    {"id":"p0006","contact_id":"","deal_id":"","name":"Gift set boxes, 60 sets","status":"blocked","start":"T-10","due":"T+18","budget":"900.00","hours_estimate":"12","health":"red","next_milestone":"Box supplier has not confirmed the die line","closed_on":""}
+  ],
+  "tasks": [
+    {"id":"t0001","project_id":"p0002","title":"Pour 160 holiday vessels","due":"T+2","priority":"high","status":"todo","estimate_min":"1440","done_on":"","blocked_by":"","notes":"Three days on the table. Nothing else happens that week."},
+    {"id":"t0002","project_id":"p0002","title":"Order 200 more amber glass","due":"T-3","priority":"now","status":"todo","estimate_min":"25","done_on":"","blocked_by":"","notes":"Four week lead time. Every day late is a day off the holiday window."},
+    {"id":"t0003","project_id":"p0003","title":"Reformulate the balm, first batch sets too soft","due":"T-6","priority":"high","status":"todo","estimate_min":"240","done_on":"","blocked_by":"","notes":"300 tins are unsellable until this is fixed."},
+    {"id":"t0004","project_id":"p0003","title":"Reprint balm labels with the corrected weight","due":"T+7","priority":"normal","status":"todo","estimate_min":"40","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0005","project_id":"","title":"Third ask on INV-4102, Willow Row","due":"T-11","priority":"now","status":"todo","estimate_min":"15","done_on":"","blocked_by":"","notes":"3120 sitting out. 36 days past net 60."},
+    {"id":"t0006","project_id":"","title":"Send Hearth Collective the six door price break","due":"T+3","priority":"high","status":"todo","estimate_min":"90","done_on":"","blocked_by":"","notes":"Price it off cost this time, not off retail."},
+    {"id":"t0007","project_id":"","title":"Call Ridgeway about the line sheet","due":"T-2","priority":"high","status":"todo","estimate_min":"15","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0008","project_id":"p0006","title":"Get the die line back from the box supplier","due":"T+1","priority":"high","status":"blocked","estimate_min":"30","done_on":"","blocked_by":"box supplier die line","notes":"Second week of waiting. Gift sets do not exist until this lands."},
+    {"id":"t0009","project_id":"","title":"Rebuild the wholesale price list off cost, not retail","due":"T","priority":"now","status":"todo","estimate_min":"120","done_on":"","blocked_by":"","notes":"Materials plus labour plus packing plus freight, then margin. In that order."},
+    {"id":"t0010","project_id":"p0002","title":"Wick, label and box holiday batch one","due":"T+9","priority":"high","status":"todo","estimate_min":"960","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0011","project_id":"p0003","title":"Pour and tin the second balm batch, 300 tins","due":"T+14","priority":"high","status":"todo","estimate_min":"600","done_on":"","blocked_by":"","notes":"Blocked in practice until the reformulation is done."},
+    {"id":"t0012","project_id":"p0001","title":"File the autumn run cost sheet","due":"T-52","priority":"normal","status":"done","estimate_min":"60","done_on":"T-51","blocked_by":"","notes":"Filed it. Did not read it."},
+    {"id":"t0013","project_id":"","title":"Renew the storefront plan before it lapses","due":"T+20","priority":"low","status":"todo","estimate_min":"20","done_on":"","blocked_by":"","notes":""},
+    {"id":"t0014","project_id":"","title":"Pack and ship the Northgate reorder","due":"T","priority":"high","status":"todo","estimate_min":"300","done_on":"","blocked_by":"","notes":"48 boxes. Aaron has already paid for the last one."}
+  ],
+  "time": [
+    {"id":"h0001","date":"T-84","project_id":"p0001","task_id":"","minutes":"780","billable":"yes","rate":"32.00","notes":"Autumn pour, 120 vessels"},
+    {"id":"h0002","date":"T-78","project_id":"p0001","task_id":"","minutes":"660","billable":"yes","rate":"32.00","notes":"Second autumn pour and wicking"},
+    {"id":"h0003","date":"T-64","project_id":"p0001","task_id":"","minutes":"540","billable":"yes","rate":"32.00","notes":"Label, box and pack the wholesale orders"},
+    {"id":"h0004","date":"T-16","project_id":"p0002","task_id":"","minutes":"600","billable":"yes","rate":"32.00","notes":"Holiday pour batch one, 160 vessels"},
+    {"id":"h0005","date":"T-8","project_id":"p0002","task_id":"","minutes":"480","billable":"yes","rate":"32.00","notes":"Wick and cure, batch one"},
+    {"id":"h0006","date":"T-3","project_id":"p0002","task_id":"","minutes":"240","billable":"no","rate":"32.00","notes":"Photography and listings for the holiday drop"},
+    {"id":"h0007","date":"T-26","project_id":"p0003","task_id":"","minutes":"300","billable":"yes","rate":"32.00","notes":"First balm batch, 300 tins"},
+    {"id":"h0008","date":"T-9","project_id":"p0003","task_id":"","minutes":"180","billable":"no","rate":"32.00","notes":"Reformulation trials. Batch is a write off."},
+    {"id":"h0009","date":"T-150","project_id":"p0004","task_id":"","minutes":"540","billable":"yes","rate":"32.00","notes":"Summer pour, 180 vessels"},
+    {"id":"h0010","date":"T-144","project_id":"p0004","task_id":"","minutes":"360","billable":"yes","rate":"32.00","notes":"Summer pack and ship"}
+  ],
+  "invoices": [
+    {"id":"i0001","project_id":"p0001","contact_id":"c0001","number":"INV-4102","issued":"T-96","due":"T-36","subtotal":"3120.00","tax":"0.00","total":"3120.00","status":"sent","paid_on":"","method":"","notes":"Net 60, now 36 days past it. Two reminders, no reply."},
+    {"id":"i0002","project_id":"p0001","contact_id":"c0002","number":"INV-4108","issued":"T-72","due":"T-12","subtotal":"2240.00","tax":"0.00","total":"2240.00","status":"paid","paid_on":"T-14","method":"transfer","notes":"Two days early. He always is."},
+    {"id":"i0003","project_id":"p0004","contact_id":"c0003","number":"INV-4061","issued":"T-138","due":"T-78","subtotal":"980.00","tax":"0.00","total":"980.00","status":"paid","paid_on":"T-70","method":"transfer","notes":"Summer wholesale, Fern and Field."},
+    {"id":"i0004","project_id":"p0002","contact_id":"c0003","number":"INV-4131","issued":"T-8","due":"T+52","subtotal":"1360.00","tax":"0.00","total":"1360.00","status":"sent","paid_on":"","method":"","notes":"Holiday preorder, first pallet already shipped."},
+    {"id":"i0005","project_id":"p0004","contact_id":"c0008","number":"WEB-2214","issued":"T-133","due":"T-133","subtotal":"1840.00","tax":"0.00","total":"1840.00","status":"paid","paid_on":"T-133","method":"platform","notes":"Corporate gifting, 60 units. Paid at checkout."},
+    {"id":"i0006","project_id":"p0004","contact_id":"c0007","number":"WEB-2190","issued":"T-147","due":"T-147","subtotal":"285.00","tax":"0.00","total":"285.00","status":"paid","paid_on":"T-147","method":"platform","notes":"Direct storefront. Paid at checkout."},
+    {"id":"i0007","project_id":"p0002","contact_id":"c0004","number":"INV-4127","issued":"T-19","due":"T+41","subtotal":"720.00","tax":"0.00","total":"720.00","status":"sent","paid_on":"","method":"","notes":"Blue Hour holiday, 40 units. Not due for six weeks."},
+    {"id":"i0008","project_id":"p0002","contact_id":"c0008","number":"WEB-2258","issued":"T-5","due":"T-5","subtotal":"1480.00","tax":"0.00","total":"1480.00","status":"paid","paid_on":"T-5","method":"platform","notes":"Holiday gifting, 48 sets. Paid at checkout, money in the same day."},
+    {"id":"i0009","project_id":"","contact_id":"c0001","number":"INV-4044","issued":"T-190","due":"T-130","subtotal":"2460.00","tax":"0.00","total":"2460.00","status":"paid","paid_on":"T-64","method":"transfer","notes":"126 days to pay. That is not payment terms, that is a loan."},
+    {"id":"i0010","project_id":"","contact_id":"c0003","number":"INV-4090","issued":"T-108","due":"T-48","subtotal":"1180.00","tax":"0.00","total":"1180.00","status":"paid","paid_on":"T-46","method":"transfer","notes":""},
+    {"id":"i0011","project_id":"","contact_id":"c0009","number":"INV-4012","issued":"T-260","due":"T-200","subtotal":"640.00","tax":"0.00","total":"640.00","status":"written_off","paid_on":"","method":"","notes":"Cobbleside closed owing this. Stock gone, no money."}
+  ],
+  "expenses": [
+    {"id":"e0001","date":"T-92","vendor":"Pinewood Wax Supply","category":"materials","amount":"1180.00","project_id":"p0001","billable":"no","method":"card","receipt":"yes","notes":"Autumn wax, one drop"},
+    {"id":"e0002","date":"T-90","vendor":"Glasshouse Vessel Co","category":"materials","amount":"1420.00","project_id":"p0001","billable":"no","method":"card","receipt":"yes","notes":"260 amber vessels and lids"},
+    {"id":"e0003","date":"T-88","vendor":"Aldergate Fragrance","category":"materials","amount":"640.00","project_id":"p0001","billable":"no","method":"card","receipt":"yes","notes":"Four scents, autumn"},
+    {"id":"e0004","date":"T-70","vendor":"Two Rivers Print","category":"packaging","amount":"210.00","project_id":"p0001","billable":"no","method":"card","receipt":"yes","notes":"Labels and hang tags"},
+    {"id":"e0005","date":"T-62","vendor":"Freightline Parcel","category":"fulfilment","amount":"265.00","project_id":"p0001","billable":"no","method":"card","receipt":"yes","notes":"Two wholesale pallets out"},
+    {"id":"e0006","date":"T-30","vendor":"Pinewood Wax Supply","category":"materials","amount":"1690.00","project_id":"p0002","billable":"no","method":"transfer","receipt":"yes","notes":"Holiday wax. Paid in full before a single unit sold."},
+    {"id":"e0007","date":"T-28","vendor":"Glasshouse Vessel Co","category":"materials","amount":"1540.00","project_id":"p0002","billable":"no","method":"transfer","receipt":"yes","notes":"420 vessels, four week lead"},
+    {"id":"e0008","date":"T-12","vendor":"Two Rivers Print","category":"packaging","amount":"430.00","project_id":"p0002","billable":"no","method":"card","receipt":"yes","notes":"Holiday labels, mailers, tissue"},
+    {"id":"e0009","date":"T-4","vendor":"Freightline Parcel","category":"fulfilment","amount":"320.00","project_id":"p0002","billable":"no","method":"card","receipt":"yes","notes":"First holiday pallet to Fern and Field"},
+    {"id":"e0010","date":"T-34","vendor":"Beacon Hill Butters","category":"materials","amount":"810.00","project_id":"p0003","billable":"no","method":"card","receipt":"yes","notes":"Balm base and tins, first batch"},
+    {"id":"e0011","date":"T-11","vendor":"Beacon Hill Butters","category":"materials","amount":"430.00","project_id":"p0003","billable":"no","method":"card","receipt":"no","notes":"Second base after the first one set too soft"},
+    {"id":"e0012","date":"T-158","vendor":"Pinewood Wax Supply","category":"materials","amount":"1180.00","project_id":"p0004","billable":"no","method":"card","receipt":"yes","notes":"Summer wax, vessels and labels"},
+    {"id":"e0013","date":"T-9","vendor":"Quarry Lane Market","category":"market fees","amount":"240.00","project_id":"","billable":"no","method":"transfer","receipt":"yes","notes":"Stall, three Saturdays"},
+    {"id":"e0014","date":"T-2","vendor":"Tinderbox Manufacturing","category":"manufacturing","amount":"1450.00","project_id":"","billable":"no","method":"transfer","receipt":"yes","notes":"Deposit on 500 lidded tins. Cash out four months before the revenue."}
+  ],
+  "recurring": [
+    {"id":"r0001","label":"Studio rent","type":"cost","amount":"780.00","cadence":"monthly","next_date":"T+11","category":"premises","notes":"Unit behind the print shop. Includes power."},
+    {"id":"r0002","label":"Storefront and payment fees","type":"cost","amount":"168.00","cadence":"monthly","next_date":"T+6","category":"overhead","notes":"Platform plan plus card processing on direct sales."},
+    {"id":"r0003","label":"Direct online sales","type":"income","amount":"2350.00","cadence":"monthly","next_date":"T+8","category":"direct","notes":"Flat year average. Runs near 4200 in November and December and near 900 in February."},
+    {"id":"r0004","label":"Wax and vessel standing order","type":"cost","amount":"640.00","cadence":"monthly","next_date":"T+16","category":"materials","notes":"Base stock. Separate from the seasonal drops."},
+    {"id":"r0005","label":"Insurance and business licence","type":"cost","amount":"138.00","cadence":"monthly","next_date":"T+21","category":"insurance","notes":""},
+    {"id":"r0006","label":"Quarry Lane stall fee","type":"cost","amount":"240.00","cadence":"quarterly","next_date":"T+13","category":"market","notes":"Three Saturdays a quarter. Mostly moves seconds."}
+  ],
+  "notes": {
+    "c0001.md": "# Della Frame, Willow Row Mercantile\n\nBiggest wholesale volume, worst payer. Two invoices of history:\n\n- INV-4044, 2460, took 126 days on net 60 terms.\n- INV-4102, 3120, currently 36 days past due, two reminders sent.\n\nWhat that means in cash: every Willow Row order is a four month loan at zero\npercent, funded out of wax money.\n\nRules going forward:\n\n- No new run goes on the table for her while an invoice is past due.\n- Opening order on the next range is fifty percent up front.\n- She replies to a phone call. She does not reply to email.\n",
+    "p0001.md": "# Autumn run, 240 units\n\nThe run that proved the pricing is wrong.\n\n- Revenue 5360 across two stockists.\n- Materials, packaging and freight 3715.\n- 33 hours of her own time, costed at 32, is 1056.\n- Left over: 589. That is eleven percent on a target of forty five.\n\nThe wholesale price was set at half of retail. Retail was set in year one by\nlooking at a shelf. Nothing in either number covers pouring, wicking, labeling\nor packing.\n\nBefore the holiday quote goes to Hearth Collective, rebuild the price from the\nbottom: materials, then labour at 32, then packing, then freight, then margin.\nIf six doors will not carry that number, six doors is not the deal.\n"
+  }
+}

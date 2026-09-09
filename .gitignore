@@ -10,7 +10,7 @@ venv/
 .pytest_cache/
 .ruff_cache/
 
-# Merit backend runtime artifacts
+# Merit AC backend runtime artifacts
 backend/merit.db
 backend/*.db
 backend/server.log
@@ -23,6 +23,7 @@ frontend/.wrangler/
 # Frontend build (Vite)
 frontend/node_modules/
 frontend/dist/
+frontend/dist-ssr/
 
 # OS / editor
 .DS_Store
