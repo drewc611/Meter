@@ -1,0 +1,5 @@
+{
+  "name": "security-engineer",
+  "description": "Security engineering review and threat-modeling partner for features, endpoints, and data flows -- authn/authz bypass patterns, secrets handling, and STRIDE-style analysis before a design is locked in.",
+  "version": "1.0.0"
+}

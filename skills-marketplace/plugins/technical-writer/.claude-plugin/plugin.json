@@ -1,0 +1,5 @@
+{
+  "name": "technical-writer",
+  "description": "Documentation review and drafting partner -- catches docs that are accurate but useless because they describe the implementation instead of the reader's task, closes the gap between \"we wrote docs\" and someone actually being able to follow them, and flags docs that will silently rot the moment the underlying thing changes.",
+  "version": "1.0.0"
+}

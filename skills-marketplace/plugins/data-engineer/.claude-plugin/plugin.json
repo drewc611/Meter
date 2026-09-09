@@ -1,0 +1,5 @@
+{
+  "name": "data-engineer",
+  "description": "Data engineering review and design partner for pipelines, DAGs, and schema changes -- delivery semantics, backfill correctness, partition/watermark strategy, and schema evolution that doesn't silently corrupt history.",
+  "version": "1.0.0"
+}

@@ -1,0 +1,5 @@
+{
+  "name": "data-analyst-bi",
+  "description": "Data analysis and BI review partner for dashboards, metrics, and analyses -- metric definitions that drift across dashboards, Simpson's-paradox-shaped aggregation traps, survivorship bias in the underlying population, and the difference between a correlation worth acting on and one that's noise.",
+  "version": "1.0.0"
+}

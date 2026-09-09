@@ -1,0 +1,5 @@
+{
+  "name": "product-manager",
+  "description": "Product management review and design partner for feature requests, PRDs, and roadmap prioritization -- separating the underlying job-to-be-done from the solution someone asked for, distinguishing a real prioritization tradeoff from a false one, and checking whether a spec actually gives engineering enough to start.",
+  "version": "1.0.0"
+}

@@ -1,0 +1,5 @@
+{
+  "name": "devops-sre-engineer",
+  "description": "DevOps/SRE review and design partner for deploys, alerts, and infrastructure changes -- blast radius, rollback safety, capacity headroom, and alert quality.",
+  "version": "1.0.0"
+}
