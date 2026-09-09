@@ -7,7 +7,7 @@ export const meta = {
   outFile: "prompts/composed-and-advanced-prompts.html",
   title: "Composed & Advanced Prompts — Merit AC Prompts",
   description:
-    "235 composed and advanced multi-stage prompts, each naming the AI system design patterns it combines -- for real work, not the daily archive's stack-tagged walkthroughs.",
+    "275 composed and advanced multi-stage prompts, each naming the AI system design patterns it combines -- for real work, not the daily archive's stack-tagged walkthroughs.",
 };
 
 // Name lookup for the "Combines:" tags below -- the eighteen archetype and
@@ -79,6 +79,16 @@ const COMPOSED_PROMPTS = {
       combines: ["tree-of-thought", "debate"],
       prompt: "Sketch three different approaches to this notifications feature, evaluate each one, and continue with the strongest. Then have a separate pass argue against that approach to surface what it's missing before you write the spec.",
     },
+    {
+      title: "Add feature flags to a risky rollout",
+      combines: ["workflow", "evaluator"],
+      prompt: "Wrap the new pricing-page change behind a feature flag pipeline that ramps from 1% to 100% automatically, and grade each ramp step against error rate and conversion before letting the next step fire.",
+    },
+    {
+      title: "Design a rate limiter for a public API",
+      combines: ["tree-of-thought", "evaluator"],
+      prompt: "Sketch three rate-limiting strategies for the public API -- fixed window, sliding window, token bucket -- and grade each against our actual traffic pattern, which is bursty, not steady, before picking one to implement.",
+    },
   ],
   daily: [
     {
@@ -100,6 +110,16 @@ const COMPOSED_PROMPTS = {
       title: "Prep a standup update",
       combines: ["memory-agent"],
       prompt: "Recall what I said I'd work on yesterday, compare it against today's commits, and draft my standup update, noting anything that slipped.",
+    },
+    {
+      title: "Clear a backlog of unread Slack threads",
+      combines: ["router", "chatbot"],
+      prompt: "Go through this week's unread threads I'm tagged in, sort them into needs-a-reply, fyi-only, and already-resolved-by-someone-else, and draft a one-line reply for anything still open in needs-a-reply.",
+    },
+    {
+      title: "Prep for a 1:1 with a report",
+      combines: ["memory-agent", "evaluator"],
+      prompt: "Recall what this report said they were blocked on in our last two 1:1s, check whether it's actually been resolved based on their recent commits and tickets, and flag it as still-open if it hasn't.",
     },
   ],
   research: [
@@ -128,6 +148,16 @@ const COMPOSED_PROMPTS = {
       combines: ["agent", "evaluator", "reflection"],
       prompt: "Scan this labeled dataset for class imbalance and label-quality issues, flag anything that would bias the model, then critique your own audit against a checklist of dataset red flags before signing off.",
     },
+    {
+      title: "Evaluate a third-party API before integrating it",
+      combines: ["agent", "evaluator"],
+      prompt: "Read this vendor's API docs, test the two endpoints we'd actually use against their sandbox, and grade their rate limits, error handling, and uptime history against what our integration needs.",
+    },
+    {
+      title: "Reconcile two user research studies with opposite conclusions",
+      combines: ["rag", "debate", "evaluator"],
+      prompt: "Pull the methodology and raw notes behind both usability studies, argue for why each one's conclusion could be right given how it was run, then judge which one actually generalizes to our current user base.",
+    },
   ],
   ops: [
     {
@@ -154,6 +184,16 @@ const COMPOSED_PROMPTS = {
       title: "Respond to an on-call page at 3am",
       combines: ["agent", "memory-agent"],
       prompt: "Diagnose why the payment queue is backing up, and recall what fixed the similar backup two weeks ago before trying anything new.",
+    },
+    {
+      title: "Decide whether to page someone at 2am",
+      combines: ["evaluator", "agent"],
+      prompt: "Look at this alert's severity, the current error rate, and whether it's customer-facing, then grade it as page-now, wait-for-morning, or auto-resolve, and pull the relevant dashboard link either way.",
+    },
+    {
+      title: "Audit which cron jobs are still needed",
+      combines: ["agent", "evaluator"],
+      prompt: "List every scheduled job in the ops repo, trace what each one's output actually feeds, and flag any job whose output nothing downstream reads anymore.",
     },
   ],
   writing: [
@@ -182,6 +222,16 @@ const COMPOSED_PROMPTS = {
       combines: ["chatbot", "evaluator"],
       prompt: "Rewrite this announcement in plain, non-native-English-friendly phrasing, then grade the result against a checklist of idioms and culturally-specific references that wouldn't translate.",
     },
+    {
+      title: "Turn a customer complaint into a product ticket",
+      combines: ["chatbot", "router"],
+      prompt: "Read this angry support email, strip the emotion out, and write it up as a neutral bug ticket routed to the right team based on what actually broke.",
+    },
+    {
+      title: "Draft an all-hands update from scattered team notes",
+      combines: ["rag", "evaluator"],
+      prompt: "Pull this quarter's team updates from the shared doc, draft a five-minute all-hands summary, then check it against the original notes for anything you rounded up into more progress than actually happened.",
+    },
   ],
   learning: [
     {
@@ -208,6 +258,16 @@ const COMPOSED_PROMPTS = {
       title: "Debug a new hire's first production bug with them",
       combines: ["copilot", "reflection"],
       prompt: "Walk through this bug with the new hire, suggesting where to look next rather than just fixing it yourself, then afterward critique whether your hints actually taught the debugging process or just gave away the answer.",
+    },
+    {
+      title: "Turn a postmortem into a training exercise",
+      combines: ["rag", "tree-of-thought"],
+      prompt: "Read this incident's postmortem, sketch two ways a new hire might have handled the same situation differently, and write a short exercise that walks them through the decision point that actually mattered.",
+    },
+    {
+      title: "Build a reading path for a new engineer joining a legacy codebase",
+      combines: ["agent", "planner-executor"],
+      prompt: "Trace which parts of the codebase this new hire's first three tickets will actually touch, then order a reading list of the relevant modules and their docs so they read what they need before they need it, not the whole repo top to bottom.",
     },
   ],
   sales: [
@@ -236,6 +296,16 @@ const COMPOSED_PROMPTS = {
       combines: ["router", "ensemble"],
       prompt: "Classify these fifty prospects into three outreach angles based on their most recent public activity, then draft three candidate opening lines per angle and keep only the one that references something specific to that company.",
     },
+    {
+      title: "Spot a deal that's quietly gone cold",
+      combines: ["memory-agent", "evaluator"],
+      prompt: "Compare this account's current email response time and meeting cadence against what it was a month ago, and grade whether the deal has actually gone cold or just hit a normal scheduling lull.",
+    },
+    {
+      title: "Write a discovery-call script for a new vertical",
+      combines: ["rag", "tree-of-thought"],
+      prompt: "Pull whatever we know about healthcare buyers from past deal notes, sketch two different discovery-call structures, and pick the one more likely to surface a real budget-holder in the first fifteen minutes.",
+    },
   ],
   data: [
     {
@@ -262,6 +332,16 @@ const COMPOSED_PROMPTS = {
       title: "Turn a raw analysis into an exec-ready takeaway",
       combines: ["rag", "tree-of-thought"],
       prompt: "Take this analysis notebook's findings, sketch two different one-sentence takeaways it could support, and pick the one that's actually defensible under a 'so what should we do differently' follow-up.",
+    },
+    {
+      title: "Catch a silent schema drift before it breaks a dashboard",
+      combines: ["agent", "evaluator"],
+      prompt: "Compare this week's incoming event schema against last week's for every field the revenue dashboard depends on, and flag any new, missing, or retyped field before it silently breaks a chart.",
+    },
+    {
+      title: "Decide if an outlier is real or a logging bug",
+      combines: ["tree-of-thought", "evaluator"],
+      prompt: "This customer's usage number is 40x the next-highest account. Sketch two explanations -- a genuinely huge account or a double-counted event -- and check the raw logs to grade which one it actually is.",
     },
   ],
   hiring: [
@@ -290,6 +370,16 @@ const COMPOSED_PROMPTS = {
       combines: ["debate", "chatbot"],
       prompt: "Draft this rejection two ways -- one that's vague and safe, one that gives one specific, useful piece of feedback -- then pick whichever version you'd actually want to receive if you were the candidate.",
     },
+    {
+      title: "Write a job post that filters instead of just describing",
+      combines: ["debate", "evaluator"],
+      prompt: "Draft this job post two ways -- one that lists every possible responsibility, one that names only the two hardest actual parts of the role -- then judge which version would attract fewer but better-matched applicants.",
+    },
+    {
+      title: "Check a reference call against the resume's claims",
+      combines: ["rag", "evaluator"],
+      prompt: "Pull this candidate's stated accomplishments from their resume, and after the reference call, grade each claim as confirmed, softened, or contradicted based on what the reference actually said.",
+    },
   ],
   legal: [
     {
@@ -316,6 +406,16 @@ const COMPOSED_PROMPTS = {
       title: "Pressure-test a policy before it ships internally",
       combines: ["debate", "tree-of-thought"],
       prompt: "Sketch three ways an employee could reasonably misread this new expense policy, argue for the interpretation most likely to cause disputes, and rewrite the policy language to close that gap before it goes out.",
+    },
+    {
+      title: "Flag a contract clause that quietly changed between drafts",
+      combines: ["agent", "evaluator"],
+      prompt: "Diff this contract's latest draft against the version we last approved, flag any clause that changed even slightly, and grade each change as material or cosmetic.",
+    },
+    {
+      title: "Check whether a new hire's non-compete actually applies here",
+      combines: ["rag", "evaluator"],
+      prompt: "Pull the non-compete language from this candidate's current contract and our state's actual enforceability rules, then grade whether it would realistically block them from joining us or is unenforceable on its face.",
     },
   ],
 };
@@ -351,6 +451,16 @@ const ADVANCED_PROMPTS = {
       title: "Build a platform from four teams' conflicting requirements",
       combines: ["multi-agent", "debate", "planner-executor", "evaluator"],
       prompt: "Platform, mobile, data, and growth all submitted \"must-have\" lists for the new internal developer platform, and at least two of the asks directly contradict each other. First, dispatch one sub-agent per team to extract what they actually need functionally, separated from how they phrased the request, since two teams asking for \"more control over deploys\" for different underlying reasons shouldn't get the same solution. Identify the sharpest genuine conflict between two teams' real needs and run a debate arguing each side on its technical merits, not on team seniority, then decide which one the platform should optimize for and what the other team loses. Turn the decision into a phased roadmap ordered by which teams are currently most blocked. Before shipping the roadmap, grade it explicitly against every team's original must-have list and name, per team, what they get and what they don't — don't let an unaddressed ask go unmentioned.",
+    },
+    {
+      title: "Cut a service's p99 latency in half without a rewrite",
+      combines: ["agent", "tree-of-thought", "evaluator", "reflection"],
+      prompt: "The checkout service's p99 latency has crept from 180ms to 400ms over six months with no single deploy anyone can point to, and a full rewrite isn't on the table before the holiday freeze in five weeks. First, have an agent profile the service under realistic load rather than trust the existing dashboards, since a metric that only samples a fraction of requests can hide exactly the tail latency this is about. Branch into three suspects — a database connection pool that's never been resized since traffic doubled, a synchronous call to a downstream service that used to be fast and no longer is, and GC pressure from an object-allocation pattern that's grown with a newer feature — and measure each directly instead of guessing from intuition about what usually causes this. Fix the confirmed cause, then critique the fix against the original 180ms baseline, not just against the current 400ms, since getting to 250ms is progress but isn't actually done.",
+    },
+    {
+      title: "Untangle a shared library update that broke four downstream teams differently",
+      combines: ["multi-agent", "router", "evaluator", "planner-executor"],
+      prompt: "A minor-version bump to the internal auth library passed its own test suite but broke four different downstream services in four different ways, and each team is currently debugging their own symptom without realizing it's the same root cause. First, classify each team's reported failure against the library's actual changelog to confirm they trace back to the same change rather than four coincidentally-timed unrelated bugs. Dispatch one sub-pass per affected team to characterize their specific breakage against their own usage pattern of the library, since a team calling it synchronously and a team calling it from a background job will need different fixes even from the same root cause. Plan the fix as patch-the-library-first, then a coordinated rollout to the four teams in order of production impact, not alphabetically or by whoever complained loudest. Grade the finished rollout against all four teams' original symptoms specifically, confirming each is actually resolved rather than assuming a fix to the library fixed everything downstream.",
     },
   ],
   gtm: [
@@ -416,6 +526,16 @@ const ADVANCED_PROMPTS = {
       combines: ["debate", "tree-of-thought", "rag", "evaluator"],
       prompt: "The deck assumes a growth curve that accelerates in year two based on a sales-hiring plan that hasn't actually been tested at this company's ramp rates yet. First, pull this company's actual historical rep ramp time and quota attainment, since the deck's acceleration assumption needs to be checked against real data, not against what the model in the spreadsheet implies is achievable. Sketch two alternate growth paths — one using the actual historical ramp rate, one using the deck's optimistic assumption — and argue against the optimistic path the way a skeptical partner would, specifically on whether the hiring plan underneath it is realistic given current recruiting velocity. Grade the deck's headline growth number against the historical-ramp scenario and flag explicitly, in one sentence the CEO can say out loud in the room, how much of the growth curve depends on an assumption that hasn't been proven yet.",
     },
+    {
+      title: "Decide whether to accelerate collections or extend a customer's payment terms",
+      combines: ["tree-of-thought", "rag", "evaluator"],
+      prompt: "A top-twenty customer is 45 days past due for the first time ever, and the same week their VP mentioned budget pressure to the account team, so it's unclear whether this is a cash-flow blip or the start of a bigger problem. First, pull their full payment history and the actual conversation notes from the account team, since a customer with a clean five-year payment record and one who's chronically late need very different responses to the same late invoice. Sketch two paths — send it to collections now, or proactively offer extended terms in exchange for a longer contract commitment — and weigh each against what's actually known about this account's health, not a blanket AR policy that doesn't distinguish between them. Grade the chosen path against the actual cash impact if the customer's budget pressure turns out to be real, and flag if the plan leaves the company exposed either way.",
+    },
+    {
+      title: "Rebuild the expense-approval workflow after a spend-limit override was abused",
+      combines: ["workflow", "agent", "evaluator"],
+      prompt: "A manager routed around the standard approval threshold by splitting one large purchase into four smaller ones, each just under the limit that would have required a second signoff, and finance only caught it during the quarterly audit. First, run the existing twelve months of expense data through an agent looking specifically for the same splitting pattern across other managers, since a fix that only addresses this one case ignores whether it's already happening elsewhere. Rebuild the approval workflow to flag any set of purchases from the same requester within a short window that sums above the threshold, not just single transactions, since that's precisely the gap that let this happen. Grade the new workflow by re-running it against the same twelve months of historical data and confirming it would have actually caught this specific case.",
+    },
   ],
   crisis: [
     {
@@ -479,6 +599,16 @@ const ADVANCED_PROMPTS = {
       title: "Build a PRD for a platform bet with no internal precedent",
       combines: ["tree-of-thought", "debate", "rag", "evaluator"],
       prompt: "Leadership wants to explore an API-first platform play the company has never attempted before, and there's no comparable internal project to model scope, risk, or timeline against. First, pull whatever's available on comparable platform launches from public case studies and any partner or competitor documentation the team has gathered, since building the PRD from pure internal intuition on something this unprecedented is how scope creeps invisibly. Sketch three different scope levels — a minimal read-only API, a full read-write platform with a partner ecosystem, and a middle ground with a curated first-party integration set — and argue for the minimal scope against the case for going bigger from the start, weighing time-to-first-signal against the risk of under-building something partners won't actually adopt. Grade the resulting PRD's scope against the team's actual current capacity, not against the ambition of the original pitch, and flag explicitly if the recommended scope still doesn't fit within it.",
+    },
+    {
+      title: "Decide whether a beta feature is ready to graduate to general availability",
+      combines: ["rag", "evaluator", "tree-of-thought"],
+      prompt: "The new collaborative-editing feature has been in beta for four months, opt-in usage has plateaued, and the team is split on whether that plateau means it's found its ceiling or means discoverability is still the problem. First, pull actual usage data broken out by cohort — users who opted in during month one versus month four — since a flat aggregate number can hide whether early adopters are still engaged while new opt-ins have stopped growing. Sketch two explanations for the plateau, a genuine ceiling on who wants this feature versus a discoverability problem masking real latent demand, and check each against the cohort data and the actual opt-in funnel rather than team sentiment. Grade the GA-readiness decision against the bug and support-ticket volume the beta has generated specifically, since a feature can have real demand and still not be ready if it's still generating a disproportionate support load.",
+    },
+    {
+      title: "Resolve a naming disagreement that's really a positioning disagreement",
+      combines: ["debate", "rag", "evaluator"],
+      prompt: "Two senior PMs have been stuck for two weeks arguing over what to call the new tier, and it's become clear the actual disagreement isn't about the name at all but about whether this tier is meant to upsell existing customers or capture a new segment entirely. First, pull whatever's on record from the original pricing-strategy doc about what this tier was supposed to accomplish, since the naming fight can't resolve until the underlying positioning question does. Argue the upsell framing against the new-segment framing using that original strategy doc as the evidence base, not each PM's more recent and possibly drifted intuition about the market. Grade the winning positioning against the actual customer segments in the CRM most likely to buy at this tier's price point, and only then let the name follow from the resolved positioning.",
     },
   ],
   exec: [
@@ -640,6 +770,16 @@ const ADVANCED_PROMPTS = {
       combines: ["router", "multi-agent", "rag", "evaluator"],
       prompt: "The same product now sells to solo freelancers, mid-size agencies, and enterprise IT departments, and CS has been running one generic playbook across all three even though what \"success\" looks like is completely different for each. First, classify the current book of accounts into the three personas based on actual usage pattern and contract size, not just self-reported company type, since some accounts don't fit the persona they'd naturally be assumed to belong to. Dispatch a separate pass to define what a healthy adoption curve and a meaningful check-in cadence look like for each persona specifically, since a monthly check-in that's appropriate for enterprise IT would feel like unwanted overhead to a solo freelancer. Grade the resulting three playbooks against the accounts that have churned in each persona historically, confirming each playbook would have actually caught that specific persona's typical warning signs.",
     },
+    {
+      title: "Design an onboarding checkpoint that catches a stall before it becomes churn",
+      combines: ["agent", "planner-executor", "evaluator"],
+      prompt: "New accounts that don't hit basic activation within their first thirty days churn at a much higher rate at renewal, and CS currently has no structured checkpoint before the ninety-day business review to catch a stalled onboarding early. First, have an agent pull activation-milestone timestamps for every account that churned in the last year to find which specific early milestone, if missed, predicted the eventual churn most reliably. Plan a checkpoint sequence around that milestone — a day-fifteen check on it, and a defined intervention if it's still missing by day twenty-five — rather than a generic day-thirty check-in that doesn't target what actually matters. Grade the new checkpoint by backtesting it against last year's churned accounts and reporting how many would have been caught with time left to intervene.",
+    },
+    {
+      title: "Rewrite a QBR template that customers stopped attending",
+      combines: ["rag", "debate", "evaluator"],
+      prompt: "Attendance at quarterly business reviews has dropped by more than half over the past year, and the current template is a slide-by-slide usage-metrics recap that several customers have said feels like a report they could've just read themselves. First, pull the actual meeting notes and any decline reasons customers gave when they skipped, since the fix needs to target why customers specifically stopped showing up, not a generic assumption that QBRs are inherently low-value. Argue for a metrics-recap format against a forward-looking, decision-focused format built around what the customer needs to decide next quarter, weighing which one actually gives a busy customer a reason to block time on their calendar. Grade the redesigned template against the specific decline reasons pulled earlier, confirming it addresses what customers actually said, not a reason nobody mentioned.",
+    },
   ],
   supplychain: [
     {
@@ -768,6 +908,16 @@ const ADVANCED_PROMPTS = {
       combines: ["rag", "agent", "tree-of-thought", "evaluator"],
       prompt: "The pen-test report lists fourteen findings, engineering says nine of them are already fixed in a release that shipped after the test window closed, and the retest is scheduled for next week with real doubt about whether all nine claims will actually hold up. First, have an agent pull the actual code and configuration for each of the nine claimed fixes and verify the fix independently rather than taking the ticket status at face value, since a ticket marked \"done\" and a vulnerability that's actually closed aren't always the same thing. For any claimed fix that can't be verified with confidence from code alone, branch into whether it needs a live retest of that specific finding before the scheduled retest, versus whether the evidence available is sufficient to close it now. Grade the final list against the original report's severity ratings, and flag explicitly which of the five remaining unfixed findings are the ones that actually need to be prioritized before the retest, not just listed as still open.",
     },
+    {
+      title: "Investigate whether a departing employee exfiltrated data before their last day",
+      combines: ["agent", "tree-of-thought", "evaluator"],
+      prompt: "An engineer who gave notice two weeks ago had access to the customer database, and their manager wants to know before their last day tomorrow whether anything unusual happened with that access during the notice period. First, have an agent pull their actual data-access logs, download activity, and any unusual query patterns from the moment they gave notice forward, comparing it against their own baseline access pattern from the prior three months, since a spike that looks alarming in isolation might just be normal end-of-project cleanup. Branch into two explanations for anything flagged — legitimate handoff activity like exporting documentation for their replacement, versus activity with no plausible work justification — and check each against what they were actually assigned to work on during that period. Grade the final finding against a clear standard: would this pattern look unusual for any departing engineer doing a normal handoff, not just unusual in the abstract.",
+    },
+    {
+      title: "Decide whether a third-party breach disclosure requires notifying our own customers",
+      combines: ["rag", "evaluator", "tree-of-thought"],
+      prompt: "A vendor we use for email delivery just disclosed a breach, and it's not yet clear whether any of our customers' data actually passed through the compromised system or whether this only affects infrastructure of theirs we don't touch. First, pull our actual data-flow documentation for that vendor integration to establish precisely what data, if any, we send them, since the notification obligation depends on that fact and not on how alarming the vendor's disclosure language sounds. Sketch two scenarios — our data was in the compromised system, or our integration only touches a part of their infrastructure the disclosure says wasn't affected — and grade which one the vendor's technical details actually support once read carefully rather than skimmed. Grade the resulting notification decision against our actual legal disclosure obligations for the scenario confirmed, not the more cautious scenario, since over-notifying customers about a breach that didn't touch their data has its own real cost.",
+    },
   ],
   intelligence: [
     {
@@ -831,6 +981,16 @@ const ADVANCED_PROMPTS = {
       title: "Resolve a tumor board's conflicting treatment recommendations",
       combines: ["multi-agent", "debate", "rag", "evaluator"],
       prompt: "A patient with three overlapping conditions has oncology recommending an aggressive chemo regimen, cardiology flagging real risk given her heart function, and palliative care raising whether the regimen's expected survival benefit is worth what it would cost her quality of life in the time she has left, and the tumor board meets in two hours. First, dispatch one pass per specialty to pull that specialty's actual relevant data on this patient — tumor staging and response likelihood, cardiac ejection fraction and treatment tolerance, and the patient's own documented goals-of-care conversation — rather than each specialist arguing from general clinical judgment alone. Debate the aggressive-regimen case against the reduced-intensity alternative directly on this patient's specific numbers, not on which specialty typically carries more weight in the room, since a genuinely borderline cardiac tolerance changes the calculus in a way a generic risk table won't capture. Synthesize the debate into one recommendation, then grade it explicitly against the patient's own stated goals-of-care documentation, and flag plainly if the medically optimal option and the patient's actual stated preference point in different directions, since that gap is the board's decision to make, not something to paper over.",
+    },
+    {
+      title: "Design a medication-reconciliation check for patients transferring between units",
+      combines: ["agent", "evaluator", "workflow"],
+      prompt: "Patients transferring from the ICU to a general medical floor have had three near-miss medication errors this quarter, each traced back to the transferring team's list not matching what the receiving team actually had on record. First, build a fixed reconciliation pipeline that runs at every unit transfer, pulling both lists and diffing them automatically, then holding the transfer for pharmacist review if any discrepancy is found, rather than relying on a verbal handoff that's exactly what failed in all three near-misses. Have that pharmacist review step work as an evaluator against a defined discrepancy checklist — dose changes, discontinued-but-still-listed medications, and new allergies not yet reflected — rather than an open-ended second look. Grade the resulting process against all three near-miss cases specifically, confirming the fixed pipeline would have actually caught each one before the patient reached the new unit.",
+    },
+    {
+      title: "Decide whether to keep a clinical-documentation model in production after a specialty expansion",
+      combines: ["evaluator", "ensemble", "rag"],
+      prompt: "The clinical-note summarization model was validated on internal medicine and cardiology notes, and it's now being used department-wide after a rollout that included oncology and psychiatry notes it was never actually tested on. First, pull a sample of its recent oncology and psychiatry summaries against the underlying full notes to check whether accuracy holds up outside the specialties it was validated for, since strong performance on the specialties it was built for says nothing about specialties with very different terminology and note structure. Generate independent gradings of the same sample from three separate clinical reviewers, and flag any summary where the reviewers meaningfully disagree on whether it's safe to rely on, since disagreement itself is a signal the model's output needs closer human review in that specialty. Grade the go/no-go decision separately per specialty rather than as one department-wide verdict, since the answer for oncology and the answer for psychiatry don't have to be the same.",
     },
   ],
   education: [
@@ -896,6 +1056,16 @@ const ADVANCED_PROMPTS = {
       combines: ["planner-executor", "debate", "memory-agent", "evaluator"],
       prompt: "The new automated sortation system cuts pick-to-pack time by nearly a third for most of the floor, but the facility's fastest manual pickers — the ones who've built up their own shortcut routes over years and consistently beat the system's suggested paths — are the ones most disrupted by being forced onto the automated routing. First, recall what happened during the last major floor-process change at this facility, specifically which workers pushed back, what the actual productivity dip looked like in the first month, and whether it ever fully recovered, rather than assuming this rollout starts from a blank slate. Argue for switching every picker onto the automated routing immediately against letting the top performers keep working their own routes for a transition period, weighing the near-term throughput cost of losing the top performers' efficiency against the risk of the automation looking worse than manual in month one specifically because of that carve-out. Plan the rollout in phases — automation on for average and below-average performers first, a defined evaluation period for whether the top performers' manual routes actually still beat the system, full rollout only if they don't — and grade the plan against whether it would have protected this facility's top performers' actual output the last time a change like this happened.",
     },
+    {
+      title: "Diagnose why on-time delivery dropped in one region while every other region held steady",
+      combines: ["agent", "tree-of-thought", "evaluator"],
+      prompt: "On-time delivery in the Southwest region has slipped nine points over the past month while every other region's rate stayed flat, and the regional team's first instinct — blame the new routing software rollout — doesn't hold up since that software rolled out everywhere at once. First, have an agent pull delivery performance broken down by carrier, route, and facility specifically within that region, since a region-wide drop with a single-region cause is more likely to trace to something local than to software everyone got simultaneously. Branch into three explanations: a specific facility running under capacity, one carrier in that region underperforming its contracted service level, or a new construction detour adding time to a cluster of routes, and check each against the granular data rather than the team's first assumption. Grade the confirmed cause against whether it explains the full nine-point drop or only part of it, and say explicitly if more than one factor is contributing.",
+    },
+    {
+      title: "Plan a driver-network transition after a major contractor relationship ends",
+      combines: ["planner-executor", "tree-of-thought", "evaluator"],
+      prompt: "The regional contract-driver company handling 30% of last-mile routes is ending the relationship in six weeks over a rate dispute, and there's no existing plan for absorbing that volume into the remaining network. First, sketch three absorption options — redistributing routes across existing contracted carriers with spare capacity, fast-tracking onboarding of a new regional carrier, or temporarily converting the highest-volume routes to company-owned fleet — and evaluate each against what's actually achievable within the six-week window, not what would be ideal with more runway. Plan the chosen combination as an ordered sequence with the routes at highest risk of missing service-level commitments transitioned first, since not every route carries equal cost if it's disrupted. Grade the finished plan against the full 30% volume being covered by week six, and flag explicitly if any subset of routes is still unaccounted for.",
+    },
   ],
   energy: [
     {
@@ -960,6 +1130,16 @@ const ADVANCED_PROMPTS = {
       combines: ["workflow", "copilot", "reflection", "evaluator"],
       prompt: "The AI-assisted headline and copy-editing pipeline that speeds up the newsroom's daily volume has, over several months of small individually-reasonable tweaks, drifted toward headlines that read noticeably closer to clickbait than the editorial standards actually allow, and nobody signed off on that drift explicitly. Run the headline-generation step as a fixed pipeline stage rather than an open-ended agent, since the sequence — draft headline, check against style guide, human editor review — is already well understood and the goal here is predictability, not more autonomy. Keep every suggested headline as a draft an editor reviews and explicitly approves before it publishes, the same as any other copilot suggestion, since the drift happened specifically because small headline tweaks started feeling too routine to warrant a real second look. Critique the pipeline's own recent output against the actual written editorial standards document, headline by headline over the last month, and name specifically which phrasing patterns crept in that the standards would have flagged had anyone checked. Grade the proposed fix against whether it would have caught every one of those specific drifted headlines, not just the most obvious ones, before it goes back into daily use.",
     },
+    {
+      title: "Decide whether to run a story before the second source confirms it",
+      combines: ["tree-of-thought", "debate", "evaluator"],
+      prompt: "A single well-placed source has confirmed a significant story, a competitor outlet appears to be closing in on the same story, and the second source who could fully corroborate it hasn't responded in six hours. First, sketch what's actually verifiable right now without the second source — documents, on-record quotes, anything independently checkable — versus what still rests entirely on the first source's word alone, since the real risk depends on which parts of the story are and aren't independently supported. Argue for holding until the second source confirms against the case for publishing the independently verifiable parts now and following up as confirmation comes in, weighing the competitive risk of being scooped against the much larger risk of publishing something that turns out wrong. Grade the final call against the outlet's own standing editorial policy on single-source stories, not against how the competitive pressure feels in the moment.",
+    },
+    {
+      title: "Rebuild a paywall metering strategy that's leaking subscribers to free alternatives",
+      combines: ["rag", "tree-of-thought", "evaluator"],
+      prompt: "Subscriber growth has flattened for two straight quarters while traffic keeps climbing, and the working theory is that the current metered paywall is generous enough that casual readers never feel pressure to convert. First, pull actual reader behavior data on how many free articles converting versus non-converting readers consume before dropping off, since the right meter number should come from where readers actually convert, not a round number picked when the paywall first launched. Sketch two alternative structures, a tighter meter with a lower free-article count or a dynamic meter that varies by content type since breaking news and long-form investigations likely convert differently, and evaluate each against the actual consumption data rather than intuition about what feels fair to readers. Grade the recommended structure against the risk of losing casual traffic entirely, since a meter tight enough to convert more readers can also be tight enough to drive the rest away before they ever get a chance to.",
+    },
   ],
   publicsector: [
     {
@@ -1023,6 +1203,16 @@ const ADVANCED_PROMPTS = {
       title: "Contain a nonconforming-parts recall already shipped to three OEM customers",
       combines: ["agent", "planner-executor", "multi-agent", "evaluator"],
       prompt: "Incoming inspection data has revealed that a batch of a critical structural fastener produced over a three-week window fell outside spec on a tolerance that wasn't being actively monitored at the time, and parts from that batch have already shipped to three OEM customers with unknown quantities already installed in finished vehicles. First, have an agent trace the affected batch to specific lot numbers and cross-reference shipment records to establish exactly which OEM customers received how many units, since the entire response plan's urgency and scope changes completely depending on whether this is a hundred units or ten thousand. Plan the response as an ordered sequence — confirm scope precisely, notify the three OEM customers with the specific lot numbers affected, support each customer's own containment of already-installed units, then implement the monitoring fix that would have caught this tolerance in the first place — since notifying customers with vague lot information forces each of them to over-scope their own search, wasting time on unaffected units. Dispatch a workstream to each of the three OEM relationships in parallel once scope is confirmed, since each customer's own containment process and internal escalation differ. Grade the finished response against whether the tolerance-monitoring fix would have actually caught this specific batch, not a generic strengthening of inspection that might miss the same failure mode again.",
+    },
+    {
+      title: "Decide whether a supplier's quality dip is a one-batch issue or a trend",
+      combines: ["rag", "tree-of-thought", "evaluator"],
+      prompt: "Incoming inspection has flagged three consecutive shipments from a long-trusted supplier with defect rates above tolerance, after two years of that supplier running essentially clean, and procurement needs to know by end of week whether to keep the current purchase order or start qualifying a backup. First, pull the supplier's full inspection history plus whatever's known about their production changes — a new production line, a raw-material source change, a shift in ownership — since three bad shipments after two clean years usually traces back to something specific that changed, not random variation. Sketch two explanations, a genuine and likely persistent quality shift at the supplier versus a temporary issue tied to something identifiable and already being fixed, and weigh each against the inspection data trend across the three shipments, not just their average. Grade the final recommendation against the actual cost and lead time of qualifying a backup supplier, since holding the current order makes sense only if the trend evidence genuinely points to temporary.",
+    },
+    {
+      title: "Design a changeover process that stops recurring first-shift-back defects",
+      combines: ["agent", "planner-executor", "evaluator"],
+      prompt: "Every time the line changes over between two products, the first hour of the next shift back consistently produces more defects than the rest of that shift, and it's been happening long enough that operators have started treating it as unavoidable. First, have an agent pull defect logs specifically from that first post-changeover hour across the last twenty changeovers to confirm the pattern is real and consistent, not just a few memorable bad days operators are generalizing from. Plan a fixed changeover checklist covering calibration verification, first-piece inspection, and a documented hold point before full-rate production resumes, ordered so no step can be skipped under schedule pressure, since schedule pressure to hit rate quickly is the most likely reason the current informal process gets rushed. Grade the new checklist by running it through the next five changeovers and comparing that first-hour defect rate against the twenty-changeover baseline established up front.",
     },
   ],
   realestate: [
@@ -1216,6 +1406,16 @@ const ADVANCED_PROMPTS = {
       combines: ["multi-agent", "debate", "tree-of-thought", "evaluator"],
       prompt: "Finance wants to close the 30 lowest-revenue stores to hit next year's margin target, real estate flags that a third of those stores are locked into leases with punitive early-termination costs that would erase most of the savings, and brand wants flagship presence maintained in at least one store per major metro regardless of that location's individual profitability. First, dispatch a pass each to finance, real estate, and brand to quantify their actual constraint in hard numbers — true net savings after termination costs, and the specific metro markets brand considers non-negotiable — rather than working from each department's qualitative preference. Sketch two closure lists — pure revenue-rank order versus a lease-cost-adjusted order that skips high-termination-cost stores even if they're low revenue — and argue for the lease-adjusted list against pure revenue rank, since a list that looks decisive on revenue but destroys most of its savings in termination fees doesn't actually hit finance's real goal. Reinstate any flagship-metro store the pure ranking would have closed, and grade the final list against the original margin target with the actual net-of-termination-cost savings number, stating plainly if the adjusted list falls short of the target and by how much, rather than presenting a compromised list as if it fully solves the original ask.",
     },
+    {
+      title: "Diagnose why one store chain-wide underperforms on a metric every comparable store hits",
+      combines: ["agent", "rag", "evaluator"],
+      prompt: "One store has missed its conversion-rate target for five straight months while every other store of comparable size and location type hits it consistently, and the regional manager has cycled through three different theories without actually confirming any of them. First, have an agent pull that store's foot-traffic, staffing-level, and conversion data broken out by hour and compare it against a matched set of comparable stores hitting target, since the gap might only show up at specific hours rather than uniformly across the day. Pull whatever's on record about that store specifically — recent staff turnover, a layout change, a nearby competitor opening — since an underperformance this consistent and this store-specific usually traces to something local, not a chain-wide issue only showing up there. Grade the confirmed cause against whether it's something fixable at the store level or requires a decision from above the regional manager, and say which.",
+    },
+    {
+      title: "Decide how deep to discount end-of-season inventory before it becomes a write-off",
+      combines: ["tree-of-thought", "rag", "evaluator"],
+      prompt: "Six weeks remain in the season, current sell-through on the seasonal line is running well behind plan, and every week of delay narrows the window where a markdown can still move inventory versus ending up as a straight write-off. First, pull actual sell-through velocity at the current price against what 20%, 35%, and 50% markdowns historically moved for comparable past seasonal lines, since the right depth should come from what's actually worked before, not a standard house discount applied regardless of how far behind plan the line is. Sketch the resulting sell-through projection under each of the three markdown depths against the six weeks remaining, and grade which one actually clears enough inventory to avoid a write-off without discounting deeper than the data says is necessary. Flag explicitly if even the deepest markdown modeled still wouldn't clear the inventory in time, since that changes the decision from a pricing question to a write-off question.",
+    },
   ],
   telecom: [
     {
@@ -1326,7 +1526,7 @@ export default function PromptLibrary() {
     <ContentLayout active="prompts" wide>
       <span className="kicker">Content</span>
       <span className="badge">
-        <i /> 235 prompts, all real
+        <i /> 275 prompts, all real
       </span>
       <h1>Composed &amp; advanced prompts</h1>
       <p className="lead">
@@ -1346,7 +1546,7 @@ export default function PromptLibrary() {
       <h2 id="composed-prompts">1. Composed prompts: combining patterns for real work</h2>
       <p>
         Real tasks rarely use one pattern in isolation — a single request usually chains two or
-        three together. Below: 48 prompts across ten categories, each naming the pattern it combines, linking back to the
+        three together. Below: 68 prompts across ten categories, each naming the pattern it combines, linking back to the
         AI system design patterns guide, so you can trace exactly how they combine.
       </p>
 
@@ -1402,12 +1602,12 @@ export default function PromptLibrary() {
 
       <h2 id="advanced-prompts">2. Advanced multi-stage prompts</h2>
       <p>
-        The 48 prompts above chain two or three patterns for a task that's genuinely one request.
-        The 187 below are heavier: each one combines three to five patterns because the underlying
+        The 68 prompts above chain two or three patterns for a task that's genuinely one request.
+        The 207 below are heavier: each one combines three to five patterns because the underlying
         work actually needs that much orchestration — a multi-week migration, a board crisis, a
         deal that's stalled for reasons nobody's confirmed yet. Each is written as a short brief —
         role, situation, ordered phases, a constraint — rather than a single flowing ask, closer to
-        how you'd actually hand this off to someone senior. 31 categories, roughly six prompts each.
+        how you'd actually hand this off to someone senior. 31 categories, six to eight prompts each.
       </p>
 
       <h3>Complex engineering &amp; platform builds</h3>
