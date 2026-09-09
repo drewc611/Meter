@@ -503,3 +503,108 @@ dropped without being published. Net: 14 unique articles published today.
 - No absence-of-evidence claims: pass
 - Every citation has a confirmed byline/author: partial — McKinsey's report is institutional and its existence/figures are corroborated by multiple outlets, but this run never rendered the McKinsey page itself; The Register byline Brandon Vigliarolo is fully confirmed via direct fetch.
 **Notes:** This is explicitly a softer-primary-sourcing case, flagged in the article's own body rather than glossed over — the specific figures were cross-checked across multiple aggregator summaries and one fully-bylined outlet, but this run did not find a second fully-named-byline outlet independently reporting the same figures, so it is logged as "partial" rather than "pass" on both checks rather than rounded up.
+
+### 2026-09-09 — catch-up run (four-day gap since last published article)
+
+Last published article was 2026-09-05 16:10 UTC; this run covers the gap to
+2026-09-09. Researched a broad set of candidates across research, product,
+funding, regulation, and tools; six cleared the Judge-tier pass and ten were
+rejected or deprioritized before or during drafting, logged individually
+below. The ten rejections are not failures of the pipeline — several were
+genuinely newsworthy stories that simply fell outside this run's recency
+window or couldn't clear the confirmed-byline bar within the time this run
+had, and are flagged as worth revisiting if better sourcing surfaces later.
+
+### 2026-09-09 08:00 UTC — figure-nscale-3-5-billion-vera-rubin-compute-deal
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites Figure's own announcement (`figure.ai/news/figure-and-nscale-sign-strategic-partnership`) as primary, direct fetch succeeded; Interesting Engineering (byline Jijo Malayil) and The Next Web (byline Cristian Dina) as corroborating secondaries, both confirmed via direct fetch.
+- Quotes ≤15 words, one per source: pass — Jensen Huang quoted at 11 words from Figure's own primary ("humanoid robots extend physical AI into the world designed for people"); Nscale CEO Josh Payne quoted at 6 words from The Next Web ("physical intelligence is AI's next frontier"); Nvidia's own "robotics flywheel" characterization quoted at 2 words from Interesting Engineering — one quote per source, none exceeding the limit.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Figure's own blog (institutional primary); Interesting Engineering byline Jijo Malayil and The Next Web byline Cristian Dina, both confirmed via direct fetch.
+**Notes:** Named the structural conflict plainly rather than treating the deal as three arm's-length parties: Nvidia holds equity in both Figure and Nscale, meaning the GPU manufacturer also has a stake in the customer and the intermediary on the same transaction. Closed on an explicit unresolved question (whether the compute converts into working robots at a cost that justifies the spend) rather than repeating the launch framing uncritically.
+
+### 2026-09-09 08:00 UTC — pytorch-foundation-alibaba-cambricon-ant-group
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites the PyTorch Foundation's own announcement (`pytorch.org/blog/alibaba-cloud-ant-group-cambricon-and-huawei-come-together-in-shanghai...`) as primary, direct fetch succeeded and returned the full press release including all named quotes; ChannelE2E/ChannelInsider (byline Eric Mboizi) as corroborating secondary, confirmed via direct fetch.
+- Quotes ≤15 words, one per source: pass — Alibaba Cloud CTO Feifei Li quoted at exactly 15 words from the primary; Cambricon's aim quoted at 8 words from ChannelE2E's own phrasing ("reduce friction between PyTorch applications and its hardware") rather than reusing the primary's own Cambricon quote a second time.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — PyTorch Foundation's own blog (institutional, Linux Foundation); ChannelE2E byline Eric Mboizi, confirmed via direct fetch.
+**Notes:** An initial WebFetch of a guessed pytorch.org URL 404'd; located the correct URL via search and re-fetched directly before drafting, rather than relying on the search-summary alone. The first draft pulled two quotes from the same single primary source (Feifei Li and Elton Gong, both from the PyTorch Foundation's own release) — caught during review and fixed by sourcing the second quote to the secondary outlet instead, keeping one quote per cited source rather than per named speaker.
+
+### 2026-09-09 08:00 UTC — meta-muse-spark-contributor-pricing-data-trade
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: partial — Meta has not published its own blog post confirming the Contributor pricing tier (and declined to comment when TechCrunch asked), so this run used two independent bylined outlets that separately fetched and reported matching figures: TechCrunch (byline Tim Fernholz) as lead, direct fetch succeeded; Cryptopolitan (byline Randa Moses) as corroborating secondary, direct fetch succeeded and figures matched exactly.
+- Quotes ≤15 words, one per source: pass — Meta's own pricing documentation, quoted via TechCrunch, trimmed to 12 words; Cryptopolitan's own "75x reduction" framing of the cached-token price cut quoted at 3 words — one quote per source.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — TechCrunch byline Tim Fernholz and Cryptopolitan byline Randa Moses, both confirmed via direct fetch.
+**Notes:** Flagged as "partial" on primary sourcing rather than "pass" since neither source is Meta's own blog — this is the same class of case as prior single-company-declined-to-comment stories in this log, resolved the same way, with two independently fetched bylined outlets whose specific dollar figures agree exactly rather than one outlet repeating the other.
+
+### 2026-09-09 08:00 UTC — florida-ag-ai-chatbot-criminal-liability-proposal
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: partial — no dedicated Attorney General press release could be located (myfloridalegal.com's press-release index and a direct Florida Politics fetch both failed to load); this run instead used two independent, confirmed-bylined outlets that covered Uthmeier's on-record Tampa press conference directly: FOX 13 Tampa Bay (byline Joe Espy) and WCTV (byline Matt Hoffmann), both confirmed via direct fetch, with matching quotes and figures.
+- Quotes ≤15 words, one per source: pass — Uthmeier quoted at 11 words via FOX 13 ("design, they control, and they significantly profit from these AI chatbots"); quoted at 9 words via WCTV ("will judge them by their words and their actions") — one quote per source, an earlier draft that used two quotes from each of the two sources was trimmed down before publishing.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — FOX 13 byline Joe Espy and WCTV byline Matt Hoffmann, both confirmed via direct fetch.
+**Notes:** Explicit in the article's own text that no bill has been drafted and nothing is enacted — this is a state AG's public proposal, not a passed law, and the piece is careful not to imply otherwise. Both cited outlets independently confirm the same direct quotes and case details (FSU shooting, USF killings), which is why this run treated two press-conference writeups as adequate sourcing despite the absence of a formal press release document.
+
+### 2026-09-09 08:00 UTC — sapien-180-million-valuation-ai-cfo-analysis
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — single source, Fortune's own exclusive reporting (byline Sheryl Estrada, `fortune.com/2026/09/08/exclusive-ai-startup-sapien-raises-180m-valuation...`), direct fetch succeeded, consistent with this log's precedent for single fully-bylined-outlet funding stories (Félix, Lyte, 2026-09-04 entries).
+- Quotes ≤15 words, one per source: pass — customer quote (Carlex VP of Finance Jason Waltz) trimmed to 7 words ("would have probably taken us two weeks"); an earlier draft used a second, longer quote from the same single source and was cut to keep to one quote total on a single-sourced piece.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Fortune byline Sheryl Estrada, confirmed via direct fetch.
+**Notes:** The $12 million error-finding claim and the "20 minutes vs. two weeks" comparison are both explicitly attributed in the article to the customer via Fortune's reporting, with an explicit caveat that this is unaudited vendor-favorable evidence, not an independently verified benchmark — flagged rather than repeated as settled fact.
+
+### 2026-09-09 08:00 UTC — openai-automated-research-intern-milestone
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: partial — `openai.com/index/research-acceleration-view-inside-openai/` returned 403 on direct fetch, the same bot-block pattern this log has flagged repeatedly for openai.com; used two independent bylined secondaries instead: Engadget (byline Jackson Chen, confirmed as a real contributing reporter via a separate search of his author page and outside bylines) and Fortune (byline Jeremy Kahn, Fortune's AI editor), both confirmed via direct fetch with matching figures.
+- Quotes ≤15 words, one per source: pass — OpenAI's own post quoted at 12 words via Engadget ("a system that can carry out well-defined research tasks under human direction"); chief scientist Jakub Pachocki quoted at 11 words via Fortune ("risks associated with AI are unfortunately going to grow from here").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Engadget byline Jackson Chen and Fortune byline Jeremy Kahn, both confirmed via direct fetch/search.
+**Notes:** A first draft used Unite.AI as the second source; this run separately checked the byline ("Jonas Reeve") and found Unite.AI's own author page discloses that byline as an AI-generated persona reviewed by editorial staff, not a human reporter. Dropped it entirely rather than publish on an unconfirmed-human byline, and replaced it with Fortune's independent reporting on the same OpenAI post, which happened to carry a substantively different and newsworthy angle (chief scientist Jakub Pachocki's own safety warning in the same announcement) rather than just re-confirming the same figures. This is the kind of byline check this log's standing rule exists for, caught before publishing rather than after.
+
+### 2026-09-09 08:00 UTC — meta-hatch-consumer-ai-agent (rejected)
+**Verdict:** rejected
+**Notes:** Every source found describes Hatch as still forthcoming as of this run — "weeks from launch," "targeting release late August or September" — with no company confirmation that it has actually shipped. Rejected on unverifiable launch status rather than pursued as a rumor. Revisit once Meta's own channels confirm an actual release.
+
+### 2026-09-09 08:00 UTC — baidu-xiaodu-ai-day-dazi-home-agents (rejected)
+**Verdict:** rejected
+**Notes:** Real event, real date (September 8, 2026, Beijing), and Baidu's own Li Ying was quoted describing the pitch — but the fullest writeup of the actual product lineup found by this run bylines its author only as "The Analyst," a pseudonym, not a confirmed individual. No other outlet with a confirmed byline covering the specific device lineup and Dazi integration was found in the time this run had. Rejected on the confirmed-byline check specifically, not on newsworthiness — worth revisiting if a bylined outlet (TechNode, SCMP, etc.) publishes a post-event recap.
+
+### 2026-09-09 08:00 UTC — eu-ai-office-september-compliance-inspections (rejected)
+**Verdict:** rejected
+**Notes:** A secondary aggregator (Cubbbix) claims the European AI Office began a first wave of compliance inspections in September, but this run could not find a European Commission press release or any bylined outlet independently confirming that specific claim — the closest confirmable primary is the August 2 enforcement-start milestone, which is older ground already implicitly covered by this log's prior EU AI Act entries. Rejected rather than publish on an uncorroborated secondary-aggregator claim.
+
+### 2026-09-09 08:00 UTC — anthropic-public-s1-ipo-prospectus (rejected)
+**Verdict:** rejected
+**Notes:** Anthropic's public S-1 prospectus has not actually been filed as of this run — every source describes it as still expected "by end of September," following the confidential June 1 filing already on the record. There is no new dated document or event to report; revisit once the public filing actually happens.
+
+### 2026-09-09 08:00 UTC — fda-tempo-pilot-behavioral-health-additions (rejected)
+**Verdict:** rejected
+**Notes:** The actual selection of Limbic and SonderMind into the TEMPO pilot dates to August 24, 2026 (MedTech Dive, byline Elise Reuter, confirmed via direct fetch) — over two weeks before this run. A September 3 STAT News piece revisits the same underlying event without new news, and is paywalled with no FDA quotes obtainable directly. Rejected on recency, consistent with this log's treatment of other stale-but-still-circulating stories.
+
+### 2026-09-09 08:00 UTC — mistral-shieldstral-safety-classifier (rejected)
+**Verdict:** rejected
+**Notes:** Shieldstral shipped August 4, 2026 — over a month before this run's date, outside this pipeline's recency window. Substantively interesting (a 3B policy-adaptive multimodal safety classifier matching models 7x its size) but too old to cover as current news.
+
+### 2026-09-09 08:00 UTC — qwen3-8-max-open-weights-release (rejected)
+**Verdict:** rejected
+**Notes:** The open-weights checkpoint landed on Hugging Face August 12-14, 2026. The model's initial API unveiling (August 3) was already logged rejected in this file on 2026-09-05 for being over a month old; the weights release is the same underlying story further along, not new news as of this run.
+
+### 2026-09-09 08:00 UTC — legora-550-million-series-d (rejected)
+**Verdict:** rejected
+**Notes:** A funding-roundup search surfaced this as if current, but the round actually closed and was reported on March 10, 2026 — six months before this run. Not September news at all; caught before drafting.
+
+### 2026-09-09 08:00 UTC — general-intuition-320-million-series-a (rejected)
+**Verdict:** rejected
+**Notes:** Round closed and was reported June 25, 2026, over two months before this run — outside the recency window. Caught before drafting.
+
+### 2026-09-09 08:00 UTC — pixxel-100-million-series-c (rejected)
+**Verdict:** rejected
+**Notes:** Genuinely recent (September 7, 2026) and well-covered, but deprioritized rather than pursued to full verification: Pixxel is primarily a hyperspectral-satellite/Earth-observation hardware company, a weaker fit for this pipeline's AI-news lane than this run's other candidates, and a direct Crunchbase News URL guess 404'd without time in this run to track down the correct one. Not rejected on a failed check — deprioritized for a stronger use of this run's remaining time.
