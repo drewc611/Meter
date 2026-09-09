@@ -175,24 +175,48 @@ def test_login_with_overlong_password_is_401_not_500(client, monkeypatch):
     assert r.status_code == 401
 
 
-def test_login_hashes_even_for_an_unknown_account(monkeypatch):
+def test_login_burns_a_hash_for_an_unknown_account(client, monkeypatch):
     """/auth/login returns the same message either way, but used to return it
     ~70x faster for an address with no account, because bcrypt only ran when
     there was a hash to check -- which told a guesser exactly what the
-    identical wording withholds. Asserted at the call level rather than by
-    timing the clock, so it can't go flaky on a loaded CI box."""
+    identical wording withholds.
+
+    Asserted through the endpoint, and by counting the work rather than
+    timing the clock: a stopwatch assertion would go flaky on a loaded CI
+    box, and asserting on the helper alone wouldn't prove /auth/login
+    actually calls it."""
     from app.services import auth as auth_service
 
-    calls = []
+    hashes_compared = []
     real_verify = auth_service.verify_password
-    monkeypatch.setattr(
-        auth_service,
-        "verify_password",
-        lambda pw, h: calls.append(h) or real_verify(pw, h),
-    )
-    auth_service.dummy_verify("whatever-the-guesser-sent")
-    assert calls, "the unknown-account path must still perform a bcrypt comparison"
-    assert calls[0].startswith("$2b$"), "must compare against a real bcrypt hash, not a stub"
+    monkeypatch.setattr(auth_service, "verify_password", lambda pw, h: hashes_compared.append(h) or real_verify(pw, h))
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+
+    r = client.post("/auth/login", json={"email": "nobody@example.com", "password": "hunter22"})
+    assert r.status_code == 401
+    assert hashes_compared, "an unknown account must still cost a bcrypt comparison"
+    assert hashes_compared[0].startswith("$2b$"), "must compare against a real bcrypt hash, not a stub"
+
+
+def test_login_costs_the_same_work_whether_or_not_the_account_exists(client, monkeypatch):
+    """The pair that matters: one bcrypt comparison either way."""
+    from app.services import auth as auth_service
+
+    counted = []
+    real_verify = auth_service.verify_password
+    monkeypatch.setattr(auth_service, "verify_password", lambda pw, h: counted.append(h) or real_verify(pw, h))
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    client.post("/auth/signup", json={"email": "real@example.com", "password": "hunter22", "name": "Ada"})
+
+    counted.clear()
+    client.post("/auth/login", json={"email": "real@example.com", "password": "wrong-password"})
+    known = len(counted)
+
+    counted.clear()
+    client.post("/auth/login", json={"email": "nobody@example.com", "password": "wrong-password"})
+    unknown = len(counted)
+
+    assert known == unknown == 1, f"known account did {known} comparison(s), unknown did {unknown}"
 
 
 def test_signup_requires_matching_code_when_set(client, monkeypatch):
