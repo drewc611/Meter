@@ -253,10 +253,15 @@ def load(name):
     return clean
 
 
-def _csv_safe(value):
+def csv_safe(value):
     """Prefix a leading formula-trigger character with a quote, so a
     spreadsheet reads this cell as text rather than running it as a formula.
-    Only ever adds a leading character; never changes anything else."""
+    Only ever adds a leading character; never changes anything else.
+
+    Public (not `_csv_safe`) because adapters.py's import ledger writes free
+    text pulled from the same untrusted bank/PayPal/Square exports straight
+    to its own CSV, outside save()'s per-registry free_text handling, and
+    needs this same guard."""
     s = str(value)
     return "'" + s if s.startswith(_FORMULA_LEAD) else s
 
@@ -276,7 +281,7 @@ def save(name, rows):
             row = {c: r.get(c, "") for c in cols}
             for c in free_text:
                 if row[c]:
-                    row[c] = _csv_safe(row[c])
+                    row[c] = csv_safe(row[c])
             w.writerow(row)
 
 
