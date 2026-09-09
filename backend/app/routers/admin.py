@@ -1,6 +1,7 @@
 """Admin endpoints: manual identity mapping, the scoring-job entry point,
 and the one-off waitlist announcement send."""
 
+import smtplib
 from datetime import datetime
 from email.errors import MessageError  # stdlib; ..services.email below is the app's sender
 
@@ -126,7 +127,7 @@ def notify_waitlist(dry_run: bool = False, db: Session = Depends(get_db)):
             continue
         try:
             email.send_email(signup.email, _NOTIFY_SUBJECT, _NOTIFY_HTML, _NOTIFY_TEXT)
-        except (OSError, MessageError, ValueError):
+        except (OSError, smtplib.SMTPException, MessageError, ValueError):
             # Deliberately wider than smtplib.SMTPException, which missed the
             # two most likely failures outright. An unreachable mail server
             # raises ConnectionRefusedError/socket.timeout -- OSError, and
