@@ -1,0 +1,16 @@
+{
+  "name": "merit-ac-skills-library",
+  "owner": {
+    "name": "Merit AC"
+  },
+  "metadata": {
+    "description": "Role-specific Claude Skills -- backend, frontend, security, product, marketing, and more."
+  },
+  "plugins": [
+    {
+      "name": "backend-engineer",
+      "source": "./plugins/backend-engineer",
+      "description": "Backend engineering review and design partner for APIs, data models, and services -- idempotency, transaction boundaries, migrations, and the failure modes that only show up under load or on retry."
+    }
+  ]
+}

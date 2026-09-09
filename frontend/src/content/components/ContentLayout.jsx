@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { key: "setup", href: "/setup/react", label: "Setup" },
   { key: "news", href: "/news", label: "News" },
   { key: "models", href: "/models", label: "Models" },
+  { key: "skills", href: "/skills", label: "Skills" },
   { key: "glossary", href: "/glossary", label: "Glossary" },
   { key: "guides", href: "/guides", label: "Guides" },
   { key: "prompts", href: "/prompts", label: "Prompts" },

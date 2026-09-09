@@ -35,6 +35,8 @@ import ModelsDirectory, { meta as modelsMeta } from "./pages/ModelsDirectory.jsx
 import ModelEntry, { modelMeta } from "./pages/ModelEntry.jsx";
 import Glossary, { meta as glossaryMeta } from "./pages/Glossary.jsx";
 import PromptDay, { promptMeta } from "./pages/PromptDay.jsx";
+import SkillsDirectory, { meta as skillsMeta } from "./pages/SkillsDirectory.jsx";
+import SkillEntry, { skillMeta } from "./pages/SkillEntry.jsx";
 import { PROMPTS } from "./data/prompts.js";
 
 // One markdown file per entry -- drop a new .md in the matching folder and it
@@ -46,6 +48,7 @@ const modelEntries = loadEntries(entriesDir("models"));
 const guideEntries = loadEntries(entriesDir("guides"));
 const cloudArchEntries = loadEntries(entriesDir("cloud-architecture"));
 const claudeArchEntries = loadEntries(entriesDir("claude-architecture"));
+const skillEntries = loadEntries(entriesDir("skills"));
 
 const PAGES = [
   [Home, homeMeta],
@@ -66,6 +69,7 @@ const PAGES = [
   [NewsIndex, newsIndexMeta, { entries: newsEntries }],
   [ModelsDirectory, modelsMeta, { entries: modelEntries }],
   [Glossary, glossaryMeta, { entries: glossaryEntries }],
+  [SkillsDirectory, skillsMeta, { entries: skillEntries }],
 ];
 
 // Guide-shaped entries (guides/cloud-architecture/claude-architecture) all
@@ -99,5 +103,9 @@ export function renderAll() {
       html: renderToStaticMarkup(<GuidePage entry={entry} section={section} />),
     }))
   );
-  return [...staticPages, ...promptPages, ...newsPages, ...modelPages, ...guidePages];
+  const skillPages = skillEntries.map((entry) => ({
+    meta: skillMeta(entry),
+    html: renderToStaticMarkup(<SkillEntry entry={entry} />),
+  }));
+  return [...staticPages, ...promptPages, ...newsPages, ...modelPages, ...guidePages, ...skillPages];
 }
