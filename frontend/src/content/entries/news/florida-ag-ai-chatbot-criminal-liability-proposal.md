@@ -27,7 +27,7 @@ Uthmeier tied the push directly to two Florida cases under active investigation:
 
 ## Where the line actually falls
 
-Uthmeier was explicit that the target is corporate liability, not a ban: "this is not a ban on AI. AI is here. It is the future," he told FOX 13's Joe Espy, adding that companies "design, they control, and they significantly profit from these AI chatbots" and should be held accountable when a product they built participates in a crime. WCTV separately quoted him framing the legal theory behind the proposal: "AI is not a person, no, but it is marketed as exhibiting human behaviors," and Florida law "will judge them by their words and their actions."
+Uthmeier framed the target as corporate liability, not a ban on the technology itself, telling FOX 13's Joe Espy that companies "design, they control, and they significantly profit from these AI chatbots" and should be held accountable when a product they built participates in a crime. WCTV separately quoted him laying out the underlying legal theory: AI systems aren't people, but Florida law "will judge them by their words and their actions" regardless.
 
 ## An early-stage proposal, not a law yet
 
