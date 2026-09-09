@@ -26,6 +26,42 @@ unauthenticated write is only ever accepted while at most one org exists in
 the whole database -- the instant a second tenant exists, it's rejected
 with no operator action required.
 
+### Fixed in the last review
+
+Five issues found and fixed, each with a regression test that fails without
+the fix:
+
+- **A company signup could land inside an individual's personal org.** With
+  `MERIT_SIGNUP_CODE` set, the shared organization was resolved as "the
+  oldest row in the table". On a deployment that ran publicly before being
+  locked down, that row is some individual's personal org, so every later
+  code-holding signup joined it and could read that person's dashboard. The
+  shared org is now selected by `plan == "company"`, and a personal org is
+  never adopted as a shared tenant. This is the one that actually crossed the
+  tenant boundary.
+- **Any password over 72 bytes returned a 500** from `/auth/signup` and
+  `/auth/login`. bcrypt refuses longer input rather than truncating it, and
+  the `ValueError` was unhandled — so an unauthenticated caller could error
+  the login endpoint for an account they don't own, and anyone using a
+  password manager's default output simply couldn't register. Now a 422 on
+  signup and a 401 on login, with the limit measured in bytes.
+- **`/auth/login` leaked which email addresses have accounts.** The error
+  message is identical either way, but bcrypt only ran when there was a hash
+  to check, so a known address took ~300ms and an unknown one ~4ms — a 70x
+  difference that answered the question the wording withholds. Failed logins
+  now perform a comparison against a dummy hash either way.
+- **One malformed waitlist row could permanently disable the announcement
+  email.** The signup validator rejected spaces but not newlines, so an
+  address containing one was stored; `/admin/notify-waitlist` then raised
+  `HeaderParseError` while building the message, which isn't an
+  `SMTPException` and so escaped as a 500 that aborted the entire run.
+  Control characters are now rejected at signup.
+- **An unreachable mail server did the same thing.** `ConnectionRefusedError`
+  is an `OSError`, not an `SMTPException`, so an ordinary transient outage
+  also 500'd the whole job. Because `notified_at` was committed only after
+  the loop, every already-sent recipient was re-emailed on the next attempt.
+  The handler now covers both, and commits per recipient.
+
 Known gaps: no rate limiting on login attempts, no audit log of who
 accessed what, account recovery (forgot-password) isn't built, and the
 "Sign in with Google" `state`

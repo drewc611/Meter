@@ -95,3 +95,60 @@ def test_notify_waitlist_counts_failed_sends_without_aborting_the_batch(client, 
     assert r.json() == {"sent": 1, "failed": 1, "dry_run": False}
     notified = {s.email for s in db.query(models.WaitlistSignup).filter(models.WaitlistSignup.notified_at.isnot(None))}
     assert notified == {"notify3@example.com"}
+
+
+def test_rejects_control_characters_in_email(client, db):
+    """A newline passed the old check (it only looked for a literal space),
+    got stored, and then made every later /admin/notify-waitlist run raise
+    HeaderParseError from the email library -- a 500 that aborted the whole
+    send, so one poisoned row disabled the announcement permanently."""
+    for payload in ("a@b.com\nBcc:attacker@evil.com", "a@b.com\rX:y", "a\tb@c.com"):
+        assert client.post("/waitlist", json={"email": payload}).status_code == 422
+    assert db.query(models.WaitlistSignup).count() == 0
+
+
+def test_rejects_unbounded_company_field(client):
+    r = client.post("/waitlist", json={"email": "a@b.com", "company": "x" * 500})
+    assert r.status_code == 422
+
+
+def test_notify_survives_an_unreachable_mail_server(client, db, monkeypatch):
+    """The old handler caught only smtplib.SMTPException, but a mail server
+    that is down raises ConnectionRefusedError -- an OSError, which escaped
+    as a 500 and lost every notified_at in the batch, re-sending to everyone
+    already emailed on the next attempt."""
+    _configure_smtp(monkeypatch)
+
+    def refuses(to, subject, html, text):
+        raise ConnectionRefusedError(111, "Connection refused")
+
+    monkeypatch.setattr("app.services.email.send_email", refuses)
+    client.post("/waitlist", json={"email": "notify4@example.com"})
+
+    r = client.post("/admin/notify-waitlist")
+    assert r.status_code == 200
+    assert r.json() == {"sent": 0, "failed": 1, "dry_run": False}
+    # Nothing was sent, so nothing may be marked notified -- otherwise these
+    # recipients are silently dropped from the next run.
+    assert db.query(models.WaitlistSignup).filter(models.WaitlistSignup.notified_at.isnot(None)).count() == 0
+
+
+def test_notify_keeps_earlier_sends_when_a_later_one_fails(client, db, monkeypatch):
+    """notified_at is committed per recipient, so a failure partway through
+    can't roll back the bookkeeping for mail that already went out."""
+    _configure_smtp(monkeypatch)
+    sent_to = []
+
+    def send_then_die(to, subject, html, text):
+        if to == "boom@example.com":
+            raise ConnectionRefusedError(111, "Connection refused")
+        sent_to.append(to)
+
+    monkeypatch.setattr("app.services.email.send_email", send_then_die)
+    client.post("/waitlist", json={"email": "first@example.com"})
+    client.post("/waitlist", json={"email": "boom@example.com"})
+
+    r = client.post("/admin/notify-waitlist")
+    assert r.status_code == 200
+    notified = {s.email for s in db.query(models.WaitlistSignup).filter(models.WaitlistSignup.notified_at.isnot(None))}
+    assert notified == set(sent_to) == {"first@example.com"}

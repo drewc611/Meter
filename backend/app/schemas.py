@@ -4,7 +4,30 @@ from datetime import datetime
 
 from pydantic import BaseModel, field_validator
 
+from .services.auth import MAX_PASSWORD_BYTES
+
 # ------------------------------------------------------------- requests
+
+
+def _validated_email(v: str) -> str:
+    """Deliberately not pydantic's EmailStr -- that needs the optional
+    email-validator dependency, which isn't installed. This is a lightweight
+    sanity check, not RFC 5321 validation; the real bar is "does mail actually
+    land," which no amount of regex checking here can guarantee anyway.
+
+    It does have to reject *control characters*, though, and checking only for
+    a literal space did not. An address containing a newline passed validation,
+    got stored, and then made every later /admin/notify-waitlist run raise
+    HeaderParseError from the email library -- a 500 that aborted the whole
+    send before any notified_at was committed, so one poisoned row disabled the
+    announcement permanently and re-sent to everyone already emailed.
+    """
+    v = v.strip()
+    if "@" not in v or len(v) > 254:
+        raise ValueError("not a valid email address")
+    if any(c.isspace() or ord(c) < 32 or ord(c) == 127 for c in v):
+        raise ValueError("not a valid email address")
+    return v
 
 
 class WaitlistSignupIn(BaseModel):
@@ -14,14 +37,15 @@ class WaitlistSignupIn(BaseModel):
     @field_validator("email")
     @classmethod
     def _basic_email_shape(cls, v: str) -> str:
-        # Deliberately not pydantic's EmailStr -- that needs the optional
-        # email-validator dependency, which isn't installed. This is a
-        # lightweight sanity check for a pre-launch signup form, not RFC 5321
-        # validation; the real bar is "does mail actually land," which no
-        # amount of regex checking here can guarantee anyway.
-        v = v.strip()
-        if "@" not in v or " " in v or len(v) > 254:
-            raise ValueError("not a valid email address")
+        return _validated_email(v)
+
+    @field_validator("company")
+    @classmethod
+    def _bounded_company(cls, v: str | None) -> str | None:
+        # Unbounded free text on an unauthenticated endpoint is a row-size
+        # problem waiting to happen; nothing legitimate needs more.
+        if v is not None and len(v) > 200:
+            raise ValueError("company must be at most 200 characters")
         return v
 
 
@@ -70,16 +94,19 @@ class SignupIn(BaseModel):
     @field_validator("email")
     @classmethod
     def _basic_email_shape(cls, v: str) -> str:
-        v = v.strip()
-        if "@" not in v or " " in v or len(v) > 254:
-            raise ValueError("not a valid email address")
-        return v
+        return _validated_email(v)
 
     @field_validator("password")
     @classmethod
-    def _min_length(cls, v: str) -> str:
+    def _length(cls, v: str) -> str:
         if len(v) < 8:
             raise ValueError("password must be at least 8 characters")
+        # bcrypt refuses anything over 72 bytes outright (it does not
+        # truncate), so without this a password manager's 100-character
+        # output is a 500 rather than a validation error. Bytes, not
+        # characters -- non-ASCII costs more than one each.
+        if len(v.encode("utf-8")) > MAX_PASSWORD_BYTES:
+            raise ValueError(f"password must be at most {MAX_PASSWORD_BYTES} bytes")
         return v
 
 

@@ -15,6 +15,8 @@ Both env vars are read live, so these tests toggle with monkeypatch.setenv
 rather than touching Settings.
 """
 
+from app import models
+
 # --------------------------------------------------------------- MERIT_API_KEY
 
 
@@ -147,6 +149,52 @@ def test_signup_rejects_short_password(client, monkeypatch):
     assert r.status_code == 422
 
 
+def test_signup_rejects_password_over_bcrypt_limit(client, monkeypatch):
+    """bcrypt refuses anything over 72 bytes -- it raises rather than
+    truncating -- so an unbounded password was a 500, not a validation
+    error. A password manager's default output is routinely longer."""
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    r = client.post("/auth/signup", json={"email": "a@example.com", "password": "a" * 100, "name": "Ada"})
+    assert r.status_code == 422
+
+
+def test_signup_password_limit_counts_bytes_not_characters(client, monkeypatch):
+    """40 emoji is 160 bytes. Measuring len() in characters would let it
+    through to bcrypt, which counts bytes and would raise."""
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    r = client.post("/auth/signup", json={"email": "a@example.com", "password": "🔥" * 40, "name": "Ada"})
+    assert r.status_code == 422
+
+
+def test_login_with_overlong_password_is_401_not_500(client, monkeypatch):
+    """Unauthenticated: anyone could 500 the login endpoint for an account
+    they don't own just by sending a long password."""
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    client.post("/auth/signup", json={"email": "a@example.com", "password": "hunter22", "name": "Ada"})
+    r = client.post("/auth/login", json={"email": "a@example.com", "password": "a" * 100})
+    assert r.status_code == 401
+
+
+def test_login_hashes_even_for_an_unknown_account(monkeypatch):
+    """/auth/login returns the same message either way, but used to return it
+    ~70x faster for an address with no account, because bcrypt only ran when
+    there was a hash to check -- which told a guesser exactly what the
+    identical wording withholds. Asserted at the call level rather than by
+    timing the clock, so it can't go flaky on a loaded CI box."""
+    from app.services import auth as auth_service
+
+    calls = []
+    real_verify = auth_service.verify_password
+    monkeypatch.setattr(
+        auth_service,
+        "verify_password",
+        lambda pw, h: calls.append(h) or real_verify(pw, h),
+    )
+    auth_service.dummy_verify("whatever-the-guesser-sent")
+    assert calls, "the unknown-account path must still perform a bcrypt comparison"
+    assert calls[0].startswith("$2b$"), "must compare against a real bcrypt hash, not a stub"
+
+
 def test_signup_requires_matching_code_when_set(client, monkeypatch):
     monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
     monkeypatch.setenv("MERIT_SIGNUP_CODE", "letmein")
@@ -180,6 +228,31 @@ def test_login_rejects_unknown_email(client, monkeypatch):
     monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
     r = client.post("/auth/login", json={"email": "nobody@example.com", "password": "hunter22"})
     assert r.status_code == 401
+
+
+# ------------------------------------------------- org provisioning (tenancy)
+
+
+def test_signup_code_never_adopts_someones_personal_org(client, db, monkeypatch):
+    """A deployment that ran public before being locked down has personal
+    orgs in the table. Picking "the oldest organization" as the shared one
+    put every later company signup inside an individual's private org, where
+    they could read that person's dashboard. The shared org must be a
+    company org -- created if there isn't one."""
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.delenv("MERIT_SIGNUP_CODE", raising=False)
+    alice = client.post(
+        "/auth/signup", json={"email": "alice@example.com", "password": "hunter22", "name": "Alice"}
+    ).json()["user"]
+
+    monkeypatch.setenv("MERIT_SIGNUP_CODE", "letmein")
+    bob = client.post(
+        "/auth/signup",
+        json={"email": "bob@example.com", "password": "hunter22", "name": "Bob", "signup_code": "letmein"},
+    ).json()["user"]
+
+    assert bob["org_id"] != alice["org_id"], "company signup landed in a personal org"
+    assert db.query(models.Organization).filter_by(id=bob["org_id"]).one().plan == "company"
 
 
 # --------------------------------------------------------------- /auth/me

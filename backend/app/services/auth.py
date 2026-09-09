@@ -25,6 +25,21 @@ from .. import models
 TOKEN_LIFETIME_SECONDS = 60 * 60 * 24 * 14  # 14 days
 _JWT_ALGORITHM = "HS256"
 
+# bcrypt hashes at most 72 bytes and, since bcrypt 4.1, raises ValueError
+# rather than silently truncating anything longer. Unhandled, that turns a
+# long password into a 500 on /auth/signup and /auth/login -- see
+# MAX_PASSWORD_BYTES enforcement in verify_password/hash_password. The limit
+# is in *bytes*, not characters: a password of 40 emoji is over it.
+MAX_PASSWORD_BYTES = 72
+
+# A real bcrypt hash at the same cost factor as gensalt()'s default, used to
+# burn the same ~300ms on a login for an account that doesn't exist as one
+# that does. Without it, "invalid email or password" takes 4ms for an unknown
+# address and 300ms for a known one, which tells a guesser exactly what the
+# identical error message is trying not to. Never matches a real password:
+# nothing knows the plaintext and no code path treats a match as success.
+_DUMMY_HASH = "$2b$12$VURRueozYI1HBuxfT6xUA.FGdq9k6I/U3OHhj5NtnaDLqJ6u3qXVO"
+
 GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
 GOOGLE_JWKS_URL = "https://www.googleapis.com/oauth2/v3/certs"
@@ -37,11 +52,41 @@ class AuthError(Exception):
 
 
 def hash_password(password: str) -> str:
-    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+    """Raises AuthError for a password bcrypt can't hash, rather than letting
+    bcrypt's ValueError escape as a 500. schemas.SignupIn rejects these first;
+    this is the backstop for any other caller."""
+    encoded = password.encode("utf-8")
+    if len(encoded) > MAX_PASSWORD_BYTES:
+        raise AuthError(f"Password must be at most {MAX_PASSWORD_BYTES} bytes")
+    return bcrypt.hashpw(encoded, bcrypt.gensalt()).decode("utf-8")
 
 
 def verify_password(password: str, password_hash: str) -> bool:
-    return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
+    """False, never an exception, for anything bcrypt would reject.
+
+    An over-long candidate can't match: hash_password refuses to create such a
+    hash in the first place, so there is nothing for it to be the password of.
+    Returning False keeps an attacker-supplied 100-byte password at /auth/login
+    a 401 instead of a 500.
+    """
+    encoded = password.encode("utf-8")
+    if len(encoded) > MAX_PASSWORD_BYTES:
+        return False
+    try:
+        return bcrypt.checkpw(encoded, password_hash.encode("utf-8"))
+    except ValueError:
+        # A malformed/truncated hash in the row, not a wrong password.
+        return False
+
+
+def dummy_verify(password: str) -> None:
+    """Spend a password check's worth of time on an account that doesn't exist.
+
+    Call this on every login that fails before reaching a real hash, so the
+    response time of "no such user" matches "wrong password". The result is
+    deliberately discarded -- this is a clock, not a check.
+    """
+    verify_password(password, _DUMMY_HASH)
 
 
 def issue_token(user: models.DashboardUser) -> str:

@@ -1,8 +1,8 @@
 """Admin endpoints: manual identity mapping, the scoring-job entry point,
 and the one-off waitlist announcement send."""
 
-import smtplib
 from datetime import datetime
+from email.errors import MessageError  # stdlib; ..services.email below is the app's sender
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -126,11 +126,24 @@ def notify_waitlist(dry_run: bool = False, db: Session = Depends(get_db)):
             continue
         try:
             email.send_email(signup.email, _NOTIFY_SUBJECT, _NOTIFY_HTML, _NOTIFY_TEXT)
-        except smtplib.SMTPException:
+        except (OSError, MessageError, ValueError):
+            # Deliberately wider than smtplib.SMTPException, which missed the
+            # two most likely failures outright. An unreachable mail server
+            # raises ConnectionRefusedError/socket.timeout -- OSError, and
+            # SMTPException is itself an OSError subclass, so this covers both.
+            # An address containing a control character raises HeaderParseError
+            # while *building* the message, before SMTP is reached at all.
+            # Either one used to escape as a 500 that aborted the whole run and
+            # lost every notified_at in the batch, so the next attempt
+            # re-emailed everyone already sent to. Schemas now reject such
+            # addresses at the door, but rows predating that fix are still in
+            # the table, and a mail server being briefly down always will be.
             failed += 1
             continue
         signup.notified_at = utcnow()
         sent += 1
-    if not dry_run:
+        # Commit per recipient. The send is the irreversible half; batching
+        # the bookkeeping behind it means any later failure re-sends mail
+        # that already went out.
         db.commit()
     return schemas.NotifyWaitlistResult(sent=sent, failed=failed, dry_run=dry_run)

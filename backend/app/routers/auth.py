@@ -60,7 +60,19 @@ def _provision_org_for_signup(db: Session, name: str, email: str) -> tuple[model
     signup gets a brand-new isolated Organization of their own.
     """
     if os.environ.get("MERIT_SIGNUP_CODE"):
-        org = db.query(models.Organization).order_by(models.Organization.id).first()
+        # Filter on plan, not just "the oldest org". A deployment that ran
+        # public before being locked down has personal orgs in the table, and
+        # the oldest row is then some individual's private organization --
+        # every code-holding signup landed inside it and could read that
+        # person's dashboard. The shared org is the one created as a company
+        # org, or a new one; a personal org is never adopted as the shared
+        # tenant.
+        org = (
+            db.query(models.Organization)
+            .filter(models.Organization.plan == "company")
+            .order_by(models.Organization.id)
+            .first()
+        )
         if org is None:
             org = models.Organization(name="Shared Organization", plan="company")
             db.add(org)
@@ -128,9 +140,15 @@ def signup(body: schemas.SignupIn, db: Session = Depends(get_db)):
 @router.post("/login", response_model=schemas.TokenOut)
 def login(body: schemas.LoginIn, db: Session = Depends(get_db)):
     user = db.query(models.DashboardUser).filter_by(email=body.email).one_or_none()
-    if user is None or not user.password_hash or not auth_service.verify_password(body.password, user.password_hash):
+    if user is None or not user.password_hash:
         # Same message either way -- confirming "that email exists" to a
-        # guesser is its own small leak.
+        # guesser is its own small leak. The message alone isn't enough,
+        # though: returning here without hashing anything answered in ~4ms
+        # where a real account took ~300ms, which told a guesser the same
+        # thing the wording withholds. Burn the comparable time first.
+        auth_service.dummy_verify(body.password)
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
+    if not auth_service.verify_password(body.password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password")
     try:
         token = auth_service.issue_token(user)
