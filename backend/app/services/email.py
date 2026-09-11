@@ -14,12 +14,24 @@ announcement email went out is worse than failing loudly.
 
 import os
 import smtplib
+import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from functools import cache
 
 
 class EmailNotConfigured(Exception):
     """Raised when MERIT_SMTP_HOST or MERIT_FROM_EMAIL isn't set."""
+
+
+@cache
+def _tls_context() -> ssl.SSLContext:
+    """Built once and shared. Reading and parsing the system CA bundle costs
+    ~20ms, and /admin/notify-waitlist calls send_email() once per recipient --
+    per-call construction put 20 seconds of pure certificate parsing into a
+    thousand-recipient send. An SSLContext is designed to be reused across
+    connections."""
+    return ssl.create_default_context()
 
 
 def is_configured() -> bool:
@@ -27,7 +39,8 @@ def is_configured() -> bool:
 
 
 def send_email(to: str, subject: str, html_body: str, text_body: str) -> None:
-    """Send one email via SMTP (STARTTLS on the configured port, default 587).
+    """Send one email via SMTP (certificate-verified STARTTLS on the
+    configured port, default 587).
 
     Raises EmailNotConfigured if MERIT_SMTP_HOST/MERIT_FROM_EMAIL aren't set,
     or smtplib.SMTPException (uncaught -- the caller decides how to handle a
@@ -49,7 +62,11 @@ def send_email(to: str, subject: str, html_body: str, text_body: str) -> None:
     msg.attach(MIMEText(html_body, "html"))
 
     with smtplib.SMTP(host, port, timeout=10) as smtp:
-        smtp.starttls()
+        # starttls() with no context builds one via ssl._create_stdlib_context(),
+        # which is CERT_NONE + check_hostname=False -- it encrypts, but verifies
+        # nothing, so anyone able to answer for MERIT_SMTP_HOST reads the session
+        # and collects MERIT_SMTP_USER/PASSWORD from the AUTH that follows.
+        smtp.starttls(context=_tls_context())
         if user and password:
             smtp.login(user, password)
         smtp.sendmail(from_addr, [to], msg.as_string())

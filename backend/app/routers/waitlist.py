@@ -10,11 +10,16 @@ from sqlalchemy.orm import Session
 
 from .. import models, schemas
 from ..dependencies import get_db
+from ..services import ratelimit
 
 router = APIRouter(prefix="/waitlist", tags=["waitlist"])
 
+# Unauthenticated and it writes a row, so without a cap one host can fill the
+# lead table (and the operator's announcement send) with junk addresses.
+_WAITLIST_LIMIT = ratelimit.limit("waitlist", max_requests=20, window_seconds=3600)
 
-@router.post("", status_code=201, response_model=schemas.WaitlistSignupOut)
+
+@router.post("", status_code=201, response_model=schemas.WaitlistSignupOut, dependencies=[Depends(_WAITLIST_LIMIT)])
 def join_waitlist(body: schemas.WaitlistSignupIn, db: Session = Depends(get_db)):
     """Idempotent per email: re-submitting updates company/source in place
     (the latest interest wins) rather than erroring or tracking duplicate

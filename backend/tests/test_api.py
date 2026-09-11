@@ -94,6 +94,25 @@ def test_ingest_unmapped_id_surfaces_as_shadow_ai_candidate(client, db):
     assert body["candidates"][0]["known_cost_usd"] == 5.0
 
 
+def test_oversized_free_text_fields_are_rejected(client, db):
+    """None of these have a natural length, and unbounded means one request
+    can park megabytes in the database, in the log line, and in every later
+    response that reads the row back."""
+    _bootstrap_person(db)
+    base = {
+        "source_system": "anthropic_api",
+        "external_id": "key_live",
+        "tool": "anthropic_api",
+        "cost_usd": 5.0,
+    }
+    for field, size in (("source_system", 201), ("external_id", 501), ("tool", 201), ("model", 201)):
+        r = client.post("/ingest/usage", json={**base, field: "x" * size})
+        assert r.status_code == 422, field
+
+    r = client.post("/auth/signup", json={"email": "big@example.com", "password": "hunter22", "name": "x" * 201})
+    assert r.status_code == 422
+
+
 def test_unknown_outcome_type_without_weight_returns_400(client, db):
     _bootstrap_person(db)
     r = client.post(

@@ -8,16 +8,25 @@ needs an authenticated user to answer "who am I."
 
 import os
 import secrets
+from urllib.parse import quote
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Cookie, Depends, HTTPException, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
 from .. import models, schemas
 from ..dependencies import get_current_user, get_db
 from ..services import auth as auth_service
+from ..services import ratelimit
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+# Both unauthenticated. Login is the tighter of the two because it's the one an
+# attacker repeats: ten tries per five minutes leaves a real person who fat-
+# fingers their password alone, and turns an offline-speed password list into
+# roughly 2,900 guesses a day from one address.
+_LOGIN_LIMIT = ratelimit.limit("auth-login", max_requests=10, window_seconds=300)
+_SIGNUP_LIMIT = ratelimit.limit("auth-signup", max_requests=10, window_seconds=3600)
 
 
 def _user_out(user: models.DashboardUser) -> schemas.UserOut:
@@ -35,6 +44,14 @@ def _user_out(user: models.DashboardUser) -> schemas.UserOut:
 
 def _frontend_url() -> str:
     return os.environ.get("MERIT_FRONTEND_URL", "http://localhost:8080")
+
+
+def _cookies_are_secure() -> bool:
+    """Whether the OAuth state cookie gets the Secure flag. Keyed off the
+    redirect URI's own scheme rather than a separate env var, since that URI
+    is by definition the address Google sends the browser back to -- if it's
+    https, so is this deployment."""
+    return os.environ.get("GOOGLE_REDIRECT_URI", "").startswith("https://")
 
 
 def _check_signup_code(provided: str | None) -> None:
@@ -65,7 +82,19 @@ def _provision_org_for_signup(db: Session, name: str, email: str) -> tuple[model
     signup gets a brand-new isolated Organization of their own.
     """
     if os.environ.get("MERIT_SIGNUP_CODE"):
-        org = db.query(models.Organization).order_by(models.Organization.id).first()
+        # Filter on plan, not just "the oldest org". A deployment that ran
+        # public before being locked down has personal orgs in the table, and
+        # the oldest row is then some individual's private organization --
+        # every code-holding signup landed inside it and could read that
+        # person's dashboard. The shared org is the one created as a company
+        # org, or a new one; a personal org is never adopted as the shared
+        # tenant.
+        org = (
+            db.query(models.Organization)
+            .filter(models.Organization.plan == "company")
+            .order_by(models.Organization.id)
+            .first()
+        )
         if org is None:
             org = models.Organization(name="Shared Organization", plan="company")
             db.add(org)
@@ -105,7 +134,7 @@ def _provision_default_identity(db: Session, org: models.Organization, name: str
     db.add(models.IdentityMapping(org_id=org.id, identity_id=ident.id, source_system="manual", external_id=email))
 
 
-@router.post("/signup", status_code=201, response_model=schemas.TokenOut)
+@router.post("/signup", status_code=201, response_model=schemas.TokenOut, dependencies=[Depends(_SIGNUP_LIMIT)])
 def signup(body: schemas.SignupIn, db: Session = Depends(get_db)):
     _check_signup_code(body.signup_code)
     if db.query(models.DashboardUser).filter_by(email=body.email).one_or_none():
@@ -130,7 +159,7 @@ def signup(body: schemas.SignupIn, db: Session = Depends(get_db)):
     return schemas.TokenOut(access_token=token, user=_user_out(user))
 
 
-@router.post("/login", response_model=schemas.TokenOut)
+@router.post("/login", response_model=schemas.TokenOut, dependencies=[Depends(_LOGIN_LIMIT)])
 def login(body: schemas.LoginIn, db: Session = Depends(get_db)):
     user = db.query(models.DashboardUser).filter_by(email=body.email).one_or_none()
     # Always run a real bcrypt check, even when there's no user or no
@@ -156,27 +185,55 @@ def google_login(invite: str | None = None):
     """Redirects to Google's consent screen. `invite`, if this deployment
     requires MERIT_SIGNUP_CODE, is carried through Google's `state`
     round-trip and checked in the callback below -- only matters for a
-    *new* account; an existing user's Google login never needs it."""
+    *new* account; an existing user's Google login never needs it.
+
+    `state` also carries a one-time nonce, parked in a cookie here and
+    compared on the way back, so a callback that didn't start with this
+    request is rejected instead of logging the browser into whoever forged
+    it. SameSite=lax rather than strict: Google's redirect is a cross-site
+    top-level navigation, which strict would not send the cookie on."""
     try:
-        url = auth_service.google_authorize_url(state=invite or "-")
+        nonce, state = auth_service.new_oauth_state(invite)
+        url = auth_service.google_authorize_url(state=state)
     except auth_service.AuthError as e:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(e)) from e
-    return RedirectResponse(url)
+    response = RedirectResponse(url)
+    response.set_cookie(
+        auth_service.OAUTH_STATE_COOKIE,
+        nonce,
+        max_age=auth_service.OAUTH_STATE_TTL_SECONDS,
+        httponly=True,
+        secure=_cookies_are_secure(),
+        samesite="lax",
+        path="/auth",
+    )
+    return response
 
 
 @router.get("/google/callback")
-def google_callback(code: str, state: str = "-", db: Session = Depends(get_db)):
+def google_callback(
+    code: str,
+    state: str = "",
+    db: Session = Depends(get_db),
+    state_nonce: str | None = Cookie(default=None, alias=auth_service.OAUTH_STATE_COOKIE),
+):
     """Exchanges Google's code, finds-or-creates the DashboardUser, and
     redirects back to the frontend with our own token attached -- a browser
     redirect flow, so errors go back as a query param the frontend can
-    show, not a raw API error the user would never see."""
+    show, not a raw API error the user would never see.
+
+    The token rides in the URL *fragment*, not the query string: a fragment
+    is never sent to a server, so it stays out of proxy logs, `Referer`
+    headers and the frontend's own analytics, and only the page's own JS
+    (context/AppDataContext.jsx) ever reads it."""
     try:
+        invite = auth_service.read_oauth_state(state, state_nonce)
         claims = auth_service.google_exchange_code(code)
         user = db.query(models.DashboardUser).filter_by(google_sub=claims["sub"]).one_or_none()
         if user is None:
             user = db.query(models.DashboardUser).filter_by(email=claims["email"]).one_or_none()
             if user is None:
-                _check_signup_code(None if state == "-" else state)
+                _check_signup_code(invite)
                 name = claims.get("name", claims["email"])
                 org, is_personal = _provision_org_for_signup(db, name, claims["email"])
                 user = models.DashboardUser(
@@ -188,14 +245,36 @@ def google_callback(code: str, state: str = "-", db: Session = Depends(get_db)):
                 db.add(user)
                 if is_personal:
                     _provision_default_identity(db, org, name, claims["email"])
-            user.google_sub = claims["sub"]  # link (new account) or backfill (existing password account)
+            elif user.password_hash:
+                # Password signup never verifies the address, so anyone can
+                # register victim@example.com before its owner ever visits.
+                # Auto-linking here would then hand that owner's Google login
+                # straight into the squatter's account -- with the squatter's
+                # password still on it. A matching verified Google email is not
+                # proof that whoever set the password owns the address, so this
+                # is the one case that doesn't link itself. Linking the two is a
+                # direct DB edit for now, same as promoting someone to admin.
+                raise auth_service.AuthError(
+                    "An account with that email already has a password -- sign in with it instead"
+                )
+            user.google_sub = claims["sub"]
             db.commit()
             db.refresh(user)
         token = auth_service.issue_token(user)
     except (auth_service.AuthError, HTTPException) as e:
         detail = e.detail if isinstance(e, HTTPException) else str(e)
-        return RedirectResponse(f"{_frontend_url()}/app?auth_error={detail}")
-    return RedirectResponse(f"{_frontend_url()}/app?token={token}")
+        # quote(), because RedirectResponse's own escaping leaves `&` and `#`
+        # alone -- an unescaped detail could otherwise inject query parameters
+        # into the URL the browser lands on.
+        return _clear_state_cookie(RedirectResponse(f"{_frontend_url()}/app?auth_error={quote(str(detail), safe='')}"))
+    return _clear_state_cookie(RedirectResponse(f"{_frontend_url()}/app#token={token}"))
+
+
+def _clear_state_cookie(response: RedirectResponse) -> RedirectResponse:
+    """One round-trip, one nonce -- expire it whether the callback succeeded
+    or failed, so a replay of the same `state` has nothing to match against."""
+    response.delete_cookie(auth_service.OAUTH_STATE_COOKIE, path="/auth")
+    return response
 
 
 @router.get("/me", response_model=schemas.UserOut)
