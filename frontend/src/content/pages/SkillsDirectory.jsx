@@ -66,6 +66,19 @@ export default function SkillsDirectory({ entries }) {
           </section>
         );
       })}
+
+      <div className="card">
+        <p className="tile-title" style={{ marginBottom: "6px" }}>
+          Why an AI spend tracker built a skills library
+        </p>
+        <p style={{ marginBottom: 0 }}>
+          These are free, no signup required, because rolling out AI tools well is upstream of the
+          question Merit AC actually answers: once a team is using them, is the spend behind
+          Copilot, Claude, or ChatGPT seats producing real work, or padding usage numbers with slop?
+          That's what the <a href="/app">dashboard</a> tracks -- spend, outcomes, and rework, rolled
+          into one score, per person and per team.
+        </p>
+      </div>
     </ContentLayout>
   );
 }
