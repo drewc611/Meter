@@ -1,5 +1,5 @@
 window.OS_DATA = {
- "generated": "2026-09-09",
+ "generated": "2026-09-11",
  "brand": {
   "product_name": "Operator OS",
   "product_slug": "operator-os",
@@ -34,7 +34,7 @@ window.OS_DATA = {
    "id": "t0001",
    "project_id": "p0005",
    "title": "Lock the phase 2 subcontractor budget before booking Jules or Sasha",
-   "due": "2026-09-08",
+   "due": "2026-09-10",
    "priority": "now",
    "status": "todo",
    "estimate_min": "45",
@@ -46,7 +46,7 @@ window.OS_DATA = {
    "id": "t0003",
    "project_id": "",
    "title": "Write the change order clause for extra creative rounds",
-   "due": "2026-09-05",
+   "due": "2026-09-07",
    "priority": "high",
    "status": "todo",
    "estimate_min": "60",
@@ -58,7 +58,7 @@ window.OS_DATA = {
    "id": "t0010",
    "project_id": "",
    "title": "Reconcile freelancer invoices against the Vance and Ostrander budgets",
-   "due": "2026-09-02",
+   "due": "2026-09-04",
    "priority": "high",
    "status": "todo",
    "estimate_min": "60",
@@ -70,7 +70,7 @@ window.OS_DATA = {
    "id": "t0013",
    "project_id": "",
    "title": "Reconcile the card statement",
-   "due": "2026-09-06",
+   "due": "2026-09-08",
    "priority": "normal",
    "status": "todo",
    "estimate_min": "45",
@@ -88,8 +88,8 @@ window.OS_DATA = {
    "value": "7200.00",
    "stage": "qualified",
    "confidence": "55",
-   "opened": "2026-09-03",
-   "expected_close": "2026-10-09",
+   "opened": "2026-09-05",
+   "expected_close": "2026-10-11",
    "next_action": "",
    "next_action_due": "",
    "status": "open",
@@ -114,14 +114,14 @@ window.OS_DATA = {
   },
   "low_point": {
    "cents": 960000,
-   "on": "2026-09-09"
+   "on": "2026-09-11"
   }
  },
  "capacity": {
   "committed_hours": 2.8,
   "available_hours": 140.0,
   "load_pct": 2.0,
-  "through": "2026-10-07"
+  "through": "2026-10-09"
  },
  "late_invoice_cents": 0,
  "late_invoice_count": 0,
@@ -153,7 +153,7 @@ window.OS_DATA = {
    "who": "Nora Vance",
    "cents": 930000,
    "late": 0,
-   "due": "2026-09-25",
+   "due": "2026-09-27",
    "bucket": "current"
   }
  ],
@@ -165,7 +165,7 @@ window.OS_DATA = {
    "stage": "quoted",
    "confidence": "50",
    "next_action": "Follow up before the quote expires",
-   "next_action_due": "2026-09-13"
+   "next_action_due": "2026-09-15"
   },
   {
    "title": "Ostrander Outdoor Gear, fall product launch phase 2",
@@ -174,7 +174,7 @@ window.OS_DATA = {
    "stage": "negotiating",
    "confidence": "60",
    "next_action": "Lock the subcontractor budget into the price before sending the revised scope",
-   "next_action_due": "2026-09-12"
+   "next_action_due": "2026-09-14"
   },
   {
    "title": "Farouk Dental social retainer renewal",
@@ -195,7 +195,7 @@ window.OS_DATA = {
    "name": "Vance Realty rebrand and campaign, phase 2",
    "status": "active",
    "health": "amber",
-   "due": "2026-10-09",
+   "due": "2026-10-11",
    "margin_pct": 58.3,
    "revenue": 930000
   },
@@ -203,7 +203,7 @@ window.OS_DATA = {
    "name": "Ashby & Wren pitch deck",
    "status": "planned",
    "health": "",
-   "due": "2026-09-29",
+   "due": "2026-10-01",
    "margin_pct": 0.0,
    "revenue": 0
   }
@@ -253,109 +253,109 @@ window.OS_DATA = {
  ],
  "log": {
   "changes": 88,
-  "last": "2026-09-09T03:26:11Z",
+  "last": "2026-09-11T01:35:26Z",
   "chain_ok": true,
   "hand_edits": 0
  },
  "timeline": [
   {
-   "date": "2026-09-10",
+   "date": "2026-09-12",
    "weighted": 1843500,
    "label": "invoice INV-6260 on time",
    "kind": "invoice"
   },
   {
-   "date": "2026-09-15",
+   "date": "2026-09-17",
    "weighted": 1831500,
    "label": "Project management software",
    "kind": "recurring"
   },
   {
-   "date": "2026-09-19",
+   "date": "2026-09-21",
    "weighted": 1793500,
    "label": "Studio and co-working desk",
    "kind": "recurring"
   },
   {
-   "date": "2026-09-27",
+   "date": "2026-09-29",
    "weighted": 1883500,
    "label": "Farouk Dental social retainer",
    "kind": "recurring"
   },
   {
-   "date": "2026-09-29",
+   "date": "2026-10-01",
    "weighted": 1837500,
    "label": "Health insurance",
    "kind": "recurring"
   },
   {
-   "date": "2026-10-15",
+   "date": "2026-10-17",
    "weighted": 1825500,
    "label": "Project management software",
    "kind": "recurring"
   },
   {
-   "date": "2026-10-19",
+   "date": "2026-10-21",
    "weighted": 1787500,
    "label": "Studio and co-working desk",
    "kind": "recurring"
   },
   {
-   "date": "2026-10-24",
+   "date": "2026-10-26",
    "weighted": 2237500,
    "label": "Brandt & Fisk quarterly content retainer",
    "kind": "recurring"
   },
   {
-   "date": "2026-10-27",
+   "date": "2026-10-29",
    "weighted": 3581500,
    "label": "deal Ostrander Outdoor Gear, fall product launch phase 2",
    "kind": "deal"
   },
   {
-   "date": "2026-10-27",
+   "date": "2026-10-29",
    "weighted": 3671500,
    "label": "Farouk Dental social retainer",
    "kind": "recurring"
   },
   {
-   "date": "2026-10-29",
-   "weighted": 3625500,
-   "label": "Health insurance",
-   "kind": "recurring"
-  },
-  {
-   "date": "2026-10-30",
-   "weighted": 4465500,
+   "date": "2026-11-01",
+   "weighted": 4511500,
    "label": "deal Ashby & Wren brand campaign",
    "kind": "deal"
   },
   {
-   "date": "2026-11-08",
+   "date": "2026-11-01",
+   "weighted": 4465500,
+   "label": "Health insurance",
+   "kind": "recurring"
+  },
+  {
+   "date": "2026-11-10",
    "weighted": 4861500,
    "label": "deal Farouk Dental social retainer renewal",
    "kind": "deal"
   },
   {
-   "date": "2026-11-15",
+   "date": "2026-11-17",
    "weighted": 4849500,
    "label": "Project management software",
    "kind": "recurring"
   },
   {
-   "date": "2026-11-19",
+   "date": "2026-11-21",
    "weighted": 4811500,
    "label": "Studio and co-working desk",
    "kind": "recurring"
   },
   {
-   "date": "2026-11-27",
+   "date": "2026-11-29",
    "weighted": 4901500,
    "label": "Farouk Dental social retainer",
    "kind": "recurring"
   },
   {
-   "date": "2026-11-29",
+   "date": "2026-12-01",
    "weighted": 4855500,
    "label": "Health insurance",
    "kind": "recurring"
