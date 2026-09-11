@@ -113,3 +113,18 @@ track regardless of publish volume.
   append-a-correction path has never been tested," per
   `merit-eng-log.md`'s 2026-09-08 finding; that's a standing watch item,
   not a goal-status problem. 56 days left to 2026-11-03.
+
+### 2026-09-11 — daily score: on track
+- **On track.** Volume grew sharply — 110 articles live, up from 49 on
+  2026-09-08 (55 published across two large batches this session, on top of
+  earlier growth). The rejection discipline held at that scale rather than
+  eroding: `merit-news-judge-log.md` now shows **16 rejected out of 125
+  total verdicts** since confirmation (up from 6/54) — a rejection rate
+  that stayed real as throughput jumped roughly 2x, not a pass that started
+  rubber-stamping under load. `merit-eng-review` independently verified this
+  by reading the log directly, not by trusting the publish-count claim.
+  Corrections trail: still zero non-empty `corrections` fields across all
+  110 articles — unchanged standing watch item, not a new problem, but now
+  the fourth consecutive check where the append-a-correction path remains
+  structurally present but never actually exercised end-to-end. 53 days
+  left to 2026-11-03.
