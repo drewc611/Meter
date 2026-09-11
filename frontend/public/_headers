@@ -5,11 +5,13 @@
 # explicit rule an edge cache or a visitor's browser can keep serving an
 # old build's HTML after a new one ships.
 #
-# The /* block also carries the site-wide security response headers. No
-# Content-Security-Policy yet: three pages still use inline <script>
-# (src/content/pages/Community.jsx, src/content/pages/Challenge.jsx, and
-# app.html's theme script), so a CSP would need hashes or nonces for those
-# first -- deferred, tracked in SECURITY.md's known gaps.
+# The /* block also carries the site-wide security response headers. The
+# Content-Security-Policy is NOT written here -- scripts/build-csp.mjs appends
+# it to dist/_headers at the end of `npm run build`, because four pages ship an
+# inline <script> (app.html's theme switch, coming-soon's calculator, and the
+# waitlist forms on /community and /challenge) and the policy has to carry a
+# sha256 of each. Hand-maintained hashes go stale the first time one of those
+# blocks is edited; generated ones can't.
 /*
   Cache-Control: no-cache, must-revalidate
   X-Frame-Options: DENY

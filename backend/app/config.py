@@ -9,7 +9,10 @@ import os
 from dataclasses import dataclass, field
 
 
-def _cors_origins_from_env() -> list[str]:
+def cors_origins_from_env() -> list[str]:
+    """Public because main.create_app() calls it directly rather than reading
+    Settings.cors_origins: the startup guard there has to see the environment
+    as it is at boot, not as it was at import time."""
     raw = os.environ.get("MERIT_CORS_ORIGINS", "*").strip()
     if not raw or raw == "*":
         return ["*"]
@@ -25,7 +28,7 @@ class Settings:
     # file:// origin). Lock this to your real frontend origin(s) via
     # MERIT_CORS_ORIGINS="https://app.example.com,https://admin.example.com"
     # before this ever serves real customer data.
-    cors_origins: list[str] = field(default_factory=_cors_origins_from_env)
+    cors_origins: list[str] = field(default_factory=cors_origins_from_env)
 
 
 settings = Settings()

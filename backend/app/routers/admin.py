@@ -3,6 +3,7 @@ and the one-off waitlist announcement send."""
 
 import smtplib
 from datetime import datetime
+from email.errors import MessageError  # stdlib; ..services.email below is the app's sender
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -153,11 +154,31 @@ def notify_waitlist(dry_run: bool = False, db: Session = Depends(get_db)):
             continue
         try:
             email.send_email(signup.email, _NOTIFY_SUBJECT, _NOTIFY_HTML, _NOTIFY_TEXT)
-        except smtplib.SMTPException:
+        except (OSError, smtplib.SMTPException, MessageError, ValueError):
+            # Catching SMTPException only -- what this used to do -- missed the
+            # two likeliest failures outright:
+            #   * an unreachable mail server raises ConnectionRefusedError or
+            #     socket.timeout, plain OSErrors that are not SMTPExceptions;
+            #   * an address holding a control character raises
+            #     HeaderParseError while *building* the message, before SMTP is
+            #     reached at all.
+            # Either escaped as a 500 that aborted the whole run and lost every
+            # notified_at in the batch, so the next attempt re-emailed everyone
+            # already sent to. Schemas now reject such addresses at the door,
+            # but rows predating that fix are still in the table, and a mail
+            # server being briefly down always will be.
+            #
+            # smtplib.SMTPException is listed explicitly for readers, though it
+            # is redundant: the stdlib declares `class SMTPException(OSError)`,
+            # so OSError already covers it. Keep OSError -- dropping it in
+            # favour of the narrower name reintroduces the connection-refused
+            # bug.
             failed += 1
             continue
         signup.notified_at = utcnow()
         sent += 1
-    if not dry_run:
+        # Commit per recipient. The send is the irreversible half; batching
+        # the bookkeeping behind it means any later failure re-sends mail
+        # that already went out.
         db.commit()
     return schemas.NotifyWaitlistResult(sent=sent, failed=failed, dry_run=dry_run)

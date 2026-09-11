@@ -15,6 +15,10 @@ Both env vars are read live, so these tests toggle with monkeypatch.setenv
 rather than touching Settings.
 """
 
+from urllib.parse import parse_qs, quote, urlsplit
+
+from app.services import auth as auth_service
+
 # --------------------------------------------------------------- MERIT_API_KEY
 
 
@@ -154,6 +158,30 @@ def test_signup_requires_matching_code_when_set(client, monkeypatch):
     assert client.post("/auth/signup", json=body).status_code == 403
     assert client.post("/auth/signup", json={**body, "signup_code": "wrong"}).status_code == 403
     assert client.post("/auth/signup", json={**body, "signup_code": "letmein"}).status_code == 201
+
+
+def test_signup_code_never_adopts_someones_personal_org(client, db, monkeypatch):
+    """A deployment that ran public before being locked down has personal
+    orgs in the table. Picking "the oldest organization" as the shared one
+    put every later company signup inside an individual's private org, where
+    they could read that person's dashboard. The shared org must be a
+    company org -- created if there isn't one."""
+    from app import models
+
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.delenv("MERIT_SIGNUP_CODE", raising=False)
+    alice = client.post(
+        "/auth/signup", json={"email": "alice@example.com", "password": "hunter22", "name": "Alice"}
+    ).json()["user"]
+
+    monkeypatch.setenv("MERIT_SIGNUP_CODE", "letmein")
+    bob = client.post(
+        "/auth/signup",
+        json={"email": "bob@example.com", "password": "hunter22", "name": "Bob", "signup_code": "letmein"},
+    ).json()["user"]
+
+    assert bob["org_id"] != alice["org_id"], "company signup landed in a personal org"
+    assert db.query(models.Organization).filter_by(id=bob["org_id"]).one().plan == "company"
 
 
 # --------------------------------------------------------------- /auth/login
@@ -328,55 +356,136 @@ def test_google_login_redirects_to_google(client, monkeypatch):
     assert "client_id=client123" in r.headers["location"]
 
 
-def test_google_callback_creates_new_user_and_redirects_with_token(client, monkeypatch):
+def _configure_google(monkeypatch, *, claims=None, **env):
     monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
     monkeypatch.setenv("GOOGLE_CLIENT_ID", "client123")
     monkeypatch.setenv("GOOGLE_CLIENT_SECRET", "secret123")
     monkeypatch.setenv("MERIT_FRONTEND_URL", "https://usemeritai.com")
+    for key, value in env.items():
+        monkeypatch.setenv(key, value)
     monkeypatch.setattr(
         "app.routers.auth.auth_service.google_exchange_code",
-        lambda code: {"sub": "google-sub-1", "email": "ada@example.com", "name": "Ada", "email_verified": True},
+        lambda code: (
+            claims or {"sub": "google-sub-1", "email": "ada@example.com", "name": "Ada", "email_verified": True}
+        ),
     )
-    r = client.get("/auth/google/callback?code=fake-code", follow_redirects=False)
+
+
+def _begin_google_login(client, invite=None):
+    """Walk the real first leg of the flow so the client is holding the state
+    cookie, and return the `state` Google would echo back. Calling the
+    callback without doing this is precisely what the CSRF check rejects."""
+    path = "/auth/google/login" + (f"?invite={invite}" if invite else "")
+    r = client.get(path, follow_redirects=False)
     assert r.status_code in (302, 307)
-    assert r.headers["location"].startswith("https://usemeritai.com/app?token=")
+    return parse_qs(urlsplit(r.headers["location"]).query)["state"][0]
 
 
-def test_google_callback_links_existing_password_account_by_email(client, monkeypatch, db):
+def _finish_google_login(client, state):
+    return client.get(f"/auth/google/callback?code=fake-code&state={quote(state)}", follow_redirects=False)
+
+
+def test_google_callback_creates_new_user_and_redirects_with_token(client, monkeypatch):
+    _configure_google(monkeypatch)
+    r = _finish_google_login(client, _begin_google_login(client))
+    assert r.status_code in (302, 307)
+    # Fragment, not query string: a fragment never reaches a server, so the
+    # session token stays out of proxy logs and Referer headers.
+    assert r.headers["location"].startswith("https://usemeritai.com/app#token=")
+    assert "?token=" not in r.headers["location"]
+
+
+def test_google_callback_refuses_to_link_onto_an_existing_password_account(client, monkeypatch, db):
+    """Account pre-hijacking: password signup never verifies the address, so
+    anyone can register a victim's email first. If Google sign-in then linked
+    itself onto that row, the victim would land in the squatter's account --
+    with the squatter's own password still on it."""
     from app import models
 
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
-    monkeypatch.setenv("GOOGLE_CLIENT_ID", "client123")
-    monkeypatch.setenv("GOOGLE_CLIENT_SECRET", "secret123")
+    _configure_google(monkeypatch)
     client.post("/auth/signup", json={"email": "ada@example.com", "password": "hunter22", "name": "Ada"})
-    monkeypatch.setattr(
-        "app.routers.auth.auth_service.google_exchange_code",
-        lambda code: {"sub": "google-sub-1", "email": "ada@example.com", "name": "Ada", "email_verified": True},
-    )
-    client.get("/auth/google/callback?code=fake-code", follow_redirects=False)
+
+    r = _finish_google_login(client, _begin_google_login(client))
+    assert "auth_error" in r.headers["location"]
+    assert "#token=" not in r.headers["location"]
+    user = db.query(models.DashboardUser).filter_by(email="ada@example.com").one()
+    assert user.google_sub is None  # never linked
+
+
+def test_google_callback_still_links_an_account_with_no_password(client, monkeypatch, db):
+    """The safe half of the same path: an account created by an earlier Google
+    login (or provisioned without one) has no password to hijack it with, so a
+    matching verified Google address still links rather than duplicating."""
+    from app import models
+
+    _configure_google(monkeypatch)
+    _finish_google_login(client, _begin_google_login(client))
+    db.query(models.DashboardUser).filter_by(email="ada@example.com").update({"google_sub": None})
+    db.commit()
+
+    r = _finish_google_login(client, _begin_google_login(client))
+    assert "#token=" in r.headers["location"]
     users = db.query(models.DashboardUser).all()
     assert len(users) == 1  # linked, not duplicated
     assert users[0].google_sub == "google-sub-1"
-    assert users[0].password_hash is not None  # password login still works after linking
+
+
+def test_google_callback_rejects_a_state_this_browser_never_started(client, monkeypatch):
+    """Login CSRF. Without a nonce to check, a forged callback carrying the
+    attacker's own authorization code switched the victim's browser into the
+    attacker's account."""
+    _configure_google(monkeypatch)
+    r = client.get("/auth/google/callback?code=fake-code&state=attacker-chosen", follow_redirects=False)
+    assert r.status_code in (302, 307)
+    assert "auth_error" in r.headers["location"]
+    assert "#token=" not in r.headers["location"]
+
+
+def test_google_callback_survives_a_non_ascii_state(client, monkeypatch):
+    """`state` is a query parameter anyone can set, and compare_digest raises
+    TypeError on a non-ASCII str -- which would escape the handler as a 500
+    rather than the error redirect every other bad state gets."""
+    _configure_google(monkeypatch)
+    _begin_google_login(client)  # so there is a cookie nonce to compare against
+    r = client.get("/auth/google/callback?code=fake-code&state=%C3%A9", follow_redirects=False)
+    assert r.status_code in (302, 307)
+    assert "auth_error" in r.headers["location"]
+
+
+def test_google_callback_rejects_a_replayed_state(client, monkeypatch):
+    """One round-trip, one nonce -- the cookie is cleared either way, so the
+    same state can't be used twice."""
+    _configure_google(monkeypatch)
+    state = _begin_google_login(client)
+    assert "#token=" in _finish_google_login(client, state).headers["location"]
+    assert "auth_error" in _finish_google_login(client, state).headers["location"]
 
 
 def test_google_callback_enforces_signup_code_for_new_accounts_only(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
-    monkeypatch.setenv("GOOGLE_CLIENT_ID", "client123")
-    monkeypatch.setenv("GOOGLE_CLIENT_SECRET", "secret123")
-    monkeypatch.setenv("MERIT_SIGNUP_CODE", "letmein")
-    monkeypatch.setenv("MERIT_FRONTEND_URL", "https://usemeritai.com")
-    monkeypatch.setattr(
-        "app.routers.auth.auth_service.google_exchange_code",
-        lambda code: {"sub": "google-sub-1", "email": "ada@example.com", "name": "Ada", "email_verified": True},
-    )
-    # No state (no code carried) -> rejected, surfaced as an error redirect, not a raw 401
-    r = client.get("/auth/google/callback?code=fake-code", follow_redirects=False)
+    _configure_google(monkeypatch, MERIT_SIGNUP_CODE="letmein")
+    # No invite carried -> rejected, surfaced as an error redirect, not a raw 401
+    r = _finish_google_login(client, _begin_google_login(client))
     assert r.status_code in (302, 307)
     assert "auth_error" in r.headers["location"]
-    # Correct code in state -> account created
-    r2 = client.get("/auth/google/callback?code=fake-code&state=letmein", follow_redirects=False)
-    assert "token=" in r2.headers["location"]
+    # Correct code carried through state -> account created
+    r2 = _finish_google_login(client, _begin_google_login(client, invite="letmein"))
+    assert "#token=" in r2.headers["location"]
+
+
+def test_google_error_redirect_cannot_inject_query_parameters(client, monkeypatch):
+    """RedirectResponse's own escaping leaves `&` and `#` alone, so an
+    unescaped error detail could append parameters to the URL the browser
+    lands on."""
+
+    def explode(code):
+        raise auth_service.AuthError("broke&token=forged#x")
+
+    _configure_google(monkeypatch)
+    monkeypatch.setattr("app.routers.auth.auth_service.google_exchange_code", explode)
+    location = _finish_google_login(client, _begin_google_login(client)).headers["location"]
+    assert location.count("?") == 1
+    assert "&" not in location and "#" not in location
+    assert "token%3Dforged" in location
 
 
 # --------------------------------------------------------------- /admin/* RBAC (is_admin)

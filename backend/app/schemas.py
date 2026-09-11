@@ -13,10 +13,39 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 # checks the encoded length for multibyte passwords.
 BCRYPT_MAX_PASSWORD_BYTES = 72
 
+# Every free-text field below is bounded. None of them have a natural length --
+# a display name, a tool slug, an external id -- and unbounded means a single
+# request can park megabytes in the database, in a log line and in every later
+# response that reads the row back. 200 is the cap the waitlist fields already
+# used; external identifiers get more room because some of them are URLs.
+MAX_NAME_LENGTH = 200
+MAX_IDENTIFIER_LENGTH = 500
+
 
 def _bcrypt_safe_password(v: str) -> str:
     if len(v.encode("utf-8")) > BCRYPT_MAX_PASSWORD_BYTES:
         raise ValueError(f"password must be at most {BCRYPT_MAX_PASSWORD_BYTES} bytes")
+    return v
+
+
+def _validated_email(v: str) -> str:
+    """Deliberately not pydantic's EmailStr -- that needs the optional
+    email-validator dependency, which isn't installed. This is a lightweight
+    sanity check, not RFC 5321 validation; the real bar is "does mail actually
+    land," which no amount of regex checking here can guarantee anyway.
+
+    It does have to reject *control characters*, though, and checking only for
+    a literal space did not. An address containing a newline passed validation,
+    got stored, and then made every later /admin/notify-waitlist run raise
+    HeaderParseError from the email library -- a 500 that aborted the whole
+    send before any notified_at was committed, so one poisoned row disabled the
+    announcement permanently and re-sent to everyone already emailed.
+    """
+    v = v.strip()
+    if "@" not in v or len(v) > 254:
+        raise ValueError("not a valid email address")
+    if any(c.isspace() or ord(c) < 32 or ord(c) == 127 for c in v):
+        raise ValueError("not a valid email address")
     return v
 
 
@@ -32,66 +61,62 @@ class WaitlistSignupIn(BaseModel):
     @field_validator("email")
     @classmethod
     def _basic_email_shape(cls, v: str) -> str:
-        # Deliberately not pydantic's EmailStr -- that needs the optional
-        # email-validator dependency, which isn't installed. This is a
-        # lightweight sanity check for a pre-launch signup form, not RFC 5321
-        # validation; the real bar is "does mail actually land," which no
-        # amount of regex checking here can guarantee anyway.
-        v = v.strip()
-        if "@" not in v or " " in v or len(v) > 254:
-            raise ValueError("not a valid email address")
-        return v
+        return _validated_email(v)
 
 
 class UsageEventIn(BaseModel):
-    source_system: str  # "anthropic_api" | "openai_api" | "github_copilot" | "chatgpt_enterprise"
-    external_id: str  # the id in that source system (api key id, seat email, etc.)
-    tool: str
+    # "anthropic_api" | "openai_api" | "github_copilot" | "chatgpt_enterprise"
+    source_system: str = Field(max_length=MAX_NAME_LENGTH)
+    # the id in that source system (api key id, seat email, etc.)
+    external_id: str = Field(max_length=MAX_IDENTIFIER_LENGTH)
+    tool: str = Field(max_length=MAX_NAME_LENGTH)
     cost_usd: float
-    model: str | None = None
+    model: str | None = Field(default=None, max_length=MAX_NAME_LENGTH)
     tokens_in: int = 0
     tokens_out: int = 0
     occurred_at: datetime | None = None
 
 
 class OutcomeEventIn(BaseModel):
-    source_system: str
-    external_id: str
-    source: str  # "github" | "jira" | "zendesk" | "hubspot"
-    outcome_type: str  # see constants.OUTCOME_VALUE_WEIGHTS
+    source_system: str = Field(max_length=MAX_NAME_LENGTH)
+    external_id: str = Field(max_length=MAX_IDENTIFIER_LENGTH)
+    source: str = Field(max_length=MAX_NAME_LENGTH)  # "github" | "jira" | "zendesk" | "hubspot"
+    outcome_type: str = Field(max_length=MAX_NAME_LENGTH)  # see constants.OUTCOME_VALUE_WEIGHTS
     occurred_at: datetime | None = None
-    external_ref: str | None = None
+    external_ref: str | None = Field(default=None, max_length=MAX_IDENTIFIER_LENGTH)
     value_weight: float | None = None
 
 
 class QualitySignalIn(BaseModel):
-    source_system: str
-    external_id: str
-    signal_type: str  # see constants.QUALITY_SIGNAL_WEIGHTS
+    source_system: str = Field(max_length=MAX_NAME_LENGTH)
+    external_id: str = Field(max_length=MAX_IDENTIFIER_LENGTH)
+    signal_type: str = Field(max_length=MAX_NAME_LENGTH)  # see constants.QUALITY_SIGNAL_WEIGHTS
     occurred_at: datetime | None = None
-    external_ref: str | None = None
+    external_ref: str | None = Field(default=None, max_length=MAX_IDENTIFIER_LENGTH)
     severity: float | None = None
 
 
 class IdentityMappingIn(BaseModel):
     email: str
-    source_system: str
-    external_id: str
+    source_system: str = Field(max_length=MAX_NAME_LENGTH)
+    external_id: str = Field(max_length=MAX_IDENTIFIER_LENGTH)
+
+    @field_validator("email")
+    @classmethod
+    def _basic_email_shape(cls, v: str) -> str:
+        return _validated_email(v)
 
 
 class SignupIn(BaseModel):
     email: str
     password: str = Field(max_length=BCRYPT_MAX_PASSWORD_BYTES)
-    name: str
-    signup_code: str | None = None
+    name: str = Field(min_length=1, max_length=MAX_NAME_LENGTH)
+    signup_code: str | None = Field(default=None, max_length=MAX_NAME_LENGTH)
 
     @field_validator("email")
     @classmethod
     def _basic_email_shape(cls, v: str) -> str:
-        v = v.strip()
-        if "@" not in v or " " in v or len(v) > 254:
-            raise ValueError("not a valid email address")
-        return v
+        return _validated_email(v)
 
     @field_validator("password")
     @classmethod
