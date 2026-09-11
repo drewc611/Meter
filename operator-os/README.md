@@ -1,5 +1,9 @@
 # Operator OS
 
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)](#five-minutes-to-something-real)
+[![Zero dependencies](https://img.shields.io/badge/dependencies-zero-brightgreen)](#why-files)
+[![License](https://img.shields.io/badge/license-custom-blue)](LICENSE)
+
 The whole business, on your machine, in files you own.
 
 Nine CSV files, an engine that does the money math the same way every time, an
@@ -105,6 +109,7 @@ trustworthy no matter what put the row there.
 | `lib/` `scripts/` `migrations/` | the engine, the launcher, the upgrades |
 | `console/` | a local dashboard. Open the html file. No server. |
 | `tests/` | the proofs. Run them yourself. |
+| `packaging/` | `pip install operator-os` scaffolder (built, tested, not yet published), a templated Homebrew formula, and what real app-store distribution would actually take -- see `packaging/README.md` |
 
 ## The proofs
 

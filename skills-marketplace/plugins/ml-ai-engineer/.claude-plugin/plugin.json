@@ -1,0 +1,5 @@
+{
+  "name": "ml-ai-engineer",
+  "description": "ML/AI engineering review and design partner for models, features, and eval pipelines -- train/serve skew, data and eval-set leakage, silent production degradation, and the gap between an offline metric and real-world behavior.",
+  "version": "1.0.0"
+}

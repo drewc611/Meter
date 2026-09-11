@@ -10,12 +10,25 @@ const CATEGORY_LABELS = {
   llm: "Language models",
   "coding-assistant": "Coding assistants",
   "image-generation": "Image & video generation",
+  "music-generation": "Music generation",
   "agent-framework": "Agent frameworks",
   voice: "Voice",
+  "vector-database": "Vector databases",
+  "enterprise-ai-platform": "Enterprise AI platforms",
   other: "Other",
 };
 
-const CATEGORY_ORDER = ["llm", "coding-assistant", "image-generation", "agent-framework", "voice", "other"];
+const CATEGORY_ORDER = [
+  "llm",
+  "coding-assistant",
+  "image-generation",
+  "music-generation",
+  "agent-framework",
+  "voice",
+  "vector-database",
+  "enterprise-ai-platform",
+  "other",
+];
 
 export default function ModelsDirectory({ entries }) {
   return (

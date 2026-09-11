@@ -1,0 +1,5 @@
+{
+  "name": "backend-engineer",
+  "description": "Backend engineering review and design partner for APIs, data models, and services -- idempotency, transaction boundaries, migrations, and the failure modes that only show up under load or on retry.",
+  "version": "1.0.0"
+}

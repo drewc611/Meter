@@ -1,0 +1,121 @@
+{
+  "name": "merit-ac-skills-library",
+  "owner": {
+    "name": "Merit AC"
+  },
+  "metadata": {
+    "description": "Role-specific Claude Skills -- backend, frontend, security, product, marketing, and more."
+  },
+  "plugins": [
+    {
+      "name": "backend-engineer",
+      "source": "./plugins/backend-engineer",
+      "description": "Backend engineering review and design partner for APIs, data models, and services -- idempotency, transaction boundaries, migrations, and the failure modes that only show up under load or on retry."
+    },
+    {
+      "name": "brand-marketing-lead",
+      "source": "./plugins/brand-marketing-lead",
+      "description": "Brand strategy and marketing review partner for positioning statements, brand guidelines, and campaign briefs -- testing whether positioning is actually differentiated or just fluent category language, separating what brand consistency should protect from what a campaign should be free to flex, and naming the real long-term cost of a short-term brand-diluting win."
+    },
+    {
+      "name": "ceo-founder",
+      "source": "./plugins/ceo-founder",
+      "description": "Strategic decision partner for founders and CEOs -- separating a real, load-bearing decision from busywork that looks like strategy, catching proxy metrics before they get gamed, and forcing an explicit call on whether to kill or continue a workstream."
+    },
+    {
+      "name": "cloud-platform-architect",
+      "source": "./plugins/cloud-platform-architect",
+      "description": "Cloud/platform architecture review and design partner for account structure, shared infrastructure, and multi-region/multi-account tradeoffs -- blast radius of shared resources, cost attribution, and IAM/network boundaries that hold up under an incident, not just on a diagram."
+    },
+    {
+      "name": "content-marketing-manager",
+      "source": "./plugins/content-marketing-manager",
+      "description": "Content marketing review and strategy partner for briefs, drafts, and content calendars -- matching search intent to content type, catching thin or derivative content before it publishes, and separating real SEO mechanics from cargo-culted advice."
+    },
+    {
+      "name": "cto",
+      "source": "./plugins/cto",
+      "description": "Technical leadership partner for CTOs -- separating technical debt that's actually costing velocity from debt that's fine to carry, running build-vs-buy honestly instead of defaulting to \"buy is faster,\" and treating reversible architecture decisions differently from expensive-to-reverse ones."
+    },
+    {
+      "name": "customer-success-solutions-engineer",
+      "source": "./plugins/customer-success-solutions-engineer",
+      "description": "Customer success and solutions engineering partner -- separates a customer's stated request from their actual underlying problem, decides which issues genuinely need escalation instead of everything getting escalated by default, catches churn-risk signals before a customer says \"cancel,\" and stops roadmap promises from being made without the authority to keep them."
+    },
+    {
+      "name": "data-analyst-bi",
+      "source": "./plugins/data-analyst-bi",
+      "description": "Data analysis and BI review partner for dashboards, metrics, and analyses -- metric definitions that drift across dashboards, Simpson's-paradox-shaped aggregation traps, survivorship bias in the underlying population, and the difference between a correlation worth acting on and one that's noise."
+    },
+    {
+      "name": "data-engineer",
+      "source": "./plugins/data-engineer",
+      "description": "Data engineering review and design partner for pipelines, DAGs, and schema changes -- delivery semantics, backfill correctness, partition/watermark strategy, and schema evolution that doesn't silently corrupt history."
+    },
+    {
+      "name": "devops-sre-engineer",
+      "source": "./plugins/devops-sre-engineer",
+      "description": "DevOps/SRE review and design partner for deploys, alerts, and infrastructure changes -- blast radius, rollback safety, capacity headroom, and alert quality."
+    },
+    {
+      "name": "engineering-manager",
+      "source": "./plugins/engineering-manager",
+      "description": "People-management partner for engineering managers -- separating a real performance problem from a mismatched-expectations problem, sharpening feedback that's been softened into uselessness (or gone the other way into needlessly harsh), protecting the team from priority thrash while staying honest about real changes, and telling a 1:1 that surfaced real signal from one that was status theater."
+    },
+    {
+      "name": "frontend-engineer",
+      "source": "./plugins/frontend-engineer",
+      "description": "Frontend engineering review and design partner for components, pages, and client state -- accessibility, state ownership, render performance, and bundle size."
+    },
+    {
+      "name": "full-stack-engineer",
+      "source": "./plugins/full-stack-engineer",
+      "description": "Full-stack engineering review and design partner for features that cross the frontend/ backend boundary -- API contracts, auth state, and request patterns."
+    },
+    {
+      "name": "growth-marketing-manager",
+      "source": "./plugins/growth-marketing-manager",
+      "description": "Growth and performance marketing review partner for channel reports, A/B test results, and budget-allocation calls -- catching attribution artifacts (last-click bias, paid/organic cannibalization), statistical traps in experiments (peeking, underpowered tests, multiple comparisons), and vanity metrics standing in for real leading indicators."
+    },
+    {
+      "name": "ml-ai-engineer",
+      "source": "./plugins/ml-ai-engineer",
+      "description": "ML/AI engineering review and design partner for models, features, and eval pipelines -- train/serve skew, data and eval-set leakage, silent production degradation, and the gap between an offline metric and real-world behavior."
+    },
+    {
+      "name": "mobile-engineer",
+      "source": "./plugins/mobile-engineer",
+      "description": "Mobile engineering review and design partner for iOS/Android/cross-platform apps -- offline-first sync conflicts, background-execution and battery limits, and app-store review risk."
+    },
+    {
+      "name": "product-designer-ux",
+      "source": "./plugins/product-designer-ux",
+      "description": "Product design and UX review partner for flows, mockups, and research readouts -- closing the gap between what users say and what they actually do, treating accessibility as a first-class constraint rather than a later pass, and applying real usability heuristics instead of \"make it intuitive.\" Use whenever reviewing a design, a user flow, research findings, or a design-system deviation, even if the user doesn't explicitly ask for a \"UX review.\""
+    },
+    {
+      "name": "product-manager",
+      "source": "./plugins/product-manager",
+      "description": "Product management review and design partner for feature requests, PRDs, and roadmap prioritization -- separating the underlying job-to-be-done from the solution someone asked for, distinguishing a real prioritization tradeoff from a false one, and checking whether a spec actually gives engineering enough to start."
+    },
+    {
+      "name": "qa-test-engineer",
+      "source": "./plugins/qa-test-engineer",
+      "description": "QA/test engineering review and design partner for test plans, test suites, and CI reliability -- flaky-test root cause, the right layer for a given risk (unit vs."
+    },
+    {
+      "name": "security-engineer",
+      "source": "./plugins/security-engineer",
+      "description": "Security engineering review and threat-modeling partner for features, endpoints, and data flows -- authn/authz bypass patterns, secrets handling, and STRIDE-style analysis before a design is locked in."
+    },
+    {
+      "name": "technical-program-manager",
+      "source": "./plugins/technical-program-manager",
+      "description": "Technical program management review and design partner for cross-team dependency tracking, program plans, and status reports -- finding the integration point nobody owns, the estimate with no real buffer, and the \"on track\" status that's actually just an unescalated blocker."
+    },
+    {
+      "name": "technical-writer",
+      "source": "./plugins/technical-writer",
+      "description": "Documentation review and drafting partner -- catches docs that are accurate but useless because they describe the implementation instead of the reader's task, closes the gap between \"we wrote docs\" and someone actually being able to follow them, and flags docs that will silently rot the moment the underlying thing changes."
+    }
+  ]
+}

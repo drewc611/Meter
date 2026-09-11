@@ -163,10 +163,13 @@ compresses everything into one scored row per person that the API/UI reads:
 Key invariant: **the dashboard and `/api/*` endpoints only ever read
 `PersonScore`, never raw events** — page loads stay fast regardless of how
 much event history accumulates. `PersonScore` is materialized by the nightly
-job, one row per `(identity, period)`. The one deliberate, documented
-exception: `analytics.get_tool_breakdown()` and `analytics.get_adoption()`
-query `UsageEvent` directly, because tool/model and active-user counts aren't
-attributes `PersonScore` carries — but both stay scoped to a single
+job, one row per `(identity, period)`. The deliberate, documented exceptions:
+`analytics.get_tool_breakdown()` and `analytics.get_adoption()` query
+`UsageEvent` directly, and `analytics.get_shadow_ai_candidates()` /
+`get_shadow_ai_observed_cost()` query `UnmappedIdentityEvent` directly (see
+"What's stubbed, on purpose" below) — none of tool/model, active-user
+counts, or unmapped-identity attempts are attributes `PersonScore` carries —
+but all stay scoped to a single
 `[start, end)` period (the same bounded pattern `scoring.py`'s own nightly
 aggregates already use), not an unbounded scan, so the invariant's actual
 purpose (cost independent of history size) still holds.
@@ -176,8 +179,10 @@ LLM-proxy API key, a GitHub login, a Zendesk agent id) resolves to exactly
 one canonical `Identity`, scoped to the caller's `Organization`. If this
 mapping is wrong, every number downstream is wrong. All ingestion endpoints
 return **422** if the external id has no mapping yet — deliberate, since an
-unmapped id is a shadow-AI candidate, not something to silently drop (see
-product spec §5.5).
+unmapped id is a shadow-AI candidate (product spec §5.5), not something to
+silently drop: `services.ingest.resolve_identity` records it as an
+`UnmappedIdentityEvent` before raising, surfaced at
+`GET /admin/shadow-ai-candidates`.
 
 Every `Team`/`Identity`/`DashboardUser`/`PersonScore` row belongs to exactly
 one `Organization` — the tenant boundary that keeps a company deployment's
@@ -238,7 +243,8 @@ data team is most likely to actually read, keep it simple.
 ### Endpoints
 
 `/ingest/*` (usage/outcome/quality-signal), `/admin/*` (identity-mapping,
-recompute-scores, notify-waitlist — `is_admin` required), `/api/*`
+recompute-scores, shadow-ai-candidates, notify-waitlist — `is_admin`
+required), `/api/*`
 (overview/people/teams/roles/trends/tool-breakdown/tool-performance/
 spend-forecast/adoption), `/auth/*` (signup/login/Google OAuth/me), and
 `/waitlist`. Full table with request/response shapes:
@@ -246,10 +252,16 @@ spend-forecast/adoption), `/auth/*` (signup/login/Google OAuth/me), and
 
 ### What's stubbed, on purpose
 
-Tier 3 calibration, shadow-AI detection, and the nightly-job scheduler are
-all intentionally unbuilt — see
-[`backend/README.md`](backend/README.md#whats-stubbed-on-purpose) for what
-each one is and why. Don't try to "complete" these without checking with
+Tier 3 calibration is intentionally unbuilt (needs real `RubricGrade` volume
+to be worth doing) and the nightly-job scheduler is a deployment decision,
+not app code — see
+[`backend/README.md`](backend/README.md#whats-stubbed-on-purpose) for both.
+Shadow-AI detection (§5.5) is built: `services.ingest.resolve_identity`
+records every unmapped external id as an `UnmappedIdentityEvent`, and
+`GET /admin/shadow-ai-candidates` plus `/api/overview`'s recoverable-spend
+estimate both read from it — see
+[`backend/README.md`](backend/README.md#shadow-ai-detection-55-of-the-spec).
+Don't try to "complete" the two still-stubbed items without checking with
 the user first.
 
 ## Code style and communication guardrails

@@ -30,6 +30,7 @@ const EXPLORE_GROUPS = [
     items: [
       { href: "/news", title: "News", meta: "Sourced commentary on AI news that actually matters" },
       { href: "/models", title: "Models & tools", meta: "A directory of AI models and tools — verified and dated" },
+      { href: "/skills", title: "Skills library", meta: "A real Claude Skill, Copilot chat mode, and ChatGPT GPT for every role" },
       { href: "/glossary", title: "Glossary", meta: "Plain-English definitions for AI terms" },
       { href: "/prompts", title: "Prompts", meta: "A 30-day AI prompt archive" },
       { href: "/community", title: "Community", meta: "Not open yet — join the interest list" },

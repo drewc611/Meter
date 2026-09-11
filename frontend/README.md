@@ -78,9 +78,13 @@ coming-soon.html        Separate static Vite entry, untouched by the React app â
 styles.css              Shared stylesheet, referenced by both HTML entries
 public/
   content.css           Shared stylesheet for the content-site pages
-  robots.txt, sitemap.xml
+  robots.txt             Static; sitemap.xml is generated (see below), not hand-maintained
 scripts/
-  prerender-content.mjs Post-build: renders src/content pages to dist/*.html
+  prerender-content.mjs Post-build: renders src/content pages to dist/*.html, then writes
+                         dist/sitemap.xml from that same page list -- every prerendered
+                         page (including individual guide/prompt/news/model entries) is in
+                         the sitemap by construction, so it can't go stale the way the old
+                         hand-maintained public/sitemap.xml did
 src/
   main.jsx              React root
   App.jsx                Top-level layout + view switching

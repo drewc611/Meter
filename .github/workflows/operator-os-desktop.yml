@@ -1,0 +1,68 @@
+name: Operator OS desktop build
+
+# Deliberately NOT run on every push/PR -- a macOS+Windows+Linux matrix build
+# costs real GitHub Actions minutes (macOS runners in particular), and this
+# app has no automated test suite yet to justify running it that often.
+# Manual dispatch for now; a `desktop-v*` tag push once this is ready to
+# actually distribute builds from.
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "desktop-v*"
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            args: ""
+          - platform: ubuntu-24.04
+            args: ""
+          - platform: windows-latest
+            args: ""
+    runs-on: ${{ matrix.platform }}
+    defaults:
+      run:
+        working-directory: operator-os/packaging/desktop
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install Linux build dependencies
+        if: matrix.platform == 'ubuntu-24.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev libsoup-3.0-dev
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm install
+
+      # Real distribution needs these secrets set in the repo (Settings ->
+      # Secrets and variables -> Actions), which needs the founder's own
+      # Apple Developer / Windows code-signing certificates -- see
+      # operator-os/packaging/README.md. Unsigned builds still work, they
+      # just carry an OS-level "unidentified developer" warning on first
+      # launch, which is fine for testing but not for a real release.
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        with:
+          projectPath: operator-os/packaging/desktop
+          tagName: ${{ github.ref_name }}
+          releaseName: "Operator OS Desktop ${{ github.ref_name }}"
+          releaseDraft: true
+          prerelease: true
+          args: ${{ matrix.args }}

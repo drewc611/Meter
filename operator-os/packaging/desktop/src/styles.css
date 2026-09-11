@@ -1,0 +1,51 @@
+/* Same ledger-paper design tokens as ../../../console/index.html -- this
+   app and the local dashboard should read as the same product. */
+:root{
+  --ground:#e9ebeb; --paper:#f6f7f6; --ink:#12171a; --ink2:#5b666c;
+  --rule:#c5cccd; --rule-strong:#8f9a9d;
+  --alarm:#a81e0c; --clear:#16624a; --watch:#8a5600;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Charter,Georgia,"Times New Roman",serif;
+  --fig:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{--ground:#0d1012;--paper:#141819;--ink:#e4e8e8;--ink2:#8b969b;
+        --rule:#262d30;--rule-strong:#4a5559;--alarm:#e8654e;--clear:#4fb894;--watch:#d09a3c;}
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--ground);color:var(--ink);font-family:var(--serif)}
+body{font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+
+header{padding:16px 20px;border-bottom:1px solid var(--rule);display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+header .name{font-size:19px;letter-spacing:-.01em}
+header .name.empty{color:var(--ink2)}
+header .path{font-family:var(--fig);font-size:11px;color:var(--ink2)}
+
+button{
+  font:inherit;font-size:14px;background:var(--paper);color:var(--ink);
+  border:1px solid var(--rule-strong);padding:8px 14px;border-radius:3px;cursor:pointer;
+}
+button:hover{background:var(--ground)}
+button:active{transform:scale(0.97)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible{outline:2px solid var(--clear);outline-offset:2px}
+button.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+button.primary:hover{opacity:.9}
+
+.layout{display:flex;flex:1;min-height:0}
+.commands{
+  width:220px;flex-shrink:0;border-right:1px solid var(--rule);padding:14px;
+  display:flex;flex-direction:column;gap:6px;overflow-y:auto;
+}
+.commands button{text-align:left}
+.commands button[aria-pressed="true"]{border-color:var(--clear);color:var(--clear)}
+
+main{flex:1;min-width:0;display:flex;flex-direction:column}
+.output{
+  flex:1;margin:0;padding:20px;overflow:auto;white-space:pre-wrap;
+  font-family:var(--fig);font-size:13px;background:var(--paper);
+}
+.output.error{color:var(--alarm)}
+.empty-state{padding:40px;color:var(--ink2);max-width:52ch}
+.empty-state h2{font-family:var(--serif);font-weight:600;color:var(--ink);margin:0 0 8px}
+
+.statusbar{border-top:1px solid var(--rule);padding:8px 20px;font-family:var(--fig);font-size:11px;color:var(--ink2)}

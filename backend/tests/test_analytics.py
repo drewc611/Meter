@@ -1,17 +1,21 @@
 from datetime import datetime, timedelta
 
+import pytest
+
 from app.services import scoring
 from app.services.analytics import (
     _aggregate,
     forecast_next_period_spend,
     get_adoption,
     get_overview,
+    get_shadow_ai_candidates,
     get_tool_breakdown,
     get_tool_performance,
     get_trends,
     recommend_action,
     segment,
 )
+from app.services.ingest import UnresolvedIdentityError
 
 START = datetime(2026, 8, 1)
 END = datetime(2026, 9, 1)
@@ -353,3 +357,96 @@ def test_get_adoption_counts_active_vs_total_by_tier(db, org, person, ingest_hel
     by_tier = {row["tier"]: row for row in result["by_tier"]}
     assert by_tier["Frontier"] == {"tier": "Frontier", "total_seats": 2, "active_users": 1, "utilization_pct": 50.0}
     assert by_tier["Basic"] == {"tier": "Basic", "total_seats": 1, "active_users": 0, "utilization_pct": 0.0}
+
+
+# ------------------------------------------------------------ shadow AI (§5.5)
+
+
+def test_get_shadow_ai_candidates_groups_unmapped_attempts(db, org, ingest_helpers):
+    for day, cost in ((1, 12.0), (2, 8.0)):
+        with pytest.raises(UnresolvedIdentityError):
+            ingest_helpers.usage(
+                source_system="anthropic_api",
+                external_id="ghost_key",
+                tool="anthropic_api",
+                cost_usd=cost,
+                occurred_at=START + timedelta(days=day),
+            )
+
+    candidates = get_shadow_ai_candidates(db, org.id, START, END)
+    assert candidates == [
+        {
+            "source_system": "anthropic_api",
+            "external_id": "ghost_key",
+            "attempt_count": 2,
+            "known_cost_usd": 20.0,
+            "first_seen_at": START + timedelta(days=1),
+            "last_seen_at": START + timedelta(days=2),
+        }
+    ]
+
+
+def test_get_shadow_ai_candidates_excludes_events_outside_period(db, org, ingest_helpers):
+    with pytest.raises(UnresolvedIdentityError):
+        ingest_helpers.usage(
+            source_system="anthropic_api",
+            external_id="ghost_key",
+            tool="anthropic_api",
+            cost_usd=999.0,
+            occurred_at=datetime(2026, 7, 15),  # before START
+        )
+    assert get_shadow_ai_candidates(db, org.id, START, END) == []
+
+
+def test_get_shadow_ai_candidates_outcome_attempts_have_no_known_cost(db, org, ingest_helpers):
+    with pytest.raises(UnresolvedIdentityError):
+        ingest_helpers.outcome(
+            source_system="github",
+            external_id="ghost_login",
+            source="github",
+            outcome_type="pr_merged",
+            occurred_at=START + timedelta(days=1),
+        )
+    candidates = get_shadow_ai_candidates(db, org.id, START, END)
+    assert candidates[0]["known_cost_usd"] == 0.0
+
+
+def test_get_overview_shadow_ai_uses_observed_cost_once_measured(db, org, person, ingest_helpers):
+    p = person()
+    ingest_helpers.usage(
+        source_system="anthropic_api",
+        external_id=f"key_{p.id}",
+        tool="anthropic_api",
+        cost_usd=100.0,
+        occurred_at=START + timedelta(days=1),
+    )
+    with pytest.raises(UnresolvedIdentityError):
+        ingest_helpers.usage(
+            source_system="anthropic_api",
+            external_id="ghost_key",
+            tool="anthropic_api",
+            cost_usd=25.0,
+            occurred_at=START + timedelta(days=2),
+        )
+    scoring.recompute_all(db, org.id, START, END)
+
+    overview = get_overview(db, org.id, START, END)
+    shadow_line = next(r for r in overview["recoverable_breakdown"] if r["label"].startswith("Shadow-AI"))
+    assert shadow_line["label"] == "Shadow-AI consolidated"  # measured, not the "(est.)" fallback
+    assert shadow_line["amount_usd"] == 25.0 * 12  # observed cost, annualized (MONTHS_PER_YEAR)
+
+
+def test_get_overview_shadow_ai_falls_back_to_estimate_when_unmeasured(db, org, person, ingest_helpers):
+    p = person()
+    ingest_helpers.usage(
+        source_system="anthropic_api",
+        external_id=f"key_{p.id}",
+        tool="anthropic_api",
+        cost_usd=100.0,
+        occurred_at=START + timedelta(days=1),
+    )
+    scoring.recompute_all(db, org.id, START, END)
+
+    overview = get_overview(db, org.id, START, END)
+    shadow_line = next(r for r in overview["recoverable_breakdown"] if r["label"].startswith("Shadow-AI"))
+    assert shadow_line["label"] == "Shadow-AI consolidated (est.)"

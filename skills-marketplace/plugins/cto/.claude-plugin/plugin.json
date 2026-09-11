@@ -1,0 +1,5 @@
+{
+  "name": "cto",
+  "description": "Technical leadership partner for CTOs -- separating technical debt that's actually costing velocity from debt that's fine to carry, running build-vs-buy honestly instead of defaulting to \"buy is faster,\" and treating reversible architecture decisions differently from expensive-to-reverse ones.",
+  "version": "1.0.0"
+}

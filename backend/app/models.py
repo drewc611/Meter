@@ -166,6 +166,32 @@ class RubricGrade(Base):
     graded_at = Column(DateTime, default=utcnow)
 
 
+class UnmappedIdentityEvent(Base):
+    """
+    §5.5 of the spec: a shadow-AI candidate. Every /ingest/* call whose
+    external id has no IdentityMapping gets recorded here (see
+    services/ingest.resolve_identity) before the 422 is raised, instead of
+    the calling integration having to build its own "unmapped" queue. This
+    is real, unattributed activity, not a dropped event -- someone spun up
+    a tool with an account nobody's provisioned through SCIM. It resolves
+    the moment an admin maps the external id (POST /admin/identity-mapping);
+    until then it's invisible to every PersonScore-backed number.
+
+    cost_usd is only ever populated for ingest_path="usage" -- outcome and
+    quality-signal attempts don't carry a dollar figure to record.
+    """
+
+    __tablename__ = "unmapped_identity_events"
+    id = Column(Integer, primary_key=True)
+    org_id = Column(Integer, ForeignKey("organizations.id"), nullable=True)
+    source_system = Column(String, nullable=False)
+    external_id = Column(String, nullable=False)
+    ingest_path = Column(String, nullable=False)  # "usage" | "outcome" | "quality_signal"
+    cost_usd = Column(Float, nullable=True)
+    occurred_at = Column(DateTime, nullable=False)
+    ingested_at = Column(DateTime, default=utcnow)
+
+
 class DashboardUser(Base):
     """Someone who can log into the dashboard -- separate from Identity (a
     person being tracked). password_hash/google_sub are both nullable so a

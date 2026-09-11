@@ -1,0 +1,4 @@
+src/operator_os_installer/_bundle/
+dist/
+build/
+*.egg-info/

@@ -35,7 +35,7 @@ from ..constants import (
     TOP_VALUE,
     VALUE_THRESHOLD,
 )
-from ..models import Identity, PersonScore, UsageEvent
+from ..models import Identity, PersonScore, UnmappedIdentityEvent, UsageEvent
 
 RECOMMENDATION_LABELS = {
     "keep_top_performer": "Keep — top performer",
@@ -184,9 +184,15 @@ def get_overview(
     high_slop_spend = sum(p["spend_usd"] for p in high_slop)
     rework_tax_pct = round(high_slop_spend / total_spend * 100, 1) if total_spend else 0.0
 
-    # Shadow AI: not modeled in this demo's ingestion (§5.5 ships separately) —
-    # illustrative placeholder, flagged as an estimate rather than a measured figure.
-    shadow_ai_recoverable = total_spend * SHADOW_AI_RATE
+    # Shadow AI (§5.5): real observed cost from unmapped usage-path attempts
+    # this period (see UnmappedIdentityEvent, populated by
+    # services.ingest.resolve_identity) whenever there's been at least one to
+    # measure. SHADOW_AI_RATE is now only a cold-start fallback -- an org with
+    # no recorded unmapped activity yet (brand new, or predating this table)
+    # still gets a labeled estimate instead of a bare zero.
+    shadow_ai_observed = get_shadow_ai_observed_cost(db, org_id, period_start, period_end)
+    shadow_ai_measured = shadow_ai_observed > 0
+    shadow_ai_recoverable = shadow_ai_observed if shadow_ai_measured else total_spend * SHADOW_AI_RATE
 
     recoverable_total = over_tiered_recoverable + slop_recoverable + shadow_ai_recoverable
 
@@ -209,7 +215,10 @@ def get_overview(
                 "label": "High-slop spend re-tiered or coached",
                 "amount_usd": round(slop_recoverable * MONTHS_PER_YEAR, 0),
             },
-            {"label": "Shadow-AI consolidated (est.)", "amount_usd": round(shadow_ai_recoverable * MONTHS_PER_YEAR, 0)},
+            {
+                "label": "Shadow-AI consolidated" if shadow_ai_measured else "Shadow-AI consolidated (est.)",
+                "amount_usd": round(shadow_ai_recoverable * MONTHS_PER_YEAR, 0),
+            },
         ],
         "fund_count": segment_counts["fund"],
         "coach_count": segment_counts["coach"],
@@ -403,3 +412,63 @@ def get_adoption(db: Session, org_id: int | None, period_start: datetime, period
         "utilization_pct": _pct(active_users, total_seats),
         "by_tier": by_tier,
     }
+
+
+def get_shadow_ai_candidates(
+    db: Session, org_id: int | None, period_start: datetime, period_end: datetime
+) -> list[dict]:
+    """§5.5 of the spec, made real instead of estimated: every distinct
+    (source_system, external_id) that hit /ingest/* with no IdentityMapping
+    during this period, grouped from UnmappedIdentityEvent (see
+    services.ingest.resolve_identity). known_cost_usd is only ever nonzero
+    for usage-path attempts -- outcome/quality-signal attempts don't carry
+    a dollar figure, so a candidate that only ever showed up on those paths
+    is real signal (someone's using a tool nobody provisioned) with an
+    honestly-zero cost, not a missing number.
+
+    Same bounded-by-period exception as get_tool_breakdown()/get_adoption():
+    UnmappedIdentityEvent isn't rolled into PersonScore (it isn't attributed
+    to anyone yet), so this reads the raw table directly, scoped to one
+    [start, end) window."""
+    rows = (
+        db.query(
+            UnmappedIdentityEvent.source_system,
+            UnmappedIdentityEvent.external_id,
+            func.count(UnmappedIdentityEvent.id),
+            func.sum(UnmappedIdentityEvent.cost_usd),
+            func.min(UnmappedIdentityEvent.occurred_at),
+            func.max(UnmappedIdentityEvent.occurred_at),
+        )
+        .filter(UnmappedIdentityEvent.org_id == org_id)
+        .filter(UnmappedIdentityEvent.occurred_at >= period_start, UnmappedIdentityEvent.occurred_at < period_end)
+        .group_by(UnmappedIdentityEvent.source_system, UnmappedIdentityEvent.external_id)
+        .all()
+    )
+    out = [
+        {
+            "source_system": source_system,
+            "external_id": external_id,
+            "attempt_count": attempt_count,
+            "known_cost_usd": round(float(known_cost or 0.0), 2),
+            "first_seen_at": first_seen_at,
+            "last_seen_at": last_seen_at,
+        }
+        for source_system, external_id, attempt_count, known_cost, first_seen_at, last_seen_at in rows
+    ]
+    return sorted(out, key=lambda r: (-r["known_cost_usd"], -r["attempt_count"]))
+
+
+def get_shadow_ai_observed_cost(db: Session, org_id: int | None, period_start: datetime, period_end: datetime) -> float:
+    """Sum of known_cost_usd across every shadow-AI candidate this period --
+    the one piece of get_overview()'s recoverable-spend estimate that's a
+    measurement instead of a heuristic, whenever there's been at least one
+    unmapped usage-path attempt to measure. See get_overview() for how this
+    combines with SHADOW_AI_RATE."""
+    total = (
+        db.query(func.sum(UnmappedIdentityEvent.cost_usd))
+        .filter(UnmappedIdentityEvent.org_id == org_id)
+        .filter(UnmappedIdentityEvent.occurred_at >= period_start, UnmappedIdentityEvent.occurred_at < period_end)
+        .filter(UnmappedIdentityEvent.ingest_path == "usage")
+        .scalar()
+    )
+    return float(total or 0.0)

@@ -1,0 +1,5 @@
+{
+  "name": "cloud-platform-architect",
+  "description": "Cloud/platform architecture review and design partner for account structure, shared infrastructure, and multi-region/multi-account tradeoffs -- blast radius of shared resources, cost attribution, and IAM/network boundaries that hold up under an incident, not just on a diagram.",
+  "version": "1.0.0"
+}

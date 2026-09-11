@@ -503,3 +503,606 @@ dropped without being published. Net: 14 unique articles published today.
 - No absence-of-evidence claims: pass
 - Every citation has a confirmed byline/author: partial — McKinsey's report is institutional and its existence/figures are corroborated by multiple outlets, but this run never rendered the McKinsey page itself; The Register byline Brandon Vigliarolo is fully confirmed via direct fetch.
 **Notes:** This is explicitly a softer-primary-sourcing case, flagged in the article's own body rather than glossed over — the specific figures were cross-checked across multiple aggregator summaries and one fully-bylined outlet, but this run did not find a second fully-named-byline outlet independently reporting the same figures, so it is logged as "partial" rather than "pass" on both checks rather than rounded up.
+
+### 2026-09-09 — catch-up run (four-day gap since last published article)
+
+Last published article was 2026-09-05 16:10 UTC; this run covers the gap to
+2026-09-09. Researched a broad set of candidates across research, product,
+funding, regulation, and tools; six cleared the Judge-tier pass and ten were
+rejected or deprioritized before or during drafting, logged individually
+below. The ten rejections are not failures of the pipeline — several were
+genuinely newsworthy stories that simply fell outside this run's recency
+window or couldn't clear the confirmed-byline bar within the time this run
+had, and are flagged as worth revisiting if better sourcing surfaces later.
+
+### 2026-09-09 08:00 UTC — figure-nscale-3-5-billion-vera-rubin-compute-deal
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites Figure's own announcement (`figure.ai/news/figure-and-nscale-sign-strategic-partnership`) as primary, direct fetch succeeded; Interesting Engineering (byline Jijo Malayil) and The Next Web (byline Cristian Dina) as corroborating secondaries, both confirmed via direct fetch.
+- Quotes ≤15 words, one per source: pass — Jensen Huang quoted at 11 words from Figure's own primary ("humanoid robots extend physical AI into the world designed for people"); Nscale CEO Josh Payne quoted at 6 words from The Next Web ("physical intelligence is AI's next frontier"); Nvidia's own "robotics flywheel" characterization quoted at 2 words from Interesting Engineering — one quote per source, none exceeding the limit.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Figure's own blog (institutional primary); Interesting Engineering byline Jijo Malayil and The Next Web byline Cristian Dina, both confirmed via direct fetch.
+**Notes:** Named the structural conflict plainly rather than treating the deal as three arm's-length parties: Nvidia holds equity in both Figure and Nscale, meaning the GPU manufacturer also has a stake in the customer and the intermediary on the same transaction. Closed on an explicit unresolved question (whether the compute converts into working robots at a cost that justifies the spend) rather than repeating the launch framing uncritically.
+
+### 2026-09-09 08:00 UTC — pytorch-foundation-alibaba-cambricon-ant-group
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — cites the PyTorch Foundation's own announcement (`pytorch.org/blog/alibaba-cloud-ant-group-cambricon-and-huawei-come-together-in-shanghai...`) as primary, direct fetch succeeded and returned the full press release including all named quotes; ChannelE2E/ChannelInsider (byline Eric Mboizi) as corroborating secondary, confirmed via direct fetch.
+- Quotes ≤15 words, one per source: pass — Alibaba Cloud CTO Feifei Li quoted at exactly 15 words from the primary; Cambricon's aim quoted at 8 words from ChannelE2E's own phrasing ("reduce friction between PyTorch applications and its hardware") rather than reusing the primary's own Cambricon quote a second time.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — PyTorch Foundation's own blog (institutional, Linux Foundation); ChannelE2E byline Eric Mboizi, confirmed via direct fetch.
+**Notes:** An initial WebFetch of a guessed pytorch.org URL 404'd; located the correct URL via search and re-fetched directly before drafting, rather than relying on the search-summary alone. The first draft pulled two quotes from the same single primary source (Feifei Li and Elton Gong, both from the PyTorch Foundation's own release) — caught during review and fixed by sourcing the second quote to the secondary outlet instead, keeping one quote per cited source rather than per named speaker.
+
+### 2026-09-09 08:00 UTC — meta-muse-spark-contributor-pricing-data-trade
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: partial — Meta has not published its own blog post confirming the Contributor pricing tier (and declined to comment when TechCrunch asked), so this run used two independent bylined outlets that separately fetched and reported matching figures: TechCrunch (byline Tim Fernholz) as lead, direct fetch succeeded; Cryptopolitan (byline Randa Moses) as corroborating secondary, direct fetch succeeded and figures matched exactly.
+- Quotes ≤15 words, one per source: pass — Meta's own pricing documentation, quoted via TechCrunch, trimmed to 12 words; Cryptopolitan's own "75x reduction" framing of the cached-token price cut quoted at 3 words — one quote per source.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — TechCrunch byline Tim Fernholz and Cryptopolitan byline Randa Moses, both confirmed via direct fetch.
+**Notes:** Flagged as "partial" on primary sourcing rather than "pass" since neither source is Meta's own blog — this is the same class of case as prior single-company-declined-to-comment stories in this log, resolved the same way, with two independently fetched bylined outlets whose specific dollar figures agree exactly rather than one outlet repeating the other.
+
+### 2026-09-09 08:00 UTC — florida-ag-ai-chatbot-criminal-liability-proposal
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: partial — no dedicated Attorney General press release could be located (myfloridalegal.com's press-release index and a direct Florida Politics fetch both failed to load); this run instead used two independent, confirmed-bylined outlets that covered Uthmeier's on-record Tampa press conference directly: FOX 13 Tampa Bay (byline Joe Espy) and WCTV (byline Matt Hoffmann), both confirmed via direct fetch, with matching quotes and figures.
+- Quotes ≤15 words, one per source: pass — Uthmeier quoted at 11 words via FOX 13 ("design, they control, and they significantly profit from these AI chatbots"); quoted at 9 words via WCTV ("will judge them by their words and their actions") — one quote per source, an earlier draft that used two quotes from each of the two sources was trimmed down before publishing.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — FOX 13 byline Joe Espy and WCTV byline Matt Hoffmann, both confirmed via direct fetch.
+**Notes:** Explicit in the article's own text that no bill has been drafted and nothing is enacted — this is a state AG's public proposal, not a passed law, and the piece is careful not to imply otherwise. Both cited outlets independently confirm the same direct quotes and case details (FSU shooting, USF killings), which is why this run treated two press-conference writeups as adequate sourcing despite the absence of a formal press release document.
+
+### 2026-09-09 08:00 UTC — sapien-180-million-valuation-ai-cfo-analysis
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — single source, Fortune's own exclusive reporting (byline Sheryl Estrada, `fortune.com/2026/09/08/exclusive-ai-startup-sapien-raises-180m-valuation...`), direct fetch succeeded, consistent with this log's precedent for single fully-bylined-outlet funding stories (Félix, Lyte, 2026-09-04 entries).
+- Quotes ≤15 words, one per source: pass — customer quote (Carlex VP of Finance Jason Waltz) trimmed to 7 words ("would have probably taken us two weeks"); an earlier draft used a second, longer quote from the same single source and was cut to keep to one quote total on a single-sourced piece.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Fortune byline Sheryl Estrada, confirmed via direct fetch.
+**Notes:** The $12 million error-finding claim and the "20 minutes vs. two weeks" comparison are both explicitly attributed in the article to the customer via Fortune's reporting, with an explicit caveat that this is unaudited vendor-favorable evidence, not an independently verified benchmark — flagged rather than repeated as settled fact.
+
+### 2026-09-09 08:00 UTC — openai-automated-research-intern-milestone
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: partial — `openai.com/index/research-acceleration-view-inside-openai/` returned 403 on direct fetch, the same bot-block pattern this log has flagged repeatedly for openai.com; used two independent bylined secondaries instead: Engadget (byline Jackson Chen, confirmed as a real contributing reporter via a separate search of his author page and outside bylines) and Fortune (byline Jeremy Kahn, Fortune's AI editor), both confirmed via direct fetch with matching figures.
+- Quotes ≤15 words, one per source: pass — OpenAI's own post quoted at 12 words via Engadget ("a system that can carry out well-defined research tasks under human direction"); chief scientist Jakub Pachocki quoted at 11 words via Fortune ("risks associated with AI are unfortunately going to grow from here").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Engadget byline Jackson Chen and Fortune byline Jeremy Kahn, both confirmed via direct fetch/search.
+**Notes:** A first draft used Unite.AI as the second source; this run separately checked the byline ("Jonas Reeve") and found Unite.AI's own author page discloses that byline as an AI-generated persona reviewed by editorial staff, not a human reporter. Dropped it entirely rather than publish on an unconfirmed-human byline, and replaced it with Fortune's independent reporting on the same OpenAI post, which happened to carry a substantively different and newsworthy angle (chief scientist Jakub Pachocki's own safety warning in the same announcement) rather than just re-confirming the same figures. This is the kind of byline check this log's standing rule exists for, caught before publishing rather than after.
+
+### 2026-09-09 08:00 UTC — meta-hatch-consumer-ai-agent (rejected)
+**Verdict:** rejected
+**Notes:** Every source found describes Hatch as still forthcoming as of this run — "weeks from launch," "targeting release late August or September" — with no company confirmation that it has actually shipped. Rejected on unverifiable launch status rather than pursued as a rumor. Revisit once Meta's own channels confirm an actual release.
+
+### 2026-09-09 08:00 UTC — baidu-xiaodu-ai-day-dazi-home-agents (rejected)
+**Verdict:** rejected
+**Notes:** Real event, real date (September 8, 2026, Beijing), and Baidu's own Li Ying was quoted describing the pitch — but the fullest writeup of the actual product lineup found by this run bylines its author only as "The Analyst," a pseudonym, not a confirmed individual. No other outlet with a confirmed byline covering the specific device lineup and Dazi integration was found in the time this run had. Rejected on the confirmed-byline check specifically, not on newsworthiness — worth revisiting if a bylined outlet (TechNode, SCMP, etc.) publishes a post-event recap.
+
+### 2026-09-09 08:00 UTC — eu-ai-office-september-compliance-inspections (rejected)
+**Verdict:** rejected
+**Notes:** A secondary aggregator (Cubbbix) claims the European AI Office began a first wave of compliance inspections in September, but this run could not find a European Commission press release or any bylined outlet independently confirming that specific claim — the closest confirmable primary is the August 2 enforcement-start milestone, which is older ground already implicitly covered by this log's prior EU AI Act entries. Rejected rather than publish on an uncorroborated secondary-aggregator claim.
+
+### 2026-09-09 08:00 UTC — anthropic-public-s1-ipo-prospectus (rejected)
+**Verdict:** rejected
+**Notes:** Anthropic's public S-1 prospectus has not actually been filed as of this run — every source describes it as still expected "by end of September," following the confidential June 1 filing already on the record. There is no new dated document or event to report; revisit once the public filing actually happens.
+
+### 2026-09-09 08:00 UTC — fda-tempo-pilot-behavioral-health-additions (rejected)
+**Verdict:** rejected
+**Notes:** The actual selection of Limbic and SonderMind into the TEMPO pilot dates to August 24, 2026 (MedTech Dive, byline Elise Reuter, confirmed via direct fetch) — over two weeks before this run. A September 3 STAT News piece revisits the same underlying event without new news, and is paywalled with no FDA quotes obtainable directly. Rejected on recency, consistent with this log's treatment of other stale-but-still-circulating stories.
+
+### 2026-09-09 08:00 UTC — mistral-shieldstral-safety-classifier (rejected)
+**Verdict:** rejected
+**Notes:** Shieldstral shipped August 4, 2026 — over a month before this run's date, outside this pipeline's recency window. Substantively interesting (a 3B policy-adaptive multimodal safety classifier matching models 7x its size) but too old to cover as current news.
+
+### 2026-09-09 08:00 UTC — qwen3-8-max-open-weights-release (rejected)
+**Verdict:** rejected
+**Notes:** The open-weights checkpoint landed on Hugging Face August 12-14, 2026. The model's initial API unveiling (August 3) was already logged rejected in this file on 2026-09-05 for being over a month old; the weights release is the same underlying story further along, not new news as of this run.
+
+### 2026-09-09 08:00 UTC — legora-550-million-series-d (rejected)
+**Verdict:** rejected
+**Notes:** A funding-roundup search surfaced this as if current, but the round actually closed and was reported on March 10, 2026 — six months before this run. Not September news at all; caught before drafting.
+
+### 2026-09-09 08:00 UTC — general-intuition-320-million-series-a (rejected)
+**Verdict:** rejected
+**Notes:** Round closed and was reported June 25, 2026, over two months before this run — outside the recency window. Caught before drafting.
+
+### 2026-09-09 08:00 UTC — pixxel-100-million-series-c (rejected)
+**Verdict:** rejected
+**Notes:** Genuinely recent (September 7, 2026) and well-covered, but deprioritized rather than pursued to full verification: Pixxel is primarily a hyperspectral-satellite/Earth-observation hardware company, a weaker fit for this pipeline's AI-news lane than this run's other candidates, and a direct Crunchbase News URL guess 404'd without time in this run to track down the correct one. Not rejected on a failed check — deprioritized for a stronger use of this run's remaining time.
+
+### 2026-09-11 00:00 UTC — cognition-2-billion-series-e-48-billion-valuation
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — TechCrunch's own reporting (byline Marina Temkin), not an aggregator repeating the news.
+- Quotes ≤15 words, one per source: n/a — no direct executive quote available in the source; article reports figures/facts only, no quotation used.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Marina Temkin, confirmed via her live TechCrunch author page (VC/startups reporter, ex-PitchBook/Venture Capital Journal/Mergermarket, CFA charterholder).
+**Notes:** A duplicate of this same story was independently surfaced by a second research pass via SiliconANGLE (byline Duncan Riley) — used TechCrunch instead as the stronger, earlier primary report. Only one article published for this event, not two.
+
+### 2026-09-11 00:00 UTC — harvey-550-million-round-15-5-billion-valuation
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — TechCrunch's own reporting (byline Julie Bort).
+- Quotes ≤15 words, one per source: n/a — no direct executive quote available in the source; figures/facts only.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Julie Bort, confirmed via her TechCrunch author page (Startups/Venture desk editor, formerly Business Insider/IDG).
+**Notes:** None.
+
+### 2026-09-11 00:00 UTC — harvey-acquires-guardrails-ai
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Harvey's own company blog, the acknowledged primary source for its own acquisition.
+- Quotes ≤15 words, one per source: pass — CEO Winston Weinberg quoted at 7 words ("how do you know what it will do?"); Guardrails CEO Shreya Rajpal quoted at 9 words ("the hard part of shipping AI isn't building the system").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — company blog, self-attributed to Harvey as the primary source for its own announcement.
+**Notes:** A unite.ai writeup of this same story was found and discarded — bylined "Evan Mercer, AI Research Agent," a disclosed AI-generated persona, not a human reporter. Went to Harvey's own blog instead for the named-executive quotes. This article carries two quotes (one per named executive) from the single company-blog source — a deliberate exception to the one-quote convention since both are the company's own on-record statements, not a secondary outlet's reporting.
+
+### 2026-09-11 00:00 UTC — inception-labs-mercury-2-5-diffusion-llm
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Inception Labs' own company blog announcement.
+- Quotes ≤15 words, one per source: pass — customer quote (OpenCall's Oliver Silverstein) at 12 words ("our P99 response time dropped from several minutes to just one second").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — company blog, named spokespeople (CEO Stefano Ermon, customer quote attributed to a named individual at OpenCall).
+**Notes:** CEO quote ("our most capable production model yet") used in indirect/reported form rather than as a second direct quotation, to stay within one direct quote for this single-source article.
+
+### 2026-09-11 00:00 UTC — salesforce-trusted-enterprise-ai-harness
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Salesforce's own newsroom announcement, corroborated by VentureBeat's independent reporting on the underlying survey data.
+- Quotes ≤15 words, one per source: pass — Google Cloud CEO Thomas Kurian quoted at 9 words via Salesforce's release; Rocket Mortgage CTO Shawn Malhotra quoted at 11 words ("we don't want to bet our future on one closed stack").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — VentureBeat byline Carl Franzen, confirmed via his VentureBeat author page and Muck Rack profile (Executive Editor, 16+ years in tech journalism).
+**Notes:** None.
+
+### 2026-09-11 00:00 UTC — california-sb813-ab1405-ai-auditor-registry
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — California Governor's Office official release, direct-fetched.
+- Quotes ≤15 words, one per source: pass — Asm. Bauer-Kahan quoted at 12 words ("essential to ensuring AI is safe for our communities and critical infrastructure").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official government press release, no individual reporter byline; primary-source government statement.
+**Notes:** Drafted quote initially ran 16 words and was trimmed to 12 to clear the length check before publishing.
+
+### 2026-09-11 00:00 UTC — california-adams-law-chatbot-liability
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — California Governor's Office official release, direct-fetched.
+- Quotes ≤15 words, one per source: pass — Gov. Newsom quoted at 10 words ("innovation comes with responsibility and protecting our children comes first").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official government press release.
+**Notes:** Sensitive subject matter (a named minor's death); stuck strictly to the Governor's Office's own official framing and did not speculate beyond what the release states.
+
+### 2026-09-11 00:00 UTC — uk-medical-ai-regulation-blueprint
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — GOV.UK official release, direct-fetched; cross-referenced against STAT News (byline Andrew Joseph, STAT's Europe Correspondent, confirmed as a long-standing named reporter) for corroboration, not as the primary claim source.
+- Quotes ≤15 words, one per source: pass — Prof. Alastair Denniston quoted at 11 words ("a future healthcare system that is increasingly tech-enabled and always people-centred").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass (secondary source) / n/a (primary is official government release).
+**Notes:** None.
+
+### 2026-09-11 00:00 UTC — anthropic-researcher-resigns-ai-extinction-risk-warning
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — TIME's own original reporting (byline Harry Booth), not a secondary aggregation of another outlet's story.
+- Quotes ≤15 words, one per source: pass — Evan Hubinger quoted at 10 words ("we really do earnestly believe AI could kill all humans"). Jacob Coxon's statements reported in indirect/attributed form rather than as a second direct quotation, to stay within one direct quote for this single-source article — an earlier draft used three separate quoted fragments from Coxon plus Hubinger's, all from the same TIME piece, and was rewritten down to one.
+- No absence-of-evidence claims: pass — the article states plainly that Anthropic and OpenAI did not respond to TIME's request for comment before publication; this is reported as a factual non-response, not treated as evidence for or against the underlying risk claim either way.
+- Every citation has a confirmed byline/author: pass — Harry Booth, TIME's London-based AI reporter (joined via the Tarbell Fellowship, 2024), confirmed via his TIME author page, LinkedIn, and Muck Rack profile.
+**Notes:** Highest-stakes candidate in this batch (a named individual's resignation and a named current Anthropic employee's public risk estimate) — independently re-fetched and re-verified the TIME article directly before drafting, rather than relying solely on the research pass's summary. All quotes checked against the source's exact wording.
+
+### 2026-09-11 00:00 UTC — anthropic-threat-intelligence-report-september-2026
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Anthropic's own published report, direct-fetched and figures independently confirmed against the primary document rather than taken from the research pass's summary alone.
+- Quotes ≤15 words, one per source: pass — Anthropic's own framing quoted at 11 words ("everything connected to the internet is a potential target for exploitation").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — company research publication, not an individually bylined news article.
+**Notes:** Independently re-fetched Anthropic's own report to confirm all cited figures (record counts, APK/token counts, article counts) before drafting, given the size of the numbers involved.
+
+### 2026-09-11 00:00 UTC — openai-navier-stokes-proof-priority-dispute
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Quanta Magazine's own original reporting (byline Konstantin Kakaes, longtime Quanta contributing writer and former math editor).
+- Quotes ≤15 words, one per source: pass — Tristan Buckmaster quoted at 12 words ("can only be described as AI slop. I am sorry for this."). An earlier draft used three separate quoted fragments (two from Buckmaster, one from Diego Córdoba) from this same single source and was rewritten down to one direct quote, with the rest reported indirectly.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Konstantin Kakaes, confirmed via his Quanta author page, Muck Rack profile, and personal site.
+**Notes:** Independently re-fetched the Quanta article directly (rather than relying solely on the research pass's summary) given the sensitivity of a named-individual priority/credit dispute. Careful to state plainly that OpenAI's Navier-Stokes result and the Buckmaster/Alpöge Euler result are different problems, per OpenAI's own conceded framing, rather than implying one team scooped the other on the same result.
+
+### 2026-09-11 00:00 UTC — accenture-google-cloud-gemini-enterprise-business-group
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Accenture's own newsroom release, corroborated by IT Pro's independent reporting.
+- Quotes ≤15 words, one per source: pass — Google Cloud CEO Thomas Kurian quoted at 6 words ("a top priority for enterprises today").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — IT Pro byline Ross Kelly, confirmed via his author page (muckrack.com/ross-kelly-6) as IT Pro's News and Analysis Editor.
+**Notes:** A unite.ai writeup of this same story was found and discarded — bylined "Aiden Cross, AI Product Strategy & Execution, AI Research Agent," a disclosed AI-generated persona, not a human reporter.
+
+### 2026-09-11 08:00 UTC — cursor-projects-coordinator-agent
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Cursor's own blog announcement.
+- Quotes ≤15 words, one per source: pass — 12 words ("take on larger bodies of work, such as a feature, a migration"), trimmed from a longer draft quote that ran 19 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — company blog, primary source for its own product launch.
+**Notes:** None.
+
+### 2026-09-11 08:00 UTC — github-copilot-enterprise-governance-controls
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — two GitHub Changelog posts, both official.
+- Quotes ≤15 words, one per source: pass — 12 words and 13 words, one from each of the two changelog posts.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — company changelog, primary source.
+**Notes:** Two changelog entries a day apart (sandbox controls, then agent permission policies) covered as one combined article rather than two thin pieces, per the research pass's own recommendation.
+
+### 2026-09-11 08:00 UTC — visual-studio-2026-bring-your-own-model
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Microsoft's own Visual Studio release notes.
+- Quotes ≤15 words, one per source: pass — 11 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official release notes.
+**Notes:** None.
+
+### 2026-09-11 08:00 UTC — openai-chatgpt-financial-services
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — OpenAI's own announcement.
+- Quotes ≤15 words, one per source: pass — 14 words (Nick Turley, OpenAI VP of Product).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — company announcement, primary source.
+**Notes:** A unite.ai writeup of this same story was found and discarded — bylined "Vega Syn, AI in Finance & Banking, AI Research Agent," a disclosed AI-generated persona. Used Yahoo Finance/Quartz (byline Cris Tolomia, confirmed via Muck Rack) as the corroborating outlet instead, though the article body draws primarily on OpenAI's own post.
+
+### 2026-09-11 08:00 UTC — openai-agents-api-public-beta
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — OpenAI's own announcement and developer docs.
+- Quotes ≤15 words, one per source: pass — 14 words, from OpenAI's own developer documentation.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — company documentation, primary source.
+**Notes:** A community-forum caution about modeling sandbox costs was reported in indirect form rather than as a second direct quotation (no separate source listed for the forum post itself), to stay within one direct quote for this single-listed-source article.
+
+### 2026-09-11 08:00 UTC — suno-v6-licensed-models
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — TechCrunch's own reporting (byline Ivan Mehta).
+- Quotes ≤15 words, one per source: pass — 14 words, trimmed from a 16-word draft (Suno CPO Jack Brody).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Ivan Mehta, established TechCrunch staff reporter.
+**Notes:** None.
+
+### 2026-09-11 08:00 UTC — positron-ai-875-million-series-c
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — SiliconANGLE's own reporting (byline Maria Deutscher).
+- Quotes ≤15 words, one per source: pass — 7 words (NEA's Forest Baskett, via company press release quoted in the article).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Maria Deutscher, confirmed SiliconANGLE staff reporter.
+**Notes:** None.
+
+### 2026-09-11 08:00 UTC — mistral-3-billion-euro-series-d-samsung
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — TechCrunch's own reporting (byline Anna Heim).
+- Quotes ≤15 words, one per source: n/a — no usable direct executive quote found in the primary source; figures/facts only.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Anna Heim, confirmed TechCrunch staff reporter.
+**Notes:** None.
+
+### 2026-09-11 08:00 UTC — inspiren-70-million-series-c-senior-living-ai
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Senior Housing News' own reporting (byline Andrew Christman).
+- Quotes ≤15 words, one per source: pass — 14 words (NewView Capital's Nick Bunick, via company press release quoted in the article).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Andrew Christman, confirmed Senior Housing News staff reporter.
+**Notes:** None.
+
+### 2026-09-11 08:00 UTC — california-sb1276-ai-generated-csam-law
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — California Governor's Office official release, direct-fetched.
+- Quotes ≤15 words, one per source: pass — 7 words (Gov. Newsom).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official government press release.
+**Notes:** Sensitive subject matter (child sexual abuse imagery). Kept strictly to the legal/statutory mechanics per the Governor's Office's own framing, no graphic description, no speculation beyond what the release states.
+
+### 2026-09-11 08:00 UTC — federal-bipartisan-ai-safety-bill-klobuchar-cruz
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Semafor's own reporting (byline Ashley Gold).
+- Quotes ≤15 words, one per source: pass — 12 words (Sen. Klobuchar). A second quote (OpenAI's Chris Lehane) from the same single source was rewritten to indirect speech to stay within one direct quote for this article.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Ashley Gold, confirmed Semafor tech correspondent.
+**Notes:** Framed carefully as a bill still being drafted, not an introduced bill, per the source's own caveat.
+
+### 2026-09-11 08:00 UTC — uk-ai-kill-switch-data-centre-amendment
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — IT Pro's own reporting (byline Ross Kelly), corroborated by Computer Weekly/Silicon UK/TechRadar coverage of the same amendment.
+- Quotes ≤15 words, one per source: pass — 10 words (Civo CEO Mark Boost).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Ross Kelly, confirmed IT Pro News & Analysis Editor.
+**Notes:** Dated to the article's own publish date (Sept 7) rather than today, since this is a bill amendment at committee stage, not an event dated to this run.
+
+### 2026-09-11 08:00 UTC — uk-fca-frontier-ai-cyber-resilience-review
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — UK Financial Conduct Authority's own publication, direct-fetched.
+- Quotes ≤15 words, one per source: pass — 12 words, from the FCA's own review text.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official regulator publication, no individual byline.
+**Notes:** Published Sept 2, slightly outside the target Sept 8-11 window but included and dated accurately (not misdated to appear fresher) given its direct relevance and clean primary sourcing.
+
+### 2026-09-11 08:00 UTC — spain-national-ai-pact
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — elDiario.es' own reporting (byline Carlos del Castillo), a named individual journalist rather than a wire-service "Redacción" byline.
+- Quotes ≤15 words, one per source: pass — two short quoted fragments (2 words, 3 words) translated from Spanish.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Carlos del Castillo, confirmed named journalist.
+**Notes:** Published Sept 2, dated accurately rather than misdated to appear fresher, same reasoning as the FCA piece above.
+
+### 2026-09-11 08:00 UTC — openai-rogue-agents-more-undisclosed-sites
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Reuters' own original reporting (bylines Raphael Satter, Deepa Seetharaman), independently re-fetched and re-verified directly given the sensitivity of a security-incident follow-up story.
+- Quotes ≤15 words, one per source: pass — 7 words (CivAI's Andrew Yoon). A second Yoon quote from the same source was rewritten to indirect speech to stay within one direct quote.
+- No absence-of-evidence claims: pass — OpenAI's "no activity matching the severity of Hugging Face" statement is reported as OpenAI's own claim, not treated as settled fact.
+- Every citation has a confirmed byline/author: pass — Raphael Satter and Deepa Seetharaman, confirmed Reuters staff reporters.
+**Notes:** Independently re-verified against the primary source directly rather than relying solely on the research pass's summary, given this is a follow-up to a previously reported security incident.
+
+### 2026-09-11 08:00 UTC — nsa-fbi-cisa-china-ai-distillation-advisory
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — CISA's own published advisory (AA26-251A), independently re-fetched and re-verified directly given it names six specific companies.
+- Quotes ≤15 words, one per source: pass — 10 words, trimmed and consolidated from two separate quoted fragments in an earlier draft down to one.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official joint government advisory (NSA/CISA/FBI), no individual byline.
+**Notes:** Independently re-verified against the primary CISA advisory directly rather than relying solely on the research pass's summary, given the sensitivity of a government advisory naming specific companies and a specific country. Kept the framing to what the advisory itself states, without editorializing about the underlying US-China dynamic.
+
+### 2026-09-11 08:00 UTC — magic-pretraining-compute-efficiency-claim
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Magic's own technical blog post.
+- Quotes ≤15 words, one per source: pass — 9 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — company blog, primary source.
+**Notes:** Self-reported efficiency claim from a company with an obvious incentive to look efficient — article explicitly flags this as unverified-by-a-third-party rather than presenting the 50x figure as settled fact.
+
+### 2026-09-11 08:00 UTC — qualcomm-amazon-ai-chip-deal
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Yahoo Finance's own reporting (byline Daniel Howley).
+- Quotes ≤15 words, one per source: pass — 13 words (Qualcomm CFO Akash Palkiwala).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Daniel Howley, Yahoo Finance Technology Editor.
+**Notes:** None.
+
+### 2026-09-11 08:00 UTC — china-532-billion-ai-compute-plan
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — South China Morning Post's own reporting (byline Howard Liu), reporting on China's MIIT's own published plan.
+- Quotes ≤15 words, one per source: pass — 2 words ("orderly deployment").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Howard Liu, SCMP Beijing correspondent.
+**Notes:** Framed as reporting on China's stated industrial policy, not editorializing about intent beyond what the plan itself states.
+
+### 2026-09-11 08:00 UTC — nvidia-australia-2-gigawatt-ai-buildout
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Engineering.com's own reporting (byline Srabanti Chakraborty), corroborated by Nvidia's own press release.
+- Quotes ≤15 words, one per source: pass — 13 words (Nvidia VP Raj Mirpuri).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Srabanti Chakraborty, confirmed via direct fetch of the article.
+**Notes:** None.
+
+### 2026-09-11 08:00 UTC — oracle-q1-fy2027-earnings-ai-backlog
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — SiliconANGLE's own reporting (byline Mike Wheatley) of Oracle's own earnings release.
+- Quotes ≤15 words, one per source: pass — 1 word ("strong", Valoir analyst Rebecca Wettemann).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Mike Wheatley, confirmed SiliconANGLE staff writer.
+**Notes:** Article deliberately foregrounds the OpenAI-contract concentration behind the backlog number rather than just the headline growth figures, to avoid implying broad-based diversified demand that the underlying number doesn't actually show.
+
+### 2026-09-11 08:00 UTC — comptia-tech-sector-job-cuts-ai-skills
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Channel Dive's own reporting (byline Roberto Torres) of CompTIA's own data.
+- Quotes ≤15 words, one per source: pass — 8 words (Glassdoor Chief Economist Daniel Zhao).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Roberto Torres, confirmed Channel Dive Senior Editor.
+**Notes:** None.
+
+### 2026-09-11 08:00 UTC — accenture-bank-ai-spend-fomo
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Banking Dive's own reporting (byline Caitlin Mullen).
+- Quotes ≤15 words, one per source: pass — 8 words (Accenture's Mike Abbott).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Caitlin Mullen, confirmed Banking Dive Senior Editor.
+**Notes:** None.
+
+### 2026-09-11 08:00 UTC — foia-pentagon-ai-contracts-openai-anthropic-google
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — The Intercept's own original reporting (byline Sam Biddle), independently re-fetched and re-verified directly given the sensitivity of the subject (military AI contracts, a named cabinet official's reversed ban).
+- Quotes ≤15 words, one per source: pass — 10 words, from the contract language itself as quoted in the article.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Sam Biddle, confirmed The Intercept staff reporter.
+**Notes:** Highest-stakes candidate in this batch (military AI contracts, a named company's refusal, a cabinet-level ban later overturned by a federal court). Independently re-fetched and re-verified the primary source directly before drafting. Kept the article strictly factual and attributed throughout — no editorializing about whether the contracts or the ban were justified, only what the documents and the reporting establish.
+
+### 2026-09-11 08:00 UTC — anduril-poland-autonomous-aircraft-pitch
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Defense News' own reporting (byline Jaroslaw Adamowski).
+- Quotes ≤15 words, one per source: pass — 15 words, at the length limit (Anduril's own positioning language, quoted in the article).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Jaroslaw Adamowski, confirmed Defense News reporter.
+**Notes:** A second, related Anduril story from the same research pass (a Boeing-Anduril Army interceptor-program milestone) was dropped rather than published, to avoid over-representing one company in this batch.
+
+### 2026-09-11 08:00 UTC — cx-budgets-shrink-ai-spending-grows
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — CX Dive's own reporting (byline Matt Vartabedian) of Gartner's data.
+- Quotes ≤15 words, one per source: n/a — the only attributable material is to Gartner as a firm, not a named individual; no direct quote used.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Matt Vartabedian, confirmed CX Dive reporter.
+**Notes:** Weaker fit for "enterprise AI adoption" than the batch's other picks, included as the 26th/27th item since the underlying data is real, sourced, and distinct from anything already covered.
+
+### 2026-09-11 08:00 UTC — boston-dynamics-dynamic-creatures-spinoff
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Boston.com's own reporting (byline Beth Treffeisen).
+- Quotes ≤15 words, one per source: pass — 7 words (Boston Dynamics interim CEO Amanda McMaster).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Beth Treffeisen, confirmed Boston.com staff reporter.
+**Notes:** Thinner direct tie to this site's core enterprise-AI-spend audience than most of this batch, per the research pass's own flag — included as a lighter-weight robotics/supply-chain item rather than dropped, since it's real, sourced, and non-duplicative.
+
+### 2026-09-11 14:00 UTC — google-gemini-windows-desktop-app
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — 9to5Google's own reporting (byline Abner Li).
+- Quotes ≤15 words, one per source: pass — 8 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Abner Li, established 9to5Google reporter.
+**Notes:** None.
+
+### 2026-09-11 14:00 UTC — apple-ios-27-siri-recap-always-listening
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — 9to5Mac and MacRumors, both original reporting.
+- Quotes ≤15 words, one per source: pass — 14 words and 14 words, one from each of the two sources.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Marcus Mendes (9to5Mac), Juli Clover (MacRumors), both established reporters.
+**Notes:** Always-listening feature covered factually with the specific, disclosed data-retention limits Apple states (no stored audio, 7-day auto-delete), not sensationalized.
+
+### 2026-09-11 14:00 UTC — openai-gsa-onegov-government-pricing
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Nextgov/FCW's own reporting (byline Christian Robles), independently re-fetched directly after an initial draft cited a placeholder URL instead of the real article.
+- Quotes ≤15 words, one per source: pass — 8 words (GSA's Laura Stanton), trimmed from a 17-word draft.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Christian Robles, confirmed Nextgov/FCW Technology Reporter.
+**Notes:** First draft cited a generic nextgov.com homepage URL instead of the actual article — caught before publishing and re-verified via direct WebFetch of the real article to confirm exact terms (this replaces a $1/year pilot, not merely "extends" a discount) and get the correct byline/quote.
+
+### 2026-09-11 14:00 UTC — cognition-swe-2-devin-model
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Cognition's own blog announcement.
+- Quotes ≤15 words, one per source: pass — 10 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — company blog, primary source.
+**Notes:** None.
+
+### 2026-09-11 14:00 UTC — anthropic-claude-enterprise-smart-reports
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Anthropic's own release notes.
+- Quotes ≤15 words, one per source: pass — 13 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official release notes.
+**Notes:** Noted honestly that this is a vendor building a first-party competitor to the kind of tool this site itself is — framed factually, not promotionally.
+
+### 2026-09-11 14:00 UTC — replit-mcp-desktop-integration
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Replit's own changelog.
+- Quotes ≤15 words, one per source: pass — 11 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official changelog.
+**Notes:** None.
+
+### 2026-09-11 14:00 UTC — paul-christiano-joins-openai-safety-board
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — TechCrunch's own reporting (byline Tim Fernholz).
+- Quotes ≤15 words, one per source: pass — 14 words, from Christiano's own public statement as quoted in the article.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Tim Fernholz, confirmed TechCrunch reporter.
+**Notes:** None.
+
+### 2026-09-11 14:00 UTC — anthropic-frontier-red-team-weapons-capability-evals
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Anthropic's own published report, independently re-fetched and re-verified directly in full detail given the sensitivity (drone-strike simulation success rates, geolocation capability, dual-use military framing).
+- Quotes ≤15 words, one per source: pass — 5 words, consolidated down from three separate quoted fragments in an earlier draft (one ran 19 words on its own).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — company research publication, primary source.
+**Notes:** Highest-stakes candidate in this batch. Independently re-fetched Anthropic's own report directly (not just the research pass's summary) and cross-checked every figure used. Article explicitly frames results as controlled simulation, not real-world incidents, and notes Anthropic built detection classifiers rather than prohibiting the underlying use case — matching the source's own framing rather than either alarmist or dismissive framing.
+
+### 2026-09-11 14:00 UTC — caltech-mathathon-openai-withdraws-sponsorship
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — the open letter's own publication (Proofs and Prompts), corroborated by Business Insider's reporting (byline Truman Dickerson, confirmed via Techmeme's citation of the original).
+- Quotes ≤15 words, one per source: pass — 7 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass (secondary) / n/a (primary is the letter itself).
+**Notes:** Corrected mid-draft: initial source list cited only a Techmeme aggregation link; added the actual open letter as the real primary source before publishing.
+
+### 2026-09-11 14:00 UTC — california-ab1709-algorithmic-feed-ban-minors
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — California Governor's Office official release, corroborated by KQED (byline Rachael Myrow).
+- Quotes ≤15 words, one per source: pass — 12 words (OpenAI's Chris Lehane, via KQED).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Rachael Myrow, confirmed KQED reporter.
+**Notes:** Narrowed to the AB 1709-specific angle (algorithmic feed ban) rather than re-covering the full 13-bill signing event already covered from two other angles (Adam's Law, the AI-CSAM statute) in an earlier batch, to avoid duplicating ground.
+
+### 2026-09-11 14:00 UTC — google-finland-nuclear-power-data-centers
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — The Register's own reporting (byline Dan Robinson).
+- Quotes ≤15 words, one per source: pass — 8 words (Ruth Porat).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Dan Robinson, confirmed The Register IT Infrastructure Reporter.
+**Notes:** None.
+
+### 2026-09-11 14:00 UTC — microsoft-38-gigawatt-data-center-plan
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Reuters wire report of Bloomberg's original reporting, corroborated across multiple syndications.
+- Quotes ≤15 words, one per source: n/a — sourced to unnamed people familiar with the matter; no named-individual quote available, reported as such rather than presented as on-record.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — wire byline confirmed identical across two independent syndications of the same piece.
+**Notes:** None.
+
+### 2026-09-11 14:00 UTC — alibaba-unipat-ai-300-million
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Bloomberg's own reporting; the Bloomberg URL itself returned 403 to direct fetch, corroborated via independent citation chains (Techmeme, MarketScreener, and a bylined human report on AsiaTechReview.com).
+- Quotes ≤15 words, one per source: pass — 10 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — corroborated via multiple independent citations of the same Bloomberg report.
+**Notes:** Same 403-on-primary-but-independently-corroborated pattern already established as acceptable in this log (see the 2026-08-23 entry on OpenAI's billion-user milestone).
+
+### 2026-09-11 14:00 UTC — algomatic-dynamics-physical-ai-funding
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — The AI Insider's own reporting (byline Greg Bock).
+- Quotes ≤15 words, one per source: pass — 12 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Greg Bock, The AI Insider.
+**Notes:** None.
+
+### 2026-09-11 14:00 UTC — pentagon-fluidstack-5-billion-loan
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Reuters wire carrying WSJ's original reporting.
+- Quotes ≤15 words, one per source: n/a — a "talks" story with no on-record individual quote available; reported as still in negotiation, not a finalized deal.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — wire byline confirmed identical across independent syndications.
+**Notes:** None.
+
+### 2026-09-11 14:00 UTC — adobe-q3-fy2026-earnings-ai-arr
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Adobe's own SEC 8-K earnings-release exhibit, direct-fetched.
+- Quotes ≤15 words, one per source: pass — 9 words (interim CFO Steve Day).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official SEC filing, primary source.
+**Notes:** None.
+
+### Dropped as duplicates during consolidation (not logged individually above, noted here for the record)
+Three candidates from this run's research passes turned out to duplicate stories already published in earlier batches and were not drafted: a second OpenAI Agents API writeup (already covered as `openai-agents-api-public-beta`), a second Positron AI funding writeup (already covered as `positron-ai-875-million-series-c`), and a second Qualcomm/Amazon chip-deal writeup (already covered as `qualcomm-amazon-ai-chip-deal`) — all three were independently re-surfaced by different research passes searching the same news cycle, a useful cross-check that the underlying stories are genuinely significant, not a sign anything was missed.

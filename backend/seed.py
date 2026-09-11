@@ -8,6 +8,7 @@ seed) so repeat runs produce the same numbers.
     python seed.py
 """
 
+import contextlib
 import random
 from datetime import timedelta
 
@@ -16,6 +17,7 @@ from app.database import Base, SessionLocal, engine
 from app.models import Identity, IdentityMapping, Organization, Team
 from app.periods import current_period, recent_periods
 from app.services import ingest, scoring
+from app.services.ingest import UnresolvedIdentityError
 
 random.seed(42)
 
@@ -180,6 +182,24 @@ for name, (ident, profile) in identities.items():
                 signal_type=signal_type,
                 occurred_at=random_day_this_period(),
                 severity=jitter_severity(base_severity),
+            )
+
+# A couple of unprovisioned personal-account keys (§5.5, "shadow AI"): someone
+# on the team is paying for their own AI tool with no SCIM mapping, so it's
+# real spend the dashboard can't attribute to anyone. Demonstrates
+# GET /admin/shadow-ai-candidates and the measured (not flat-rate-estimated)
+# "Shadow-AI consolidated" line on /api/overview out of the box.
+for external_id, n_events in (("personal_key_7f2a", 4), ("personal_key_c091", 2)):
+    for _ in range(n_events):
+        with contextlib.suppress(UnresolvedIdentityError):
+            ingest.ingest_usage_event(
+                db,
+                org.id,
+                source_system="anthropic_api",
+                external_id=external_id,
+                tool="anthropic_api",
+                cost_usd=round(random.uniform(15, 60), 2),
+                occurred_at=random_day_this_period(),
             )
 
 # score the current period, plus a lighter-weight backfill of preceding months below

@@ -12,9 +12,41 @@ import { readdirSync, readFileSync } from "node:fs";
 import matter from "gray-matter";
 import { Marked } from "marked";
 import { gfmHeadingId, getHeadingList } from "marked-gfm-heading-id";
+import sanitizeHtml from "sanitize-html";
 
 const marked = new Marked();
 marked.use(gfmHeadingId());
+
+// marked renders inline HTML in the markdown source verbatim -- it has no
+// "escape everything" mode (that option was removed upstream years ago),
+// so a `<script>`/`onerror=`/etc. fragment inside a .md file's body would
+// otherwise reach the browser unescaped via the dangerouslySetInnerHTML
+// calls in GuidePage/Glossary/ModelEntry/NewsArticle. That matters most for
+// /news: those entries are drafted and merged by an unattended pipeline
+// with no human review gate (see merit-ai-team/docs/merit-news-goal.md),
+// so "content this team authored" isn't a safety guarantee for that folder
+// the way it is for hand-written guides. Sanitizing every entry type here,
+// not just news, keeps this one function the single place that guarantee
+// actually holds, rather than something the next new entry type has to
+// remember to opt into. Allowlist matches exactly what marked + the
+// .card-wrapping below actually produce -- nothing from raw markdown HTML
+// survives that isn't already in this list.
+const SANITIZE_OPTIONS = {
+  allowedTags: [
+    "h1", "h2", "h3", "h4", "h5", "h6",
+    "p", "a", "strong", "em", "code", "pre", "div", "span",
+    "ul", "ol", "li", "blockquote", "hr", "br",
+    "table", "thead", "tbody", "tr", "th", "td", "img",
+  ],
+  allowedAttributes: {
+    "*": ["id"],
+    a: ["href", "title"],
+    img: ["src", "alt", "title"],
+    code: ["class"], // marked's language-xxx class on fenced code blocks
+    div: ["class"], // the .card wrapper added below
+  },
+  allowedSchemes: ["http", "https", "mailto"],
+};
 
 // `dir` is an absolute path to a src/content/entries/<type>/ folder.
 export function loadEntries(dir) {
@@ -24,7 +56,11 @@ export function loadEntries(dir) {
       const raw = readFileSync(`${dir}/${filename}`, "utf8");
       const { data, content } = matter(raw);
       // Match Code.jsx's visual: every fenced code block sits inside a `.card`.
-      const html = marked.parse(content).replace(/<pre>/g, '<div class="card"><pre>').replace(/<\/pre>/g, "</pre></div>");
+      const rendered = marked
+        .parse(content)
+        .replace(/<pre>/g, '<div class="card"><pre>')
+        .replace(/<\/pre>/g, "</pre></div>");
+      const html = sanitizeHtml(rendered, SANITIZE_OPTIONS);
       const headings = getHeadingList();
       return { slug: filename.replace(/\.md$/, ""), ...data, html, headings };
     });

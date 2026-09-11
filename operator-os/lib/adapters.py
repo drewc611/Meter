@@ -322,6 +322,11 @@ def record_import(adapter, external_id, entity, row_id, amount="",
             status, "/".join(STATUSES)))
     rows = imports_ledger()
     ext = str(external_id or "").strip()
+    # summary is a "why" string built by an adapter, and every adapter puts
+    # untrusted description/payee/sender text from the source file at the
+    # front of it -- unlike D.put()'s rows, this ledger is written straight
+    # via _save_ledger, not through D.save()'s free_text handling, so it
+    # needs its own formula-injection guard before a spreadsheet ever opens it.
     entry = {
         "id": "",
         "adapter": adapter,
@@ -330,7 +335,7 @@ def record_import(adapter, external_id, entity, row_id, amount="",
         "row_id": row_id or "",
         "imported_on": D.iso(when or D.today()),
         "amount": amount or "",
-        "summary": (summary or "").replace("\n", " ")[:120],
+        "summary": D.csv_safe((summary or "").replace("\n", " ")[:120]),
         "status": status,
     }
     for r in rows:

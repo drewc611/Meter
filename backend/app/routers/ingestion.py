@@ -1,7 +1,9 @@
 """The three ingestion endpoints — spend, outcomes, quality signals.
 
 All three return 422 if the external id has no IdentityMapping yet: an unmapped
-id is a shadow-AI candidate (§5.5 of the spec), not a silently dropped event.
+id is a shadow-AI candidate (§5.5 of the spec), not a silently dropped event --
+services.ingest.resolve_identity records it as an UnmappedIdentityEvent before
+the 422, so it surfaces at GET /admin/shadow-ai-candidates.
 """
 
 from collections.abc import Callable
