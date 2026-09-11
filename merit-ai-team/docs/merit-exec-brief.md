@@ -5,6 +5,93 @@ never blended. Append each week's brief as a new dated section.
 
 ## Log
 
+### 2026-09-11 — third brief, daily cadence starts
+
+**Design-partner goal.** Off. 0 real tenants, 111 days left. Two more PRs
+landed since the last brief (#104: skills library + shadow-AI detection +
+55 news articles; #105: ten-fix security audit) — real work, still neither
+touched ingestion, a real tenant, or anything on the path to a design
+partner. Third straight check with zero targeted work on the actual
+headline goal, and last week's specific recommendation to fix that
+("assign one concrete lever, worked every week") wasn't acted on.
+
+**Content/challenge goal.** Off. Real measure still 0. 40 days left (was
+43). Same blocker, fifth time named: `PAID_TRACK_PAYMENT_LINK` is still a
+placeholder. `/skills`, the biggest content asset this arm has shipped, has
+its own gap now too — see below.
+
+**News goal.** On track. 110 articles live (up from 49 — more than
+doubled), and the rejection discipline held at that scale: 16 of 125
+Judge-tier verdicts were rejections (was 6/54), independently re-verified
+by `merit-eng-review` reading actual rejected entries, not just the
+aggregate. Corrections trail: still zero non-empty `corrections` fields
+across all 110 articles, fourth consecutive check the append-path has
+never actually run. 53 days left.
+
+**The three things.**
+
+1. **The design-partner goal is now going stale by pattern, not
+   incident.** Two consecutive briefs have named this and recommended the
+   same fix — assign it explicit weekly work — and two consecutive weeks
+   nothing changed, because both landed PRs were, correctly, aimed at other
+   arms. At 111 days left, doing the same thing a third time and expecting
+   a different number is the actual risk here, not the individual PRs.
+2. **Shadow-AI's cost figure can inflate itself under retry, and it feeds
+   the headline pitch number.** `merit-eng-review` found a retried
+   `/ingest/usage` call against a still-unmapped identity writes a fresh
+   `UnmappedIdentityEvent` row every time — no dedup. `known_cost_usd`
+   feeds `get_shadow_ai_observed_cost()`, which is the one *measured*
+   (not heuristic) input to `get_overview()`'s "recover 24%" figure. Not
+   live yet — no real tenant retries against this endpoint today — but it
+   needs a decision before the design-partner goal above ever produces one.
+   Same root cause as the carried-over ingestion-idempotency finding from
+   2026-09-08, now confirmed to extend to the new table too.
+3. **`/skills` — 22 pages, a real installable artifact per role, live
+   since today — has no path back to the product.** `merit-growth` found
+   `SkillsDirectory.jsx` has zero copy explaining why an AI spend tracker
+   built this and no link to `/app` or `/methodology`. This is this week's
+   cheapest real fix: copy-only, no client JS, no sign-off needed beyond a
+   go-ahead, and it's the difference between `/skills` being a free-utility
+   dead end and it actually feeding either of the other two goals.
+
+**Decisions owed.**
+
+- **Create the Stripe Payment Link.** Fifth time flagged. Still two
+  minutes, still the only thing blocking the content goal's real measure.
+  Recommend: today.
+- **Assign the design-partner goal explicit weekly work.** Second time
+  flagged with no action taken. Recommend: pick one lever now — a named
+  prospect list with outreach sent this week, or one real ingestion path
+  built and demoed to one named company — and put someone (or one session)
+  on it specifically, not as leftover capacity.
+- **Pick the ingestion idempotency key's shape.** Unchanged from last
+  week's options: client-supplied `event_id` (recommended — survives a
+  retry with slightly different field values) vs. a derived natural key.
+  Now touches both the original three event tables and
+  `UnmappedIdentityEvent`.
+- **Greenlight the `/skills` copy fix.** A short section explaining the
+  product connection plus a link to `/app`/`/methodology` — cheapest item
+  on this brief, recommend doing it this week alongside the Stripe link.
+- **Add a `permissions:` block to `operator-os-desktop.yml`.** The one
+  workflow PR #105's least-privilege pass missed; it creates GitHub
+  releases (`releaseDraft: true`) and is currently running on whatever the
+  org's default `GITHUB_TOKEN` scope is. Recommend: scope it to
+  `contents: write` explicitly, matching every other workflow's pattern.
+- **Confirm `MERIT_JWT_SECRET` is actually strong on Fly.** Still
+  unconfirmed, still cheap (`fly secrets list -a meter`), carried from last
+  brief unchanged.
+
+**Dropped.** The challenge day-tracker checklist greenlight from last
+brief — still not built, still not decided either way; naming it here
+rather than letting a second brief pass silently over an un-acted
+recommendation. Nothing new was deliberately declined this run: today's
+sessions were infra-check, eng-review, and growth-check against two
+already-merged PRs, not new build work, so there was no build backlog to
+triage against. The competitive scan was again one pass, not a dedicated
+sweep — Braintrust noted as a new content-SEO competitor on LLM-cost-
+attribution terms, category-naming decision now three runs open with no
+founder input yet.
+
 ### 2026-09-08 — second brief, first full team run (infra + eng + growth in one pass)
 
 **Design-partner goal.** Off. 0 real tenants, 114 days left, unchanged since

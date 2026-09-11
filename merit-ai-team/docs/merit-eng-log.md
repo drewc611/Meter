@@ -5,6 +5,115 @@ defects, their location, and their fix. Append, don't overwrite.
 
 ## Log
 
+### 2026-09-11 — repo mode
+
+Second-look review of the two PRs merged since last run: #104 (22-role skills
+library + shadow-AI detection + 55 news articles) and #105 (ten-fix security
+audit). 184 backend tests pass (up from 149), ruff clean.
+
+**Confirmed**
+| Finding | Severity | Where |
+| --- | --- | --- |
+| `operator-os-desktop.yml` has no `permissions:` block — the one workflow PR #105 missed. It's also the one that most needs a scoped grant: it runs `tauri-apps/tauri-action@v0` with `GITHUB_TOKEN` and `releaseDraft: true`, i.e. it creates GitHub releases, which needs `contents: write`. Every other workflow in `.github/workflows/` (`ci.yml`, `codeql.yml`, `dependency-audit.yml`, `github-sync.yml`, `nightly-recompute.yml`, `backup-verification.yml`, etc.) has an explicit `permissions:` block, several literally `permissions: {}` with a comment explaining why. This one silently inherits whatever the repo/org sets as the default `GITHUB_TOKEN` permission. If that default is the classic "read and write," this token has broader scope than every other workflow's explicit grant, contradicting the PR's own "least-privilege GITHUB_TOKEN on all workflows" description. If the org default is instead read-only, this workflow's release step (`releaseDraft: true`) will fail on next run — a functional bug hiding behind the same gap. Either reading, it's not "all workflows." | Medium | `.github/workflows/operator-os-desktop.yml` (no `permissions:` key at all; contrast every other file under `.github/workflows/`) |
+| A retried failed ingest call against an already-known-unmapped identity writes a fresh `UnmappedIdentityEvent` row every time, with no dedup — this is the same missing-idempotency-key gap flagged last run (`backend/app/models.py:97-149`), now extended to the new shadow-AI table. Concretely: a billing proxy that retries on non-2xx (422 counts) for a not-yet-provisioned API key inflates `attempt_count` in `GET /admin/shadow-ai-candidates`, and — more consequentially — inflates `known_cost_usd`/`get_shadow_ai_observed_cost()`, which feeds directly into `get_overview()`'s headline `recoverable_annual_usd` figure (the "recover 24%" pitch number). A shadow-AI estimate that's supposed to be the one *measured* (not heuristic) component of that number can overstate itself the more aggressively an integration retries. | Medium | `backend/app/services/ingest.py:58-73` (`resolve_identity`); consumed by `backend/app/services/analytics.py:461-474` (`get_shadow_ai_observed_cost`) and `backend/app/services/analytics.py:193-195` (`get_overview`'s `shadow_ai_recoverable`) |
+
+Everything else checked out as claimed, verified by reading the code rather
+than trusting either PR's description:
+
+- **Shadow-AI org scoping is airtight.** `UnmappedIdentityEvent` recording in
+  `resolve_identity` uses the same `org_id` resolution every other ingest
+  path already uses (`dependencies.require_api_key`); `GET
+  /admin/shadow-ai-candidates` derives its `org_id` from the logged-in
+  admin's own token via `resolve_org_id`, never a query param, and the whole
+  `/admin/*` router is gated by `require_admin` at the router level
+  (`main.py:121`) — the endpoint itself has no gate of its own, which looked
+  like a gap on first read of `routers/admin.py` until checking `main.py`.
+  `tests/test_multi_tenant_isolation.py::test_shadow_ai_candidates_stay_within_their_own_org`
+  exercises this directly (org B never sees org A's unmapped attempts) —
+  not just plausible from reading the code, actually tested.
+- **STARTTLS cert verification is real.** `services/email.py`'s
+  `_tls_context()` calls `ssl.create_default_context()` (`CERT_REQUIRED` +
+  hostname checking on by default), replacing the prior default context
+  `starttls()` builds on its own, which is `CERT_NONE`. The docstring's
+  claimed vulnerability (anyone answering for `MERIT_SMTP_HOST` reads the
+  session and the SMTP AUTH credentials) is the real behavior of the old
+  code, and the fix closes it.
+- **OAuth CSRF nonce is real, not decorative.** `new_oauth_state` mints the
+  nonce, `google_login` sets it `httponly=True`, `secure=` (conditional on
+  the redirect URI's scheme), `samesite="lax"`, scoped to `/auth`;
+  `read_oauth_state` compares it against the returned `state` with
+  `secrets.compare_digest` (constant-time) and raises on any mismatch;
+  `_clear_state_cookie` expires it on both the success and failure path so a
+  captured `state` can't be replayed. The session JWT itself now rides in
+  the redirect's URL fragment (`/app#token=...`), confirmed read out of
+  `location.hash` (not `location.search`) in
+  `frontend/src/context/AppDataContext.jsx:78`, and wiped from the address
+  bar immediately after.
+- **Rate limiting is real and correctly scoped.** `services/ratelimit.py`'s
+  fixed-window-per-caller limiter is wired via `dependencies=[...]` on
+  `/auth/login` (10/5min), `/auth/signup` (10/hr), and — per
+  `routers/waitlist.py` — `/waitlist`; keyed on `Fly-Client-IP` specifically
+  (not general `X-Forwarded-For`, which a client can spoof).
+- **`check_startup_environment()` genuinely blocks.** A weak/missing
+  `MERIT_JWT_SECRET` or `MERIT_CORS_ORIGINS` left as `*` raises
+  `RuntimeError` when `FLY_APP_NAME` or `MERIT_ENV=production` is set, warns
+  only otherwise — confirmed by reading `main.py:36-90`, matching the PR
+  description exactly.
+- **CSP hashing is sound.** `build-csp.mjs` hashes inline `<script>` bodies
+  verbatim (no trim/normalize) from the actual built `dist/` HTML, replaces
+  rather than appends on a re-run (avoiding the browser's CSP-intersection
+  footgun on duplicate headers), and ties the block to Cloudflare's `_headers`
+  `/*` path — matches `CLAUDE.md`'s own warning that hand-maintained hashes
+  would silently start blocking a page.
+
+**Autonomous news pipeline (§6 checklist, re-checked against current state)**
+- `corrections` support is structural, not a special case: `loadEntries.js`
+  spreads gray-matter's full parsed frontmatter (`...data`) onto every
+  entry with no field allowlist, so any `corrections:` array in a `.md`
+  file's frontmatter reaches `NewsArticle.jsx` automatically. Render logic
+  unchanged and still correct: visible, unconditional, not behind a click
+  (`NewsArticle.jsx:20-33`).
+- Still never exercised. 110 news entries now on disk (55 + the 55 PR #104
+  added) — zero (`0`) carry a `corrections` field. The render path and the
+  frontmatter plumbing are both provably correct by inspection; the
+  publish-time *append* path (something that actually edits a live `.md`
+  file to add a correction after the fact) has no code or automation
+  artifact in this repo to point to at all — same gap as last run, now
+  against double the article count with the same zero real exercises.
+- Judge pass keeps rejecting things, at a similar rate: **16 rejected / 125
+  total verdicts** in `merit-news-judge-log.md` (was 6/54 last run) — real
+  reasons each time (unconfirmed byline, stale/out-of-recency-window story,
+  primary source unconfirmable, rumor not yet on the record), not a rubber
+  stamp. Confirmed by reading actual rejected entries, not the aggregate
+  count alone.
+- No static publish credential for `/news` found this run either — grepped
+  `.github/workflows/` for anything news-related and found nothing, same as
+  last run's finding by absence. Still inferred, not independently
+  confirmed against the actual session/trigger config, which this review
+  has no visibility into.
+
+**Carried over**
+| Finding | Age |
+| --- | --- |
+| No idempotency key on `/ingest/usage`/`/ingest/outcome`/`/ingest/quality-signal` — retried delivery double-counts spend/outcome/quality | since 2026-09-01 (first logged 2026-09-08) |
+| `cost_usd`/`spend_usd`/`value_per_dollar`/`slop_risk` all `Float`, not `Decimal`/cents-as-integer | since 2026-09-08 |
+| `starlette` not pinned explicitly (not currently exploitable — `fastapi>=0.141.1` still resolves past the CVE-2026-48710 floor) | since 2026-09-08 |
+| News pipeline correction-append path exists only as a rendering/schema capability, never actually run end-to-end | since 2026-08-22 |
+
+**Closed since last run**
+- Nothing from the prior "Carried over" list closes this run — all three
+  (no CSP, no `/auth/signup`/`/waitlist` rate limiting, OAuth token in query
+  string) were exactly what PR #105 shipped and are now verified fixed
+  above, so they move out of Carried over rather than being listed as
+  newly-found.
+
+**Goal:** Ten design partners by 2026-12-31 · 111 days left · none of this
+run's findings block that goal directly — the shadow-AI retry-inflation
+finding matters most once real integrations are actually retrying against
+this endpoint, which hasn't happened with real (non-demo) tenant data yet;
+the `operator-os-desktop.yml` permissions gap is Operator OS release
+tooling, not the Merit AC product surface the design-partner goal tracks.
+
 ### 2026-09-08 — repo mode
 
 **Confirmed**

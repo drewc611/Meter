@@ -172,6 +172,19 @@ average the two into a single status.
   happens — this is now the fourth time this exact blocker has been named
   across `merit-exec-brief.md`'s 2026-09-04 entry and every log since.
 
+### 2026-09-11 — daily score: off
+- **Off**, same reason as every prior check: the real measure (signups ×
+  paid-conversion) is 0 because `PAID_TRACK_PAYMENT_LINK` in
+  `frontend/src/content/data/paidTrack.js` is still a placeholder — confirmed
+  again this run by `merit-growth`. 40 days left on the 60-day clock (was 43
+  on 2026-09-08). No content-volume work moved this goal's actual measure
+  today either: PR #104 shipped a 22-role skills library and 55 news
+  articles, real and sourced, but none of it is the two-minute Stripe step
+  that unblocks this goal — now the fifth consecutive check naming the same
+  blocker. `merit-growth` also found `/skills` (PR #104's new content type)
+  has no copy linking back to `/app` or `/methodology`, which is this goal's
+  arm, not the design-partner goal's — flagged for a follow-up fix.
+
 ### 2026-09-05 — site interactivity assigned to growth
 - The founder asked directly for the site to be "more interactive." No
   feature was specified — that's growth's job to propose, not guess at.

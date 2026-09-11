@@ -6,6 +6,108 @@ long as it's consistent; don't rewrite prior entries.
 
 ## Log
 
+### 2026-09-11
+
+**Status:** frontend 200 (0.56s) · api /healthz 200 (0.58s) · TLS cert live
+(same caveat as every prior run: this session's egress proxy re-terminates
+TLS, so the observed chain is the proxy's, not usemeritai.com's own).
+
+**Changed since last run (2026-09-08)** — verifying PR #104 (22-role skills
+library, shadow-AI detection, 55 news articles, sitemap generator) and PR
+#105 (security audit, ten fixes), both merged to `main` today.
+
+- **CSP is live and matches the PR #105 description.** `curl -sSI
+  https://usemeritai.com` now returns a real `content-security-policy`
+  header: `script-src 'self'` plus four `sha256-` hashes, no
+  `'unsafe-inline'` on scripts (`style-src` still carries `'unsafe-inline'`,
+  which is expected/unflagged — that's inline `style=""` attributes, not
+  the inline-script risk the audit targeted). This closes the standing
+  "CSP still absent" item that's been open since 2026-08-15.
+- **`/admin/shadow-ai-candidates` cannot be confirmed live via
+  `/openapi.json`** — that endpoint is still correctly 404 (`MERIT_DISABLE_API_DOCS`
+  holding, same as every prior run), which is the intended behavior, not a
+  regression. Per the hard rule, did not probe `/admin/*` directly to check.
+  Confirmed instead by reading the merged code: `UnmappedIdentityEvent` in
+  `backend/app/models.py:169` and `GET /admin/shadow-ai-candidates` in
+  `backend/app/routers/admin.py:93-109` are both present on `main` (commit
+  `a598130`). FastAPI derives the schema from these route decorators
+  automatically, so the endpoint will be part of the live (hidden) schema —
+  there's no live surface to diff against `api-surface.md` this week since
+  the doc endpoint is intentionally dark, same tradeoff as last week.
+- **`/skills` and the new `/news` articles return real prerendered content,
+  not 404s or empty SPA shells.** `/skills` → 200, 10,901 bytes, correct
+  `<title>AI Skills Library — Merit AC</title>` and full nav. Spot-checked
+  three new article URLs pulled from `/news/` — all 200 with correct,
+  distinct `<title>` tags and real body content (5.3–6.1 KB each).
+- **`sitemap.xml` grew from 134 to 258 URLs** (111 `/news/` entries, 23
+  `/skills` entries) — the generator fix from last week's run is holding
+  and picked up both new content sets automatically, no manual sitemap edit
+  needed for either PR.
+- **Frontend bundle shipped a new deploy, size essentially flat.**
+  `/app`'s JS hash changed (`app-CBXmwqid.js` → `app-BGU6PEpS.js`,
+  243,479 → 243,517 bytes, +0.02%) confirming a deploy went out; CSS hash
+  unchanged (`app-BLGyitf4.css`, 22,408 bytes). No bundle growth concern.
+- **Rate limiting, OAuth CSRF nonce, and SMTP STARTTLS cert verification
+  (PR #105's other three fixes) confirmed present in code, not live-tested**
+  — deliberately: probing `/auth/login`/`/auth/signup`/`/waitlist` to
+  trigger the limiter would itself be an auth attempt / a touch on
+  `/waitlist`, both against this skill's hard rule. Verified instead by
+  reading `backend/app/services/ratelimit.py` (fixed-window, per-`Fly-Client-IP`,
+  covers exactly those three endpoints), `backend/app/services/auth.py`
+  (`new_oauth_state`/`read_oauth_state`, constant-time nonce comparison),
+  and `backend/app/services/email.py` (`smtp.starttls(context=_tls_context())`,
+  no `CERT_NONE` fallback). All match the PR description.
+- **Boot-time refusal on weak `MERIT_JWT_SECRET` / wide-open CORS confirmed
+  in code** (`backend/app/main.py`'s `check_startup_environment`) — not
+  independently testable live without redeploying with a bad config, which
+  is out of scope for this check; the site being up at all is consistent
+  with it passing on the current config.
+- **All GitHub workflows now declare a `permissions:` block** (most
+  `permissions: {}`, service workflows scoped narrower than default) —
+  matches PR #105's least-privilege `GITHUB_TOKEN` claim.
+- **DNS unchanged**: still no MX or TXT at the apex (DoH query, no Answer
+  section). SPF/DMARC gap from 2026-08-15 still open.
+- **`starlette` still not explicitly pinned** in `backend/requirements.txt`
+  — flagged as new last week, untouched by either PR. Still resolves to
+  `1.6.0` (well past the BadHost-patched floor `1.0.1`) via `fastapi>=0.141.1`,
+  so still not exposed, just still undefensive.
+- **Advisory watch: nothing new since 2026-09-08.** Re-searched FastAPI/
+  Starlette/Uvicorn/Pydantic and Vite/React/Fly.io advisories — the same
+  set from last week (BadHost, the Vite dev-server file-read CVEs, the RSC
+  advisory) with no new disclosures, and none of the "new" search hits
+  postdate last week's check.
+- **New this run: neither `Strict-Transport-Security` nor
+  `Permissions-Policy` are present** on the frontend response. Not
+  previously called out by name in the log (prior entries tracked CSP +
+  the three headers fixed in PR #87), but the skill's header checklist
+  includes both — worth closing now that CSP is done, same PR effort
+  pattern as the last three.
+
+**Open**
+| Issue | Severity | Age |
+| --- | --- | --- |
+| No SPF/DMARC/MX on usemeritai.com apex | Medium | since 2026-08-15 |
+| No `Strict-Transport-Security` or `Permissions-Policy` header | Medium | new this run |
+| Single API region (`ord`), backup posture undocumented | Low | since 2026-08-15 |
+| `starlette` not explicitly pinned in requirements.txt | Low | since 2026-09-08 |
+
+**Cost/capacity:** single-region `ord` Fly deployment, unchanged. Both
+`/healthz` probes this run landed at 0.56–0.58s with no cold-start gap
+between them (not a clean idle-to-warm comparison, but nothing suggests
+new pressure). No billing source connected to this session — not
+estimating.
+
+**This week's one thing:** both PRs shipped clean — CSP is the standout
+fix (closes a Medium open since day one), and the sitemap generator from
+last week proved itself by absorbing 55 news articles and a skills library
+with zero manual sitemap work. The next gap worth closing is HSTS +
+Permissions-Policy, now that CSP is off the list.
+
+**Goal:** Ten design partners by 2026-12-31 · 111 days left · CSP landing
+and the skills library both strengthen the site's credibility with a
+security-conscious buyer, but neither moves the design-partner count
+directly — on track, no change in trajectory this run.
+
 ### 2026-09-08
 
 **Status:** frontend 200 (0.49s) · api /healthz 200 (0.53s) · TLS cert live and

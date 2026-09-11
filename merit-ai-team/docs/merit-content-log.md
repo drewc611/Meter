@@ -6,6 +6,52 @@ for the content goal's progress count — never estimate it from memory.
 
 ## Log
 
+### 2026-09-11
+
+**Published this run:** none authored this run — catching up the log for
+PR #104 (merged 2026-09-11), a new content type this arm hasn't logged
+before:
+
+- `/skills` — a 22-role AI skills library, one entry per role
+  (`frontend/src/content/entries/skills/*.md`: backend/frontend/full-stack/
+  mobile/ML-AI/cloud-platform/devops-SRE engineer, security engineer,
+  QA/test engineer, data engineer, data analyst/BI, product manager,
+  product designer/UX, technical program manager, engineering manager,
+  CTO, CEO/founder, growth marketing manager, content marketing manager,
+  brand marketing lead, customer success/solutions engineer, technical
+  writer). Each role ships three real installable artifacts under
+  `frontend/public/skills/<role>/` — a Claude Skill, a GitHub Copilot chat
+  mode, a ChatGPT Custom GPT config — not prompt text, files built to each
+  platform's actual spec. Verified linked from top nav and the homepage,
+  and covered by the sitemap automatically (see `merit-growth-log.md`'s
+  2026-09-11 entry for the full evaluation).
+- `skills-marketplace/` — a companion Claude Code plugin marketplace,
+  generated from the same `SKILL.md` files (`node
+  scripts/build_marketplace.mjs`, not hand-edited), installable via
+  `/plugin marketplace add drewc611/Meter --path skills-marketplace`.
+- News: 55 more articles across three batches this session (Sept 2-11),
+  bringing the section to 110 live — file count verified directly against
+  the claim.
+
+**Drafted, awaiting deploy:** a Show HN-style launch post for `/skills` +
+the marketplace, written out in full in `merit-growth-log.md`'s 2026-09-11
+entry — not yet posted, needs the founder's go-ahead.
+
+**Stack coverage so far:** unchanged from 2026-09-08 (react/python/node/
+tensorflow-pyro all covered) — this run's additions are a new content type
+(`/skills`) and more `/news`, not stack-tagged prompts.
+
+**Gap found, not yet fixed:** `SkillsDirectory.jsx` has no copy tying the
+library back to Merit AC's actual product and no link to `/app` or
+`/methodology` — a real visitor-facing hole in the hub-for-AI story, not
+just a missing nice-to-have. Recommended fix (copy-only, no client JS) is
+in the growth log; not applied this run since it wasn't this run's call to
+make unprompted.
+
+**Goal:** 30-day challenge run with paid conversions · 40 days left · a
+genuinely new content type shipped, real measure still zero (Payment Link
+still not created — see `merit-growth-log.md` and `merit-exec-brief.md`).
+
 ### 2026-08-21
 
 **Shipped this run:**

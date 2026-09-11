@@ -40,3 +40,15 @@ act on it.
   check where the headline goal had zero attention while other arms moved.
   Recommend: this goal needs its own explicit weekly action, not "whatever
   falls out of other work," or it will still read 0/10 in December.
+
+### 2026-09-11 — daily score: off
+- **Off.** 111 days left, measure still 0 real tenants. Two more PRs landed
+  since the last check (#104: shadow-AI detection + skills library + 55 news
+  articles; #105: ten-fix security audit), both real and both still not
+  ingestion, a real tenant, or anything on the direct path to a design
+  partner. `merit-eng-review`'s 2026-09-11 pass flagged that the shadow-AI
+  retry-idempotency gap will matter for this goal once a real (non-demo)
+  tenant actually starts retrying failed ingest calls — not yet, since no
+  real tenant exists. The recommendation from 2026-09-08 stands unaddressed:
+  this goal needs its own explicit weekly action, not incidental output from
+  other arms.

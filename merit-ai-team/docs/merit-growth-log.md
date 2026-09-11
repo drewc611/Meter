@@ -5,6 +5,125 @@ entries, append-only.
 
 ## Log
 
+### 2026-09-11
+
+**Shipped since last run (2026-09-08):** Two PRs, one of them the biggest
+unplanned launch this arm has seen:
+
+- **PR #104 — the `/skills` library.** 22 role-specific entries
+  (`frontend/src/content/entries/skills/*.md`), engineering through
+  leadership/ops, each shipping three real installable artifacts per role
+  (Claude Skill, GitHub Copilot chat mode, ChatGPT Custom GPT config) under
+  `frontend/public/skills/<role>/`, plus a companion Claude Code plugin
+  marketplace at `skills-marketplace/` (`/plugin marketplace add
+  drewc611/Meter --path skills-marketplace`). Same PR also landed 55 more
+  `/news` articles across three batches (Sept 2-11).
+- **PR #105 — security audit, ten fixes.** Mostly outside this arm's remit,
+  but two items touch growth directly: `/waitlist` now rate-limited (20
+  joins/hour per IP, keyed on `Fly-Client-IP`) — irrelevant at current
+  traffic but worth remembering before any real launch-day spike; and a
+  real tenant-boundary bug fix (a company-plan signup could land inside an
+  individual's personal org if that org happened to be the oldest row) —
+  relevant because it's exactly the kind of bug a first design partner's
+  signup would have hit.
+
+**`/skills` evaluation (this run's primary job):**
+
+- **Not orphaned.** Verified directly — it's in the top nav
+  (`ContentLayout.jsx`: `{ key: "skills", href: "/skills", label: "Skills" }`)
+  and on the homepage (`Home.jsx`: "Skills library — A real Claude Skill,
+  Copilot chat mode, and ChatGPT GPT for every role"). Sitemap coverage is
+  automatic per the 2026-09-08 fix — every prerendered page, `/skills` and
+  all 22 `/skills/<role>` pages included, is in `sitemap.xml` by
+  construction (`prerender-content.mjs`), so this isn't a repeat of the
+  "invisible to crawlers" problem.
+- **Fits the hub-for-AI repositioning structurally**, but the page itself
+  doesn't say why Merit AC — an AI spend/value tracker — built it.
+  `SkillsDirectory.jsx` is a clean, honest reference page (install
+  instructions, no fabricated capabilities) but has zero copy connecting it
+  to the product and zero link back to `/app` or `/methodology`. A visitor
+  who lands here via search has no reason to learn Merit AC also does spend
+  tracking. That's a real gap, not a nice-to-have — the whole point of the
+  hub strategy is that free utility content earns the visit and the product
+  earns the conversion; right now `/skills` only does the first half.
+- **Concrete SEO/distribution angle: a developer-community launch post.**
+  This is exactly the kind of asset (free, installable, dev-tool-adjacent,
+  no signup wall) that a Show HN / dev-Twitter post drives real traffic and
+  backlinks for, and the plugin marketplace specifically needs an
+  external-facing announcement to get discovered at all — nobody finds a
+  GitHub subfolder marketplace by search. Drafted below as this run's
+  deliverable.
+
+**Competitive scan (AI spend management / AI ROI / LLM cost attribution /
+FinOps-for-AI):** The category is still cost-visibility, not value
+attribution — Amnic's own "8 Best FinOps Tools for AI Cost Management"
+roundup names Amnic, Vantage, CloudZero, Finout, Pointfive, Cloudgov,
+Cloudchipr, and Apptio Cloudability; every one of them tracks token/GPU
+spend by team or workload, none does Merit AC's value-per-dollar +
+slop-risk + person-level framing. New this scan: Braintrust (an
+eval/observability company) is now publishing its own "how to track LLM
+costs" playbook content — not a product competitor yet, but a content-SEO
+one for the "LLM cost attribution" term specifically, worth knowing if
+that's the term the founder eventually picks. FinOps Foundation's "AI
+Value" topic area (flagged 09-08) is still there and still the strongest
+signal that the industry is drifting toward Merit AC's actual framing.
+Category-naming recommendation is now three runs old with nothing decided
+— repeating it because the gap between "the industry validates this
+framing" and "Merit AC owns the search term for it" is the whole risk.
+
+**Deliverable this run — Show HN-style launch post** for `/skills` + the
+plugin marketplace (not yet posted — needs the founder's go-ahead, this is
+copy, not a submission):
+
+> **Show HN: 22 real Claude Skills / Copilot chat modes / ChatGPT GPTs, one per job function**
+>
+> We build an AI spend and value tracker — the pitch is telling a company
+> whether its AI spend is producing real work or slop. Building that meant
+> writing a lot of role-specific AI tooling internally, so we turned it
+> into a public library: 22 roles, backend engineer through CEO, each
+> shipped as three actual installable artifacts — a Claude Skill
+> (`SKILL.md`), a GitHub Copilot custom chat mode, and a ChatGPT Custom GPT
+> config. Not prompt text to retype — files built to each platform's real
+> spec.
+>
+> Free at usemeritai.com/skills. If you use Claude Code there's also a
+> plugin marketplace, so you can install any of them directly:
+> `/plugin marketplace add drewc611/Meter --path skills-marketplace`
+>
+> Feedback on any one role's skill — what it gets wrong, what's missing —
+> is genuinely useful. These came out of our own team's workflows, not a
+> generic prompt-engineering pass, and we'll keep them current the same way
+> we keep the rest of the site honest: dated, checkable, nothing claimed
+> that isn't true yet.
+
+**Recommended next:** Get sign-off to post the launch draft above (HN plus
+wherever else makes sense), and add a short "why we built this" paragraph
+plus an `/app` and `/methodology` cross-link to `SkillsDirectory.jsx` —
+copy-only, doesn't touch `ContentLayout.jsx`'s no-client-JS contract, so it
+doesn't need the site-interactivity sign-off, just the founder's OK on the
+words. Category naming still needs a decision. The Stripe Payment Link is
+still the single blocker on the content goal's real measure, unchanged
+across four straight runs now.
+
+**News arm — verified against PR #104's claim:** 110 articles confirmed
+live (`frontend/src/content/entries/news/*.md` count matches the claimed
+total exactly). `merit-news-judge-log.md` verdicts across its full history:
+109 published, 16 rejected — the Judge pass is still saying no (up from 6
+rejected of 54 total as of 09-08), so the rubber-stamp concern stays
+resolved, not just assumed clean. Zero articles carry a non-empty
+`corrections` field — same standing watch item as 09-08, still can't tell
+"nothing's been wrong" from "the correction path has never been exercised."
+Not a regression, just still open.
+
+**Outreach status:** No waitlist volume available this session — same
+`/admin/*` restriction as every prior run. No named-company list this run;
+priority was the `/skills` evaluation per this run's brief.
+
+**Goal:** 30-day challenge run with paid conversions · 40 days left (of 60,
+from 2026-08-22) · content volume keeps growing (`/skills` is a genuinely
+new content type, not just more of the same), but the goal's real measure
+is still zero — unchanged, still entirely blocked on the Payment Link.
+
 ### 2026-09-08
 
 **Shipped since last run (2026-09-04):** A large amount landed without a
