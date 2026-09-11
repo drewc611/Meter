@@ -70,9 +70,13 @@ export function AppDataProvider({ children }) {
   useEffect(() => {
     if (redirectHandled.current) return;
     redirectHandled.current = true;
-    const params = new URLSearchParams(location.search);
-    const token = params.get("token");
-    const authError = params.get("auth_error");
+    // The session token comes back in the fragment, not the query string --
+    // a fragment is never sent to a server, so it can't end up in an access
+    // log or a Referer header on the way in. The error, which isn't secret,
+    // stays a query param. Both are wiped from the address bar immediately so
+    // neither survives into history.
+    const token = new URLSearchParams(location.hash.slice(1)).get("token");
+    const authError = new URLSearchParams(location.search).get("auth_error");
     if (token || authError) {
       if (token) {
         setStoredToken(token);

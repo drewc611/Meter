@@ -18,7 +18,7 @@ from fastapi.testclient import TestClient  # noqa: E402
 from app import models  # noqa: E402
 from app.database import Base, SessionLocal, engine  # noqa: E402
 from app.main import app  # noqa: E402
-from app.services import ingest  # noqa: E402
+from app.services import ingest, ratelimit  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
@@ -28,6 +28,15 @@ def fresh_schema():
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture(autouse=True)
+def fresh_rate_limits():
+    """The limiter's counters are module-level, so without this they carry
+    across tests and whichever test happened to run last starts failing. Left
+    *enabled* rather than switched off, so a test that trips a real limit says
+    so instead of passing quietly."""
+    ratelimit.reset()
 
 
 @pytest.fixture

@@ -75,9 +75,19 @@ context; SVG charts are plain JSX, not string-built.
 ```bash
 npm install
 npm run dev       # Vite dev server, http://localhost:5173
-npm run build     # production build -> dist/
+npm run build     # production build -> dist/ (client, SSR, prerender, CSP)
 npm run preview   # serve the dist/ build locally
 ```
+
+`npm run build` is four steps, and the last one matters for more than tidiness:
+after the client build, the SSR build and `scripts/prerender-content.mjs`,
+`scripts/build-csp.mjs` hashes every inline `<script>` in the built HTML and
+writes the Content-Security-Policy into `dist/_headers`. Don't hand-write a
+CSP into `public/_headers` — four pages carry an inline `<script>`, and
+hand-maintained hashes silently start blocking the page the first time one of
+those blocks is edited. Note that neither `npm run preview` nor the docker
+nginx image applies `_headers`; only Cloudflare (and `wrangler dev`) does, so
+a CSP change has to be verified against one of those.
 
 It tries `http://localhost:8000` first and falls back to
 `src/lib/fallbackData.js`'s embedded snapshot if the API is unreachable
@@ -188,7 +198,9 @@ which functions do what: [`backend/README.md`](backend/README.md#why-three-tiers
 ### Backend module map (`backend/app/`)
 
 ```
-main.py            FastAPI app factory (create_app) — mounts routers, CORS from config
+main.py            FastAPI app factory (create_app) — mounts routers, CORS from config;
+                   check_startup_environment() refuses to boot a production deployment
+                   with a missing/weak MERIT_JWT_SECRET or wide-open MERIT_CORS_ORIGINS
 config.py          infra settings (database URL, CORS origins) read from env
 constants.py       tunable business constants: weight tables + segment/recovery knobs
 time_utils.py      single naive-UTC clock (utcnow), used everywhere instead of datetime.utcnow()
@@ -206,7 +218,10 @@ services/
   forecasting.py   ML spend forecast (cross-validated ridge regression) behind /api/spend-forecast
   github_ingest.py whole-repo GitHub PR/CI sync, called by github_sync.py (repo root)
   auth.py          password hashing (bcrypt), JWT issue/verify (pyjwt), Google OAuth flow
-  email.py         plain-SMTP outbound mail (/admin/notify-waitlist)
+                   incl. the one-time state nonce the callback checks
+  email.py         plain-SMTP outbound mail (/admin/notify-waitlist), cert-verified STARTTLS
+  ratelimit.py     per-caller cap on the three unauthenticated endpoints (/auth/login,
+                   /auth/signup, /waitlist) — in-process, LRU-bounded; see SECURITY.md
 routers/
   ingestion.py     /ingest/*      admin.py    /admin/*
   dashboard.py     /api/*         auth.py     /auth/*

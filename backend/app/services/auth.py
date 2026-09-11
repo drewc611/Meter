@@ -12,7 +12,9 @@ first -- rotating the secret is the "log everyone out" lever if it's ever
 needed.
 """
 
+import logging
 import os
+import secrets
 import time
 from urllib.parse import urlencode
 
@@ -22,8 +24,20 @@ import jwt as pyjwt
 
 from .. import models
 
+logger = logging.getLogger(__name__)
+
 TOKEN_LIFETIME_SECONDS = 60 * 60 * 24 * 14  # 14 days
 _JWT_ALGORITHM = "HS256"
+
+# The OAuth round-trip's CSRF nonce: minted in /auth/google/login, parked in
+# this cookie, echoed back inside Google's `state`, and compared on the way
+# out. Ten minutes is generous for a consent screen and short enough that a
+# leaked nonce is worthless by the time anyone finds it.
+OAUTH_STATE_COOKIE = "merit_oauth_state"
+OAUTH_STATE_TTL_SECONDS = 600
+# `state` carries two things now, so it needs a separator that cannot occur in
+# the nonce (token_urlsafe is [A-Za-z0-9_-]) and does not need URL-escaping.
+_STATE_SEPARATOR = "."
 
 GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token"
@@ -82,15 +96,40 @@ def decode_token(token: str) -> dict:
     return pyjwt.decode(token, jwt_secret, algorithms=[_JWT_ALGORITHM])
 
 
+def new_oauth_state(invite: str | None) -> tuple[str, str]:
+    """Mint a fresh (nonce, state) pair for one Google round-trip. The nonce
+    goes in a cookie; `state` is what travels through Google and carries both
+    the nonce and the optional signup code."""
+    nonce = secrets.token_urlsafe(24)
+    return nonce, f"{nonce}{_STATE_SEPARATOR}{invite or ''}"
+
+
+def read_oauth_state(state: str, cookie_nonce: str | None) -> str | None:
+    """Verify a returning `state` against the nonce this browser was issued,
+    and return the signup code it carried (None if it carried none).
+
+    Without this check `state` was just an attacker-chosen string nobody
+    validated, which is login CSRF: a forged callback carrying the attacker's
+    own authorization code silently switches the victim's browser into the
+    attacker's account, and anything the victim then enters lands there.
+
+    compare_digest, not ==, so a wrong nonce doesn't leak its correct prefix
+    through response timing -- and compared as bytes, because `state` is a
+    query parameter anyone can set and compare_digest raises TypeError on a
+    non-ASCII str, which would escape the caller's handler as a 500. Same
+    reason routers/auth._check_signup_code encodes before comparing."""
+    nonce, _, invite = state.partition(_STATE_SEPARATOR)
+    if not cookie_nonce or not nonce:
+        raise AuthError("This sign-in link has expired or didn't start here -- try again")
+    if not secrets.compare_digest(nonce.encode("utf-8"), cookie_nonce.encode("utf-8")):
+        raise AuthError("This sign-in link has expired or didn't start here -- try again")
+    return invite or None
+
+
 def google_authorize_url(state: str) -> str:
     """The URL to send the browser to for Google's consent screen. `state`
-    round-trips through Google unmodified and is used by the callback (see
-    routers/auth.py) purely to carry an optional signup code through the
-    redirect -- it is NOT a CSRF nonce: nothing generates a per-request
-    value here or verifies one on the way back. Practical impact is low
-    (a forged callback logs the victim's browser into the attacker's own
-    Google account here, not an account takeover) but this is a known,
-    disclosed gap -- see SECURITY.md."""
+    round-trips through Google unmodified; build it with new_oauth_state()
+    and check it with read_oauth_state() on the way back."""
     client_id = os.environ.get("GOOGLE_CLIENT_ID")
     if not client_id:
         raise AuthError("GOOGLE_CLIENT_ID is not set -- Google sign-in isn't configured")
@@ -126,7 +165,12 @@ def google_exchange_code(code: str) -> dict:
         timeout=15,
     )
     if resp.status_code != 200:
-        raise AuthError(f"Google token exchange failed: {resp.text}")
+        # Google's body is echoed to the server log, not to the caller -- an
+        # AuthError here ends up in a redirect URL the browser shows, and the
+        # upstream body is both attacker-influenced (it quotes the submitted
+        # code) and none of the caller's business.
+        logger.warning("Google token exchange failed: %s %s", resp.status_code, resp.text)
+        raise AuthError("Google sign-in failed -- try again")
     id_token = resp.json().get("id_token")
     if not id_token:
         raise AuthError("Google didn't return an id_token")

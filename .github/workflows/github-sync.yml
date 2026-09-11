@@ -12,6 +12,11 @@ on:
     - cron: "0 */6 * * *" # every 6 hours
   workflow_dispatch: {}
 
+# Least privilege for the automatic GITHUB_TOKEN: with no permissions block a
+# job inherits the repository default, which can be read/write across the whole
+# repo. This job never calls the GitHub API.
+permissions: {}
+
 jobs:
   sync:
     runs-on: ubuntu-latest

@@ -64,5 +64,31 @@ def test_weak_jwt_secret_refuses_to_boot_with_explicit_merit_env(monkeypatch):
 
 def test_strong_jwt_secret_boots_fine_on_fly(monkeypatch):
     monkeypatch.setenv("MERIT_JWT_SECRET", "x" * 48)
+    monkeypatch.setenv("MERIT_CORS_ORIGINS", "https://usemeritai.com")
     monkeypatch.setenv("FLY_APP_NAME", "meter")
+    create_app()  # must not raise
+
+
+def test_wide_open_cors_refuses_to_boot_in_production(monkeypatch):
+    """config.py defaults MERIT_CORS_ORIGINS to '*' for the local demo. On a
+    real deployment that means any page on the internet can call this API with
+    a logged-in visitor's browser, and nothing made setting it mandatory."""
+    monkeypatch.setenv("MERIT_JWT_SECRET", "x" * 48)
+    monkeypatch.setenv("FLY_APP_NAME", "meter")
+    for value in ("*", ""):
+        monkeypatch.setenv("MERIT_CORS_ORIGINS", value)
+        with pytest.raises(RuntimeError, match="MERIT_CORS_ORIGINS"):
+            create_app()
+    monkeypatch.delenv("MERIT_CORS_ORIGINS", raising=False)
+    with pytest.raises(RuntimeError, match="MERIT_CORS_ORIGINS"):
+        create_app()
+
+
+def test_wide_open_cors_is_fine_outside_production(monkeypatch):
+    """The local demo opens the dashboard straight off disk, so the wide-open
+    default has to keep working on a laptop."""
+    monkeypatch.setenv("MERIT_JWT_SECRET", "x" * 48)
+    monkeypatch.delenv("MERIT_CORS_ORIGINS", raising=False)
+    monkeypatch.delenv("FLY_APP_NAME", raising=False)
+    monkeypatch.delenv("MERIT_ENV", raising=False)
     create_app()  # must not raise

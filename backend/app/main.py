@@ -16,7 +16,7 @@ import os
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .config import settings
+from .config import cors_origins_from_env
 from .database import init_db
 from .dependencies import get_current_user, require_admin, require_api_key
 from .routers import admin, auth, dashboard, health, ingestion, waitlist
@@ -24,8 +24,25 @@ from .routers import admin, auth, dashboard, health, ingestion, waitlist
 logger = logging.getLogger(__name__)
 
 
-def create_app() -> FastAPI:
-    init_db()
+def _in_production() -> bool:
+    """FLY_APP_NAME is set by the Fly.io runtime itself on every real deploy
+    (see fly.toml/DEPLOY.md) -- local dev, docker compose and the test suite
+    never set it, so it's a reliable signal that this process is a live
+    deployment rather than someone's laptop. MERIT_ENV=production is the
+    explicit override for any other host."""
+    return bool(os.environ.get("FLY_APP_NAME")) or os.environ.get("MERIT_ENV", "").strip().lower() == "production"
+
+
+def check_startup_environment(cors_origins: list[str]) -> None:
+    """Everything that has to be true about the environment before this app is
+    allowed to serve traffic. Raises RuntimeError on a production deployment
+    that would otherwise come up insecure, and warns rather than blocks
+    everywhere else -- a laptop running `make run` with no secrets set is a
+    supported way to use this, a public deployment in the same state is not.
+
+    Nothing here ever logs a secret's value, only that it is missing or weak.
+    """
+    in_production = _in_production()
 
     # "Unset = open" is deliberate (see dependencies.py), but nothing else
     # would catch a Fly secret getting silently removed in production -- log
@@ -35,19 +52,10 @@ def create_app() -> FastAPI:
     # accepted at all -- unset means it is, as long as at most one org exists.
     if not os.environ.get("MERIT_API_KEY"):
         logger.warning("MERIT_API_KEY is unset -- /ingest/* has no auth enforced while at most one org exists.")
-    jwt_secret = os.environ.get("MERIT_JWT_SECRET")
-    # FLY_APP_NAME is set by the Fly.io runtime itself on every real deploy
-    # (see fly.toml/DEPLOY.md) -- it is not something local dev, docker
-    # compose, or the test suite ever set, so it is a reliable signal that
-    # this process is a live deployment rather than someone's laptop.
-    # MERIT_ENV=production is the explicit override for any other host.
-    in_production = (
-        bool(os.environ.get("FLY_APP_NAME")) or os.environ.get("MERIT_ENV", "").strip().lower() == "production"
-    )
+
     # Every tenant boundary in this app rests on this token, so a missing or
-    # short one is refused outright in production rather than merely logged --
-    # neither branch below ever logs the secret's own value, only that it's
-    # missing or too short.
+    # short one is refused outright in production rather than merely logged.
+    jwt_secret = os.environ.get("MERIT_JWT_SECRET")
     if not jwt_secret:
         if in_production:
             raise RuntimeError(
@@ -70,6 +78,23 @@ def create_app() -> FastAPI:
             "(secrets.token_urlsafe(48))."
         )
 
+    # fly.toml sets MERIT_CORS_ORIGINS, but nothing made that mandatory -- and
+    # config.py defaults it to "*", which on a real deployment means any page
+    # on the internet can call this API with a visitor's browser. Refused for
+    # the same reason as the secret above: the deployment that most needs the
+    # origin list is the one where forgetting it is silent.
+    if in_production and "*" in cors_origins:
+        raise RuntimeError(
+            "MERIT_CORS_ORIGINS is unset or '*' in production -- refusing to start. Set it to the "
+            "frontend origin(s) that should be allowed to call this API, comma-separated."
+        )
+
+
+def create_app() -> FastAPI:
+    init_db()
+    cors_origins = cors_origins_from_env()
+    check_startup_environment(cors_origins)
+
     # /openapi.json, /docs, and /redoc publish the full admin and ingest
     # endpoint surface to anyone who looks -- harmless in local dev, but on
     # a real deployment it's a map handed to an attacker for free. Set
@@ -85,7 +110,7 @@ def create_app() -> FastAPI:
     )
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.cors_origins,
+        allow_origins=cors_origins,
         allow_methods=["*"],
         allow_headers=["*"],
     )
