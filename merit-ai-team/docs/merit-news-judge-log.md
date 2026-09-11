@@ -959,3 +959,150 @@ had, and are flagged as worth revisiting if better sourcing surfaces later.
 - No absence-of-evidence claims: pass
 - Every citation has a confirmed byline/author: pass — Beth Treffeisen, confirmed Boston.com staff reporter.
 **Notes:** Thinner direct tie to this site's core enterprise-AI-spend audience than most of this batch, per the research pass's own flag — included as a lighter-weight robotics/supply-chain item rather than dropped, since it's real, sourced, and non-duplicative.
+
+### 2026-09-11 14:00 UTC — google-gemini-windows-desktop-app
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — 9to5Google's own reporting (byline Abner Li).
+- Quotes ≤15 words, one per source: pass — 8 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Abner Li, established 9to5Google reporter.
+**Notes:** None.
+
+### 2026-09-11 14:00 UTC — apple-ios-27-siri-recap-always-listening
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — 9to5Mac and MacRumors, both original reporting.
+- Quotes ≤15 words, one per source: pass — 14 words and 14 words, one from each of the two sources.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Marcus Mendes (9to5Mac), Juli Clover (MacRumors), both established reporters.
+**Notes:** Always-listening feature covered factually with the specific, disclosed data-retention limits Apple states (no stored audio, 7-day auto-delete), not sensationalized.
+
+### 2026-09-11 14:00 UTC — openai-gsa-onegov-government-pricing
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Nextgov/FCW's own reporting (byline Christian Robles), independently re-fetched directly after an initial draft cited a placeholder URL instead of the real article.
+- Quotes ≤15 words, one per source: pass — 8 words (GSA's Laura Stanton), trimmed from a 17-word draft.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Christian Robles, confirmed Nextgov/FCW Technology Reporter.
+**Notes:** First draft cited a generic nextgov.com homepage URL instead of the actual article — caught before publishing and re-verified via direct WebFetch of the real article to confirm exact terms (this replaces a $1/year pilot, not merely "extends" a discount) and get the correct byline/quote.
+
+### 2026-09-11 14:00 UTC — cognition-swe-2-devin-model
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Cognition's own blog announcement.
+- Quotes ≤15 words, one per source: pass — 10 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — company blog, primary source.
+**Notes:** None.
+
+### 2026-09-11 14:00 UTC — anthropic-claude-enterprise-smart-reports
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Anthropic's own release notes.
+- Quotes ≤15 words, one per source: pass — 13 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official release notes.
+**Notes:** Noted honestly that this is a vendor building a first-party competitor to the kind of tool this site itself is — framed factually, not promotionally.
+
+### 2026-09-11 14:00 UTC — replit-mcp-desktop-integration
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Replit's own changelog.
+- Quotes ≤15 words, one per source: pass — 11 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official changelog.
+**Notes:** None.
+
+### 2026-09-11 14:00 UTC — paul-christiano-joins-openai-safety-board
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — TechCrunch's own reporting (byline Tim Fernholz).
+- Quotes ≤15 words, one per source: pass — 14 words, from Christiano's own public statement as quoted in the article.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Tim Fernholz, confirmed TechCrunch reporter.
+**Notes:** None.
+
+### 2026-09-11 14:00 UTC — anthropic-frontier-red-team-weapons-capability-evals
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Anthropic's own published report, independently re-fetched and re-verified directly in full detail given the sensitivity (drone-strike simulation success rates, geolocation capability, dual-use military framing).
+- Quotes ≤15 words, one per source: pass — 5 words, consolidated down from three separate quoted fragments in an earlier draft (one ran 19 words on its own).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — company research publication, primary source.
+**Notes:** Highest-stakes candidate in this batch. Independently re-fetched Anthropic's own report directly (not just the research pass's summary) and cross-checked every figure used. Article explicitly frames results as controlled simulation, not real-world incidents, and notes Anthropic built detection classifiers rather than prohibiting the underlying use case — matching the source's own framing rather than either alarmist or dismissive framing.
+
+### 2026-09-11 14:00 UTC — caltech-mathathon-openai-withdraws-sponsorship
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — the open letter's own publication (Proofs and Prompts), corroborated by Business Insider's reporting (byline Truman Dickerson, confirmed via Techmeme's citation of the original).
+- Quotes ≤15 words, one per source: pass — 7 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass (secondary) / n/a (primary is the letter itself).
+**Notes:** Corrected mid-draft: initial source list cited only a Techmeme aggregation link; added the actual open letter as the real primary source before publishing.
+
+### 2026-09-11 14:00 UTC — california-ab1709-algorithmic-feed-ban-minors
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — California Governor's Office official release, corroborated by KQED (byline Rachael Myrow).
+- Quotes ≤15 words, one per source: pass — 12 words (OpenAI's Chris Lehane, via KQED).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Rachael Myrow, confirmed KQED reporter.
+**Notes:** Narrowed to the AB 1709-specific angle (algorithmic feed ban) rather than re-covering the full 13-bill signing event already covered from two other angles (Adam's Law, the AI-CSAM statute) in an earlier batch, to avoid duplicating ground.
+
+### 2026-09-11 14:00 UTC — google-finland-nuclear-power-data-centers
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — The Register's own reporting (byline Dan Robinson).
+- Quotes ≤15 words, one per source: pass — 8 words (Ruth Porat).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Dan Robinson, confirmed The Register IT Infrastructure Reporter.
+**Notes:** None.
+
+### 2026-09-11 14:00 UTC — microsoft-38-gigawatt-data-center-plan
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Reuters wire report of Bloomberg's original reporting, corroborated across multiple syndications.
+- Quotes ≤15 words, one per source: n/a — sourced to unnamed people familiar with the matter; no named-individual quote available, reported as such rather than presented as on-record.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — wire byline confirmed identical across two independent syndications of the same piece.
+**Notes:** None.
+
+### 2026-09-11 14:00 UTC — alibaba-unipat-ai-300-million
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Bloomberg's own reporting; the Bloomberg URL itself returned 403 to direct fetch, corroborated via independent citation chains (Techmeme, MarketScreener, and a bylined human report on AsiaTechReview.com).
+- Quotes ≤15 words, one per source: pass — 10 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — corroborated via multiple independent citations of the same Bloomberg report.
+**Notes:** Same 403-on-primary-but-independently-corroborated pattern already established as acceptable in this log (see the 2026-08-23 entry on OpenAI's billion-user milestone).
+
+### 2026-09-11 14:00 UTC — algomatic-dynamics-physical-ai-funding
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — The AI Insider's own reporting (byline Greg Bock).
+- Quotes ≤15 words, one per source: pass — 12 words.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Greg Bock, The AI Insider.
+**Notes:** None.
+
+### 2026-09-11 14:00 UTC — pentagon-fluidstack-5-billion-loan
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Reuters wire carrying WSJ's original reporting.
+- Quotes ≤15 words, one per source: n/a — a "talks" story with no on-record individual quote available; reported as still in negotiation, not a finalized deal.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — wire byline confirmed identical across independent syndications.
+**Notes:** None.
+
+### 2026-09-11 14:00 UTC — adobe-q3-fy2026-earnings-ai-arr
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Adobe's own SEC 8-K earnings-release exhibit, direct-fetched.
+- Quotes ≤15 words, one per source: pass — 9 words (interim CFO Steve Day).
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official SEC filing, primary source.
+**Notes:** None.
+
+### Dropped as duplicates during consolidation (not logged individually above, noted here for the record)
+Three candidates from this run's research passes turned out to duplicate stories already published in earlier batches and were not drafted: a second OpenAI Agents API writeup (already covered as `openai-agents-api-public-beta`), a second Positron AI funding writeup (already covered as `positron-ai-875-million-series-c`), and a second Qualcomm/Amazon chip-deal writeup (already covered as `qualcomm-amazon-ai-chip-deal`) — all three were independently re-surfaced by different research passes searching the same news cycle, a useful cross-check that the underlying stories are genuinely significant, not a sign anything was missed.
