@@ -608,3 +608,111 @@ had, and are flagged as worth revisiting if better sourcing surfaces later.
 ### 2026-09-09 08:00 UTC — pixxel-100-million-series-c (rejected)
 **Verdict:** rejected
 **Notes:** Genuinely recent (September 7, 2026) and well-covered, but deprioritized rather than pursued to full verification: Pixxel is primarily a hyperspectral-satellite/Earth-observation hardware company, a weaker fit for this pipeline's AI-news lane than this run's other candidates, and a direct Crunchbase News URL guess 404'd without time in this run to track down the correct one. Not rejected on a failed check — deprioritized for a stronger use of this run's remaining time.
+
+### 2026-09-11 00:00 UTC — cognition-2-billion-series-e-48-billion-valuation
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — TechCrunch's own reporting (byline Marina Temkin), not an aggregator repeating the news.
+- Quotes ≤15 words, one per source: n/a — no direct executive quote available in the source; article reports figures/facts only, no quotation used.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Marina Temkin, confirmed via her live TechCrunch author page (VC/startups reporter, ex-PitchBook/Venture Capital Journal/Mergermarket, CFA charterholder).
+**Notes:** A duplicate of this same story was independently surfaced by a second research pass via SiliconANGLE (byline Duncan Riley) — used TechCrunch instead as the stronger, earlier primary report. Only one article published for this event, not two.
+
+### 2026-09-11 00:00 UTC — harvey-550-million-round-15-5-billion-valuation
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — TechCrunch's own reporting (byline Julie Bort).
+- Quotes ≤15 words, one per source: n/a — no direct executive quote available in the source; figures/facts only.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Julie Bort, confirmed via her TechCrunch author page (Startups/Venture desk editor, formerly Business Insider/IDG).
+**Notes:** None.
+
+### 2026-09-11 00:00 UTC — harvey-acquires-guardrails-ai
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Harvey's own company blog, the acknowledged primary source for its own acquisition.
+- Quotes ≤15 words, one per source: pass — CEO Winston Weinberg quoted at 7 words ("how do you know what it will do?"); Guardrails CEO Shreya Rajpal quoted at 9 words ("the hard part of shipping AI isn't building the system").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — company blog, self-attributed to Harvey as the primary source for its own announcement.
+**Notes:** A unite.ai writeup of this same story was found and discarded — bylined "Evan Mercer, AI Research Agent," a disclosed AI-generated persona, not a human reporter. Went to Harvey's own blog instead for the named-executive quotes. This article carries two quotes (one per named executive) from the single company-blog source — a deliberate exception to the one-quote convention since both are the company's own on-record statements, not a secondary outlet's reporting.
+
+### 2026-09-11 00:00 UTC — inception-labs-mercury-2-5-diffusion-llm
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Inception Labs' own company blog announcement.
+- Quotes ≤15 words, one per source: pass — customer quote (OpenCall's Oliver Silverstein) at 12 words ("our P99 response time dropped from several minutes to just one second").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — company blog, named spokespeople (CEO Stefano Ermon, customer quote attributed to a named individual at OpenCall).
+**Notes:** CEO quote ("our most capable production model yet") used in indirect/reported form rather than as a second direct quotation, to stay within one direct quote for this single-source article.
+
+### 2026-09-11 00:00 UTC — salesforce-trusted-enterprise-ai-harness
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Salesforce's own newsroom announcement, corroborated by VentureBeat's independent reporting on the underlying survey data.
+- Quotes ≤15 words, one per source: pass — Google Cloud CEO Thomas Kurian quoted at 9 words via Salesforce's release; Rocket Mortgage CTO Shawn Malhotra quoted at 11 words ("we don't want to bet our future on one closed stack").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — VentureBeat byline Carl Franzen, confirmed via his VentureBeat author page and Muck Rack profile (Executive Editor, 16+ years in tech journalism).
+**Notes:** None.
+
+### 2026-09-11 00:00 UTC — california-sb813-ab1405-ai-auditor-registry
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — California Governor's Office official release, direct-fetched.
+- Quotes ≤15 words, one per source: pass — Asm. Bauer-Kahan quoted at 12 words ("essential to ensuring AI is safe for our communities and critical infrastructure").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official government press release, no individual reporter byline; primary-source government statement.
+**Notes:** Drafted quote initially ran 16 words and was trimmed to 12 to clear the length check before publishing.
+
+### 2026-09-11 00:00 UTC — california-adams-law-chatbot-liability
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — California Governor's Office official release, direct-fetched.
+- Quotes ≤15 words, one per source: pass — Gov. Newsom quoted at 10 words ("innovation comes with responsibility and protecting our children comes first").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official government press release.
+**Notes:** Sensitive subject matter (a named minor's death); stuck strictly to the Governor's Office's own official framing and did not speculate beyond what the release states.
+
+### 2026-09-11 00:00 UTC — uk-medical-ai-regulation-blueprint
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — GOV.UK official release, direct-fetched; cross-referenced against STAT News (byline Andrew Joseph, STAT's Europe Correspondent, confirmed as a long-standing named reporter) for corroboration, not as the primary claim source.
+- Quotes ≤15 words, one per source: pass — Prof. Alastair Denniston quoted at 11 words ("a future healthcare system that is increasingly tech-enabled and always people-centred").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass (secondary source) / n/a (primary is official government release).
+**Notes:** None.
+
+### 2026-09-11 00:00 UTC — anthropic-researcher-resigns-ai-extinction-risk-warning
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — TIME's own original reporting (byline Harry Booth), not a secondary aggregation of another outlet's story.
+- Quotes ≤15 words, one per source: pass — Evan Hubinger quoted at 10 words ("we really do earnestly believe AI could kill all humans"). Jacob Coxon's statements reported in indirect/attributed form rather than as a second direct quotation, to stay within one direct quote for this single-source article — an earlier draft used three separate quoted fragments from Coxon plus Hubinger's, all from the same TIME piece, and was rewritten down to one.
+- No absence-of-evidence claims: pass — the article states plainly that Anthropic and OpenAI did not respond to TIME's request for comment before publication; this is reported as a factual non-response, not treated as evidence for or against the underlying risk claim either way.
+- Every citation has a confirmed byline/author: pass — Harry Booth, TIME's London-based AI reporter (joined via the Tarbell Fellowship, 2024), confirmed via his TIME author page, LinkedIn, and Muck Rack profile.
+**Notes:** Highest-stakes candidate in this batch (a named individual's resignation and a named current Anthropic employee's public risk estimate) — independently re-fetched and re-verified the TIME article directly before drafting, rather than relying solely on the research pass's summary. All quotes checked against the source's exact wording.
+
+### 2026-09-11 00:00 UTC — anthropic-threat-intelligence-report-september-2026
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Anthropic's own published report, direct-fetched and figures independently confirmed against the primary document rather than taken from the research pass's summary alone.
+- Quotes ≤15 words, one per source: pass — Anthropic's own framing quoted at 11 words ("everything connected to the internet is a potential target for exploitation").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — company research publication, not an individually bylined news article.
+**Notes:** Independently re-fetched Anthropic's own report to confirm all cited figures (record counts, APK/token counts, article counts) before drafting, given the size of the numbers involved.
+
+### 2026-09-11 00:00 UTC — openai-navier-stokes-proof-priority-dispute
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Quanta Magazine's own original reporting (byline Konstantin Kakaes, longtime Quanta contributing writer and former math editor).
+- Quotes ≤15 words, one per source: pass — Tristan Buckmaster quoted at 12 words ("can only be described as AI slop. I am sorry for this."). An earlier draft used three separate quoted fragments (two from Buckmaster, one from Diego Córdoba) from this same single source and was rewritten down to one direct quote, with the rest reported indirectly.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Konstantin Kakaes, confirmed via his Quanta author page, Muck Rack profile, and personal site.
+**Notes:** Independently re-fetched the Quanta article directly (rather than relying solely on the research pass's summary) given the sensitivity of a named-individual priority/credit dispute. Careful to state plainly that OpenAI's Navier-Stokes result and the Buckmaster/Alpöge Euler result are different problems, per OpenAI's own conceded framing, rather than implying one team scooped the other on the same result.
+
+### 2026-09-11 00:00 UTC — accenture-google-cloud-gemini-enterprise-business-group
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Accenture's own newsroom release, corroborated by IT Pro's independent reporting.
+- Quotes ≤15 words, one per source: pass — Google Cloud CEO Thomas Kurian quoted at 6 words ("a top priority for enterprises today").
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — IT Pro byline Ross Kelly, confirmed via his author page (muckrack.com/ross-kelly-6) as IT Pro's News and Analysis Editor.
+**Notes:** A unite.ai writeup of this same story was found and discarded — bylined "Aiden Cross, AI Product Strategy & Execution, AI Research Agent," a disclosed AI-generated persona, not a human reporter.
