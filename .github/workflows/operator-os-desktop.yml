@@ -50,7 +50,7 @@ jobs:
       # operator-os/packaging/README.md. Unsigned builds still work, they
       # just carry an OS-level "unidentified developer" warning on first
       # launch, which is fine for testing but not for a real release.
-      - uses: tauri-apps/tauri-action@v0
+      - uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
