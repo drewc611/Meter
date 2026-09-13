@@ -1106,3 +1106,304 @@ had, and are flagged as worth revisiting if better sourcing surfaces later.
 
 ### Dropped as duplicates during consolidation (not logged individually above, noted here for the record)
 Three candidates from this run's research passes turned out to duplicate stories already published in earlier batches and were not drafted: a second OpenAI Agents API writeup (already covered as `openai-agents-api-public-beta`), a second Positron AI funding writeup (already covered as `positron-ai-875-million-series-c`), and a second Qualcomm/Amazon chip-deal writeup (already covered as `qualcomm-amazon-ai-chip-deal`) — all three were independently re-surfaced by different research passes searching the same news cycle, a useful cross-check that the underlying stories are genuinely significant, not a sign anything was missed.
+
+### 2026-09-13 03:49 UTC — manual catch-up run, seven parallel beats (founder-requested)
+The scheduled "Daily Merit AC content" trigger fires once a day, not every 5 hours as this goal's own progress log describes — that faster cadence was apparently never actually built as separate Routines, only documented as a target (flagged separately in the next eng-review). Its 2026-09-12 firing shows `ROUTINE_RUN_STATUS_SUCCEEDED` in 98 seconds with zero commits, zero PRs, and nothing published — a silent no-op the pipeline never logged anywhere, this run's own first finding. The founder asked for a manual catch-up. Seven parallel research passes ran, one per beat (frontier models, funding/M&A, policy/regulation, enterprise adoption, safety/security, hardware/infra, developer tools), each independently instructed on the full sourcing rules and handed the existing slug list to avoid duplicating prior coverage. 30 articles cleared the Judge-tier bar and published; each is logged individually below. No cross-beat duplicates reached publication — one beat (safety/security) independently caught that another beat had already published the Amodei/pacing story and skipped it before drafting.
+
+### 2026-09-13 03:49 UTC — anthropic-openai-amodei-pace-the-frontier-pledge
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Dario Amodei's own essay ("We Must Pace the Frontier," darioamodei.com) as primary; TechCrunch (Anthony Ha) and NBC News (An Phung) as corroborating secondaries covering Altman's and Musk's same-day endorsements.
+- Quotes ≤15 words, one per source: pass — each quote verified as an exact short substring.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Anthony Ha and An Phung both confirmed bylines at their respective outlets.
+**Notes:** Cross-lab story (Anthropic's own commitment plus independent, same-day endorsements from two competitors) corroborated across three separate sources rather than resting on the essay alone.
+
+### 2026-09-13 03:49 UTC — deepseek-v4-1-flash-encoder-decoder-launch
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — DeepSeek's own product page and API changelog, plus the Hugging Face model card.
+- Quotes ≤15 words, one per source: n/a — technical specs, no on-record individual quote used.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — official company sources are institutional primary, not attributed to an unconfirmed byline.
+**Notes:** A TechNode citation was dropped from consideration because its byline was "TechNode Feed," not a confirmed human byline; DeepSeek's own material was used instead for every technical claim.
+
+### 2026-09-13 03:49 UTC — openai-pauses-chatgpt-pro-astra-demand
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: partial — OpenAI's own help-center page returned 403 on direct fetch; relied on CIO (Gyana Swain, confirmed byline) which directly quotes OpenAI's Thibault Sottiaux.
+- Quotes ≤15 words, one per source: pass.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Gyana Swain, confirmed CIO reporter.
+**Notes:** None.
+
+### 2026-09-13 03:49 UTC — openai-chatgpt-images-2-5-launch
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: partial — OpenAI's own blog post returned 403 on direct fetch; relied on 9to5Mac (Zac Hall, confirmed byline) which directly quotes OpenAI.
+- Quotes ≤15 words, one per source: pass.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Zac Hall, confirmed 9to5Mac reporter.
+**Notes:** None.
+
+### 2026-09-13 03:49 UTC — google-deepmind-alphagenome-atlas-launch
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Google DeepMind's own blog post, direct-fetched.
+- Quotes ≤15 words, one per source: n/a — no individual quote used, figures traced directly to the official post.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — institutional primary source.
+**Notes:** None.
+
+### 2026-09-13 03:49 UTC — (frontier-models beat) rejected candidates
+**Verdict:** rejected (5 candidates, not drafted)
+**Notes:** xAI Grok 4.7 — no model page, API id, or technical detail published as of 09-12, only Musk's own social posts; hadn't actually shipped. OpenAI Codex/PaperCut attack — real, but off-beat for "lab announcements" (published instead as `greynoise-papercut-ai-orchestrated-campaign` under the safety/security beat). Anthropic Claude "smart reports" Enterprise beta — couldn't confirm a publish date fell in-window; Anthropic's own Sept news listing didn't include it. OpenAI Safety Fellowship program — OpenAI's own page 403'd, no bylined secondary confirmed within search budget. DeepMind "agentic video understanding with Gemini" — only found via a secondary summary; the direct URL 404'd, couldn't verify against the primary post.
+
+### 2026-09-13 03:49 UTC — greynoise-papercut-ai-orchestrated-campaign
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — GreyNoise's own official blog (Sept 9), corroborated by Help Net Security.
+- Quotes ≤15 words, one per source: pass.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass.
+**Notes:** Hard numbers/timeline (440 servers, 395 orgs, 48 countries) traced directly to the official disclosure.
+
+### 2026-09-13 03:49 UTC — accomplish-beltdown-claude-code-sandbox-escape
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Accomplish's own disclosure (researcher Oren Yomtov) plus Upstarts Media (Alex Konrad, confirmed byline).
+- Quotes ≤15 words, one per source: pass — exact substring confirmed.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass.
+**Notes:** Vendor remediation timeline (~50 days/30 releases vs. ~1 week for Cursor and OpenAI on comparable sandbox bugs) verified against the vendor's own disclosure.
+
+### 2026-09-13 03:49 UTC — google-gtig-ai-threat-tracker-agentic-adversaries
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Google Cloud's own official blog, corroborated by The Hacker News (Ravie Lakshmanan, confirmed byline).
+- Quotes ≤15 words, one per source: pass.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass.
+**Notes:** Confirmed distinct from the already-published Anthropic threat-intelligence report (different vendor, different case studies) before drafting.
+
+### 2026-09-13 03:49 UTC — (safety/security beat) rejected candidates
+**Verdict:** rejected (5 candidates, not drafted)
+**Notes:** Unit 42 AI-assisted-attack investigation — published 2026-09-02, stale. Amodei pacing essay — already published by the frontier-models beat, dropped to avoid duplication. A ChatGPT-flagged alleged school-shooting-plot story involving a minor — the only reporting had no confirmed named-reporter byline and no OpenAI-side confirmation; rejected outright given the subject matter makes the byline bar non-negotiable. OpenAI Daybreak Defense Network "35+ partners" — the underlying commitment was announced 09-03/09-04; the 09-11 mentions found were recaps, not new news. SGLang unauthenticated-RCE CVE claim — found only via an unbylined aggregator, no primary advisory located before search budget ran out; dropped rather than publish an unverified CVE.
+
+### 2026-09-13 03:49 UTC — ayar-labs-150-million-series-e-extension
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — SiliconANGLE (Mike Wheatley, confirmed byline).
+- Quotes ≤15 words, one per source: pass.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass.
+**Notes:** No valuation was disclosed by the company; none was invented to fill the gap.
+
+### 2026-09-13 03:49 UTC — meta-acquires-stilla-ai
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Axios "Scoop" (Sara Fischer, confirmed byline).
+- Quotes ≤15 words, one per source: pass.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass.
+**Notes:** No acquisition price was disclosed; framed as such rather than estimated.
+
+### 2026-09-13 03:49 UTC — mecka-ai-500-million-valuation-sequoia
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — TechCrunch (Marina Temkin, confirmed byline), sourced to two anonymous people; neither company confirmed on record.
+- Quotes ≤15 words, one per source: n/a.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass.
+**Notes:** Framed throughout as reported/unconfirmed, matching the sourcing's actual certainty level.
+
+### 2026-09-13 03:49 UTC — listen-labs-salesforce-acquisition-talks
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — TechCrunch (Marina Temkin, confirmed byline), multiple anonymous sources; all parties declined comment.
+- Quotes ≤15 words, one per source: n/a.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass.
+**Notes:** Framed as talks, not a completed deal — a signed term sheet was reportedly walked away from, not signed.
+
+### 2026-09-13 03:49 UTC — cohere-2-3-billion-raise-20-billion-valuation-talks
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — The Globe and Mail (Joe Castaldo and Sean Silcoff, confirmed bylines), four anonymous sources.
+- Quotes ≤15 words, one per source: n/a — a CEO quote available only in paraphrase was dropped rather than presented as a direct quote; used indirect attribution instead.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass.
+**Notes:** None.
+
+### 2026-09-13 03:49 UTC — tar-120-million-series-a-off-grid-ai-power
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — company's own Business Wire release, republished by Pulse 2.0 (Amit Chowdhry, confirmed byline).
+- Quotes ≤15 words, one per source: pass — raw HTML pulled to confirm the exact verbatim quote, under the 15-word limit.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass.
+**Notes:** None.
+
+### 2026-09-13 03:49 UTC — (funding beat) rejected candidates
+**Verdict:** rejected (9 candidates, not drafted)
+**Notes:** Nexthop AI $500M Series B, Gimlet Labs $300M Series B, Upwind $300M raise, Norm AI $120M Series C, Nebius/Eigen AI acquisition — all confirmed stale (dated outside the 09-08–09-13 window) against primary sources despite surfacing as "recent" in search. AIDIN Robotics, Kinetix AI, Enigmata rounds — real and in-window but sourced only through unbylined aggregator roundups; sourcing bar not met. Anthropic/Nvidia "$100B IPO talks, $2T valuation" — sourced only to a low-quality aggregator (Crypto Briefing) with no verifiable named-reporter byline; rejected on the citation rule. Nscale board addition — real (TechCrunch) but a governance move, not a funding/M&A event; off-beat.
+
+### 2026-09-13 03:49 UTC — california-sb867-ai-companion-toy-moratorium
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — official CA leginfo bill text, direct-fetched and quoted exactly; National Law Review analysis (two named Ballard Spahr attorneys) as secondary.
+- Quotes ≤15 words, one per source: pass.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass.
+**Notes:** Confirmed distinct from the six other bills in the same Sept 9-10 Newsom child-safety signing bundle already covered (auditor registry, Adam's Law, algorithmic-feed ban, CSAM law) — this is a first-in-nation product ban, a different bill and a different legal mechanism.
+
+### 2026-09-13 03:49 UTC — nyt-openai-copyright-summary-judgment-motions
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Publishers Weekly (Nathalie op de Beeck, confirmed byline), direct-fetched.
+- Quotes ≤15 words, one per source: pass.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass.
+**Notes:** Distinct procedural event (cross-motions for summary judgment, docket 1:25-md-03143) from the already-published DOJ statement of interest in the same underlying litigation.
+
+### 2026-09-13 03:49 UTC — tech-industry-opposes-ai-chip-export-ndaa-riders
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Export Compliance Daily (Marc Selinger, confirmed byline), direct-fetched.
+- Quotes ≤15 words, one per source: pass — quoted from the trade groups' letter as reported.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass.
+**Notes:** None.
+
+### 2026-09-13 03:49 UTC — (policy/regulation beat) rejected candidates
+**Verdict:** rejected (10 candidates, not drafted)
+**Notes:** xAI v. Minnesota injunction denial, UK medical-AI blueprint (duplicate), Texas AG/Meta investigation, Massachusetts frontier-AI bill, UK workplace-monitoring consultation, Colorado AI Act delay, Commerce/BIS chip-export draft rule — all rejected on recency (outside window) or duplication. One EU AI Office "first wave of compliance inspections" claim was found verbatim across multiple unbylined SEO/content-mill sites with no corroboration from CNIL, BfDI, AESIA, or the European Commission's own pages when checked directly — likely fabricated or laundered content, dropped under the confirmed-byline rule rather than published with a hedge. A "19 lawmakers slam Meta over AI deepfakes" claim, attributed once to "India West," could not be reproduced or corroborated on retry and was treated as a likely search-summarization artifact rather than confirmed news.
+
+### 2026-09-13 03:49 UTC — servicetitan-max-ai-trades-earnings
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — ServiceTitan's own 8-K press release (SEC EDGAR).
+- Quotes ≤15 words, one per source: pass — CEO and President both quoted, each an exact short substring.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official SEC filing, primary source.
+**Notes:** None.
+
+### 2026-09-13 03:49 UTC — box-chatgpt-mcp-enterprise-content
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Box's own company blog, corroborated by a Business Wire release with named-title quotes from Box's and OpenAI's own people.
+- Quotes ≤15 words, one per source: pass.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — Box's own blog author credited.
+**Notes:** Same governance-preserving-AI-access shape as the already-published GitHub Copilot enterprise governance story, but a distinct vendor and event.
+
+### 2026-09-13 03:49 UTC — yelp-hatch-openai-voice-ai-local-business
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — official Yelp/Hatch/OpenAI joint announcement (Business Wire).
+- Quotes ≤15 words, one per source: pass — named-title quotes from all three companies.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass.
+**Notes:** None.
+
+### 2026-09-13 03:49 UTC — (enterprise-adoption beat) rejected candidates
+**Verdict:** rejected (6 candidates, not drafted)
+**Notes:** A Kroger "agentic AI"/Instacart claim was rejected after pulling Kroger's actual Sept 11 earnings-call transcript directly and finding zero mention of AI anywhere in it — the underlying secondary source conflated a stale (Nov 2025) Instacart/Kroger article with an unrelated Sept 2026 Instacart launch that had no Kroger-specific content; would have been an invented/conflated claim, killed before drafting. HPE Q3 earnings, Broadcom Q3 earnings — both confirmed stale (dated 09-02, six days outside window) despite third-party framing suggesting they were fresh. Korn Ferry, NICE Ltd, RH, Casey's earnings — checked directly, no substantive AI content found. NVIDIA/Huang $3-4T infrastructure remark — not tied to a specific newly-disclosed figure or a verified exact quote within budget. Amazon Seattle-area WARN layoff — the WARN filing itself does not state AI as the cause; "amid AI push" was reporter framing, not company-confirmed. Google Cloud/Accenture forward-deployed-engineers unit — duplicate of already-published `accenture-google-cloud-gemini-enterprise-business-group`.
+
+### 2026-09-13 03:49 UTC — firmus-openai-malaysia-anchor-customer-deal
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Firmus's own newsroom press release.
+- Quotes ≤15 words, one per source: pass — exact substrings confirmed.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official company source, primary.
+**Notes:** None.
+
+### 2026-09-13 03:49 UTC — zankore-indonesia-3-1-billion-gpu-loan
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — The Next Web (Cristian Dina, confirmed byline); figures cross-checked against Bloomberg/DCD/LightReading headlines for consistency.
+- Quotes ≤15 words, one per source: pass.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass.
+**Notes:** Flagged the Nvidia-investor/Nvidia-vendor circularity (Nvidia backs the buyer and sells it the GPUs) as the article's analytical angle, not hidden.
+
+### 2026-09-13 03:49 UTC — nextdc-1-1-billion-convertible-notes
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Motley Fool Australia (Laura Stewart, confirmed byline), terms cross-checked against additional reporting.
+- Quotes ≤15 words, one per source: pass.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass.
+**Notes:** Third capital raise in four months for this company — noted as context, not treated as a red flag without evidence.
+
+### 2026-09-13 03:49 UTC — fluidstack-cameron-county-texas-data-center
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — KRGV local TV (Karen Lucero, confirmed byline), figures cross-checked against additional local/trade coverage.
+- Quotes ≤15 words, one per source: pass.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass.
+**Notes:** Confirmed distinct from the already-published `pentagon-fluidstack-5-billion-loan` before drafting — that loan funds supply-chain manufacturing, this is a specific facility groundbreaking.
+
+### 2026-09-13 03:49 UTC — uae-germany-46-5-billion-ai-investment
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Daily Sabah, wire byline AFP (confirmed); figure cross-checked against CNBC/WSJ/Bloomberg headlines converging on the same numbers.
+- Quotes ≤15 words, one per source: n/a.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: pass — wire service byline.
+**Notes:** Site/operator for the 1GW data-center commitment are still unnamed by the parties; not guessed at.
+
+### 2026-09-13 03:49 UTC — (hardware/infra beat) rejected candidates
+**Verdict:** rejected (6 candidates, not drafted)
+**Notes:** Anthropic's reported "$517 billion in compute deals" — the underlying reporting is paywalled at The Information with no confirmable individual byline, and the figure is that outlet's own aggregate estimate, not a company disclosure; too risky for a no-review pipeline despite wide pickup elsewhere. Yotta Data Services GPU order — dollar and GPU-count figures were inconsistent by 2x across sources, no primary source found, one available byline didn't clear the confirmed-byline bar. XPeng IRON humanoid production — blocked by paywalls/403s before a primary source or confirmed byline could be reached. SLB/Kelvion acquisition, Meta robots-in-datacenters testing, Iren/Microsoft Texas capacity delivery — all confirmed stale (dated 08-17 through 08-31) despite surfacing as recent.
+
+### 2026-09-13 03:49 UTC — github-copilot-code-review-auto-resolution
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — GitHub's own Changelog, direct-fetched.
+- Quotes ≤15 words, one per source: n/a — figures (47% claimed improvement) traced directly to the official post.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official company source.
+**Notes:** Confirmed distinct from two already-published Copilot articles (approval authority, sandbox/permissions governance) covering different features.
+
+### 2026-09-13 03:49 UTC — sourcegraph-amp-free-bring-your-own-key
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Sourcegraph/Amp's own official announcement.
+- Quotes ≤15 words, one per source: n/a — pricing facts, no individual quote used.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official company source.
+**Notes:** None.
+
+### 2026-09-13 03:49 UTC — anthropic-claude-code-plugin-evals
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Claude Code's own official docs and version changelog.
+- Quotes ≤15 words, one per source: n/a.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official documentation, primary source.
+**Notes:** None.
+
+### 2026-09-13 03:49 UTC — cognition-fusion-multi-agent-harness
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Cognition's own official blog.
+- Quotes ≤15 words, one per source: n/a — benchmark figures traced directly to the official post.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official company source.
+**Notes:** Confirmed distinct from the already-published SWE-2 model launch and Series E funding stories — this is the harness/architecture release with its own benchmark data.
+
+### 2026-09-13 03:49 UTC — cognition-acquires-dioxus-team
+**Verdict:** published
+**Checks:**
+- Primary source over trade-report paraphrase: pass — Cognition's own official blog.
+- Quotes ≤15 words, one per source: n/a.
+- No absence-of-evidence claims: pass
+- Every citation has a confirmed byline/author: n/a — official company source.
+**Notes:** Distinct from prior Cognition coverage; a third Cognition-related story in this run, each covering a genuinely separate event (model launch, funding, harness release, acquihire).
+
+### 2026-09-13 03:49 UTC — (developer-tools beat) rejected candidates
+**Verdict:** rejected (7 candidates, not drafted)
+**Notes:** GitHub Copilot weekly roundup, Google Antigravity 2.13.0, Zed editor updates — routine/incremental, no substantive news angle. Windsurf/Devin "Cascade removed" — real and in-window but thin, and would have been a third Cognition article. Lovable "$100M ARR" and data-training opt-out claims — initial search snippets suggested September 2026 dates; direct primary-source verification found the actual dates were July 2025 and July 2026, both stale — caught only by fetching primary sources rather than trusting aggregator snippets. Docker MCP Catalog, GitLab Duo GA, Atlassian Rovo Dev, npm/PyPI AI-malware trend, Perplexity Comet, Together AI/Groq, StackBlitz Bolt, JetBrains Junie — no verifiable primary source dated in-window found for any.
