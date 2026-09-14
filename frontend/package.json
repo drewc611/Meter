@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && vite build --ssr src/content/entry-server.jsx --outDir dist-ssr && node scripts/prerender-content.mjs && node scripts/build-csp.mjs",
+    "build": "node scripts/sync-newsletter.mjs && vite build && vite build --ssr src/content/entry-server.jsx --outDir dist-ssr && node scripts/prerender-content.mjs && node scripts/build-csp.mjs",
     "preview": "vite preview",
     "screenshot": "node scripts/capture-screenshots.mjs"
   },
@@ -19,6 +19,7 @@
     "marked": "^18.0.12",
     "marked-gfm-heading-id": "^4.1.4",
     "playwright": "^1.63.0",
+    "rss-parser": "^3.13.0",
     "sanitize-html": "^2.17.7",
     "turndown": "^7.2.4",
     "turndown-plugin-gfm": "^1.0.2",

@@ -83,6 +83,10 @@ repository** (this deploys as a Worker with static assets, not the older
    `assets.directory` points at `dist`, matching the build output directory
    from step 3.
 5. Deploy. Confirm the build succeeds and the given `*.workers.dev` URL loads.
+   Optional: **Settings → Build → Environment variables** →
+   `MERIT_NEWSLETTER_RSS_URL` set to a real RSS/Atom feed URL turns on the
+   `/newsletter` section's auto-sync (see `frontend/README.md`); leave it
+   unset and `/newsletter` just renders empty.
 6. Worker's **Settings → Domains & Routes** → add `usemeritai.com` and
    `www.usemeritai.com` as custom domains. Since the domain's already in
    this Cloudflare account, DNS gets configured automatically for the root
