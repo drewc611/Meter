@@ -17,7 +17,7 @@ The UK's National Commission into the Regulation of AI in Healthcare, chaired by
 
 ## Why one-time approval doesn't fit this category of product
 
-Medical devices have historically been approved once, against a fixed specification, and left alone. That model assumes the product doesn't change after approval -- which doesn't hold for an LLM-based tool that can be updated, fine-tuned, or shift behavior based on the data it sees in deployment. Prof. Denniston framed the goal as building "a future healthcare system that is increasingly tech-enabled and always people-centred," which only works if the regulatory model actually tracks a system that keeps changing after it ships.
+Medical devices have historically been approved once, against a fixed specification, and left alone. That model assumes the product doesn't change after approval -- which doesn't hold for an LLM-based tool whose behavior can be updated, fine-tuned, or shifted based on the data it sees in deployment. Prof. Denniston framed the goal as building "a future healthcare system that is increasingly tech-enabled and always people-centred," which only works if the regulatory model actually tracks a system that keeps changing after it ships.
 
 ## A template that reaches past healthcare
 

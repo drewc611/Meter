@@ -8,7 +8,7 @@ dek: >-
   K2 Horizon spans 0.9B to 375B parameters under Apache 2.0, and IFM is calling
   it the largest fully open model release in AI history -- a claim this site
   independently checked against Hugging Face's own published artifacts rather
-  than taking on the strength of a single press release.
+  than taking it on the strength of a single press release.
 sources:
   - label: >-
       UAE's AI university introduces world's largest 'fully open' models — The

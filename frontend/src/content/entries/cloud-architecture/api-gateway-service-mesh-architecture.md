@@ -16,7 +16,7 @@ lead: >-
 wide: true
 tileMeta: 'North-south versus east-west traffic, and the sidecar tradeoff a mesh actually costs'
 ---
-## 1\. North-south versus east-south traffic
+## 1\. North-south versus east-west traffic
 
 North-south traffic is the traffic crossing a system's outer boundary: a client on the internet calling an API. East-west traffic is the traffic between services already inside that boundary: the checkout service calling the inventory service, which calls the pricing service. These are genuinely different problems. North-south traffic is comparatively low in volume relative to the total request graph, arrives from untrusted clients, and needs a single, well-defined entry point where authentication and rate limiting can be enforced once. East-west traffic is comparatively high in volume, since a single external request commonly fans out into several internal calls, originates from services that are, at least nominally, already inside the trust boundary, and the problems that matter for it are less about keeping strangers out and more about one internal service's slowness or failure not silently cascading into every other service that calls it.
 
