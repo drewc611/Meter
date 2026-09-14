@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { key: "claude-architecture", href: "/claude-architecture", label: "Claude Architecture" },
   { key: "setup", href: "/setup/react", label: "Setup" },
   { key: "news", href: "/news", label: "News" },
+  { key: "newsletter", href: "/newsletter", label: "Newsletter" },
   { key: "models", href: "/models", label: "Models" },
   { key: "skills", href: "/skills", label: "Skills" },
   { key: "glossary", href: "/glossary", label: "Glossary" },

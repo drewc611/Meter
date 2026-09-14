@@ -13,8 +13,9 @@ live at `/coming-soon.html` — it just isn't linked from anywhere in the
 site's navigation.
 
 The content-site pages (`/`, `/architecture`, `/setup/*`, `/news`,
-`/models`, `/glossary`, `/guides`, `/prompts`, `/challenge`, `/community`,
-`/operator-os`) are real React components under `src/content/` — but they
+`/newsletter`, `/models`, `/glossary`, `/guides`, `/prompts`, `/challenge`,
+`/community`, `/operator-os`) are real React components under `src/content/`
+— but they
 **prerender to plain static HTML at build time**, not client-rendered SPA
 routes, so each one ships as a real, crawlable file at its clean path
 instead of an empty shell that would 404 on a direct request (the
@@ -56,6 +57,23 @@ them to make them look more finished than they are — the markdown format
 makes adding a *real* entry easier, not the bar for what counts as one
 lower.
 
+**Newsletter posts sync automatically from an RSS/Atom feed.**
+`scripts/sync-newsletter.mjs` runs as the first step of `npm run build`: it
+reads `MERIT_NEWSLETTER_RSS_URL`, fetches that feed, and writes any post not
+already on disk into `src/content/entries/newsletter/<slug>.md` — same
+frontmatter-plus-body shape `loadEntries.js` already expects, so `/newsletter`
+and each post's own page (`NewsletterIndex.jsx` / `NewsletterEntry.jsx`) work
+exactly like every other markdown-driven section above. The env var is unset
+by default, which makes the script a no-op (`/newsletter` just renders its
+empty state) rather than a build failure — set it locally or in the deploy
+environment to point it at a real feed. It's additive and idempotent: an
+existing post on disk is never overwritten or deleted, so a hand-edited
+synced post, or one whose upstream post disappeared, stays put across
+reruns. The post body it writes is the feed's own excerpt, not full
+republished content — each entry links out to the real post via its `link`
+frontmatter field (validated with `isSafeUrl`, since feed content is
+untrusted external input, same treatment `sources[].url` gets in `/news`).
+
 ## Commands
 
 ```bash
@@ -70,6 +88,10 @@ npm run preview     # serve the dist/ build locally
 without it, the dashboard falls back to the embedded demo snapshot in
 `src/lib/fallbackData.js` and the sidebar badge shows DEMO instead of LIVE.
 
+Set `MERIT_NEWSLETTER_RSS_URL` before `npm run build` to sync newsletter
+posts from a real feed (see "Newsletter posts sync automatically" above);
+leave it unset for a build with an empty `/newsletter` section.
+
 ## Layout
 
 ```
@@ -80,11 +102,13 @@ public/
   content.css           Shared stylesheet for the content-site pages
   robots.txt             Static; sitemap.xml is generated (see below), not hand-maintained
 scripts/
+  sync-newsletter.mjs    Pre-build: fetches MERIT_NEWSLETTER_RSS_URL (if set) and writes any
+                         new post into src/content/entries/newsletter/ -- see above
   prerender-content.mjs Post-build: renders src/content pages to dist/*.html, then writes
                          dist/sitemap.xml from that same page list -- every prerendered
-                         page (including individual guide/prompt/news/model entries) is in
-                         the sitemap by construction, so it can't go stale the way the old
-                         hand-maintained public/sitemap.xml did
+                         page (including individual guide/prompt/news/model/newsletter
+                         entries) is in the sitemap by construction, so it can't go stale
+                         the way the old hand-maintained public/sitemap.xml did
 src/
   main.jsx              React root
   App.jsx                Top-level layout + view switching
@@ -103,12 +127,13 @@ src/
       loadEntries.js       Reads a src/content/entries/<type>/ dir -> parsed {slug, ...frontmatter, html} array
     pages/                Home (site root), Architecture,
                            SetupReact/Python/Node/TensorflowPyro,
-                           NewsIndex/NewsArticle, ModelsDirectory/ModelEntry, Glossary,
+                           NewsIndex/NewsArticle, NewsletterIndex/NewsletterEntry,
+                           ModelsDirectory/ModelEntry, Glossary,
                            GuidesIndex/GuidePage, CloudArchitectureIndex, ClaudeArchitectureIndex,
                            guides/AISystemPatterns.jsx (hand-built diagrams, not markdown-driven),
                            PromptsIndex/PromptDay, Challenge, Community, OperatorOS
-    entries/                One .md file per entry -- news/, glossary/, models/,
-                           guides/, cloud-architecture/, claude-architecture/
+    entries/                One .md file per entry -- news/, newsletter/ (synced, see above),
+                           glossary/, models/, guides/, cloud-architecture/, claude-architecture/
     data/                  prompts.js, paidTrack.js -- still plain exported arrays
 ```
 
