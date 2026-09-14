@@ -95,3 +95,14 @@ export function stripTags(html) {
   } while (result !== prev);
   return result;
 }
+
+// Markdown-body links go through sanitizeHtml above (allowedSchemes:
+// http/https/mailto), but a handful of pages render a frontmatter *field*
+// straight into an href (NewsArticle's sources[].url, ModelEntry's
+// sourceUrl) -- a plain JSX attribute binding, so React doesn't scheme-check
+// it and this sanitize pass never touches it. Same allowlist, same reason
+// it matters most for /news: an unattended pipeline with no human review
+// gate is the content going into that field.
+export function isSafeUrl(url) {
+  return typeof url === "string" && /^(https?:|mailto:)/i.test(url.trim());
+}

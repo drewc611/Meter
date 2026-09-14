@@ -1,5 +1,5 @@
 import ContentLayout from "../components/ContentLayout.jsx";
-import { stripTags } from "../lib/loadEntries.js";
+import { stripTags, isSafeUrl } from "../lib/loadEntries.js";
 
 export function modelMeta(entry) {
   return {
@@ -20,7 +20,8 @@ export default function ModelEntry({ entry }) {
           {entry.pricingNote}
         </p>
         <p style={{ marginBottom: 0 }}>
-          <a href={entry.sourceUrl}>Source</a> · verified {entry.verifiedDate}
+          {isSafeUrl(entry.sourceUrl) ? <a href={entry.sourceUrl}>Source</a> : "Source"} · verified{" "}
+          {entry.verifiedDate}
         </p>
       </div>
       <p>

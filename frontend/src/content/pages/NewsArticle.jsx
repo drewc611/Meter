@@ -1,4 +1,5 @@
 import ContentLayout from "../components/ContentLayout.jsx";
+import { isSafeUrl } from "../lib/loadEntries.js";
 
 export function newsMeta(entry) {
   return {
@@ -35,9 +36,7 @@ export default function NewsArticle({ entry }) {
       <h2>Sources</h2>
       <ul>
         {entry.sources.map((s) => (
-          <li key={s.url}>
-            <a href={s.url}>{s.label}</a>
-          </li>
+          <li key={s.url}>{isSafeUrl(s.url) ? <a href={s.url}>{s.label}</a> : s.label}</li>
         ))}
       </ul>
 

@@ -31,6 +31,22 @@ def test_ingest_open_when_api_key_unset(client, monkeypatch):
     assert r.status_code == 422  # unmapped id -> UnresolvedIdentityError -> 422, not 401: auth let it through
 
 
+def test_ingest_rejects_unauthenticated_call_in_production_even_with_one_org(client, monkeypatch):
+    """The single-org "unset = open" fallback is a local-dev/test convenience
+    only -- in production it must never apply, since a single-org deployment
+    (an individual's personal use, or a company's first signup) is exactly
+    the shape every real production tenant starts in. Without this, an
+    anonymous caller who knows any already-mapped external_id could write
+    fabricated spend/outcome data with no credential at all."""
+    monkeypatch.delenv("MERIT_API_KEY", raising=False)
+    monkeypatch.setenv("MERIT_ENV", "production")
+    r = client.post(
+        "/ingest/usage",
+        json={"source_system": "anthropic_api", "external_id": "nope", "tool": "anthropic_api", "cost_usd": 1.0},
+    )
+    assert r.status_code == 401
+
+
 def test_ingest_rejects_missing_or_wrong_key_when_set(client, monkeypatch):
     monkeypatch.setenv("MERIT_API_KEY", "s3cret")
     payload = {"source_system": "anthropic_api", "external_id": "x", "tool": "anthropic_api", "cost_usd": 1.0}
