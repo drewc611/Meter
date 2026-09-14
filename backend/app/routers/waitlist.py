@@ -21,16 +21,23 @@ _WAITLIST_LIMIT = ratelimit.limit("waitlist", max_requests=20, window_seconds=36
 
 @router.post("", status_code=201, response_model=schemas.WaitlistSignupOut, dependencies=[Depends(_WAITLIST_LIMIT)])
 def join_waitlist(body: schemas.WaitlistSignupIn, db: Session = Depends(get_db)):
-    """Idempotent per email: re-submitting updates company/source in place
-    (the latest interest wins) rather than erroring or tracking duplicate
-    rows -- so someone already on the general waitlist who later signs up
-    for a specific interest list (e.g. the /challenge paid track) still
-    shows up under that source."""
+    """Idempotent per email: re-submitting updates name/company/note/source in
+    place (the latest interest wins) rather than erroring or tracking
+    duplicate rows -- so someone already on the general waitlist who later
+    signs up for a specific interest list (e.g. the /challenge paid track,
+    or the /clark-x lead form) still shows up under that source."""
     existing = db.query(models.WaitlistSignup).filter_by(email=body.email).one_or_none()
     if existing is None:
-        db.add(models.WaitlistSignup(email=body.email, company=body.company, source=body.source))
+        db.add(
+            models.WaitlistSignup(
+                email=body.email, name=body.name, company=body.company, note=body.note, source=body.source
+            )
+        )
     else:
-        existing.company = body.company or existing.company  # don't blank out a prior value with an empty form
+        # Don't blank out a prior value with an empty form.
+        existing.name = body.name or existing.name
+        existing.company = body.company or existing.company
+        existing.note = body.note or existing.note
         existing.source = body.source
     db.commit()
     return schemas.WaitlistSignupOut()

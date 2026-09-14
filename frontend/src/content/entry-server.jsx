@@ -37,6 +37,8 @@ import Glossary, { meta as glossaryMeta } from "./pages/Glossary.jsx";
 import PromptDay, { promptMeta } from "./pages/PromptDay.jsx";
 import SkillsDirectory, { meta as skillsMeta } from "./pages/SkillsDirectory.jsx";
 import SkillEntry, { skillMeta } from "./pages/SkillEntry.jsx";
+import FinancertSpotlight, { meta as financertMeta } from "./pages/FinancertSpotlight.jsx";
+import AllDashSpotlight, { meta as allDashMeta } from "./pages/AllDashSpotlight.jsx";
 import { PROMPTS } from "./data/prompts.js";
 
 // One markdown file per entry -- drop a new .md in the matching folder and it
@@ -70,6 +72,8 @@ const PAGES = [
   [ModelsDirectory, modelsMeta, { entries: modelEntries }],
   [Glossary, glossaryMeta, { entries: glossaryEntries }],
   [SkillsDirectory, skillsMeta, { entries: skillEntries }],
+  [FinancertSpotlight, financertMeta],
+  [AllDashSpotlight, allDashMeta],
 ];
 
 // Guide-shaped entries (guides/cloud-architecture/claude-architecture) all
