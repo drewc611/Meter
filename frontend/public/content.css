@@ -832,13 +832,13 @@ th {
   transform: translateY(-3px);
   box-shadow: var(--shadow-tile);
 }
-.grid a.tile .tile-title {
+.tile-title {
   font-family: var(--font-display);
   font-weight: 700;
   margin-bottom: var(--sp-1);
   display: block;
 }
-.grid a.tile .tile-meta {
+.tile-meta {
   font-size: 13.5px;
   color: var(--muted);
 }
