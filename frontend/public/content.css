@@ -101,6 +101,26 @@ a:hover {
   border-radius: 4px;
 }
 
+/* Every hover/active/focus transition on this site is a short (0.12-0.18s)
+   color/transform/box-shadow move -- deliberately never load-bearing for
+   understanding the page, so turning them off for reduced-motion is a pure
+   subtraction, not a degraded experience. `scroll-behavior: smooth` (the
+   in-page anchor links on Home.jsx, the ToC) is the other motion this site
+   has; !important is needed here because it overrides a same-specificity
+   transition already set per-selector, not because anything else does. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
 /* ---------- header (slim top bar) ---------- */
 header.site {
   position: sticky;
@@ -212,14 +232,30 @@ nav.site-nav a.nav-cta:focus-visible {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     gap: 5px;
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
     padding: 0;
+    margin: 0 -10px 0 0;
     border: none;
+    border-radius: var(--radius-sm);
     background: none;
     cursor: pointer;
     order: 2;
+    transition: background 0.15s var(--ease-out);
+  }
+  .nav-toggle:hover,
+  .nav-toggle:focus-visible {
+    background: var(--paper-2);
+  }
+  .nav-toggle-input:focus-visible ~ .nav-toggle {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    background: var(--paper-2);
+  }
+  .nav-toggle span:not(.sr-only) {
+    width: 20px;
   }
   .nav-toggle span:not(.sr-only) {
     display: block;
