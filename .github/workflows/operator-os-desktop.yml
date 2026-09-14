@@ -11,6 +11,12 @@ on:
     tags:
       - "desktop-v*"
 
+# tauri-action creates a GitHub release (releaseDraft: true below), which
+# needs contents: write -- every other workflow in this repo has an explicit
+# permissions block, this one was the one exception.
+permissions:
+  contents: write
+
 jobs:
   build:
     strategy:

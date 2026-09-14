@@ -9,6 +9,7 @@ from fastapi import Depends, Header, HTTPException, status
 from sqlalchemy.orm import Session
 
 from . import models
+from .config import in_production
 from .database import SessionLocal
 from .services import auth as auth_service
 
@@ -30,7 +31,8 @@ def require_api_key(
     every caller used to share.
 
     A token that matches an org's ingest_token resolves to that org. No
-    header at all still works, but only when it's unambiguous:
+    header at all still works, but only outside production, and only when
+    it's unambiguous:
       - MERIT_API_KEY is set (the deployment has explicitly opted into
         requiring ingest auth, same as before) -> a missing header is 401,
         exactly like today. The migrated default org's ingest_token equals
@@ -43,6 +45,20 @@ def require_api_key(
         This is what actually makes multi-tenancy safe by default: the
         instant a second tenant exists, an unauthenticated write becomes
         ambiguous and is rejected with no operator action required.
+
+    In production (see config.in_production), the single-org fallback above
+    is refused unconditionally, regardless of MERIT_API_KEY or org count.
+    That convenience exists for local dev and tests, where there's nothing
+    real to protect -- but the product's own tenant model explicitly
+    supports a single-org *production* deployment (an individual's personal
+    use, or a company's first signup), and for that shape "at most one org"
+    was true for every real deployment on day one. Left unconditional, an
+    anonymous caller who knows or guesses any already-mapped external_id
+    (trivially the account owner's own email, auto-provisioned at signup)
+    could POST fabricated spend/outcome data with no credential at all.
+    Every Organization has had its own ingest_token since the multi-tenant
+    migration (see GET /admin/org), so there is always a real credential to
+    require once real data is at stake.
     """
     if authorization:
         if not authorization.startswith("Bearer "):
@@ -53,6 +69,8 @@ def require_api_key(
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or missing API key")
         return org
 
+    if in_production():
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or missing API key")
     if os.environ.get("MERIT_API_KEY"):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid or missing API key")
     orgs = db.query(models.Organization).limit(2).all()

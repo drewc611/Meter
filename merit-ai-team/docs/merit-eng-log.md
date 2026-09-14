@@ -5,6 +5,105 @@ defects, their location, and their fix. Append, don't overwrite.
 
 ## Log
 
+### 2026-09-14 — full-repo security audit (founder-requested "audit, fix everything")
+
+Not a diff review — the working tree was clean, so this audited the entire
+current codebase on `main` (backend, frontend, CI workflows), not a
+specific PR. Three parallel passes (backend, frontend, CI/infra), each told
+to read the PR #105 baseline first and not re-flag anything already fixed
+there. All findings below were fixed and verified (184 backend tests +
+1 new regression test pass, `ruff check`/`ruff format --check` clean,
+frontend `npm run build` clean) before this entry was written.
+
+**HIGH — unescaped frontmatter injected into `<title>`/`<meta description>`, self-defeating the CSP**
+`frontend/scripts/prerender-content.mjs`'s `documentFor()` interpolated
+`meta.title`/`meta.description` into the HTML shell via raw template
+literals — unlike `bodyHtml` (rendered through React and already escaped),
+this sink had none. Both fields ultimately trace to markdown frontmatter,
+which `loadEntries.js` spreads unmodified — and for `/news` specifically,
+that's content drafted and merged by an unattended pipeline with no human
+review gate. A frontmatter `title` containing `">​<script>` would break out
+of the tag/attribute and inject a live script — and because
+`build-csp.mjs` runs *after* prerender and hashes whatever inline
+`<script>` blocks are already in the built HTML, an injected script would
+have been hashed into the CSP's own allowlist, defeating it by
+construction. Fixed: added an `escapeHtml()` helper, applied to both
+fields. Verified in the built output (`dist/news/*.html` titles now render
+apostrophes as `&#39;`, etc.).
+
+**MEDIUM — `javascript:` URI scheme not checked on two frontmatter-sourced `href`s**
+`NewsArticle.jsx`'s `sources[].url` and `ModelEntry.jsx`'s `sourceUrl` are
+plain JSX attribute bindings straight from frontmatter — `sanitize-html`'s
+`allowedSchemes: ["http", "https", "mailto"]` in `loadEntries.js` only ever
+applies to the markdown *body*, never to these fields, and React doesn't
+scheme-check `href`. A frontmatter `sources[].url: "javascript:..."` would
+render a clickable link executing attacker JS in the page origin. Fixed:
+added `isSafeUrl()` to `loadEntries.js` (same allowlist), both sinks now
+render plain text instead of a link when the URL fails the check.
+
+**MEDIUM — `MERIT_API_KEY` unenforced at boot, unlike `MERIT_JWT_SECRET`/`MERIT_CORS_ORIGINS`**
+`check_startup_environment()` hard-refused to boot production on a
+missing/weak JWT secret or wide-open CORS, but only logged a warning for a
+missing `MERIT_API_KEY`. Per `require_api_key`'s own documented logic,
+unset `MERIT_API_KEY` + at most one `Organization` resolves an
+unauthenticated `/ingest/*` call with **no credential at all** — and a
+single-org deployment is exactly the shape every real production tenant
+starts in (an individual's personal use, or a company's first signup), not
+an edge case. Concrete exploit: an anonymous caller who knows or guesses
+any already-mapped `external_id` (trivially the account owner's own email,
+auto-provisioned at signup) could POST fabricated spend/outcome data with
+no auth token whatsoever. Raising `RuntimeError` on missing
+`MERIT_API_KEY` (mirroring the JWT treatment) was considered and rejected
+— it would break the documented, intentional single-org convenience and
+force every fresh production signup to fail to boot until an operator
+manually set a now-superseded global secret. Instead, fixed at the actual
+point of risk: `require_api_key()` now refuses the "no header" fallback
+unconditionally in production (`config.in_production()`), regardless of
+`MERIT_API_KEY` or org count — every Organization has its own
+`ingest_token` since the multi-tenant migration (`GET /admin/org`), so a
+real credential always exists to require once real data is at stake. New
+regression test:
+`test_ingest_rejects_unauthenticated_call_in_production_even_with_one_org`.
+
+**Closed from the carried-over list (both previously logged, fixed here):**
+- `operator-os-desktop.yml` missing `permissions:` block — added
+  `contents: write` (needed for `tauri-action`'s `releaseDraft: true`),
+  matching every other workflow's explicit-grant pattern.
+- `starlette` not pinned explicitly — added `starlette>=1.0.1` (the
+  CVE-2026-48710/BadHost patched floor, confirmed via the CVE's own
+  advisory) to `backend/requirements.txt`. `fastapi>=0.141.1` already
+  resolved past this floor; the pin just stops a future resolve from
+  landing below it.
+- `Strict-Transport-Security` / `Permissions-Policy` headers missing —
+  added both to `frontend/public/_headers`' `/*` block. HSTS uses
+  `max-age=31536000; includeSubDomains` without `preload` — preload-list
+  submission is a stronger, harder-to-reverse commitment left for the
+  founder to opt into deliberately, not added silently.
+
+**Not fixed, flagged for triage:** 9 open Dependabot PRs (#108-#115) —
+6 patch/minor bumps (pydantic, ruff, uvicorn, marked, playwright, plus
+pytest 8→9 which is a major bump but backend-only) and 3 GitHub Actions
+major-version bumps (`checkout` 5→7, `setup-node` 4→7, `tauri-action` 0→1)
+that only affect `operator-os-desktop.yml` specifically, since every other
+workflow is already on the newer major. Not merged as part of this audit —
+listed for the founder/next infra pass to triage individually against
+their own CI.
+
+**Verified clean, no exploit path found:** SQL injection (ORM throughout;
+the only string-built SQL in `database.py` interpolates only hardcoded
+column names, never request input), tenant-isolation/org-scoping on every
+`/api/*`/`/admin/*` query including the shadow-AI endpoints (cross-org
+test already exists and passes), auth/JWT/OAuth flow, mass assignment,
+SSRF, path traversal, GitHub Actions script injection (grepped every
+workflow for untrusted `${{ }}` interpolated into `run:` steps — none
+found), and the CSP-generation script's hashing logic itself.
+
+**Goal:** Ten design partners by 2026-12-31 · 108 days left · the shadow-AI
+org-scoping re-verification and the `MERIT_API_KEY` fix both matter most
+once a real (non-demo) tenant exists — neither blocks the goal directly,
+but the frontmatter-XSS fix specifically protects the JWT any real design
+partner's logged-in session would carry, on the same origin as `/app`.
+
 ### 2026-09-11 — repo mode
 
 Second-look review of the two PRs merged since last run: #104 (22-role skills

@@ -16,6 +16,22 @@ const ssrOutDir = join(projectRoot, "dist-ssr");
 
 const { renderAll } = await import(join(ssrOutDir, "entry-server.js"));
 
+// meta.title/meta.description ultimately trace back to markdown frontmatter
+// (loadEntries.js spreads it unmodified) -- for /news specifically that's
+// content drafted and merged by an unattended pipeline with no human review
+// gate. Unlike bodyHtml (rendered through React, escaped by construction),
+// this document shell is hand-built string interpolation, so these two
+// fields need their own escaping or a frontmatter title containing `">`
+// breaks out of the tag/attribute it sits in.
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
 function documentFor(meta, bodyHtml) {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -23,8 +39,8 @@ function documentFor(meta, bodyHtml) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
-<title>${meta.title}</title>
-<meta name="description" content="${meta.description}">
+<title>${escapeHtml(meta.title)}</title>
+<meta name="description" content="${escapeHtml(meta.description)}">
 <link rel="stylesheet" href="/content.css">
 </head>
 <body>

@@ -9,6 +9,16 @@ import os
 from dataclasses import dataclass, field
 
 
+def in_production() -> bool:
+    """FLY_APP_NAME is set by the Fly.io runtime itself on every real deploy
+    (see fly.toml/DEPLOY.md) -- local dev, docker compose and the test suite
+    never set it, so it's a reliable signal that this process is a live
+    deployment rather than someone's laptop. MERIT_ENV=production is the
+    explicit override for any other host. Read live, not cached on Settings,
+    for the same reason as the auth env vars below."""
+    return bool(os.environ.get("FLY_APP_NAME")) or os.environ.get("MERIT_ENV", "").strip().lower() == "production"
+
+
 def cors_origins_from_env() -> list[str]:
     """Public because main.create_app() calls it directly rather than reading
     Settings.cors_origins: the startup guard there has to see the environment
