@@ -67,14 +67,10 @@ export default function SkillEntry({ entry }) {
       <h2>Download</h2>
       <div className="grid">
         {ARTIFACTS.map((a) => (
-          <div key={a.key} className="tile" style={{ display: "block" }}>
-            <span className="tile-title">
-              <a href={`/skills/${entry.slug}/${a.file}`} download>
-                {a.label}
-              </a>
-            </span>
+          <a key={a.key} className="tile" href={`/skills/${entry.slug}/${a.file}`} download>
+            <span className="tile-title">{a.label}</span>
             <span className="tile-meta">{a.install}</span>
-          </div>
+          </a>
         ))}
       </div>
 
