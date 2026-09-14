@@ -54,7 +54,10 @@ def _validated_email(v: str) -> str:
 
 class WaitlistSignupIn(BaseModel):
     email: str
+    name: str | None = Field(default=None, max_length=MAX_NAME_LENGTH)
     company: str | None = Field(default=None, max_length=200)
+    # free text, e.g. the /clark-x lead form's "primary bottleneck" field
+    note: str | None = Field(default=None, max_length=MAX_IDENTIFIER_LENGTH)
     # e.g. "challenge-paid-track" for the /challenge interest form
     source: str = Field(default="coming-soon", max_length=200)
 
@@ -147,7 +150,9 @@ class WaitlistEntryOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)  # constructed from WaitlistSignup ORM rows, not a dict
 
     email: str
+    name: str | None
     company: str | None
+    note: str | None
     source: str
     created_at: datetime
     notified_at: datetime | None

@@ -15,6 +15,23 @@ def test_join_waitlist(client, db):
     assert row.company == "Acme"
 
 
+def test_join_waitlist_with_name_and_note(client, db):
+    r = client.post(
+        "/waitlist",
+        json={
+            "email": "leadform@example.com",
+            "name": "Jordan Lee",
+            "note": "Deployment approvals take three days because nobody owns the sign-off.",
+            "source": "clarkx-analysis",
+        },
+    )
+    assert r.status_code == 201
+    row = db.query(models.WaitlistSignup).filter_by(email="leadform@example.com").one()
+    assert row.name == "Jordan Lee"
+    assert row.note == "Deployment approvals take three days because nobody owns the sign-off."
+    assert row.source == "clarkx-analysis"
+
+
 def test_join_waitlist_without_company(client):
     r = client.post("/waitlist", json={"email": "b@example.com"})
     assert r.status_code == 201

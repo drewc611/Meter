@@ -227,7 +227,9 @@ class WaitlistSignup(Base):
     __tablename__ = "waitlist_signups"
     id = Column(Integer, primary_key=True)
     email = Column(String, unique=True, nullable=False, index=True)
+    name = Column(String, nullable=True)
     company = Column(String, nullable=True)
+    note = Column(String, nullable=True)  # free text, e.g. the /clark-x lead form's "primary bottleneck" field
     source = Column(String, nullable=False, server_default="coming-soon")
     created_at = Column(DateTime, default=utcnow)
     notified_at = Column(DateTime, nullable=True)  # set by /admin/notify-waitlist, so a re-run doesn't double-email
