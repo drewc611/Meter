@@ -39,6 +39,7 @@ import SkillsDirectory, { meta as skillsMeta } from "./pages/SkillsDirectory.jsx
 import SkillEntry, { skillMeta } from "./pages/SkillEntry.jsx";
 import FinancertSpotlight, { meta as financertMeta } from "./pages/FinancertSpotlight.jsx";
 import AllDashSpotlight, { meta as allDashMeta } from "./pages/AllDashSpotlight.jsx";
+import PortampSpotlight, { meta as portampMeta } from "./pages/PortampSpotlight.jsx";
 import { PROMPTS } from "./data/prompts.js";
 
 // One markdown file per entry -- drop a new .md in the matching folder and it
@@ -74,6 +75,7 @@ const PAGES = [
   [SkillsDirectory, skillsMeta, { entries: skillEntries }],
   [FinancertSpotlight, financertMeta],
   [AllDashSpotlight, allDashMeta],
+  [PortampSpotlight, portampMeta],
 ];
 
 // Guide-shaped entries (guides/cloud-architecture/claude-architecture) all

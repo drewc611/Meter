@@ -200,6 +200,7 @@ export default function Home() {
           { label: "Operator OS", note: "Business operating system", href: "/operator-os" },
           { label: "Financert", note: "Wealth allocation vs. the Fed's own data", href: "/financert" },
           { label: "The All Dash", note: "Local-first command center", href: "/all-dash" },
+          { label: "Portamp", note: "Legacy front ends, ported and proven", href: "/portamp" },
         ]}
       />
 
