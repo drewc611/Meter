@@ -118,11 +118,8 @@ export default function Home() {
         </span>
         <h1>We build the systems. Merit AC proves the method.</h1>
         <p className="lead">
-          Clark X Group is a technology holding company. Merit AC is its flagship product — an AI
-          intelligence hub and spend/value tracker built around one principle: show the work, not
-          the hype. Follow AI without the noise, build with real architecture references, run the
-          business on a local-first operating system, and measure whether the spend behind it all
-          is producing real work or slop.
+          Clark X Group is a technology holding company. Merit AC, its flagship product, is an AI
+          intelligence hub and spend tracker built on one idea: show the work, not the hype.
         </p>
         <div className="cta-row">
           <a className="btn btn-primary" href="#product">
@@ -149,10 +146,8 @@ export default function Home() {
         <span className="kicker">Flagship product</span>
         <h2 style={{ marginTop: 0 }}>One product. Four surfaces.</h2>
         <p>
-          Merit AC's own navigation groups into four things worth doing: understand what's
-          actually happening in AI, build with it well, operate a business on it, and measure
-          whether the spend is worth it. Everything below is real and live today — nothing here is
-          a roadmap item dressed up as shipped.
+          Understand what's happening in AI, build with it well, run a business on it, and measure
+          whether the spend is worth it. Everything below is live today, not a roadmap.
         </p>
       </div>
 
@@ -174,11 +169,9 @@ export default function Home() {
       <span className="kicker">Engineering</span>
       <h2>The pipeline behind the score.</h2>
       <p>
-        Three independent ingestion paths write into three separate tables, all attributed to a
-        person through an identity-mapping table, and a nightly job compresses everything into one
-        scored row per person. The dashboard and every <code>/api/*</code> endpoint read only that
-        scored row — never raw events — so page loads stay fast no matter how much history
-        accumulates.
+        Three ingestion paths feed one nightly scoring job, which compresses everything into a
+        single row per person. The dashboard reads only that scored row, never raw events — so it
+        stays fast no matter how much history piles up.
       </p>
       <LinearDiagram steps={PIPELINE_STEPS} />
       <p style={{ marginTop: "var(--sp-3)" }}>
@@ -188,10 +181,9 @@ export default function Home() {
       <span className="kicker">Parent company</span>
       <h2>Clark X owns the platform. Merit AC earns the attention.</h2>
       <p>
-        Merit AC stays a distinct product brand rather than folding into &quot;Clark X&quot;
-        everywhere — the site you&apos;re on, the dashboard, the domain, all of it. Clark X Group
-        is the parent behind it: the entity that can take on other software, IP, consulting work,
-        or future operating companies without forcing everything into one product&apos;s identity.
+        Merit AC keeps its own name rather than folding into &quot;Clark X&quot; everywhere. Clark
+        X Group is the parent behind it — free to take on other software, IP, or ventures without
+        forcing them under one product&apos;s identity.
       </p>
       <HubDiagram
         hub={{ label: "Clark X Group LLC", note: "Ownership, IP, strategy" }}
@@ -210,9 +202,8 @@ export default function Home() {
         </span>
         <h2 style={{ margin: "0 0 var(--sp-2)" }}>Find the bottleneck. Build the leverage.</h2>
         <p style={{ marginBottom: "var(--sp-5)" }}>
-          Use Clark X for enterprise work, architecture, and new ventures. Use Merit AC as the
-          product proof point. Tell us where execution is actually slowing down and we&apos;ll
-          follow up directly — no automated pitch, a real read from a real person.
+          Use Clark X for enterprise work, architecture, and new ventures — Merit AC is the proof
+          point. Tell us where execution is slowing down and we&apos;ll follow up directly.
         </p>
 
         <form className="lead-form" id="clarkXLeadForm" noValidate>

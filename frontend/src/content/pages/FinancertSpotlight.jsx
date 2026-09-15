@@ -57,9 +57,8 @@ export default function FinancertSpotlight() {
       <p className="lead">
         Financert answers one question with real data: how do the wealthiest American households
         actually hold their money, and how does your portfolio compare? Enter what you own by
-        asset class, and it shows your allocation beside the measured allocation of the top 0.1%,
-        the top 1%, the next 9%, the next 40%, and the bottom 50% — plus which tier your mix most
-        resembles.
+        asset class and see your allocation beside every tier from the top 0.1% down to the bottom
+        50% — plus which one your mix most resembles.
       </p>
 
       <h2>What the data says</h2>

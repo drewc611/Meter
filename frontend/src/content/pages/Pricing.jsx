@@ -75,8 +75,8 @@ export default function Pricing() {
       <span className="kicker">Work with us</span>
       <h1>Book a consultation, or subscribe</h1>
       <p className="lead">
-        Two ways to work directly with the team behind Merit AC — a paid consultation, scheduled
-        directly, or an ongoing subscription. No sales call required to see the price.
+        Two ways to work with the team behind Merit AC: a paid consultation, or an ongoing
+        subscription. No sales call required to see the price.
       </p>
 
       <div className="grid">
@@ -88,8 +88,7 @@ export default function Pricing() {
             {CONSULTATION_PRICE_LABEL}
           </p>
           <p style={{ marginBottom: "var(--sp-4)" }}>
-            A direct working session on your own AI spend, architecture, or rollout — not a sales
-            call, an actual session with someone who builds this for a living.
+            A working session on your own AI spend, architecture, or rollout — not a sales call.
           </p>
 
           {BOOKING_URL ? (
@@ -124,8 +123,7 @@ export default function Pricing() {
             {SUBSCRIPTION_PRICE_LABEL}
           </p>
           <p style={{ marginBottom: "var(--sp-4)" }}>
-            Ongoing access to the paid tier — ask what's included before committing; this page
-            doesn&apos;t oversell it with a feature list written before the tier existed.
+            Ongoing access to the paid tier — ask what&apos;s included before committing.
           </p>
 
           {SUBSCRIPTION_PAYMENT_LINK ? (
