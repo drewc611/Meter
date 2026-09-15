@@ -19,7 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from .config import cors_origins_from_env, in_production
 from .database import init_db
 from .dependencies import get_current_user, require_admin, require_api_key
-from .routers import admin, auth, dashboard, health, ingestion, waitlist
+from .routers import admin, assistant, auth, dashboard, health, ingestion, waitlist
 
 logger = logging.getLogger(__name__)
 
@@ -112,9 +112,10 @@ def create_app() -> FastAPI:
     app.include_router(admin.router, dependencies=[Depends(require_admin)])
     app.include_router(dashboard.router, dependencies=[Depends(get_current_user)])
     app.include_router(health.router)
-    # auth/waitlist are ungated -- an anonymous visitor has no token yet.
+    # auth/waitlist/assistant are ungated -- an anonymous visitor has no token yet.
     app.include_router(auth.router)
     app.include_router(waitlist.router)
+    app.include_router(assistant.router)
     return app
 
 

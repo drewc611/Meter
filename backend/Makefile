@@ -1,9 +1,10 @@
-.PHONY: help install seed github-sync recompute run test lint fmt clean
+.PHONY: help install seed github-sync sync-content recompute run test lint fmt clean
 
 help:
 	@echo "make install      - install runtime + dev dependencies"
 	@echo "make seed         - build merit.db with 6 months of sample data"
 	@echo "make github-sync  - pull merged PRs/CI status from MERIT_GITHUB_OWNER/REPO"
+	@echo "make sync-content - mirror frontend/src/content/entries/ into ContentEntry for the AI assistant"
 	@echo "make recompute    - recompute PersonScore for the current period"
 	@echo "make run          - start the API on :8000 (uvicorn --reload)"
 	@echo "make test         - run the pytest suite"
@@ -19,6 +20,9 @@ seed:
 
 github-sync:
 	python github_sync.py
+
+sync-content:
+	python sync_content.py
 
 recompute:
 	python recompute.py
