@@ -42,6 +42,7 @@ import AllDashSpotlight, { meta as allDashMeta } from "./pages/AllDashSpotlight.
 import PortampSpotlight, { meta as portampMeta } from "./pages/PortampSpotlight.jsx";
 import NewsletterIndex, { meta as newsletterIndexMeta } from "./pages/NewsletterIndex.jsx";
 import NewsletterEntry, { newsletterMeta } from "./pages/NewsletterEntry.jsx";
+import Pricing, { meta as pricingMeta } from "./pages/Pricing.jsx";
 import { PROMPTS } from "./data/prompts.js";
 
 // One markdown file per entry -- drop a new .md in the matching folder and it
@@ -80,6 +81,7 @@ const PAGES = [
   [AllDashSpotlight, allDashMeta],
   [PortampSpotlight, portampMeta],
   [NewsletterIndex, newsletterIndexMeta, { entries: newsletterEntries }],
+  [Pricing, pricingMeta],
 ];
 
 // Guide-shaped entries (guides/cloud-architecture/claude-architecture) all
