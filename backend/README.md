@@ -124,6 +124,7 @@ touches your `merit.db`. Ruff/pytest config lives in `pyproject.toml`.
 | GET | `/auth/google/callback` | Google's redirect target — exchanges the code, redirects to the frontend with a token |
 | GET | `/auth/me` | The logged-in user, given a valid token |
 | POST | `/waitlist` | Pre-launch signup from the coming-soon page. Ungated, same as `/auth/*` — an anonymous visitor has no token yet by definition |
+| POST | `/assistant/ask` | Answers a visitor's question about the site's own content, grounded only in `ContentEntry` rows (see `services/content_index.py`) — never the model's own general knowledge. Ungated like `/waitlist`, rate-limited like it too since this one costs a real Claude API call per request. Needs `ANTHROPIC_API_KEY`; returns **503** when it's unset rather than crashing. `make sync-content` (or `python sync_content.py`) populates `ContentEntry` from `frontend/src/content/entries/**/*.md` — rerun it whenever that markdown changes, since nothing does it automatically yet |
 
 All ingestion endpoints return **422** if the external id has no
 `IdentityMapping` yet — that's deliberate (§5.5 of the spec: an unmapped id is
@@ -154,9 +155,10 @@ Two independent auth layers, covering two different kinds of caller:
 
 Both default to unset/open, so local dev, `docker compose`, and the test
 suite stay exactly as open as before; see [`DEPLOY.md`](../DEPLOY.md#turning-on-dashboard-login)
-for turning them on in production. `/healthz` and `/waitlist` are always
-open — Fly's health check and an anonymous visitor signing up both have no
-token by definition.
+for turning them on in production. `/healthz`, `/waitlist`, and
+`/assistant/ask` are always open — Fly's health check, an anonymous visitor
+signing up, and an anonymous visitor asking the assistant a question all
+have no token by definition.
 
 ### Signup and Organization creation
 

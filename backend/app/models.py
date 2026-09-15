@@ -235,6 +235,28 @@ class WaitlistSignup(Base):
     notified_at = Column(DateTime, nullable=True)  # set by /admin/notify-waitlist, so a re-run doesn't double-email
 
 
+class ContentEntry(Base):
+    """One piece of the public site's own content (news, guides, models,
+    glossary, skills, newsletter, ...), mirrored from the frontend's own
+    markdown source of truth (frontend/src/content/entries/<type>/*.md) so
+    services/assistant.py always has something current to read from. Not
+    org-scoped -- this is the site's own public content, the same for every
+    visitor, not per-tenant data. Never edited by hand: rebuilt by
+    sync_content.py (see services/content_index.py), which is idempotent
+    and safe to rerun any time the markdown changes."""
+
+    __tablename__ = "content_entries"
+    id = Column(Integer, primary_key=True)
+    type = Column(String, nullable=False)  # "news" | "models" | "glossary" | "guides" | ...
+    slug = Column(String, nullable=False)
+    title = Column(String, nullable=False)
+    url_path = Column(String, nullable=False)  # e.g. "/news/some-article"
+    body = Column(Text, nullable=False)  # raw markdown body, frontmatter stripped
+    updated_at = Column(DateTime, default=utcnow)
+
+    __table_args__ = (UniqueConstraint("type", "slug", name="uq_content_type_slug"),)
+
+
 class PersonScore(Base):
     """
     Materialized output of the nightly scoring job (see services/scoring.recompute_all).

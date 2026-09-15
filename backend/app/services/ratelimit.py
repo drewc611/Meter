@@ -1,8 +1,9 @@
 """
-A small fixed-window-per-caller rate limiter for the three endpoints anyone on
-the internet can reach without a token: /auth/login, /auth/signup and
-/waitlist. Unthrottled, those are free password guessing, free account
-creation, and free lead-table spam respectively.
+A small fixed-window-per-caller rate limiter for the endpoints anyone on
+the internet can reach without a token: /auth/login, /auth/signup,
+/waitlist, and /assistant/ask. Unthrottled, those are free password
+guessing, free account creation, free lead-table spam, and a free-standing
+Claude API bill respectively.
 
 Deliberately in-process rather than Redis. This app runs as a single Fly
 machine by design (see backend/fly.toml -- one SQLite file on one mounted
