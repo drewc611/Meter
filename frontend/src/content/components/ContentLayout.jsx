@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { key: "news", href: "/news", label: "News" },
   { key: "newsletter", href: "/newsletter", label: "Newsletter" },
   { key: "ask", href: "/ask", label: "Ask" },
+  { key: "pricing", href: "/pricing", label: "Pricing" },
   { key: "models", href: "/models", label: "Models" },
   { key: "skills", href: "/skills", label: "Skills" },
   { key: "glossary", href: "/glossary", label: "Glossary" },
