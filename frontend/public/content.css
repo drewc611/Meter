@@ -703,6 +703,82 @@ pre.pre-wrap {
   cursor: not-allowed;
   transform: none;
 }
+
+/* ---------- /ask assistant chat ---------- */
+.ask-messages {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  max-height: 420px;
+  overflow-y: auto;
+  margin-bottom: var(--sp-4);
+}
+.ask-msg {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 85%;
+  white-space: pre-wrap;
+}
+.ask-msg-user {
+  align-self: flex-end;
+  background: var(--brand);
+  color: #fff;
+}
+.ask-msg-assistant {
+  align-self: flex-start;
+  background: var(--paper-2);
+  color: var(--ink);
+}
+.ask-sources {
+  align-self: flex-start;
+  margin: -6px 0 0;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.ask-sources a {
+  color: var(--muted);
+  text-decoration: underline;
+}
+.ask-sources a:hover,
+.ask-sources a:focus-visible {
+  color: var(--brand);
+}
+.ask-form {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: flex-end;
+}
+.ask-form textarea {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+.ask-form textarea::placeholder {
+  color: var(--muted-2);
+}
+.ask-form textarea:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
+}
+.ask-form button {
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ask-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
 .sr-only {
   position: absolute;
   width: 1px;

@@ -322,3 +322,17 @@ class AdoptionOut(BaseModel):
     active_users: int
     utilization_pct: float
     by_tier: list[AdoptionTierOut]
+
+
+class AssistantAskIn(BaseModel):
+    question: str = Field(min_length=1, max_length=1000)
+
+
+class AssistantSourceOut(BaseModel):
+    title: str
+    url: str
+
+
+class AssistantAskOut(BaseModel):
+    answer: str
+    sources: list[AssistantSourceOut]
