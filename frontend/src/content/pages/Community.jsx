@@ -10,37 +10,34 @@ export const meta = {
 const PILLARS = [
   {
     title: "The team's own build notes",
-    body:
-      "What's actually working (and what broke) as the reference platform behind the guides, prompts, and challenge keeps getting built out — not a polished summary after the fact. If a control boundary turns out to be harder to enforce than the guide made it sound, that's what shows up here.",
+    body: "What's actually working, and what broke, as the platform behind the guides and challenge gets built — not a polished summary after the fact.",
   },
   {
     title: "Compare notes with other builders",
-    body:
-      "A place to see how other people running the 30-day challenge scoped their repository controls, their identity boundary, their approval flow — and to post your own. The interesting part is usually where two reasonable setups disagree.",
+    body: "See how other people running the 30-day challenge scoped their controls, identity boundary, and approval flow — and post your own.",
   },
   {
     title: "A direct line for questions",
-    body:
-      "Somewhere to ask a specific question about a discipline, a domain, or your capstone build and get a real answer, not a support ticket — not a rewritten version of a guide that already exists.",
+    body: "Ask a specific question about a discipline, a domain, or your capstone build, and get a real answer — not a rewritten guide.",
   },
 ];
 
 const FAQ = [
   {
     q: "Is this open yet?",
-    a: "No. Everything on this page is real — the pillars describe what it's actually meant to be — but there's no live space to join today. Leave your email below and you'll hear about it the moment there is one.",
+    a: "No — the pillars above describe what it's meant to be, but there's no live space yet. Leave your email below and you'll hear when there is.",
   },
   {
     q: "Which platform will it be on?",
-    a: "Not decided. It'll depend on what actually fits — a text-heavy build-notes archive wants different software than a live Q&A. Whatever it ends up being, it'll be named here plainly, not folded into a vague \"community platform\" phrase.",
+    a: "Not decided yet — it depends on what actually fits. Whatever it ends up being, it'll be named here plainly.",
   },
   {
     q: "Will it cost anything?",
-    a: "Also not decided. If it does, the price will be stated the same way everything else on this site states a number — plainly, next to what it buys, not hidden behind a \"contact us.\"",
+    a: "Also not decided. If it does, the price will be stated plainly, next to what it buys.",
   },
   {
     q: "What happens to my email if this never launches?",
-    a: "It sits in the interest list and nothing else — it's not added to any other list, and there's no drip sequence between now and an actual announcement.",
+    a: "It sits in the interest list, nothing else — no other list, no drip sequence.",
   },
 ];
 
@@ -53,10 +50,9 @@ export default function Community() {
       </span>
       <h1>Community</h1>
       <p className="lead">
-        A space to go deeper on governed agentic DevSecOps than a page can — with the Merit AC team
-        and other people building through the <a href="/challenge">30-day challenge</a>. It isn't open
-        yet. No platform or price has been decided, so there's nothing to sell here — just an honest
-        description and a place to say you're interested.
+        A space to go deeper on governed agentic DevSecOps with the Merit AC team and other people
+        building through the <a href="/challenge">30-day challenge</a>. Not open yet — leave your
+        email below and you'll hear when it is.
       </p>
 
       <div className="grid">
@@ -84,10 +80,7 @@ export default function Community() {
         <p className="kicker" style={{ marginBottom: "8px" }}>
           Get notified
         </p>
-        <p>
-          Leave your email and I'll reach out when this opens — with whatever it actually turns out
-          to be, platform and price included, once those are decided.
-        </p>
+        <p>Leave your email and I'll reach out when this opens, platform and price included.</p>
         <form className="signup-form" id="communityForm" noValidate>
           <label htmlFor="communityEmail" className="sr-only">
             Work email
@@ -146,11 +139,10 @@ export default function Community() {
       </div>
 
       <p>
-        In the meantime: the <a href="/prompts">30-day prompt archive</a>, the{" "}
-        <a href="/guides">guides</a>, and the <a href="/challenge">challenge</a> are all live and
-        free — the fastest way to have something worth comparing notes on when this does open. The{" "}
-        <a href="/models">models directory</a> and <a href="/glossary">glossary</a> are there too, if
-        it's a definition or a tool comparison you're after rather than a build to run.
+        In the meantime: the <a href="/prompts">prompt archive</a>, <a href="/guides">guides</a>,
+        and the <a href="/challenge">challenge</a> are live and free. The{" "}
+        <a href="/models">models directory</a> and <a href="/glossary">glossary</a> are there too,
+        if it's a definition you're after rather than a build.
       </p>
     </ContentLayout>
   );

@@ -12,9 +12,8 @@ export default function AskAssistant() {
       <span className="kicker">Assistant</span>
       <h1>Ask about the work here</h1>
       <p className="lead">
-        Answers come only from what's actually published on this site — news, guides, the models
-        directory, the glossary — never guessed or filled in from outside. If the site doesn't
-        cover something yet, the assistant says so instead of making it up.
+        Answers come only from what's published on this site. If it isn't covered yet, the
+        assistant says so instead of guessing.
       </p>
 
       <div className="card">

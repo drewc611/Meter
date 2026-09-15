@@ -95,13 +95,10 @@ export default function OperatorOS() {
       </span>
       <h1>Operator OS: the whole business, on your machine, in files you own.</h1>
       <p className="lead">
-        Nine CSV files, an engine that does the money math the same way every time, an event log
-        that makes every change reversible, real double-entry books, a query language, a cash
-        simulation with the odds attached, eight import adapters, a plugin SDK, an agent layer that
-        runs the whole thing on a schedule, thirty-five tools, eight encoded businesses to start
-        from, and a workbook covering every step on Mac and Windows. No account, no server, no
-        subscription, nothing to log into -- Python 3.9 and an optional git install are the entire
-        dependency list, on purpose.
+        A file-based business operating system: real double-entry books, cash forecasting with the
+        odds attached, import adapters, and an agent layer that runs on a schedule — all on your
+        own machine. No account, no server, no subscription; Python 3.9 and an optional git install
+        are the entire dependency list.
       </p>
 
       <h2>Five minutes to something real</h2>
@@ -196,8 +193,7 @@ export default function OperatorOS() {
           <a href="https://github.com/drewc611/Meter/tree/main/operator-os">
             <code>operator-os/</code>
           </a>{" "}
-          -- this page describes what's actually in that build, sourced directly from its own README
-          and manual, not marketing copy written ahead of the product.
+          — this page describes what's actually in that build.
         </p>
       </div>
     </ContentLayout>
