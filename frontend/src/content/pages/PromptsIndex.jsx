@@ -34,15 +34,27 @@ export default function PromptsIndex() {
         pipeline config, the prompt tells you what to paste in first.
       </p>
 
+      <p className="day-progress" id="challengeProgress" role="status" aria-live="polite">
+        0 of {PROMPTS.length} days checked off
+      </p>
+
       {SECTIONS.map((section) => (
         <div key={section.label}>
           <h2>{section.label}</h2>
           <div className="grid">
             {PROMPTS.filter((p) => p.day >= section.days[0] && p.day <= section.days[1]).map((p) => (
-              <a key={p.day} className="tile" href={`/prompts/day-${p.day}-${p.slug}`}>
-                <span className="tile-title">Day {p.day}: {p.title}</span>
-                <span className="tile-meta">{p.track}</span>
-              </a>
+              <div className="tile-day-wrap" key={p.day}>
+                <a className="tile" href={`/prompts/day-${p.day}-${p.slug}`}>
+                  <span className="tile-title">Day {p.day}: {p.title}</span>
+                  <span className="tile-meta">{p.track}</span>
+                </a>
+                <label className="day-check" aria-label={`Mark Day ${p.day} as complete`}>
+                  <input type="checkbox" data-day={p.day} />
+                  <span className="day-check-mark" aria-hidden="true">
+                    ✓
+                  </span>
+                </label>
+              </div>
             ))}
           </div>
         </div>
@@ -57,6 +69,54 @@ export default function PromptsIndex() {
           non-trivial work, each one naming exactly which patterns it's built from.
         </p>
       </div>
+
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `(function(){
+  var STORAGE_KEY = "meritChallengeProgress";
+  var boxes = document.querySelectorAll("[data-day]");
+  var progressEl = document.getElementById("challengeProgress");
+  var total = boxes.length;
+
+  function loadDone() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+  function saveDone(days) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(days));
+    } catch (e) {}
+  }
+  function updateProgress(done) {
+    if (progressEl) progressEl.textContent = done.length + " of " + total + " days checked off";
+  }
+
+  var done = loadDone();
+  boxes.forEach(function (box) {
+    var day = Number(box.getAttribute("data-day"));
+    var wrap = box.closest(".tile-day-wrap");
+    if (done.indexOf(day) !== -1) {
+      box.checked = true;
+      if (wrap) wrap.classList.add("day-complete");
+    }
+    box.addEventListener("change", function () {
+      var d = loadDone();
+      var idx = d.indexOf(day);
+      if (box.checked && idx === -1) d.push(day);
+      else if (!box.checked && idx !== -1) d.splice(idx, 1);
+      saveDone(d);
+      updateProgress(d);
+      if (wrap) wrap.classList.toggle("day-complete", box.checked);
+    });
+  });
+  updateProgress(done);
+})();`,
+        }}
+      />
     </ContentLayout>
   );
 }

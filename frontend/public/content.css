@@ -923,6 +923,71 @@ th {
   color: var(--muted);
 }
 
+/* Per-day progress checklist (/prompts) -- a checkbox layered over each
+   .tile rather than restructuring it, so .grid a.tile's own styling stays
+   untouched. localStorage-only, no server round trip; see PromptsIndex.jsx. */
+.day-progress {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 var(--sp-2);
+}
+.tile-day-wrap {
+  position: relative;
+}
+/* Specificity has to beat .grid a.tile's own padding shorthand (2 classes +
+   1 tag), or this override silently loses and the checkbox sits on top of
+   wrapped title text -- matched here with an equally-qualified selector. */
+.grid .tile-day-wrap a.tile {
+  padding-right: 48px;
+}
+.day-check {
+  position: absolute;
+  top: var(--sp-4);
+  right: var(--sp-4);
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+}
+.day-check input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.day-check-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--line-strong);
+  background: var(--paper-2);
+  color: transparent;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background 0.15s var(--ease-out), border-color 0.15s var(--ease-out), color 0.15s var(--ease-out),
+    transform 0.12s var(--ease-out);
+}
+.day-check input:checked + .day-check-mark {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+.day-check input:focus-visible + .day-check-mark {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+.day-check input:active + .day-check-mark {
+  transform: scale(0.92);
+}
+.tile-day-wrap.day-complete .tile {
+  border-color: var(--good-pale);
+  background: var(--good-pale);
+}
+
 /* A small per-item category label -- distinct from .badge, which is a single
    glowing-dot status marker used once per page, not repeated per tile. */
 .chip {
