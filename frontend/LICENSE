@@ -1,0 +1,6 @@
+This directory is part of Merit AC, licensed under the terms in the
+repository root: see ../LICENSE (the formal terms) or ../LICENSE-PLAIN.md
+(a plain-English summary). This pointer file exists so the license is
+visible from inside the product's own directory, the same way
+operator-os/ carries its own license file -- the text isn't duplicated
+here to avoid the two copies drifting out of sync.

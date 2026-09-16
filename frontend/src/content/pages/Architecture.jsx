@@ -28,6 +28,7 @@ export default function Architecture() {
           { href: "#deployment", label: "Where it runs" },
           { href: "#verdict", label: "Does this hosting choice make sense?" },
           { href: "#stubbed", label: "What's deliberately not built yet" },
+          { href: "#licensing", label: "How it's licensed" },
         ]}
       />
 
@@ -226,6 +227,29 @@ export default function Architecture() {
         </p>
       </div>
 
+
+      <h2 id="licensing">6. How it's licensed</h2>
+      <p>
+        Free for your own personal, non-commercial use -- read it, run it, self-host it to track
+        your own AI spend. Using it on behalf of a company or organization -- internal use, a
+        service to others, evaluating it for a purchase decision -- needs a separate written
+        commercial license.
+      </p>
+      <div className="card">
+        <p style={{ marginBottom: 0 }}>
+          Full terms in{" "}
+          <a href="https://github.com/drewc611/Meter/blob/main/LICENSE">
+            <code>LICENSE</code>
+          </a>
+          , or the plain-English version in{" "}
+          <a href="https://github.com/drewc611/Meter/blob/main/LICENSE-PLAIN.md">
+            <code>LICENSE-PLAIN.md</code>
+          </a>
+          . Using the hosted dashboard itself is separate from this code license -- see{" "}
+          <a href="/pricing">/pricing</a>. Operator OS is a different product with its own
+          license: <a href="/operator-os">/operator-os</a>.
+        </p>
+      </div>
 
       <div className="card">
         <p>

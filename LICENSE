@@ -1,7 +1,10 @@
 Copyright (c) 2026 A_ROCK. All rights reserved.
 
-This software and its associated source code, documentation, and other
-files in this repository (the "Software") are dual-licensed as follows.
+This is Merit AC's license: it covers Merit AC's own source code and
+documentation in this repository (principally backend/ and frontend/) (the
+"Software"), and is dual-licensed as follows. It does not cover
+operator-os/, a separate product distributed under its own license --
+see operator-os/LICENSE and operator-os/LICENCE-PLAIN.md.
 
 1. PERSONAL USE
 
