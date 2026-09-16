@@ -7,6 +7,7 @@
 // contract: it's a plain <aside>, no collapse state, just hidden under the
 // mobile breakpoint where nav.site-nav's checkbox toggle takes over instead.
 const NAV_ITEMS = [
+  { key: "products", href: "/products", label: "Products" },
   { key: "architecture", href: "/architecture", label: "Architecture" },
   { key: "cloud-architecture", href: "/cloud-architecture", label: "Cloud Architecture" },
   { key: "claude-architecture", href: "/claude-architecture", label: "Claude Architecture" },
