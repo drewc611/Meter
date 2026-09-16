@@ -45,6 +45,7 @@ import NewsletterEntry, { newsletterMeta } from "./pages/NewsletterEntry.jsx";
 import AskAssistant, { meta as askAssistantMeta } from "./pages/AskAssistant.jsx";
 import Pricing, { meta as pricingMeta } from "./pages/Pricing.jsx";
 import Contact, { meta as contactMeta } from "./pages/Contact.jsx";
+import Products, { meta as productsMeta } from "./pages/Products.jsx";
 import { PROMPTS } from "./data/prompts.js";
 
 // One markdown file per entry -- drop a new .md in the matching folder and it
@@ -86,6 +87,7 @@ const PAGES = [
   [AskAssistant, askAssistantMeta],
   [Pricing, pricingMeta],
   [Contact, contactMeta],
+  [Products, productsMeta],
 ];
 
 // Guide-shaped entries (guides/cloud-architecture/claude-architecture) all

@@ -195,6 +195,9 @@ export default function Home() {
           { label: "Portamp", note: "Legacy front ends, ported and proven", href: "/portamp" },
         ]}
       />
+      <p style={{ marginTop: "var(--sp-3)" }}>
+        Full list with descriptions: <a href="/products">/products</a>.
+      </p>
 
       <div className="card" style={{ marginTop: "var(--sp-10)" }}>
         <span className="kicker" style={{ marginBottom: "var(--sp-2)" }}>
