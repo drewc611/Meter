@@ -21,6 +21,13 @@ real work or slop. Early prototype status. Four parts:
   rather than 404ing as client-only SPA routes, and so an anonymous visitor
   lands on a real landing page instead of an auth-gated dashboard. See
   `frontend/README.md`.
+
+  `backend/` and `frontend/` together are Merit AC's own product boundary,
+  under the dual-use license at the repository root (free personal use,
+  paid commercial license required otherwise) — see `LICENSE` and the
+  plain-English `LICENSE-PLAIN.md`, both also pointed to by a short
+  `LICENSE` file physically inside each of `backend/` and `frontend/`, and
+  surfaced on the site itself at `/architecture#licensing`.
 - `operator-os/` — a second, independent product: a file-based business
   operating system (double-entry books, cash forecasting, import adapters,
   a scheduled agent layer), distributed as a standalone Python CLI, not a
