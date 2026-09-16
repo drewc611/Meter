@@ -1,3 +1,5 @@
+import { Fragment } from "react";
+
 // Shared shell for the prerendered content-site pages (home, architecture,
 // setup guides, guides, prompts, challenge). These render at build time via
 // entry-server.jsx + scripts/prerender-content.mjs into plain static HTML --
@@ -6,24 +8,51 @@
 // left-hand section nav below is the same "never ships client-side JS"
 // contract: it's a plain <aside>, no collapse state, just hidden under the
 // mobile breakpoint where nav.site-nav's checkbox toggle takes over instead.
-const NAV_ITEMS = [
-  { key: "products", href: "/products", label: "Products" },
-  { key: "architecture", href: "/architecture", label: "Architecture" },
-  { key: "cloud-architecture", href: "/cloud-architecture", label: "Cloud Architecture" },
-  { key: "claude-architecture", href: "/claude-architecture", label: "Claude Architecture" },
-  { key: "setup", href: "/setup/react", label: "Setup" },
-  { key: "news", href: "/news", label: "News" },
-  { key: "newsletter", href: "/newsletter", label: "Newsletter" },
-  { key: "ask", href: "/ask", label: "Ask" },
-  { key: "pricing", href: "/pricing", label: "Pricing" },
-  { key: "models", href: "/models", label: "Models" },
-  { key: "skills", href: "/skills", label: "Skills" },
-  { key: "glossary", href: "/glossary", label: "Glossary" },
-  { key: "guides", href: "/guides", label: "Guides" },
-  { key: "prompts", href: "/prompts", label: "Prompts" },
-  { key: "challenge", href: "/challenge", label: "Challenge" },
-  { key: "operator-os", href: "/operator-os", label: "Operator OS" },
-  { key: "community", href: "/community", label: "Community" },
+//
+// Grouped rather than one flat 17-link list -- the groups mirror the
+// Understand/Build/Operate/Measure taxonomy Home.jsx's own SURFACES already
+// uses, so a visitor sees the same structure whether they land on / or open
+// the nav from any other page. Group labels render in both the desktop
+// sidebar and the mobile overlay (content.css scopes visibility per surface).
+const NAV_GROUPS = [
+  {
+    label: "Products",
+    items: [{ key: "products", href: "/products", label: "All products" }],
+  },
+  {
+    label: "Understand",
+    items: [
+      { key: "news", href: "/news", label: "News" },
+      { key: "newsletter", href: "/newsletter", label: "Newsletter" },
+      { key: "models", href: "/models", label: "Models" },
+      { key: "glossary", href: "/glossary", label: "Glossary" },
+      { key: "ask", href: "/ask", label: "Ask" },
+    ],
+  },
+  {
+    label: "Build",
+    items: [
+      { key: "architecture", href: "/architecture", label: "Architecture" },
+      { key: "cloud-architecture", href: "/cloud-architecture", label: "Cloud Architecture" },
+      { key: "claude-architecture", href: "/claude-architecture", label: "Claude Architecture" },
+      { key: "setup", href: "/setup/react", label: "Setup" },
+      { key: "guides", href: "/guides", label: "Guides" },
+      { key: "skills", href: "/skills", label: "Skills" },
+      { key: "prompts", href: "/prompts", label: "Prompts" },
+    ],
+  },
+  {
+    label: "Operate",
+    items: [
+      { key: "operator-os", href: "/operator-os", label: "Operator OS" },
+      { key: "challenge", href: "/challenge", label: "Challenge" },
+      { key: "community", href: "/community", label: "Community" },
+    ],
+  },
+  {
+    label: "Company",
+    items: [{ key: "pricing", href: "/pricing", label: "Pricing" }],
+  },
 ];
 
 export default function ContentLayout({ active, wide, children }) {
@@ -50,10 +79,15 @@ export default function ContentLayout({ active, wide, children }) {
             <span className="sr-only">Menu</span>
           </label>
           <nav className="site-nav">
-            {NAV_ITEMS.map((item) => (
-              <a key={item.key} href={item.href} aria-current={item.key === active ? "page" : undefined}>
-                {item.label}
-              </a>
+            {NAV_GROUPS.map((group) => (
+              <Fragment key={group.label}>
+                <span className="section-nav-label">{group.label}</span>
+                {group.items.map((item) => (
+                  <a key={item.key} href={item.href} aria-current={item.key === active ? "page" : undefined}>
+                    {item.label}
+                  </a>
+                ))}
+              </Fragment>
             ))}
             <a href="/app" className="nav-cta">
               Sign in
@@ -64,10 +98,15 @@ export default function ContentLayout({ active, wide, children }) {
       <div className="site-body">
         <aside className="section-nav" aria-label="Sections">
           <span className="section-nav-label">Merit AC</span>
-          {NAV_ITEMS.map((item) => (
-            <a key={item.key} href={item.href} aria-current={item.key === active ? "page" : undefined}>
-              {item.label}
-            </a>
+          {NAV_GROUPS.map((group) => (
+            <Fragment key={group.label}>
+              <span className="section-nav-label section-nav-group-label">{group.label}</span>
+              {group.items.map((item) => (
+                <a key={item.key} href={item.href} aria-current={item.key === active ? "page" : undefined}>
+                  {item.label}
+                </a>
+              ))}
+            </Fragment>
           ))}
         </aside>
         <main className={wide ? "content wide" : "content"}>{children}</main>
