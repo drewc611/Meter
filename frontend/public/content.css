@@ -185,6 +185,11 @@ nav.site-nav {
 nav.site-nav a:not(.nav-cta) {
   display: none;
 }
+/* Group-label spans only make sense in the mobile full-screen overlay below
+   (desktop's copy of the nav is the sidebar, which has its own labels). */
+nav.site-nav .section-nav-label {
+  display: none;
+}
 nav.site-nav a {
   color: var(--muted);
   text-decoration: none;
@@ -295,6 +300,18 @@ nav.site-nav a.nav-cta:focus-visible {
     padding: var(--sp-2) 0;
     border-bottom: 1px solid var(--line);
   }
+  nav.site-nav .section-nav-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-2);
+    margin: var(--sp-4) 0 var(--sp-1);
+  }
+  nav.site-nav .section-nav-label:first-child {
+    margin-top: 0;
+  }
   nav.site-nav a.nav-cta {
     width: auto;
     margin-top: var(--sp-3);
@@ -333,6 +350,7 @@ aside.section-nav {
   border-right: 1px solid var(--line);
 }
 aside.section-nav .section-nav-label {
+  display: block;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -340,6 +358,12 @@ aside.section-nav .section-nav-label {
   color: var(--muted-2);
   margin: 0 0 var(--sp-3);
   padding: 0 var(--sp-3);
+}
+/* Per-group labels (Products/Understand/Build/...) need breathing room
+   above them since they repeat down the list, unlike the single "Merit AC"
+   label at the very top. */
+aside.section-nav .section-nav-group-label {
+  margin-top: var(--sp-5);
 }
 aside.section-nav a {
   display: block;
