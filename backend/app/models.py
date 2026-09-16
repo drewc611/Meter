@@ -107,6 +107,13 @@ class UsageEvent(Base):
     cost_usd = Column(Float, nullable=False)
     occurred_at = Column(DateTime, nullable=False)
     ingested_at = Column(DateTime, default=utcnow)
+    # Caller-supplied idempotency key -- optional, but when present a retry
+    # with the same (identity, event_id) replays the existing row instead of
+    # double-counting spend. Enforced by a unique index in database.py, not
+    # a __table_args__ constraint here, so it applies uniformly to fresh and
+    # pre-existing databases via the same backfill path -- see database.py's
+    # _backfill_indexes() docstring.
+    event_id = Column(String, nullable=True)
 
 
 class OutcomeEvent(Base):
@@ -130,6 +137,8 @@ class OutcomeEvent(Base):
     occurred_at = Column(DateTime, nullable=False)
     external_ref = Column(String, nullable=True)  # PR url, ticket id, deal id — for drill-down
     ingested_at = Column(DateTime, default=utcnow)
+    # See UsageEvent.event_id -- same idempotency mechanism.
+    event_id = Column(String, nullable=True)
 
 
 class QualitySignal(Base):
@@ -146,6 +155,8 @@ class QualitySignal(Base):
     occurred_at = Column(DateTime, nullable=False)
     external_ref = Column(String, nullable=True)
     ingested_at = Column(DateTime, default=utcnow)
+    # See UsageEvent.event_id -- same idempotency mechanism.
+    event_id = Column(String, nullable=True)
 
 
 class RubricGrade(Base):
@@ -179,6 +190,13 @@ class UnmappedIdentityEvent(Base):
 
     cost_usd is only ever populated for ingest_path="usage" -- outcome and
     quality-signal attempts don't carry a dollar figure to record.
+
+    event_id: same idempotency key as the three event tables -- without it,
+    a retried call against a still-unmapped identity (a normal failure mode:
+    the calling integration retries because it saw a 422 and doesn't know
+    that's expected) wrote a fresh row every time, inflating the observed
+    shadow-AI cost that feeds get_shadow_ai_observed_cost(). See database.py
+    for the unique-index enforcement.
     """
 
     __tablename__ = "unmapped_identity_events"
@@ -190,6 +208,7 @@ class UnmappedIdentityEvent(Base):
     cost_usd = Column(Float, nullable=True)
     occurred_at = Column(DateTime, nullable=False)
     ingested_at = Column(DateTime, default=utcnow)
+    event_id = Column(String, nullable=True)
 
 
 class DashboardUser(Base):

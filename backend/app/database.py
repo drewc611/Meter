@@ -29,17 +29,40 @@ _COLUMN_BACKFILLS = [
     ("waitlist_signups", "source", "VARCHAR NOT NULL DEFAULT 'coming-soon'"),
     ("waitlist_signups", "name", "VARCHAR"),
     ("waitlist_signups", "note", "VARCHAR"),
+    ("usage_events", "event_id", "VARCHAR"),
+    ("outcome_events", "event_id", "VARCHAR"),
+    ("quality_signals", "event_id", "VARCHAR"),
+    ("unmapped_identity_events", "event_id", "VARCHAR"),
+]
+
+# Ingestion idempotency: a caller-supplied event_id is optional, but when
+# given, a retry (the normal failure mode for a webhook or billing-proxy
+# call) must resolve to the same row instead of double-counting spend or
+# inflating the shadow-AI cost figure -- see services/ingest.py. Enforced
+# here as a plain unique index rather than a __table_args__ constraint on
+# the model, so the same statement applies identically to a fresh database
+# (where create_all already added the column) and an existing one (where
+# _backfill_columns just added it) -- no dialect branching needed, since
+# both SQLite and Postgres support CREATE UNIQUE INDEX IF NOT EXISTS and
+# both exclude NULL from uniqueness checks by default, which is what lets
+# callers that don't supply an event_id keep working unconstrained.
+_INDEX_BACKFILLS = [
+    ("uq_usage_identity_event", "usage_events", "identity_id, event_id"),
+    ("uq_outcome_identity_event", "outcome_events", "identity_id, event_id"),
+    ("uq_quality_identity_event", "quality_signals", "identity_id, event_id"),
+    ("uq_unmapped_org_source_event", "unmapped_identity_events", "org_id, source_system, event_id"),
 ]
 
 
 def init_db() -> None:
-    """Create any missing tables, then backfill any columns added to
+    """Create any missing tables, then backfill any columns/indexes added to
     existing tables since they first shipped. Import models first so they
     are registered."""
     from . import models  # noqa: F401  (registers mappers on Base.metadata)
 
     Base.metadata.create_all(bind=engine)
     _backfill_columns()
+    _backfill_indexes()
     _migrate_to_multi_tenant()
 
 
@@ -53,6 +76,16 @@ def _backfill_columns() -> None:
             existing = {c["name"] for c in inspector.get_columns(table)}
             if column not in existing:
                 conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {column} {ddl}"))
+
+
+def _backfill_indexes() -> None:
+    inspector = inspect(engine)
+    table_names = set(inspector.get_table_names())
+    with engine.begin() as conn:
+        for name, table, columns in _INDEX_BACKFILLS:
+            if table not in table_names:
+                continue  # brand-new DB with no tables at all yet -- shouldn't happen post-create_all, but cheap to guard
+            conn.execute(text(f"CREATE UNIQUE INDEX IF NOT EXISTS {name} ON {table} ({columns})"))
 
 
 def _migrate_to_multi_tenant() -> None:
