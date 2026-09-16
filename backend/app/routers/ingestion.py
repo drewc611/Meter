@@ -49,6 +49,7 @@ def post_usage(
             tokens_in=evt.tokens_in,
             tokens_out=evt.tokens_out,
             occurred_at=evt.occurred_at,
+            event_id=evt.event_id,
         )
     )
     return schemas.IngestAccepted(id=row.id)
@@ -76,6 +77,7 @@ def post_outcome(
             occurred_at=evt.occurred_at,
             external_ref=evt.external_ref,
             value_weight=evt.value_weight,
+            event_id=evt.event_id,
         )
     )
     return schemas.IngestAccepted(id=row.id)
@@ -97,6 +99,7 @@ def post_quality_signal(
             occurred_at=evt.occurred_at,
             external_ref=evt.external_ref,
             severity=evt.severity,
+            event_id=evt.event_id,
         )
     )
     return schemas.IngestAccepted(id=row.id)

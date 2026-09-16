@@ -49,6 +49,7 @@ def resolve_identity(
     ingest_path: str,
     cost_usd: float | None = None,
     occurred_at: datetime | None = None,
+    event_id: str | None = None,
 ) -> Identity:
     mapping = (
         db.query(IdentityMapping)
@@ -56,17 +57,31 @@ def resolve_identity(
         .one_or_none()
     )
     if mapping is None:
-        db.add(
-            UnmappedIdentityEvent(
-                org_id=org_id,
-                source_system=source_system,
-                external_id=external_id,
-                ingest_path=ingest_path,
-                cost_usd=cost_usd,
-                occurred_at=occurred_at or utcnow(),
+        # A caller that retries a 422 (a reasonable thing to do -- it looks
+        # like a transient failure from the outside) would otherwise record
+        # a fresh shadow-AI row every attempt, inflating the observed cost
+        # figure. With an event_id, check for the row this exact attempt
+        # already wrote before adding another.
+        existing = None
+        if event_id is not None:
+            existing = (
+                db.query(UnmappedIdentityEvent)
+                .filter_by(org_id=org_id, source_system=source_system, event_id=event_id)
+                .one_or_none()
             )
-        )
-        db.commit()
+        if existing is None:
+            db.add(
+                UnmappedIdentityEvent(
+                    org_id=org_id,
+                    source_system=source_system,
+                    external_id=external_id,
+                    ingest_path=ingest_path,
+                    cost_usd=cost_usd,
+                    occurred_at=occurred_at or utcnow(),
+                    event_id=event_id,
+                )
+            )
+            db.commit()
         raise UnresolvedIdentityError(
             f"No identity mapped for {source_system}:{external_id}. "
             f"Provision via SCIM sync or map manually before usage can be attributed."
@@ -86,10 +101,22 @@ def ingest_usage_event(
     tokens_in: int = 0,
     tokens_out: int = 0,
     occurred_at: datetime | None = None,
+    event_id: str | None = None,
 ) -> UsageEvent:
     identity = resolve_identity(
-        db, org_id, source_system, external_id, ingest_path="usage", cost_usd=cost_usd, occurred_at=occurred_at
+        db,
+        org_id,
+        source_system,
+        external_id,
+        ingest_path="usage",
+        cost_usd=cost_usd,
+        occurred_at=occurred_at,
+        event_id=event_id,
     )
+    if event_id is not None:
+        existing = db.query(UsageEvent).filter_by(identity_id=identity.id, event_id=event_id).one_or_none()
+        if existing is not None:
+            return existing
     event = UsageEvent(
         identity_id=identity.id,
         tool=tool,
@@ -98,6 +125,7 @@ def ingest_usage_event(
         tokens_out=tokens_out,
         cost_usd=cost_usd,
         occurred_at=occurred_at or utcnow(),
+        event_id=event_id,
     )
     db.add(event)
     db.commit()
@@ -116,8 +144,15 @@ def ingest_outcome_event(
     occurred_at: datetime | None = None,
     external_ref: str | None = None,
     value_weight: float | None = None,
+    event_id: str | None = None,
 ) -> OutcomeEvent:
-    identity = resolve_identity(db, org_id, source_system, external_id, ingest_path="outcome", occurred_at=occurred_at)
+    identity = resolve_identity(
+        db, org_id, source_system, external_id, ingest_path="outcome", occurred_at=occurred_at, event_id=event_id
+    )
+    if event_id is not None:
+        existing = db.query(OutcomeEvent).filter_by(identity_id=identity.id, event_id=event_id).one_or_none()
+        if existing is not None:
+            return existing
     weight = value_weight if value_weight is not None else OUTCOME_VALUE_WEIGHTS.get(outcome_type, 0.0)
     event = OutcomeEvent(
         identity_id=identity.id,
@@ -126,6 +161,7 @@ def ingest_outcome_event(
         value_weight=weight,
         occurred_at=occurred_at or utcnow(),
         external_ref=external_ref,
+        event_id=event_id,
     )
     db.add(event)
     db.commit()
@@ -159,10 +195,21 @@ def ingest_quality_signal(
     occurred_at: datetime | None = None,
     external_ref: str | None = None,
     severity: float | None = None,
+    event_id: str | None = None,
 ) -> QualitySignal:
     identity = resolve_identity(
-        db, org_id, source_system, external_id, ingest_path="quality_signal", occurred_at=occurred_at
+        db,
+        org_id,
+        source_system,
+        external_id,
+        ingest_path="quality_signal",
+        occurred_at=occurred_at,
+        event_id=event_id,
     )
+    if event_id is not None:
+        existing = db.query(QualitySignal).filter_by(identity_id=identity.id, event_id=event_id).one_or_none()
+        if existing is not None:
+            return existing
     sev = severity if severity is not None else QUALITY_SIGNAL_WEIGHTS.get(signal_type, 0.5)
     signal = QualitySignal(
         identity_id=identity.id,
@@ -170,6 +217,7 @@ def ingest_quality_signal(
         severity=sev,
         occurred_at=occurred_at or utcnow(),
         external_ref=external_ref,
+        event_id=event_id,
     )
     db.add(signal)
     db.commit()

@@ -78,6 +78,10 @@ class UsageEventIn(BaseModel):
     tokens_in: int = 0
     tokens_out: int = 0
     occurred_at: datetime | None = None
+    # Optional idempotency key -- a retry with the same event_id replays the
+    # existing row instead of double-counting spend. Omit it and the call
+    # behaves exactly as before (always inserts).
+    event_id: str | None = Field(default=None, max_length=MAX_IDENTIFIER_LENGTH)
 
 
 class OutcomeEventIn(BaseModel):
@@ -88,6 +92,7 @@ class OutcomeEventIn(BaseModel):
     occurred_at: datetime | None = None
     external_ref: str | None = Field(default=None, max_length=MAX_IDENTIFIER_LENGTH)
     value_weight: float | None = None
+    event_id: str | None = Field(default=None, max_length=MAX_IDENTIFIER_LENGTH)
 
 
 class QualitySignalIn(BaseModel):
@@ -97,6 +102,7 @@ class QualitySignalIn(BaseModel):
     occurred_at: datetime | None = None
     external_ref: str | None = Field(default=None, max_length=MAX_IDENTIFIER_LENGTH)
     severity: float | None = None
+    event_id: str | None = Field(default=None, max_length=MAX_IDENTIFIER_LENGTH)
 
 
 class IdentityMappingIn(BaseModel):
