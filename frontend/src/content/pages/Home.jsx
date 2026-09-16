@@ -198,85 +198,16 @@ export default function Home() {
 
       <div className="card" style={{ marginTop: "var(--sp-10)" }}>
         <span className="kicker" style={{ marginBottom: "var(--sp-2)" }}>
-          Start here
+          Talk to us
         </span>
         <h2 style={{ margin: "0 0 var(--sp-2)" }}>Find the bottleneck. Build the leverage.</h2>
-        <p style={{ marginBottom: "var(--sp-5)" }}>
+        <p style={{ marginBottom: "var(--sp-4)" }}>
           Use Clark X for enterprise work, architecture, and new ventures — Merit AC is the proof
           point. Tell us where execution is slowing down and we&apos;ll follow up directly.
         </p>
-
-        <form className="lead-form" id="clarkXLeadForm" noValidate>
-          <div className="field">
-            <label htmlFor="clarkXName">Name</label>
-            <input type="text" id="clarkXName" name="name" placeholder="Your name" autoComplete="name" />
-          </div>
-          <div className="field">
-            <label htmlFor="clarkXEmail">Corporate email</label>
-            <input
-              type="email"
-              id="clarkXEmail"
-              name="email"
-              placeholder="you@company.com"
-              required
-              autoComplete="email"
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="clarkXNote">Primary bottleneck</label>
-            <textarea
-              id="clarkXNote"
-              name="note"
-              rows={3}
-              placeholder="Where is execution slowing down?"
-            />
-          </div>
-          <button type="submit" className="btn btn-primary lead-form-submit">
-            Start the analysis
-          </button>
-        </form>
-        <p className="signup-msg" id="clarkXLeadMsg" role="status" aria-live="polite" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){
-  var API_BASE = ["localhost", "127.0.0.1", ""].indexOf(location.hostname) !== -1
-    ? "http://localhost:8000"
-    : "https://api.usemeritai.com";
-  var form = document.getElementById("clarkXLeadForm");
-  var msg = document.getElementById("clarkXLeadMsg");
-  form.addEventListener("submit", function (e) {
-    e.preventDefault();
-    var email = document.getElementById("clarkXEmail").value.trim();
-    if (!email) return;
-    var name = document.getElementById("clarkXName").value.trim();
-    var note = document.getElementById("clarkXNote").value.trim();
-    var btn = form.querySelector("button");
-    var label = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = "Sending…";
-    fetch(API_BASE + "/waitlist", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email, name: name || null, note: note || null, source: "clarkx-analysis" }),
-    })
-      .then(function (res) {
-        if (!res.ok) throw new Error("bad status");
-        msg.textContent = "Got it — we'll follow up directly.";
-        msg.className = "signup-msg ok";
-        form.reset();
-      })
-      .catch(function () {
-        msg.textContent = "Couldn't reach the server — try again in a moment.";
-        msg.className = "signup-msg err";
-      })
-      .finally(function () {
-        btn.disabled = false;
-        btn.textContent = label;
-      });
-  });
-})();`,
-          }}
-        />
+        <a className="btn btn-primary" href="/contact">
+          Get in touch
+        </a>
       </div>
     </ContentLayout>
   );
