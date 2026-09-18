@@ -24,6 +24,7 @@ from sqlalchemy.orm import Session
 
 from ..constants import SLOP_VOLUME_BASE, SLOP_VOLUME_STEP
 from ..models import Identity, OutcomeEvent, PersonScore, QualitySignal, UsageEvent
+from ..money import cents_to_usd
 
 # --------------------------------------------------------------- pure math
 
@@ -72,14 +73,16 @@ def confidence_label(has_tier2: bool, has_tier3: bool) -> str:
 # ----------------------------------------------------- single-person queries
 
 
-def _sum_spend(db: Session, identity_id: int, start: datetime, end: datetime) -> float:
+def _sum_spend_cents(db: Session, identity_id: int, start: datetime, end: datetime) -> int:
+    """Integer cents, summed in SQL -- exact, no float rounding error (see
+    app/money.py)."""
     total = (
-        db.query(func.coalesce(func.sum(UsageEvent.cost_usd), 0.0))
+        db.query(func.coalesce(func.sum(UsageEvent.cost_usd_cents), 0))
         .filter(UsageEvent.identity_id == identity_id)
         .filter(UsageEvent.occurred_at >= start, UsageEvent.occurred_at < end)
         .scalar()
     )
-    return float(total or 0.0)
+    return int(total or 0)
 
 
 def _sum_outcome_value(db: Session, identity_id: int, start: datetime, end: datetime) -> float:
@@ -104,7 +107,7 @@ def _slop_signals(db: Session, identity_id: int, start: datetime, end: datetime)
 def raw_value_score(db: Session, identity_id: int, start: datetime, end: datetime) -> float:
     """Tier 1 value/$ for a single person (see raw_value_from_totals)."""
     return raw_value_from_totals(
-        _sum_spend(db, identity_id, start, end),
+        cents_to_usd(_sum_spend_cents(db, identity_id, start, end)),
         _sum_outcome_value(db, identity_id, start, end),
     )
 
@@ -117,16 +120,17 @@ def raw_slop_risk(db: Session, identity_id: int, start: datetime, end: datetime)
 # ------------------------------------------------------- population queries
 
 
-def _spend_by_identity(db: Session, org_id: int, start: datetime, end: datetime) -> dict[int, float]:
+def _spend_by_identity_cents(db: Session, org_id: int, start: datetime, end: datetime) -> dict[int, int]:
+    """Integer cents per identity, summed in SQL -- exact (see app/money.py)."""
     rows = (
-        db.query(UsageEvent.identity_id, func.sum(UsageEvent.cost_usd))
+        db.query(UsageEvent.identity_id, func.sum(UsageEvent.cost_usd_cents))
         .join(Identity, Identity.id == UsageEvent.identity_id)
         .filter(Identity.org_id == org_id)
         .filter(UsageEvent.occurred_at >= start, UsageEvent.occurred_at < end)
         .group_by(UsageEvent.identity_id)
         .all()
     )
-    return {identity_id: float(total or 0.0) for identity_id, total in rows}
+    return {identity_id: int(total or 0) for identity_id, total in rows}
 
 
 def _outcome_value_by_identity(db: Session, org_id: int, start: datetime, end: datetime) -> dict[int, float]:
@@ -169,21 +173,23 @@ def recompute_all(db: Session, org_id: int, start: datetime, end: datetime) -> i
     unrelated organizations' numbers together -- it only ever sees this
     org's raw_values.
     """
-    spends = _spend_by_identity(db, org_id, start, end)
+    spends_cents = _spend_by_identity_cents(db, org_id, start, end)
     outcome_values = _outcome_value_by_identity(db, org_id, start, end)
     severities = _severities_by_identity(db, org_id, start, end)
 
     identity_ids = [row.id for row in db.query(Identity.id).filter(Identity.org_id == org_id).all()]
     raw_values = {
-        identity_id: raw_value_from_totals(spends.get(identity_id, 0.0), outcome_values.get(identity_id, 0.0))
+        identity_id: raw_value_from_totals(
+            cents_to_usd(spends_cents.get(identity_id, 0)), outcome_values.get(identity_id, 0.0)
+        )
         for identity_id in identity_ids
     }
     normalized = normalize_value_scores(raw_values)
 
     scored = 0
     for identity_id in identity_ids:
-        spend = spends.get(identity_id, 0.0)
-        if spend <= 0:
+        spend_cents = spends_cents.get(identity_id, 0)
+        if spend_cents <= 0:
             continue  # no AI activity this period — nothing to score
 
         person_severities = severities.get(identity_id, [])
@@ -201,7 +207,7 @@ def recompute_all(db: Session, org_id: int, start: datetime, end: datetime) -> i
             .one_or_none()
         )
         if existing:
-            existing.spend_usd = spend
+            existing.spend_usd_cents = spend_cents
             existing.value_per_dollar = value
             existing.slop_risk = slop
             existing.confidence = conf
@@ -212,7 +218,7 @@ def recompute_all(db: Session, org_id: int, start: datetime, end: datetime) -> i
                     identity_id=identity_id,
                     period_start=start,
                     period_end=end,
-                    spend_usd=spend,
+                    spend_usd_cents=spend_cents,
                     value_per_dollar=value,
                     slop_risk=slop,
                     confidence=conf,

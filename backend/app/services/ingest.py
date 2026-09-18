@@ -24,6 +24,7 @@ from sqlalchemy.orm import Session
 
 from ..constants import OUTCOME_VALUE_WEIGHTS, QUALITY_SIGNAL_WEIGHTS
 from ..models import Identity, IdentityMapping, OutcomeEvent, QualitySignal, UnmappedIdentityEvent, UsageEvent
+from ..money import usd_to_cents
 from ..time_utils import utcnow
 
 # A reverted PR is both a negative Tier-1 outcome and a Tier-2 quality signal;
@@ -76,7 +77,7 @@ def resolve_identity(
                     source_system=source_system,
                     external_id=external_id,
                     ingest_path=ingest_path,
-                    cost_usd=cost_usd,
+                    cost_usd_cents=usd_to_cents(cost_usd) if cost_usd is not None else None,
                     occurred_at=occurred_at or utcnow(),
                     event_id=event_id,
                 )
@@ -123,7 +124,7 @@ def ingest_usage_event(
         model=model,
         tokens_in=tokens_in,
         tokens_out=tokens_out,
-        cost_usd=cost_usd,
+        cost_usd_cents=usd_to_cents(cost_usd),
         occurred_at=occurred_at or utcnow(),
         event_id=event_id,
     )

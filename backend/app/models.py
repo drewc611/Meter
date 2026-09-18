@@ -104,7 +104,9 @@ class UsageEvent(Base):
     model = Column(String, nullable=True)  # "claude-opus-4", "gpt-4.1", null for flat-fee seats
     tokens_in = Column(Integer, default=0)
     tokens_out = Column(Integer, default=0)
-    cost_usd = Column(Float, nullable=False)
+    # Integer cents, not float dollars -- see app/money.py's module docstring
+    # for why (summing many float dollar amounts accumulates rounding error).
+    cost_usd_cents = Column(Integer, nullable=False)
     occurred_at = Column(DateTime, nullable=False)
     ingested_at = Column(DateTime, default=utcnow)
     # Caller-supplied idempotency key -- optional, but when present a retry
@@ -188,8 +190,8 @@ class UnmappedIdentityEvent(Base):
     the moment an admin maps the external id (POST /admin/identity-mapping);
     until then it's invisible to every PersonScore-backed number.
 
-    cost_usd is only ever populated for ingest_path="usage" -- outcome and
-    quality-signal attempts don't carry a dollar figure to record.
+    cost_usd_cents is only ever populated for ingest_path="usage" -- outcome
+    and quality-signal attempts don't carry a dollar figure to record.
 
     event_id: same idempotency key as the three event tables -- without it,
     a retried call against a still-unmapped identity (a normal failure mode:
@@ -205,7 +207,7 @@ class UnmappedIdentityEvent(Base):
     source_system = Column(String, nullable=False)
     external_id = Column(String, nullable=False)
     ingest_path = Column(String, nullable=False)  # "usage" | "outcome" | "quality_signal"
-    cost_usd = Column(Float, nullable=True)
+    cost_usd_cents = Column(Integer, nullable=True)
     occurred_at = Column(DateTime, nullable=False)
     ingested_at = Column(DateTime, default=utcnow)
     event_id = Column(String, nullable=True)
@@ -294,7 +296,8 @@ class PersonScore(Base):
     identity_id = Column(Integer, ForeignKey("identities.id"), nullable=False)
     period_start = Column(DateTime, nullable=False)
     period_end = Column(DateTime, nullable=False)
-    spend_usd = Column(Float, nullable=False)
+    # Integer cents, not float dollars -- see app/money.py's module docstring.
+    spend_usd_cents = Column(Integer, nullable=False)
     value_per_dollar = Column(Float, nullable=False)  # normalized to company median = 1.0x
     slop_risk = Column(Float, nullable=False)  # 0-100
     confidence = Column(String, nullable=False)  # "tier1" | "tier1+2" | "tier1+2+3"
