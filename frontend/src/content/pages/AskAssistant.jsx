@@ -87,12 +87,17 @@ export default function AskAssistant() {
     btn.textContent = "Asking…";
     var thinking = addMessage("assistant", "Thinking…");
 
+    var controller = new AbortController();
+    var timeoutId = setTimeout(function () { controller.abort(); }, 45000);
+
     fetch(API_BASE + "/assistant/ask", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ question: question }),
+      signal: controller.signal,
     })
       .then(function (res) {
+        clearTimeout(timeoutId);
         if (res.status === 503) {
           thinking.remove();
           errorMsg.textContent = "The assistant isn't set up yet -- check back later.";
@@ -113,9 +118,12 @@ export default function AskAssistant() {
         thinking.textContent = data.answer;
         addSources(data.sources);
       })
-      .catch(function () {
+      .catch(function (err) {
+        clearTimeout(timeoutId);
         thinking.remove();
-        errorMsg.textContent = "Couldn't reach the assistant -- try again in a moment.";
+        errorMsg.textContent = err && err.name === "AbortError"
+          ? "That's taking too long -- try a shorter question or try again in a moment."
+          : "Couldn't reach the assistant -- try again in a moment.";
         errorMsg.className = "signup-msg err";
       })
       .finally(function () {
