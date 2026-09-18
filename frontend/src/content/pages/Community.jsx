@@ -113,19 +113,26 @@ export default function Community() {
     var label = btn.textContent;
     btn.disabled = true;
     btn.textContent = "Joining…";
+    var controller = new AbortController();
+    var timeoutId = setTimeout(function () { controller.abort(); }, 15000);
     fetch(API_BASE + "/waitlist", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: emailValue, source: "community-interest" }),
+      signal: controller.signal,
     })
       .then(function (res) {
+        clearTimeout(timeoutId);
         if (!res.ok) throw new Error("bad status");
         msg.textContent = "You're on the list — I'll email you when this opens.";
         msg.className = "signup-msg ok";
         form.reset();
       })
-      .catch(function () {
-        msg.textContent = "Couldn't reach the server — try again in a moment.";
+      .catch(function (err) {
+        clearTimeout(timeoutId);
+        msg.textContent = err && err.name === "AbortError"
+          ? "This is taking longer than expected — try again in a moment."
+          : "Couldn't reach the server — try again in a moment.";
         msg.className = "signup-msg err";
       })
       .finally(function () {
