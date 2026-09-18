@@ -107,7 +107,7 @@ def test_recompute_writes_one_score_per_active_person(db, org, person, ingest_he
     scores = db.query(PersonScore).all()
     assert len(scores) == 1
     assert scores[0].identity_id == star.id
-    assert scores[0].spend_usd == pytest.approx(300.0)
+    assert scores[0].spend_usd_cents == 30000
     assert scores[0].confidence == "tier1"  # no quality signals → tier1 only
 
 
@@ -149,12 +149,14 @@ def test_bulk_and_single_person_paths_agree(db, org, person, ingest_helpers):
     p = person(name="Cross Check")
     _seed_person_with_activity(db, ingest_helpers, p, spend=180, merges=6, reverts=1, signals=3)
 
-    single_spend = scoring._sum_spend(db, p.id, START, END)
+    single_spend = scoring._sum_spend_cents(db, p.id, START, END)
     single_value = scoring.raw_value_score(db, p.id, START, END)
     single_slop = scoring.raw_slop_risk(db, p.id, START, END)
 
-    bulk_spend = scoring._spend_by_identity(db, org.id, START, END)[p.id]
-    bulk_value = raw_value_from_totals(bulk_spend, scoring._outcome_value_by_identity(db, org.id, START, END)[p.id])
+    bulk_spend = scoring._spend_by_identity_cents(db, org.id, START, END)[p.id]
+    bulk_value = raw_value_from_totals(
+        scoring.cents_to_usd(bulk_spend), scoring._outcome_value_by_identity(db, org.id, START, END)[p.id]
+    )
     bulk_slop = raw_slop_from_severities(scoring._severities_by_identity(db, org.id, START, END)[p.id])
 
     assert single_spend == pytest.approx(bulk_spend)

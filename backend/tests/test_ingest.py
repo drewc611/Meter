@@ -26,7 +26,7 @@ def test_unresolved_external_id_records_shadow_ai_event(db, org):
     assert row.source_system == "anthropic_api"
     assert row.external_id == "key_does_not_exist"
     assert row.ingest_path == "usage"
-    assert row.cost_usd == 4.25
+    assert row.cost_usd_cents == 425
 
 
 def test_unresolved_outcome_records_shadow_ai_event_with_no_cost(db, org):
@@ -41,7 +41,7 @@ def test_unresolved_outcome_records_shadow_ai_event_with_no_cost(db, org):
         )
     row = db.query(UnmappedIdentityEvent).one()
     assert row.ingest_path == "outcome"
-    assert row.cost_usd is None
+    assert row.cost_usd_cents is None
 
 
 def test_ingest_usage_attributes_to_person(db, org, person):
@@ -57,7 +57,7 @@ def test_ingest_usage_attributes_to_person(db, org, person):
     )
     row = db.query(UsageEvent).one()
     assert row.identity_id == p.id
-    assert row.cost_usd == 12.5
+    assert row.cost_usd_cents == 1250
 
 
 def test_ingest_usage_unresolved_raises(db, org):

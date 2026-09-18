@@ -33,6 +33,14 @@ _COLUMN_BACKFILLS = [
     ("outcome_events", "event_id", "VARCHAR"),
     ("quality_signals", "event_id", "VARCHAR"),
     ("unmapped_identity_events", "event_id", "VARCHAR"),
+    # Integer-cents columns replacing the old float-dollar cost_usd/spend_usd
+    # -- see app/money.py and _migrate_money_to_cents() below. Added nullable
+    # (a pre-existing table can't gain a NOT NULL column with no default via
+    # a plain ALTER TABLE ADD COLUMN); every row gets backfilled immediately
+    # after, and every write path from here on always supplies a value.
+    ("usage_events", "cost_usd_cents", "INTEGER"),
+    ("unmapped_identity_events", "cost_usd_cents", "INTEGER"),
+    ("person_scores", "spend_usd_cents", "INTEGER"),
 ]
 
 # Ingestion idempotency: a caller-supplied event_id is optional, but when
@@ -64,6 +72,7 @@ def init_db() -> None:
     _backfill_columns()
     _backfill_indexes()
     _migrate_to_multi_tenant()
+    _migrate_money_to_cents()
 
 
 def _backfill_columns() -> None:
@@ -86,6 +95,38 @@ def _backfill_indexes() -> None:
             if table not in table_names:
                 continue  # brand-new DB with no tables at all yet -- shouldn't happen post-create_all, but cheap to guard
             conn.execute(text(f"CREATE UNIQUE INDEX IF NOT EXISTS {name} ON {table} ({columns})"))
+
+
+def _migrate_money_to_cents() -> None:
+    """One-time backfill for a database that still has rows written before
+    cost_usd/spend_usd moved from float dollars to integer cents (see
+    app/money.py). The old float columns are left in place, physically
+    orphaned -- SQLite has no cheap way to drop them portably across the
+    SQLite versions this might run against, and an unused column costs
+    nothing at runtime since the ORM model no longer references it. Uses
+    SQLite's own ROUND() rather than doing the conversion in Python so the
+    whole backfill is one atomic UPDATE per table.
+    """
+    inspector = inspect(engine)
+    table_names = set(inspector.get_table_names())
+    backfills = [
+        ("usage_events", "cost_usd", "cost_usd_cents"),
+        ("unmapped_identity_events", "cost_usd", "cost_usd_cents"),
+        ("person_scores", "spend_usd", "spend_usd_cents"),
+    ]
+    with engine.begin() as conn:
+        for table, old_column, new_column in backfills:
+            if table not in table_names:
+                continue
+            columns = {c["name"] for c in inspector.get_columns(table)}
+            if old_column not in columns or new_column not in columns:
+                continue  # brand-new DB: create_all only ever produced the cents column
+            conn.execute(
+                text(
+                    f"UPDATE {table} SET {new_column} = CAST(ROUND({old_column} * 100) AS INTEGER) "
+                    f"WHERE {new_column} IS NULL AND {old_column} IS NOT NULL"
+                )
+            )
 
 
 def _migrate_to_multi_tenant() -> None:
