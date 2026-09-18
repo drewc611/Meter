@@ -42,15 +42,36 @@ export default function ModelsDirectory({ entries }) {
         a permanent record — check the source link for anything current.
       </p>
 
+      <label htmlFor="modelsFilter" className="sr-only">
+        Filter by name or maker
+      </label>
+      <input
+        type="search"
+        id="modelsFilter"
+        className="filter-input"
+        placeholder="Filter by name or maker…"
+        autoComplete="off"
+        style={{ marginBottom: "var(--sp-6)" }}
+      />
+      <p id="modelsFilterEmpty" className="signup-msg" style={{ display: "none" }}>
+        No models or tools match that filter.
+      </p>
+
       {CATEGORY_ORDER.map((category) => {
         const items = entries.filter((m) => m.category === category);
         if (items.length === 0) return null;
         return (
-          <section key={category}>
+          <section key={category} data-filter-section>
             <h2>{CATEGORY_LABELS[category]}</h2>
             <div className="grid">
               {items.map((m) => (
-                <a key={m.slug} id={m.slug} className="tile" href={`/models/${m.slug}`}>
+                <a
+                  key={m.slug}
+                  id={m.slug}
+                  className="tile"
+                  href={`/models/${m.slug}`}
+                  data-filter-key={`${m.name} ${m.maker}`.toLowerCase()}
+                >
                   <span className="tile-title">{m.name}</span>
                   <span className="tile-meta">{m.maker}</span>
                 </a>
@@ -59,6 +80,32 @@ export default function ModelsDirectory({ entries }) {
           </section>
         );
       })}
+
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `(function(){
+  var input = document.getElementById("modelsFilter");
+  var empty = document.getElementById("modelsFilterEmpty");
+  var sections = Array.prototype.slice.call(document.querySelectorAll("[data-filter-section]"));
+  input.addEventListener("input", function () {
+    var query = input.value.trim().toLowerCase();
+    var anyVisible = false;
+    sections.forEach(function (section) {
+      var tiles = Array.prototype.slice.call(section.querySelectorAll("[data-filter-key]"));
+      var sectionHasMatch = false;
+      tiles.forEach(function (tile) {
+        var match = !query || tile.getAttribute("data-filter-key").indexOf(query) !== -1;
+        tile.style.display = match ? "" : "none";
+        if (match) sectionHasMatch = true;
+      });
+      section.style.display = sectionHasMatch ? "" : "none";
+      if (sectionHasMatch) anyVisible = true;
+    });
+    empty.style.display = anyVisible ? "none" : "";
+  });
+})();`,
+        }}
+      />
     </ContentLayout>
   );
 }

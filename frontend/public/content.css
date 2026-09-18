@@ -719,6 +719,25 @@ pre.pre-wrap {
   outline: 2px solid var(--brand);
   outline-offset: 1px;
 }
+.filter-input {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 14px;
+  font-family: inherit;
+}
+.filter-input::placeholder {
+  color: var(--muted-2);
+}
+.filter-input:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
+}
 .lead-form-submit {
   border: none;
   cursor: pointer;
