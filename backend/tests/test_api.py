@@ -183,6 +183,141 @@ def test_full_pipeline_overview(client, db):
     assert roles[0]["name"] == "Engineer"
 
 
+def test_sub_half_cent_per_event_costs_are_not_floored_to_zero(client, db):
+    """Regression test for the integer-cents-per-event bug: a Haiku-class
+    call costing $0.0003 must not round to $0 before it's summed. 300 calls
+    at $0.0003 -- $0.09 of real spend -- used to sum to exactly $0.00
+    because usd_to_cents() rounded each event individually before the
+    SUM(). Storing per-event cost in micros instead of cents is what fixes
+    this; PersonScore still rounds to cents, but only once, on the
+    already-summed total."""
+    _bootstrap_person(db)
+    now = datetime(*current_period()[0].timetuple()[:3], 10)
+    for _ in range(300):
+        assert (
+            client.post(
+                "/ingest/usage",
+                json={
+                    "source_system": "anthropic_api",
+                    "external_id": "key_live",
+                    "tool": "anthropic_api",
+                    "cost_usd": 0.0003,
+                    "occurred_at": now.isoformat(),
+                },
+            ).status_code
+            == 201
+        )
+    assert client.post("/admin/recompute-scores").status_code == 200
+    people = client.get("/api/people").json()
+    assert len(people) == 1
+    assert people[0]["spend_usd"] == 0.09
+
+
+def _post_raw_json(client, path, body: str):
+    """httpx's own json= kwarg refuses to encode NaN/Infinity before a
+    request is even sent (allow_nan=False in its encoder) -- which is a
+    client-side courtesy, not something every real caller gets. Starlette's
+    request parsing uses stdlib json.loads, which accepts bare NaN/Infinity
+    tokens by default, so a client that serializes with Python's own
+    json.dumps(allow_nan=True) (the default) -- or plenty of non-Python
+    JSON encoders with the same default -- can and does send them over the
+    wire. Posting the raw bytes directly is what actually exercises that
+    server-side path instead of only the client library's own guard."""
+    return client.post(path, content=body.encode(), headers={"content-type": "application/json"})
+
+
+def test_non_finite_cost_usd_is_a_clean_422_not_a_500(client, db):
+    """Regression test: NaN and +/-Infinity used to reach usd_to_cents()
+    unvalidated and raise ValueError/OverflowError there -- an unhandled 500,
+    reachable even on the unmapped-identity path since resolve_identity
+    records the shadow-AI row before raising its own 422."""
+    _bootstrap_person(db)
+    base = '"source_system": "anthropic_api", "external_id": "key_live", "tool": "anthropic_api"'
+    for bad_cost in ("NaN", "Infinity", "-Infinity"):
+        r = _post_raw_json(client, "/ingest/usage", "{" + base + f', "cost_usd": {bad_cost}' + "}")
+        assert r.status_code == 422, bad_cost
+
+    r = client.post(
+        "/ingest/usage",
+        json={
+            "source_system": "anthropic_api",
+            "external_id": "key_live",
+            "tool": "anthropic_api",
+            "cost_usd": -1.0,
+        },
+    )
+    assert r.status_code == 422
+
+    # Same guard on the path that records an UnmappedIdentityEvent before
+    # its own 422 -- must not crash there either.
+    r = _post_raw_json(
+        client,
+        "/ingest/usage",
+        '{"source_system": "anthropic_api", "external_id": "totally_unknown", '
+        '"tool": "anthropic_api", "cost_usd": NaN}',
+    )
+    assert r.status_code == 422
+
+
+def test_absurdly_large_cost_usd_is_rejected(client, db):
+    """Regression test: 1e308 didn't crash, but stored an integer around
+    10**314 (scaled to micros) into an INTEGER column -- nonsense far beyond
+    any real per-event cost. A sane upper bound turns it into a 422."""
+    _bootstrap_person(db)
+    r = client.post(
+        "/ingest/usage",
+        json={
+            "source_system": "anthropic_api",
+            "external_id": "key_live",
+            "tool": "anthropic_api",
+            "cost_usd": 1e308,
+        },
+    )
+    assert r.status_code == 422
+
+
+def test_event_id_replay_is_scoped_per_source_system(client, db):
+    """Regression test: two integrations that both number their own events
+    from 1 (a billing export and a provider's admin API, say) must not
+    collide on event_id alone -- the second call used to silently replay
+    the first integration's row instead of recording its own. Uses two
+    source systems already mapped to the same identity by _bootstrap_person
+    (anthropic_api/key_live and github/gh_live) to stand in for two
+    different integrations reporting on the same person."""
+    _bootstrap_person(db)
+    now = datetime(*current_period()[0].timetuple()[:3], 10)
+    billing = client.post(
+        "/ingest/usage",
+        json={
+            "source_system": "anthropic_api",
+            "external_id": "key_live",
+            "tool": "anthropic_api",
+            "cost_usd": 100.0,
+            "occurred_at": now.isoformat(),
+            "event_id": "inv-9001",
+        },
+    )
+    assert billing.status_code == 201
+
+    provider = client.post(
+        "/ingest/usage",
+        json={
+            "source_system": "github",
+            "external_id": "gh_live",
+            "tool": "github_copilot",
+            "cost_usd": 250.0,
+            "occurred_at": now.isoformat(),
+            "event_id": "inv-9001",
+        },
+    )
+    assert provider.status_code == 201
+    assert provider.json()["id"] != billing.json()["id"]
+
+    assert client.post("/admin/recompute-scores").status_code == 200
+    people = client.get("/api/people").json()
+    assert people[0]["spend_usd"] == 350.0
+
+
 def test_people_months_ago_reads_a_prior_period(client, db):
     from app.periods import prior_period
 

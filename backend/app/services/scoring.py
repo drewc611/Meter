@@ -24,7 +24,7 @@ from sqlalchemy.orm import Session
 
 from ..constants import SLOP_VOLUME_BASE, SLOP_VOLUME_STEP
 from ..models import Identity, OutcomeEvent, PersonScore, QualitySignal, UsageEvent
-from ..money import cents_to_usd
+from ..money import micros_to_cents, micros_to_usd
 
 # --------------------------------------------------------------- pure math
 
@@ -73,11 +73,11 @@ def confidence_label(has_tier2: bool, has_tier3: bool) -> str:
 # ----------------------------------------------------- single-person queries
 
 
-def _sum_spend_cents(db: Session, identity_id: int, start: datetime, end: datetime) -> int:
-    """Integer cents, summed in SQL -- exact, no float rounding error (see
-    app/money.py)."""
+def _sum_spend_micros(db: Session, identity_id: int, start: datetime, end: datetime) -> int:
+    """Integer micros, summed in SQL -- exact, no float rounding error, and
+    no per-event rounding to a whole cent either (see app/money.py)."""
     total = (
-        db.query(func.coalesce(func.sum(UsageEvent.cost_usd_cents), 0))
+        db.query(func.coalesce(func.sum(UsageEvent.cost_usd_micros), 0))
         .filter(UsageEvent.identity_id == identity_id)
         .filter(UsageEvent.occurred_at >= start, UsageEvent.occurred_at < end)
         .scalar()
@@ -107,7 +107,7 @@ def _slop_signals(db: Session, identity_id: int, start: datetime, end: datetime)
 def raw_value_score(db: Session, identity_id: int, start: datetime, end: datetime) -> float:
     """Tier 1 value/$ for a single person (see raw_value_from_totals)."""
     return raw_value_from_totals(
-        cents_to_usd(_sum_spend_cents(db, identity_id, start, end)),
+        micros_to_usd(_sum_spend_micros(db, identity_id, start, end)),
         _sum_outcome_value(db, identity_id, start, end),
     )
 
@@ -120,10 +120,10 @@ def raw_slop_risk(db: Session, identity_id: int, start: datetime, end: datetime)
 # ------------------------------------------------------- population queries
 
 
-def _spend_by_identity_cents(db: Session, org_id: int, start: datetime, end: datetime) -> dict[int, int]:
-    """Integer cents per identity, summed in SQL -- exact (see app/money.py)."""
+def _spend_by_identity_micros(db: Session, org_id: int, start: datetime, end: datetime) -> dict[int, int]:
+    """Integer micros per identity, summed in SQL -- exact (see app/money.py)."""
     rows = (
-        db.query(UsageEvent.identity_id, func.sum(UsageEvent.cost_usd_cents))
+        db.query(UsageEvent.identity_id, func.sum(UsageEvent.cost_usd_micros))
         .join(Identity, Identity.id == UsageEvent.identity_id)
         .filter(Identity.org_id == org_id)
         .filter(UsageEvent.occurred_at >= start, UsageEvent.occurred_at < end)
@@ -173,14 +173,14 @@ def recompute_all(db: Session, org_id: int, start: datetime, end: datetime) -> i
     unrelated organizations' numbers together -- it only ever sees this
     org's raw_values.
     """
-    spends_cents = _spend_by_identity_cents(db, org_id, start, end)
+    spends_micros = _spend_by_identity_micros(db, org_id, start, end)
     outcome_values = _outcome_value_by_identity(db, org_id, start, end)
     severities = _severities_by_identity(db, org_id, start, end)
 
     identity_ids = [row.id for row in db.query(Identity.id).filter(Identity.org_id == org_id).all()]
     raw_values = {
         identity_id: raw_value_from_totals(
-            cents_to_usd(spends_cents.get(identity_id, 0)), outcome_values.get(identity_id, 0.0)
+            micros_to_usd(spends_micros.get(identity_id, 0)), outcome_values.get(identity_id, 0.0)
         )
         for identity_id in identity_ids
     }
@@ -188,10 +188,14 @@ def recompute_all(db: Session, org_id: int, start: datetime, end: datetime) -> i
 
     scored = 0
     for identity_id in identity_ids:
-        spend_cents = spends_cents.get(identity_id, 0)
-        if spend_cents <= 0:
+        spend_micros = spends_micros.get(identity_id, 0)
+        if spend_micros <= 0:
             continue  # no AI activity this period — nothing to score
 
+        # Rounded to cents once, here, on the already-summed period total --
+        # never per event (see app/money.py's module docstring for why that
+        # distinction matters).
+        spend_cents = micros_to_cents(spend_micros)
         person_severities = severities.get(identity_id, [])
         conf = confidence_label(has_tier2=bool(person_severities), has_tier3=False)
         slop = raw_slop_from_severities(person_severities)

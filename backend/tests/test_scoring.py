@@ -149,13 +149,13 @@ def test_bulk_and_single_person_paths_agree(db, org, person, ingest_helpers):
     p = person(name="Cross Check")
     _seed_person_with_activity(db, ingest_helpers, p, spend=180, merges=6, reverts=1, signals=3)
 
-    single_spend = scoring._sum_spend_cents(db, p.id, START, END)
+    single_spend = scoring._sum_spend_micros(db, p.id, START, END)
     single_value = scoring.raw_value_score(db, p.id, START, END)
     single_slop = scoring.raw_slop_risk(db, p.id, START, END)
 
-    bulk_spend = scoring._spend_by_identity_cents(db, org.id, START, END)[p.id]
+    bulk_spend = scoring._spend_by_identity_micros(db, org.id, START, END)[p.id]
     bulk_value = raw_value_from_totals(
-        scoring.cents_to_usd(bulk_spend), scoring._outcome_value_by_identity(db, org.id, START, END)[p.id]
+        scoring.micros_to_usd(bulk_spend), scoring._outcome_value_by_identity(db, org.id, START, END)[p.id]
     )
     bulk_slop = raw_slop_from_severities(scoring._severities_by_identity(db, org.id, START, END)[p.id])
 

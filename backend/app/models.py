@@ -104,17 +104,27 @@ class UsageEvent(Base):
     model = Column(String, nullable=True)  # "claude-opus-4", "gpt-4.1", null for flat-fee seats
     tokens_in = Column(Integer, default=0)
     tokens_out = Column(Integer, default=0)
-    # Integer cents, not float dollars -- see app/money.py's module docstring
-    # for why (summing many float dollar amounts accumulates rounding error).
-    cost_usd_cents = Column(Integer, nullable=False)
+    # Integer micros (millionths of a dollar), not cents -- see app/money.py's
+    # module docstring. A prior version of this column stored cents, which
+    # floors any sub-half-cent per-event cost (routine for a single LLM
+    # completion) to zero; that column is now orphaned in the DB schema
+    # (see database.py's _migrate_cost_usd_to_micros()), not dropped.
+    cost_usd_micros = Column(Integer, nullable=False)
     occurred_at = Column(DateTime, nullable=False)
     ingested_at = Column(DateTime, default=utcnow)
+    # Which source system reported this event -- "anthropic_api", "billing_export",
+    # etc. Nullable because historical rows predate this column and can't be
+    # backfilled with a real value. New rows always populate it: two
+    # integrations that both number their own events from 1 (a billing export
+    # and a provider's admin API, say) would otherwise collide on event_id
+    # alone and silently replay one integration's row in place of the other's.
+    source_system = Column(String, nullable=True)
     # Caller-supplied idempotency key -- optional, but when present a retry
-    # with the same (identity, event_id) replays the existing row instead of
-    # double-counting spend. Enforced by a unique index in database.py, not
-    # a __table_args__ constraint here, so it applies uniformly to fresh and
-    # pre-existing databases via the same backfill path -- see database.py's
-    # _backfill_indexes() docstring.
+    # with the same (identity, source_system, event_id) replays the existing
+    # row instead of double-counting spend. Enforced by a unique index in
+    # database.py, not a __table_args__ constraint here, so it applies
+    # uniformly to fresh and pre-existing databases via the same backfill
+    # path -- see database.py's _backfill_indexes() docstring.
     event_id = Column(String, nullable=True)
 
 
@@ -139,6 +149,9 @@ class OutcomeEvent(Base):
     occurred_at = Column(DateTime, nullable=False)
     external_ref = Column(String, nullable=True)  # PR url, ticket id, deal id — for drill-down
     ingested_at = Column(DateTime, default=utcnow)
+    # See UsageEvent.source_system -- same reasoning, nullable for the same
+    # historical-backfill reason.
+    source_system = Column(String, nullable=True)
     # See UsageEvent.event_id -- same idempotency mechanism.
     event_id = Column(String, nullable=True)
 
@@ -157,6 +170,9 @@ class QualitySignal(Base):
     occurred_at = Column(DateTime, nullable=False)
     external_ref = Column(String, nullable=True)
     ingested_at = Column(DateTime, default=utcnow)
+    # See UsageEvent.source_system -- same reasoning, nullable for the same
+    # historical-backfill reason.
+    source_system = Column(String, nullable=True)
     # See UsageEvent.event_id -- same idempotency mechanism.
     event_id = Column(String, nullable=True)
 
@@ -190,8 +206,10 @@ class UnmappedIdentityEvent(Base):
     the moment an admin maps the external id (POST /admin/identity-mapping);
     until then it's invisible to every PersonScore-backed number.
 
-    cost_usd_cents is only ever populated for ingest_path="usage" -- outcome
-    and quality-signal attempts don't carry a dollar figure to record.
+    cost_usd_micros is only ever populated for ingest_path="usage" -- outcome
+    and quality-signal attempts don't carry a dollar figure to record. Micros,
+    not cents, for the same reason as UsageEvent.cost_usd_micros -- see
+    app/money.py.
 
     event_id: same idempotency key as the three event tables -- without it,
     a retried call against a still-unmapped identity (a normal failure mode:
@@ -207,7 +225,7 @@ class UnmappedIdentityEvent(Base):
     source_system = Column(String, nullable=False)
     external_id = Column(String, nullable=False)
     ingest_path = Column(String, nullable=False)  # "usage" | "outcome" | "quality_signal"
-    cost_usd_cents = Column(Integer, nullable=True)
+    cost_usd_micros = Column(Integer, nullable=True)
     occurred_at = Column(DateTime, nullable=False)
     ingested_at = Column(DateTime, default=utcnow)
     event_id = Column(String, nullable=True)

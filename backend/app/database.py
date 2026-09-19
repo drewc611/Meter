@@ -14,6 +14,7 @@ from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from .config import settings
+from .money import usd_to_cents, usd_to_micros
 from .time_utils import utcnow
 
 connect_args = {"check_same_thread": False} if settings.database_url.startswith("sqlite") else {}
@@ -41,6 +42,19 @@ _COLUMN_BACKFILLS = [
     ("usage_events", "cost_usd_cents", "INTEGER"),
     ("unmapped_identity_events", "cost_usd_cents", "INTEGER"),
     ("person_scores", "spend_usd_cents", "INTEGER"),
+    # Per-event storage moved from cents to micros (see app/money.py's module
+    # docstring) -- cents floors any sub-half-cent LLM call to zero before it
+    # ever reaches a SUM(). cost_usd_cents above is left in place, orphaned,
+    # same reasoning as the original cost_usd float column.
+    ("usage_events", "cost_usd_micros", "INTEGER"),
+    ("unmapped_identity_events", "cost_usd_micros", "INTEGER"),
+    # Which source system reported the event -- added so the idempotency key
+    # can be scoped per-integration (see _INDEX_BACKFILLS below); two
+    # integrations numbering their own events from 1 previously collided on
+    # event_id alone.
+    ("usage_events", "source_system", "VARCHAR"),
+    ("outcome_events", "source_system", "VARCHAR"),
+    ("quality_signals", "source_system", "VARCHAR"),
 ]
 
 # Ingestion idempotency: a caller-supplied event_id is optional, but when
@@ -53,13 +67,27 @@ _COLUMN_BACKFILLS = [
 # _backfill_columns just added it) -- no dialect branching needed, since
 # both SQLite and Postgres support CREATE UNIQUE INDEX IF NOT EXISTS and
 # both exclude NULL from uniqueness checks by default, which is what lets
-# callers that don't supply an event_id keep working unconstrained.
+# callers that don't supply an event_id (or, on a pre-existing row, don't
+# have a source_system) keep working unconstrained.
+#
+# Scoped by source_system, not just identity_id -- two integrations that both
+# number their own events from 1 (a billing export and a provider's admin API,
+# say) previously collided on the first event_id they shared, silently
+# replaying one integration's row in place of the other's with a 201 and no
+# warning on either side.
 _INDEX_BACKFILLS = [
-    ("uq_usage_identity_event", "usage_events", "identity_id, event_id"),
-    ("uq_outcome_identity_event", "outcome_events", "identity_id, event_id"),
-    ("uq_quality_identity_event", "quality_signals", "identity_id, event_id"),
+    ("uq_usage_identity_source_event", "usage_events", "identity_id, source_system, event_id"),
+    ("uq_outcome_identity_source_event", "outcome_events", "identity_id, source_system, event_id"),
+    ("uq_quality_identity_source_event", "quality_signals", "identity_id, source_system, event_id"),
     ("uq_unmapped_org_source_event", "unmapped_identity_events", "org_id, source_system, event_id"),
 ]
+
+# The three indexes above replace an earlier version scoped by identity_id
+# alone (before source_system existed on these tables). CREATE UNIQUE INDEX
+# IF NOT EXISTS leaves an existing index with the old column list untouched
+# under the new name -- these old ones need dropping explicitly so the
+# replacement actually takes effect on a pre-existing database.
+_OLD_INDEXES_TO_DROP = ["uq_usage_identity_event", "uq_outcome_identity_event", "uq_quality_identity_event"]
 
 
 def init_db() -> None:
@@ -73,6 +101,7 @@ def init_db() -> None:
     _backfill_indexes()
     _migrate_to_multi_tenant()
     _migrate_money_to_cents()
+    _migrate_cost_usd_to_micros()
 
 
 def _backfill_columns() -> None:
@@ -91,6 +120,8 @@ def _backfill_indexes() -> None:
     inspector = inspect(engine)
     table_names = set(inspector.get_table_names())
     with engine.begin() as conn:
+        for name in _OLD_INDEXES_TO_DROP:
+            conn.execute(text(f"DROP INDEX IF EXISTS {name}"))
         for name, table, columns in _INDEX_BACKFILLS:
             if table not in table_names:
                 continue  # brand-new DB with no tables at all yet -- shouldn't happen post-create_all, but cheap to guard
@@ -103,9 +134,17 @@ def _migrate_money_to_cents() -> None:
     app/money.py). The old float columns are left in place, physically
     orphaned -- SQLite has no cheap way to drop them portably across the
     SQLite versions this might run against, and an unused column costs
-    nothing at runtime since the ORM model no longer references it. Uses
-    SQLite's own ROUND() rather than doing the conversion in Python so the
-    whole backfill is one atomic UPDATE per table.
+    nothing at runtime since the ORM model no longer references it.
+
+    Rounds in Python via money.usd_to_cents, not SQLite's own ROUND() --
+    ROUND() rounds the column's binary-float representation directly, which
+    disagrees with Decimal(str(x))'s decimal-text-based rounding on a
+    measurable share of rows (an audit of this exact backfill found about 1
+    row in 500 landing a cent away). Using the same function the write path
+    uses is what keeps a backfilled row and a freshly-ingested row agreeing
+    on the same input; row-by-row here instead of one atomic UPDATE is the
+    cost of that agreement, and at this product's current data volumes it's
+    a small one.
     """
     inspector = inspect(engine)
     table_names = set(inspector.get_table_names())
@@ -121,12 +160,49 @@ def _migrate_money_to_cents() -> None:
             columns = {c["name"] for c in inspector.get_columns(table)}
             if old_column not in columns or new_column not in columns:
                 continue  # brand-new DB: create_all only ever produced the cents column
-            conn.execute(
-                text(
-                    f"UPDATE {table} SET {new_column} = CAST(ROUND({old_column} * 100) AS INTEGER) "
-                    f"WHERE {new_column} IS NULL AND {old_column} IS NOT NULL"
+            rows = conn.execute(
+                text(f"SELECT id, {old_column} FROM {table} WHERE {new_column} IS NULL AND {old_column} IS NOT NULL")
+            ).fetchall()
+            for row_id, old_value in rows:
+                conn.execute(
+                    text(f"UPDATE {table} SET {new_column} = :new_value WHERE id = :id"),
+                    {"new_value": usd_to_cents(old_value), "id": row_id},
                 )
-            )
+
+
+def _migrate_cost_usd_to_micros() -> None:
+    """One-time backfill for cost_usd_micros, added alongside cost_usd_cents
+    once per-event storage moved from cents to micros (see app/money.py's
+    module docstring for why cents floors sub-half-cent LLM calls to zero).
+
+    Derives from the original cost_usd float column, not from cost_usd_cents
+    -- cost_usd_cents already lost precision for any event under $0.005, so
+    deriving from it would carry that loss forward instead of fixing it.
+    cost_usd is still there, physically orphaned by _migrate_money_to_cents
+    above rather than dropped, which is what makes recovering full precision
+    for historical rows possible at all.
+    """
+    inspector = inspect(engine)
+    table_names = set(inspector.get_table_names())
+    backfills = [
+        ("usage_events", "cost_usd", "cost_usd_micros"),
+        ("unmapped_identity_events", "cost_usd", "cost_usd_micros"),
+    ]
+    with engine.begin() as conn:
+        for table, old_column, new_column in backfills:
+            if table not in table_names:
+                continue
+            columns = {c["name"] for c in inspector.get_columns(table)}
+            if old_column not in columns or new_column not in columns:
+                continue
+            rows = conn.execute(
+                text(f"SELECT id, {old_column} FROM {table} WHERE {new_column} IS NULL AND {old_column} IS NOT NULL")
+            ).fetchall()
+            for row_id, old_value in rows:
+                conn.execute(
+                    text(f"UPDATE {table} SET {new_column} = :new_value WHERE id = :id"),
+                    {"new_value": usd_to_micros(old_value), "id": row_id},
+                )
 
 
 def _migrate_to_multi_tenant() -> None:

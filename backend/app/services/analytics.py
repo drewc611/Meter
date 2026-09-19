@@ -36,7 +36,7 @@ from ..constants import (
     VALUE_THRESHOLD,
 )
 from ..models import Identity, PersonScore, UnmappedIdentityEvent, UsageEvent
-from ..money import cents_to_usd
+from ..money import cents_to_usd, micros_to_usd
 
 RECOMMENDATION_LABELS = {
     "keep_top_performer": "Keep — top performer",
@@ -267,7 +267,7 @@ def get_tool_breakdown(db: Session, org_id: int | None, period_start: datetime, 
         db.query(
             UsageEvent.tool,
             UsageEvent.model,
-            func.sum(UsageEvent.cost_usd_cents),
+            func.sum(UsageEvent.cost_usd_micros),
             func.count(UsageEvent.id),
         )
         .join(Identity, Identity.id == UsageEvent.identity_id)
@@ -277,8 +277,13 @@ def get_tool_breakdown(db: Session, org_id: int | None, period_start: datetime, 
         .all()
     )
     out = [
-        {"tool": tool, "model": model, "spend_usd": round(cents_to_usd(int(spend_cents or 0)), 2), "event_count": count}
-        for tool, model, spend_cents, count in rows
+        {
+            "tool": tool,
+            "model": model,
+            "spend_usd": round(micros_to_usd(int(spend_micros or 0)), 2),
+            "event_count": count,
+        }
+        for tool, model, spend_micros, count in rows
     ]
     return sorted(out, key=lambda r: -r["spend_usd"])
 
@@ -298,7 +303,7 @@ def get_tool_performance(db: Session, org_id: int | None, period_start: datetime
     caveat, not as a per-tool causal ranking.
     """
     tool_spend_by_identity = (
-        db.query(UsageEvent.identity_id, UsageEvent.tool, func.sum(UsageEvent.cost_usd_cents))
+        db.query(UsageEvent.identity_id, UsageEvent.tool, func.sum(UsageEvent.cost_usd_micros))
         .join(Identity, Identity.id == UsageEvent.identity_id)
         .filter(Identity.org_id == org_id)
         .filter(UsageEvent.occurred_at >= period_start, UsageEvent.occurred_at < period_end)
@@ -308,8 +313,8 @@ def get_tool_performance(db: Session, org_id: int | None, period_start: datetime
     scores_by_identity = {s.identity_id: s for s in _latest_scores(db, org_id, period_start, period_end)}
 
     buckets = defaultdict(lambda: {"spend_usd": 0.0, "vw": 0.0, "sw": 0.0, "people": set()})
-    for identity_id, tool, spend_cents in tool_spend_by_identity:
-        spend = cents_to_usd(int(spend_cents or 0))
+    for identity_id, tool, spend_micros in tool_spend_by_identity:
+        spend = micros_to_usd(int(spend_micros or 0))
         score = scores_by_identity.get(identity_id)
         if score is None or spend <= 0:
             continue
@@ -439,7 +444,7 @@ def get_shadow_ai_candidates(
             UnmappedIdentityEvent.source_system,
             UnmappedIdentityEvent.external_id,
             func.count(UnmappedIdentityEvent.id),
-            func.sum(UnmappedIdentityEvent.cost_usd_cents),
+            func.sum(UnmappedIdentityEvent.cost_usd_micros),
             func.min(UnmappedIdentityEvent.occurred_at),
             func.max(UnmappedIdentityEvent.occurred_at),
         )
@@ -453,11 +458,11 @@ def get_shadow_ai_candidates(
             "source_system": source_system,
             "external_id": external_id,
             "attempt_count": attempt_count,
-            "known_cost_usd": round(cents_to_usd(int(known_cost_cents or 0)), 2),
+            "known_cost_usd": round(micros_to_usd(int(known_cost_micros or 0)), 2),
             "first_seen_at": first_seen_at,
             "last_seen_at": last_seen_at,
         }
-        for source_system, external_id, attempt_count, known_cost_cents, first_seen_at, last_seen_at in rows
+        for source_system, external_id, attempt_count, known_cost_micros, first_seen_at, last_seen_at in rows
     ]
     return sorted(out, key=lambda r: (-r["known_cost_usd"], -r["attempt_count"]))
 
@@ -468,11 +473,11 @@ def get_shadow_ai_observed_cost(db: Session, org_id: int | None, period_start: d
     measurement instead of a heuristic, whenever there's been at least one
     unmapped usage-path attempt to measure. See get_overview() for how this
     combines with SHADOW_AI_RATE."""
-    total_cents = (
-        db.query(func.sum(UnmappedIdentityEvent.cost_usd_cents))
+    total_micros = (
+        db.query(func.sum(UnmappedIdentityEvent.cost_usd_micros))
         .filter(UnmappedIdentityEvent.org_id == org_id)
         .filter(UnmappedIdentityEvent.occurred_at >= period_start, UnmappedIdentityEvent.occurred_at < period_end)
         .filter(UnmappedIdentityEvent.ingest_path == "usage")
         .scalar()
     )
-    return cents_to_usd(int(total_cents or 0))
+    return micros_to_usd(int(total_micros or 0))

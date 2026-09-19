@@ -24,7 +24,7 @@ from sqlalchemy.orm import Session
 
 from ..constants import OUTCOME_VALUE_WEIGHTS, QUALITY_SIGNAL_WEIGHTS
 from ..models import Identity, IdentityMapping, OutcomeEvent, QualitySignal, UnmappedIdentityEvent, UsageEvent
-from ..money import usd_to_cents
+from ..money import usd_to_micros
 from ..time_utils import utcnow
 
 # A reverted PR is both a negative Tier-1 outcome and a Tier-2 quality signal;
@@ -77,7 +77,7 @@ def resolve_identity(
                     source_system=source_system,
                     external_id=external_id,
                     ingest_path=ingest_path,
-                    cost_usd_cents=usd_to_cents(cost_usd) if cost_usd is not None else None,
+                    cost_usd_micros=usd_to_micros(cost_usd) if cost_usd is not None else None,
                     occurred_at=occurred_at or utcnow(),
                     event_id=event_id,
                 )
@@ -115,7 +115,11 @@ def ingest_usage_event(
         event_id=event_id,
     )
     if event_id is not None:
-        existing = db.query(UsageEvent).filter_by(identity_id=identity.id, event_id=event_id).one_or_none()
+        existing = (
+            db.query(UsageEvent)
+            .filter_by(identity_id=identity.id, source_system=source_system, event_id=event_id)
+            .one_or_none()
+        )
         if existing is not None:
             return existing
     event = UsageEvent(
@@ -124,8 +128,9 @@ def ingest_usage_event(
         model=model,
         tokens_in=tokens_in,
         tokens_out=tokens_out,
-        cost_usd_cents=usd_to_cents(cost_usd),
+        cost_usd_micros=usd_to_micros(cost_usd),
         occurred_at=occurred_at or utcnow(),
+        source_system=source_system,
         event_id=event_id,
     )
     db.add(event)
@@ -151,7 +156,11 @@ def ingest_outcome_event(
         db, org_id, source_system, external_id, ingest_path="outcome", occurred_at=occurred_at, event_id=event_id
     )
     if event_id is not None:
-        existing = db.query(OutcomeEvent).filter_by(identity_id=identity.id, event_id=event_id).one_or_none()
+        existing = (
+            db.query(OutcomeEvent)
+            .filter_by(identity_id=identity.id, source_system=source_system, event_id=event_id)
+            .one_or_none()
+        )
         if existing is not None:
             return existing
     weight = value_weight if value_weight is not None else OUTCOME_VALUE_WEIGHTS.get(outcome_type, 0.0)
@@ -162,6 +171,7 @@ def ingest_outcome_event(
         value_weight=weight,
         occurred_at=occurred_at or utcnow(),
         external_ref=external_ref,
+        source_system=source_system,
         event_id=event_id,
     )
     db.add(event)
@@ -208,7 +218,11 @@ def ingest_quality_signal(
         event_id=event_id,
     )
     if event_id is not None:
-        existing = db.query(QualitySignal).filter_by(identity_id=identity.id, event_id=event_id).one_or_none()
+        existing = (
+            db.query(QualitySignal)
+            .filter_by(identity_id=identity.id, source_system=source_system, event_id=event_id)
+            .one_or_none()
+        )
         if existing is not None:
             return existing
     sev = severity if severity is not None else QUALITY_SIGNAL_WEIGHTS.get(signal_type, 0.5)
@@ -218,6 +232,7 @@ def ingest_quality_signal(
         severity=sev,
         occurred_at=occurred_at or utcnow(),
         external_ref=external_ref,
+        source_system=source_system,
         event_id=event_id,
     )
     db.add(signal)
