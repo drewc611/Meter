@@ -11,10 +11,14 @@ before this ever sees real customer data. See config.py.
 """
 
 import logging
+import math
 import os
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import JSONResponse
 
 from .config import cors_origins_from_env, in_production
 from .database import init_db
@@ -22,6 +26,35 @@ from .dependencies import get_current_user, require_admin, require_api_key
 from .routers import admin, assistant, auth, dashboard, health, ingestion, waitlist
 
 logger = logging.getLogger(__name__)
+
+
+def _json_safe(value):
+    """A rejected request body can itself contain a value JSON can't
+    represent -- a bare NaN/Infinity/-Infinity float, which Starlette's
+    default JSONResponse (allow_nan=False, per the JSON spec) refuses to
+    serialize. FastAPI's default 422 handler echoes the offending value
+    back verbatim under "input", so without this, posting a non-finite
+    cost_usd didn't just fail validation -- the 422 response describing
+    *why* it failed crashed with an unhandled 500 of its own. repr(), not
+    str(): 'nan' alone reads as a plausible string value; "nan" (Python's
+    repr of the float) makes clear it's the number, not text."""
+    if isinstance(value, float) and (math.isnan(value) or math.isinf(value)):
+        return repr(value)
+    if isinstance(value, dict):
+        return {k: _json_safe(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_json_safe(v) for v in value]
+    return value
+
+
+async def _validation_exception_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+    # jsonable_encoder first, same as FastAPI's own default handler, to
+    # normalize everything else (tuples in "loc", enums, etc.) -- _json_safe
+    # only needs to patch the one gap that encoder leaves: a NaN/Infinity
+    # float is already a plain, encoder-legal Python float, so it passes
+    # through jsonable_encoder unchanged and only fails downstream, in
+    # JSONResponse's own strict-JSON serialization.
+    return JSONResponse(status_code=422, content={"detail": _json_safe(jsonable_encoder(exc.errors()))})
 
 
 def check_startup_environment(cors_origins: list[str]) -> None:
@@ -105,6 +138,10 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    # See _validation_exception_handler's docstring: without this, a request
+    # rejected for containing a NaN/Infinity float crashed a second time
+    # trying to report why.
+    app.add_exception_handler(RequestValidationError, _validation_exception_handler)
     # /ingest/* -- service token for machines (proxies, webhooks, personal.py).
     app.include_router(ingestion.router, dependencies=[Depends(require_api_key)])
     # /admin/* additionally requires is_admin -- these endpoints can reassign

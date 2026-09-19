@@ -9,7 +9,7 @@ org's raw values at once)."""
 from datetime import datetime
 
 from app import models
-from app.money import usd_to_cents
+from app.money import usd_to_micros
 from app.periods import current_period
 from app.services import scoring
 
@@ -181,7 +181,7 @@ def test_value_median_is_not_mixed_across_orgs(db):
         db.refresh(ident)
         db.add(
             models.UsageEvent(
-                identity_id=ident.id, tool="anthropic_api", cost_usd_cents=usd_to_cents(spend), occurred_at=START
+                identity_id=ident.id, tool="anthropic_api", cost_usd_micros=usd_to_micros(spend), occurred_at=START
             )
         )
         if outcome_value:

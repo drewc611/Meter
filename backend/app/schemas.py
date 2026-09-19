@@ -21,6 +21,21 @@ BCRYPT_MAX_PASSWORD_BYTES = 72
 MAX_NAME_LENGTH = 200
 MAX_IDENTIFIER_LENGTH = 500
 
+# cost_usd, value_weight and severity all reach the DB through app/money.py
+# or straight into a Float column with no further checking -- unbounded,
+# NaN and +/-Infinity all reached usd_to_cents()/usd_to_micros() and raised
+# ValueError/OverflowError there instead of a clean 422 here (reproduced:
+# posting cost_usd=NaN or cost_usd=Infinity to /ingest/usage was an
+# unhandled 500, reachable on the unmapped-identity/shadow-AI path too,
+# since resolve_identity records that row before the 422 it would otherwise
+# raise). allow_inf_nan=False on a float Field rejects NaN and +/-Infinity
+# as a validation error rather than a crash; the ge/le pair catches negative
+# and absurdly large values (a single ingested event costing more than $1M,
+# or a value_weight/severity outside the ranges the rest of the scoring
+# model assumes) the same way.
+MAX_SINGLE_EVENT_COST_USD = 1_000_000
+MAX_VALUE_WEIGHT_MAGNITUDE = 1_000
+
 
 def _bcrypt_safe_password(v: str) -> str:
     if len(v.encode("utf-8")) > BCRYPT_MAX_PASSWORD_BYTES:
@@ -73,7 +88,7 @@ class UsageEventIn(BaseModel):
     # the id in that source system (api key id, seat email, etc.)
     external_id: str = Field(max_length=MAX_IDENTIFIER_LENGTH)
     tool: str = Field(max_length=MAX_NAME_LENGTH)
-    cost_usd: float
+    cost_usd: float = Field(ge=0, le=MAX_SINGLE_EVENT_COST_USD, allow_inf_nan=False)
     model: str | None = Field(default=None, max_length=MAX_NAME_LENGTH)
     tokens_in: int = 0
     tokens_out: int = 0
@@ -91,7 +106,9 @@ class OutcomeEventIn(BaseModel):
     outcome_type: str = Field(max_length=MAX_NAME_LENGTH)  # see constants.OUTCOME_VALUE_WEIGHTS
     occurred_at: datetime | None = None
     external_ref: str | None = Field(default=None, max_length=MAX_IDENTIFIER_LENGTH)
-    value_weight: float | None = None
+    value_weight: float | None = Field(
+        default=None, ge=-MAX_VALUE_WEIGHT_MAGNITUDE, le=MAX_VALUE_WEIGHT_MAGNITUDE, allow_inf_nan=False
+    )
     event_id: str | None = Field(default=None, max_length=MAX_IDENTIFIER_LENGTH)
 
 
@@ -101,7 +118,7 @@ class QualitySignalIn(BaseModel):
     signal_type: str = Field(max_length=MAX_NAME_LENGTH)  # see constants.QUALITY_SIGNAL_WEIGHTS
     occurred_at: datetime | None = None
     external_ref: str | None = Field(default=None, max_length=MAX_IDENTIFIER_LENGTH)
-    severity: float | None = None
+    severity: float | None = Field(default=None, ge=0, le=1, allow_inf_nan=False)
     event_id: str | None = Field(default=None, max_length=MAX_IDENTIFIER_LENGTH)
 
 
