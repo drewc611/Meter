@@ -127,6 +127,19 @@ export default function PortampSpotlight() {
         named, never guessed at.
       </p>
 
+      <p className="grid-group-label" style={{ marginTop: "var(--sp-8)" }}>
+        How it compares
+      </p>
+      <div className="grid">
+        <a className="tile" href="/comparisons/portamp-vs-github-copilot">
+          <span className="tile-title">Portamp vs. GitHub Copilot</span>
+          <span className="tile-meta">
+            A generated conformance suite vs. AI-assisted coding with parity verification left to
+            the developer
+          </span>
+        </a>
+      </div>
+
       <div className="card" style={{ marginTop: "var(--sp-10)" }}>
         <span className="kicker" style={{ marginBottom: "var(--sp-2)" }}>
           Get early access

@@ -263,6 +263,19 @@ export default function Architecture() {
           back from <a href="/prompts">the daily archive</a>.
         </p>
       </div>
+
+      <p className="grid-group-label" style={{ marginTop: "var(--sp-8)" }}>
+        How it compares
+      </p>
+      <div className="grid">
+        <a className="tile" href="/comparisons/merit-ac-vs-helicone">
+          <span className="tile-title">Merit AC vs. Helicone</span>
+          <span className="tile-meta">
+            Observability vs. value/risk scoring -- and an honest look at where Helicone is
+            simply ahead
+          </span>
+        </a>
+      </div>
     </ContentLayout>
   );
 }

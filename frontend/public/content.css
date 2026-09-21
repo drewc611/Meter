@@ -1065,27 +1065,62 @@ th {
   max-width: 60ch;
 }
 .grid a.tile {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  /* A real minimum click target, not just "however tall the text makes
+     it" -- short-copy tiles (a two-word title, one line of meta) used to
+     end up barely bigger than the text itself. */
+  min-height: 108px;
   text-decoration: none;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: var(--sp-5);
+  padding: var(--sp-5) var(--sp-6);
   color: var(--ink);
   background: var(--card);
+  position: relative;
   /* No ambient glow at rest -- a hairline border and a solid panel color
-     carry the separation; the hover state below is the only motion. */
-  transition: border-color 0.15s var(--ease-out), background 0.15s var(--ease-out);
+     carry the separation; the hover/focus state below is where this
+     tile's own motion lives. */
+  transition: border-color 0.15s var(--ease-out), background 0.15s var(--ease-out),
+    transform 0.15s var(--ease-out), backdrop-filter 0.15s var(--ease-out);
 }
+/* The hover/focus state goes translucent -- a frosted pane over the page
+   rather than a flat color swap -- so the whole grid visibly lifts off
+   the surface under the pointer instead of just changing shade. Kept to
+   the interactive state only: every tile is still a fully opaque, solid
+   panel at rest (readable, no glass-on-glass legibility problem) and
+   only lets the page show through once it's the one thing being looked at. */
 .grid a.tile:hover,
 .grid a.tile:focus-visible {
   border-color: var(--brand);
-  background: var(--card-hover);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transform: translateY(-2px);
+}
+/* A quiet arrow that only appears on hover/focus -- confirms "this whole
+   card is one link" without adding a permanent icon to every tile at rest. */
+.grid a.tile::after {
+  content: "→";
+  position: absolute;
+  top: var(--sp-5);
+  right: var(--sp-5);
+  color: var(--brand);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.15s var(--ease-out), transform 0.15s var(--ease-out);
+}
+.grid a.tile:hover::after,
+.grid a.tile:focus-visible::after {
+  opacity: 1;
+  transform: translateX(0);
 }
 .tile-title {
   font-family: var(--font-display);
   font-weight: 700;
   margin-bottom: var(--sp-1);
   display: block;
+  padding-right: var(--sp-6);
 }
 .tile-meta {
   font-size: 13.5px;

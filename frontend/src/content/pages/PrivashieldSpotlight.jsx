@@ -91,10 +91,18 @@ export default function PrivashieldSpotlight() {
         ))}
       </div>
 
-      <p style={{ marginTop: "var(--sp-3)" }}>
-        How it compares to a mature, widely-deployed open-source alternative:{" "}
-        <a href="/comparisons/privashield-vs-wazuh">PrivaShield vs. Wazuh</a>.
+      <p className="grid-group-label" style={{ marginTop: "var(--sp-8)" }}>
+        How it compares
       </p>
+      <div className="grid">
+        <a className="tile" href="/comparisons/privashield-vs-wazuh">
+          <span className="tile-title">PrivaShield vs. Wazuh</span>
+          <span className="tile-meta">
+            A mature open-source SIEM with its own local AI vs. a narrower platform built around
+            signed, advisory-only AI governance
+          </span>
+        </a>
+      </div>
 
       <h2>Where it stands today</h2>
       <p>

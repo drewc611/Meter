@@ -126,6 +126,19 @@ export default function FinancertSpotlight() {
         ))}
       </div>
 
+      <p className="grid-group-label" style={{ marginTop: "var(--sp-8)" }}>
+        How it compares
+      </p>
+      <div className="grid">
+        <a className="tile" href="/comparisons/financert-vs-empower">
+          <span className="tile-title">Financert vs. Empower</span>
+          <span className="tile-meta">
+            Own-user-base benchmarking vs. real Federal Reserve percentile-tier data, no account
+            linking
+          </span>
+        </a>
+      </div>
+
       <div className="card" style={{ marginTop: "var(--sp-10)" }}>
         <span className="kicker" style={{ marginBottom: "var(--sp-2)" }}>
           Get early access

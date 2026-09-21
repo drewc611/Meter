@@ -190,6 +190,18 @@ export default function OperatorOS() {
         business printing on your own screen, it didn't work.
       </p>
 
+      <p className="grid-group-label" style={{ marginTop: "var(--sp-8)" }}>
+        How it compares
+      </p>
+      <div className="grid">
+        <a className="tile" href="/comparisons/operator-os-vs-quickbooks">
+          <span className="tile-title">Operator OS vs. QuickBooks</span>
+          <span className="tile-meta">
+            File-based double-entry books and a Monte Carlo cash forecast, vs. cloud accounting
+          </span>
+        </a>
+      </div>
+
       <div className="card">
         <p style={{ marginBottom: 0 }}>
           The source lives in this repository, under{" "}
