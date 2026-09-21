@@ -146,7 +146,12 @@ header.site {
   z-index: 20;
   height: var(--topbar-h);
   border-bottom: 1px solid var(--line);
-  background: rgba(10, 12, 28, 0.82);
+  /* Was hardcoded to the old blue-indigo-tinted paper value (rgba(10, 12,
+     28, ...)) -- the token swap didn't catch it because it's not a var()
+     reference, and it showed as a visibly blue-tinted bar against the new
+     neutral-black page body on every single page (this header is sticky
+     site-wide). Matches --paper (#0a0a0b) now. */
+  background: rgba(10, 10, 11, 0.82);
   backdrop-filter: blur(10px);
 }
 .site-inner {
@@ -241,7 +246,15 @@ nav.site-nav a.nav-cta:focus-visible {
 }
 
 /* ---------- mobile nav (CSS-only checkbox toggle, no JS) ---------- */
+/* display: none, not just opacity: 0 -- an opacity-hidden checkbox is still
+   in the tab order. Without this, a keyboard user tabbing through the
+   desktop header landed on an invisible checkbox that does nothing (its
+   :checked effect only exists inside the max-width: 900px query below) --
+   a wasted, unperceivable stop between the logo and "Sign in". display:
+   none removes it from the tab order entirely; the 900px query below
+   restores it exactly where the visible .nav-toggle label already is. */
 .nav-toggle-input {
+  display: none;
   position: absolute;
   opacity: 0;
   pointer-events: none;
@@ -251,6 +264,9 @@ nav.site-nav a.nav-cta:focus-visible {
 }
 
 @media (max-width: 900px) {
+  .nav-toggle-input {
+    display: block;
+  }
   .nav-toggle {
     display: flex;
     flex-direction: column;
@@ -304,6 +320,16 @@ nav.site-nav a.nav-cta:focus-visible {
     z-index: 30;
     order: 3;
     flex-direction: column;
+    /* The base (desktop) rule sets flex-wrap: wrap for the inline top-bar
+       layout and nothing here ever reset it. Combined with flex-direction:
+       column and this box's bounded height, once the 17 links + 5 group
+       labels + CTA exceeded the viewport height, flex-wrap split them into
+       a second column that ran off the right edge instead of the intended
+       single scrollable column -- overflow-y: auto below never engaged
+       because the content technically still "fit" by spilling sideways.
+       Reproduced on a 390x844 viewport: the menu showed two truncated
+       columns, most of the second one off-screen and unreachable. */
+    flex-wrap: nowrap;
     align-items: flex-start;
     gap: var(--sp-1);
     padding: var(--sp-5);
