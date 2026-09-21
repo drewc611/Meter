@@ -39,17 +39,19 @@
   --good: #4ade9c;
   --good-pale: rgba(74, 222, 156, 0.14);
 
-  --card: rgba(255, 255, 255, 0.035);
-  --card-hover: rgba(255, 255, 255, 0.065);
+  /* Solid panel colors, not a translucent white overlay -- rgba(255,255,255,
+     .035-.065) "frosted glass on dark" is the single most reused card
+     treatment in AI-generated SaaS templates, and it looks the same
+     regardless of what accent color sits on top of it. A flat, distinct
+     panel color is a real decision instead of a default. */
+  --card: var(--paper-2);
+  --card-hover: var(--paper-3);
   --code-bg: rgba(0, 0, 0, 0.35);
-  --shadow-tile: 0 1px 2px rgba(0, 0, 0, 0.35), 0 16px 32px -16px rgba(0, 0, 0, 0.55);
-  --shadow-pop: 0 2px 4px rgba(0, 0, 0, 0.35), 0 24px 48px -20px rgba(0, 0, 0, 0.65);
 
-  /* the one gradient move -- a single, restrained source in the brand gold,
-     not a two-blob bloom. Signal, not decoration: it exists so the hero
-     doesn't read as flat black, not to announce "AI product" the way a
-     violet gradient bloom now reflexively does. */
-  --gradient-aurora: radial-gradient(48% 38% at 84% -12%, rgba(207, 157, 53, 0.14), transparent 68%);
+  /* No gradient bloom. A radial glow behind the hero is the other
+     instantly-recognizable "AI landing page" default (every Linear/shadcn
+     clone has one, regardless of brand) -- flat surface, let the type and
+     the gold accent carry the hero instead of ambient decoration. */
 
   /* type scale, 1.333 (major third) off a 16px base -- was previously a
      comment-only claim; these are the actual tokens, used below and
@@ -225,7 +227,7 @@ nav.site-nav a.nav-cta {
   color: var(--paper);
   background: var(--brand);
   padding: 7px 18px;
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   border-bottom: none;
   font-weight: 600;
   transition: background 0.15s var(--ease-out), transform 0.15s var(--ease-out), box-shadow 0.15s var(--ease-out);
@@ -429,7 +431,6 @@ main.content.wide > .grid {
 }
 
 .hero-wash {
-  background-image: var(--gradient-aurora);
   margin: calc(var(--sp-12) * -1) calc(var(--sp-10) * -1) var(--sp-10);
   padding: var(--sp-16) var(--sp-10) var(--sp-10);
 }
@@ -445,7 +446,10 @@ main.content.wide > .grid {
   border-radius: var(--radius-lg);
   background: var(--paper-3);
   border: 1px solid var(--line-strong);
-  box-shadow: var(--shadow-pop);
+  /* One flat shadow, not the old two-layer glow -- a framed screenshot
+     earns some lift off the page; it doesn't need to look like it's
+     hovering. */
+  box-shadow: 0 20px 40px -24px rgba(0, 0, 0, 0.6);
   overflow: hidden;
 }
 .hero-preview img {
@@ -465,29 +469,34 @@ main.content.wide > .grid {
   margin-bottom: var(--sp-3);
 }
 
+/* A plain bracketed status label, not a pill with a glowing dot -- that
+   combination (rounded-full badge + pulsing colored dot) is one of the
+   most reused "AI-generated SaaS landing page" defaults there is, and it
+   reads the same on every product that uses it regardless of brand. The
+   live/pending distinction now lives in the text color instead of a dot:
+   var(--good) reads as "this is real and working," var(--muted) as
+   "not yet." The `<i>` element still exists in every page's markup
+   (23 pages use .badge) but is hidden here rather than removed from each
+   page's JSX -- pure CSS-level change, no markup migration needed. */
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 20px;
-  background: var(--brand-pale);
-  color: var(--brand-dark);
-  border: 1px solid var(--brand-pale-strong);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--good);
+  border: 1px solid var(--line-strong);
   margin-bottom: var(--sp-5);
 }
-.badge i {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--good);
-  box-shadow: 0 0 8px rgba(74, 222, 156, 0.5);
+.badge.pending {
+  color: var(--muted);
 }
-.badge.pending i {
-  background: var(--brand);
-  box-shadow: 0 0 8px rgba(207, 157, 53, 0.5);
+.badge i {
+  display: none;
 }
 
 h1,
@@ -589,7 +598,7 @@ pre.pre-wrap {
   font-weight: 700;
   font-size: 15px;
   padding: 11px 24px;
-  border-radius: 999px;
+  border-radius: var(--radius);
   text-decoration: none;
   transition: background 0.15s var(--ease-out), border-color 0.15s var(--ease-out), transform 0.15s var(--ease-out),
     box-shadow 0.15s var(--ease-out);
@@ -887,7 +896,6 @@ nav.toc a:hover {
   border-radius: var(--radius);
   padding: var(--sp-5) var(--sp-6);
   margin: var(--sp-5) 0;
-  box-shadow: 0 1px 2px rgba(19, 21, 46, 0.03), 0 10px 24px -18px rgba(19, 21, 46, 0.18);
 }
 .card > *:last-child {
   margin-bottom: 0;
@@ -952,16 +960,14 @@ th {
   padding: var(--sp-5);
   color: var(--ink);
   background: var(--card);
-  box-shadow: 0 1px 2px rgba(19, 21, 46, 0.03), 0 8px 20px -16px rgba(19, 21, 46, 0.16);
-  transition: border-color 0.18s var(--ease-out), transform 0.18s var(--ease-out), background 0.18s var(--ease-out),
-    box-shadow 0.18s var(--ease-out);
+  /* No ambient glow at rest -- a hairline border and a solid panel color
+     carry the separation; the hover state below is the only motion. */
+  transition: border-color 0.15s var(--ease-out), background 0.15s var(--ease-out);
 }
 .grid a.tile:hover,
 .grid a.tile:focus-visible {
   border-color: var(--brand);
   background: var(--card-hover);
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-tile);
 }
 .tile-title {
   font-family: var(--font-display);
@@ -1039,8 +1045,8 @@ th {
   background: var(--good-pale);
 }
 
-/* A small per-item category label -- distinct from .badge, which is a single
-   glowing-dot status marker used once per page, not repeated per tile. */
+/* A small per-item category label -- distinct from .badge, which is a
+   single status marker used once per page, not repeated per tile. */
 .chip {
   display: inline-block;
   font-size: 11px;
@@ -1050,7 +1056,7 @@ th {
   color: var(--brand-dark);
   background: var(--brand-pale);
   border: 1px solid var(--brand-pale-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-sm);
   padding: 3px 9px;
   margin-bottom: var(--sp-2);
 }
