@@ -131,9 +131,6 @@ export default function Home() {
         </div>
 
         <a className="hero-preview" href="/app" aria-label="Open the Merit AC dashboard">
-          <div className="hero-preview-bar">
-            <i /> <i /> <i />
-          </div>
           <img
             src="/images/dashboard-preview.png"
             alt="The Merit AC dashboard overview, showing AI spend, value per dollar, slop risk, and recoverable spend for a sample org"
