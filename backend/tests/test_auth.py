@@ -301,6 +301,18 @@ def test_oversized_password_is_422_on_signup_and_login(client, monkeypatch):
     assert client.post("/auth/login", json={"email": "b@example.com", "password": multibyte}).status_code == 422
 
 
+def test_oversized_login_email_is_422(client, monkeypatch):
+    """LoginIn.email stays a plain str (not ValidatedEmail, so a malformed
+    login still 401s instead of 422 -- see the comment on ValidatedEmail's
+    definition), but it was the one free-text field in the file with no
+    length cap at all. A megabytes-long email is now rejected before it
+    reaches the identity lookup."""
+    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    huge_email = "a" * 300 + "@example.com"
+    r = client.post("/auth/login", json={"email": huge_email, "password": "hunter22"})
+    assert r.status_code == 422
+
+
 def test_oversized_password_does_not_reveal_whether_the_account_exists(client, monkeypatch):
     """The enumeration oracle this closes: an existing email used to crash
     into a 500 while an unknown one cleanly 401'd, because `or` short-circuits
