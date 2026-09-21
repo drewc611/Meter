@@ -9,6 +9,7 @@ export default function AuthGate() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [signupCode, setSignupCode] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -39,7 +40,12 @@ export default function AuthGate() {
     const trimmedEmail = email.trim();
     if (!trimmedEmail || !password) return;
     setSubmitting(true);
-    const result = await submitAuth({ email: trimmedEmail, password, name: name.trim() });
+    const result = await submitAuth({
+      email: trimmedEmail,
+      password,
+      name: name.trim(),
+      signupCode: signupCode.trim(),
+    });
     setSubmitting(false);
     if (!result.ok) {
       setError(result.error);
@@ -64,7 +70,7 @@ export default function AuthGate() {
           <h2>{isSignup ? "Create your account" : "Sign in to Merit AC"}</h2>
           <p>
             {isSignup
-              ? "Sign up solo and get your own private space -- your usage, your dashboard, nobody else's data mixed in."
+              ? "Sign up solo for your own private space, or enter your company's code below to join their workspace instead."
               : "This deployment requires an account to view live data."}
           </p>
 
@@ -120,6 +126,15 @@ export default function AuthGate() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            {isSignup && (
+              <input
+                type="text"
+                placeholder="Company code (optional)"
+                autoComplete="off"
+                value={signupCode}
+                onChange={(e) => setSignupCode(e.target.value)}
+              />
+            )}
             {error && <div className="auth-error">{error}</div>}
             <button type="submit" className="auth-submit-btn" disabled={submitting}>
               {isSignup ? "Sign up" : "Sign in"}

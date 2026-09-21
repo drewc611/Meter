@@ -57,6 +57,40 @@ export async function fetchOrg() {
   return fetchJSON("/admin/org", 4000);
 }
 
+// Admin-only, fetched on demand by the Team view -- the raw Identity roster
+// (see admin.list_identities), not the PersonScore-gated /api/people, so a
+// just-provisioned person with no usage yet still shows up.
+export async function fetchIdentities() {
+  return fetchJSON("/admin/identities", 4000);
+}
+
+// POST /admin/identity -- provisions a new person (see routers/admin.py).
+// Returns {ok, data} or {ok: false, error} rather than throwing, same shape
+// AppDataContext.submitAuth already uses, since the Team view needs to show
+// a field-level error message on failure, not just fail silently.
+export async function createIdentity(body) {
+  try {
+    const token = getStoredToken();
+    const res = await fetch(API_BASE + "/admin/identity", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      // A 409/404 detail is a plain string; a 422 validation failure's
+      // detail is a list of {msg, loc, ...} objects instead (see
+      // main.py's _validation_exception_handler) -- fall back to its first
+      // message rather than rendering "[object Object]".
+      const detail = Array.isArray(data.detail) ? data.detail[0]?.msg : data.detail;
+      return { ok: false, error: detail || "Something went wrong -- try again." };
+    }
+    return { ok: true, data };
+  } catch {
+    return { ok: false, error: "Couldn't reach the server -- try again in a moment." };
+  }
+}
+
 export async function fetchLive() {
   const [ov, tm, rl, tr, tb, ad, tp, sf] = await Promise.all([
     fetchJSON("/api/overview"),

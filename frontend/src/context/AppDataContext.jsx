@@ -89,9 +89,12 @@ export function AppDataProvider({ children }) {
   }, []);
 
   const submitAuth = useCallback(
-    async ({ email, password, name }) => {
+    async ({ email, password, name, signupCode }) => {
       const path = authMode === "signup" ? "/auth/signup" : "/auth/login";
-      const body = authMode === "signup" ? { email, password, name } : { email, password };
+      const body =
+        authMode === "signup"
+          ? { email, password, name, ...(signupCode ? { signup_code: signupCode } : {}) }
+          : { email, password };
       try {
         const res = await fetch(API_BASE + path, {
           method: "POST",
