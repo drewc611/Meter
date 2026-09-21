@@ -17,7 +17,10 @@ import { Fragment } from "react";
 const NAV_GROUPS = [
   {
     label: "Products",
-    items: [{ key: "products", href: "/products", label: "All products" }],
+    items: [
+      { key: "products", href: "/products", label: "All products" },
+      { key: "comparisons", href: "/comparisons", label: "Comparisons" },
+    ],
   },
   {
     label: "Understand",

@@ -64,6 +64,10 @@ export default function Products() {
           </a>
         ))}
       </div>
+
+      <p style={{ marginTop: "var(--sp-3)" }}>
+        How each one compares to a real alternative: <a href="/comparisons">/comparisons</a>.
+      </p>
     </ContentLayout>
   );
 }
