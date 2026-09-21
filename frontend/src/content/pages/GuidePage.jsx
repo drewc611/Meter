@@ -3,15 +3,18 @@ import Toc from "../components/Toc.jsx";
 import { tocFromHeadings } from "../lib/loadEntries.js";
 
 // One shared template for every guide-shaped entry (guides, cloud-architecture,
-// claude-architecture) -- these used to be 22 separate hand-written JSX pages;
-// now they're markdown files under src/content/entries/, and this is the only
-// component that renders them. `entry.html` is build-time-generated from
-// markdown this team writes, not runtime/user input, so dangerouslySetInnerHTML
-// here carries none of the XSS risk that name usually implies.
+// claude-architecture, comparisons) -- these used to be 22 separate hand-written
+// JSX pages; now they're markdown files under src/content/entries/, and this is
+// the only component that renders them. `entry.html` is build-time-generated
+// from markdown this team writes, not runtime/user input, so
+// dangerouslySetInnerHTML here carries none of the XSS risk that name usually
+// implies.
+const TITLE_SUFFIX = { comparisons: "Clark X Group" };
+
 export function guideMeta(entry, section) {
   return {
     outFile: `${section}/${entry.slug}.html`,
-    title: `${entry.title} — Merit AC Guides`,
+    title: `${entry.title} — ${TITLE_SUFFIX[section] || "Merit AC Guides"}`,
     description: entry.description,
   };
 }

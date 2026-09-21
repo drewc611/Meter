@@ -46,6 +46,7 @@ import AskAssistant, { meta as askAssistantMeta } from "./pages/AskAssistant.jsx
 import Pricing, { meta as pricingMeta } from "./pages/Pricing.jsx";
 import Contact, { meta as contactMeta } from "./pages/Contact.jsx";
 import Products, { meta as productsMeta } from "./pages/Products.jsx";
+import ComparisonsIndex, { meta as comparisonsMeta } from "./pages/ComparisonsIndex.jsx";
 import { PROMPTS } from "./data/prompts.js";
 
 // One markdown file per entry -- drop a new .md in the matching folder and it
@@ -59,6 +60,7 @@ const cloudArchEntries = loadEntries(entriesDir("cloud-architecture"));
 const claudeArchEntries = loadEntries(entriesDir("claude-architecture"));
 const skillEntries = loadEntries(entriesDir("skills"));
 const newsletterEntries = loadEntries(entriesDir("newsletter"));
+const comparisonEntries = loadEntries(entriesDir("comparisons"));
 
 const PAGES = [
   [Home, homeMeta],
@@ -88,6 +90,7 @@ const PAGES = [
   [Pricing, pricingMeta],
   [Contact, contactMeta],
   [Products, productsMeta],
+  [ComparisonsIndex, comparisonsMeta, { entries: comparisonEntries }],
 ];
 
 // Guide-shaped entries (guides/cloud-architecture/claude-architecture) all
@@ -96,6 +99,7 @@ const GUIDE_SECTIONS = [
   ["guides", guideEntries],
   ["cloud-architecture", cloudArchEntries],
   ["claude-architecture", claudeArchEntries],
+  ["comparisons", comparisonEntries],
 ];
 
 export function renderAll() {
