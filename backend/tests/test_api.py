@@ -371,6 +371,47 @@ def test_absurdly_large_cost_usd_is_rejected(client, db):
     assert r.status_code == 422
 
 
+def test_deeply_nested_field_in_rejected_body_is_a_clean_422_not_a_500(client, db):
+    """Regression test: a request body assigning a deeply nested list to a
+    scalar-typed field (e.g. cost_usd) put that whole structure under
+    exc.errors()["input"], and _json_safe (app/main.py) recursed into it one
+    stack frame per level with no depth cap -- an unauthenticated
+    RecursionError/500 with a few hundred nested brackets in a few-KB body.
+    700 levels: deep enough to have crashed _json_safe before this fix, not
+    so deep it trips Starlette's own (separately-handled) body-JSON parsing
+    limit first."""
+    _bootstrap_person(db)
+    nested = "1.0"
+    for _ in range(700):
+        nested = f"[{nested}]"
+    r = _post_raw_json(
+        client,
+        "/ingest/usage",
+        '{"source_system": "anthropic_api", "external_id": "key_live", '
+        f'"tool": "anthropic_api", "cost_usd": {nested}' + "}",
+    )
+    assert r.status_code == 422
+
+
+def test_absurdly_large_token_counts_are_rejected(client, db):
+    """Regression test: tokens_in/tokens_out were an unbounded `int` reaching
+    a plain SQLite Integer column -- a value like 10**30 raised an unhandled
+    OverflowError at db.commit() instead of a clean 422, the same bug class
+    cost_usd/value_weight/severity are already bounded to prevent."""
+    _bootstrap_person(db)
+    r = client.post(
+        "/ingest/usage",
+        json={
+            "source_system": "anthropic_api",
+            "external_id": "key_live",
+            "tool": "anthropic_api",
+            "cost_usd": 1.0,
+            "tokens_in": 10**30,
+        },
+    )
+    assert r.status_code == 422
+
+
 def test_event_id_replay_is_scoped_per_source_system(client, db):
     """Regression test: two integrations that both number their own events
     from 1 (a billing export and a provider's admin API, say) must not
