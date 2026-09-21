@@ -193,6 +193,8 @@ export default function Home() {
           { label: "Financert", note: "Wealth allocation vs. the Fed's own data", href: "/financert" },
           { label: "The All Dash", note: "Local-first command center", href: "/all-dash" },
           { label: "Portamp", note: "Legacy front ends, ported and proven", href: "/portamp" },
+          { label: "Toneara", note: "Private, in-browser instrumental sketches", href: "/toneara" },
+          { label: "PrivaShield", note: "Self-hosted security, signed AI governance", href: "/privashield" },
         ]}
       />
       <p style={{ marginTop: "var(--sp-3)" }}>
