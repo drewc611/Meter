@@ -46,6 +46,14 @@ const SANITIZE_OPTIONS = {
     div: ["class"], // the .card wrapper added below
   },
   allowedSchemes: ["http", "https", "mailto"],
+  // sanitize-html's allowedSchemes only constrains a URL that *has* a
+  // scheme -- a protocol-relative one ("//evil.example/x") has none, so it
+  // passes through unchanged regardless of the allowlist above unless this
+  // is turned off. Reachable through the exact threat model this file's own
+  // comment calls out: an unattended /news pipeline with no human review
+  // gate emitting `[text](//attacker.example/phish)` or
+  // `![](//attacker.example/beacon.gif)` in a generated article body.
+  allowProtocolRelative: false,
 };
 
 // `dir` is an absolute path to a src/content/entries/<type>/ folder.
