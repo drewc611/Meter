@@ -15,7 +15,9 @@ export default function Architecture() {
       <span className="badge">
         <i /> Reflects the live deployment
       </span>
-      <h1>How Merit AC is built</h1>
+      <h1>
+        How Merit AC is <span className="accent-word">built</span>
+      </h1>
       <p className="lead">
         Exactly how Merit AC is built and hosted -- the pipeline, the data model, where it runs,
         and what's deliberately not built yet.
@@ -260,6 +262,19 @@ export default function Architecture() {
           <a href="/prompts/composed-and-advanced-prompts">prompt library</a>, alongside a link
           back from <a href="/prompts">the daily archive</a>.
         </p>
+      </div>
+
+      <p className="grid-group-label" style={{ marginTop: "var(--sp-8)" }}>
+        How it compares
+      </p>
+      <div className="grid">
+        <a className="tile" href="/comparisons/merit-ac-vs-helicone">
+          <span className="tile-title">Merit AC vs. Helicone</span>
+          <span className="tile-meta">
+            Observability vs. value/risk scoring -- and an honest look at where Helicone is
+            simply ahead
+          </span>
+        </a>
       </div>
     </ContentLayout>
   );

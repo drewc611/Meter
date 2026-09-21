@@ -12,7 +12,9 @@ export default function ComparisonsIndex({ entries }) {
   return (
     <ContentLayout active="comparisons">
       <span className="kicker">Clark X Group</span>
-      <h1>How each product compares</h1>
+      <h1>
+        How each product <span className="accent-word">compares</span>
+      </h1>
       <p className="lead">
         This is marketing content, not the news arm — it's Clark X Group comparing its own products
         against a real, named alternative, not third-party reporting. Every claim about the other

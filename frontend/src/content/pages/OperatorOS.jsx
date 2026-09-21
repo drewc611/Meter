@@ -93,7 +93,10 @@ export default function OperatorOS() {
       <span className="badge">
         <i /> Runs entirely on your machine -- source in this repo
       </span>
-      <h1>Operator OS: the whole business, on your machine, in files you own.</h1>
+      <h1>
+        Operator OS: the whole business, on your machine, in files you{" "}
+        <span className="accent-word">own</span>.
+      </h1>
       <p className="lead">
         A file-based business operating system: real double-entry books, cash forecasting with the
         odds attached, import adapters, and an agent layer that runs on a schedule — all on your
@@ -186,6 +189,18 @@ export default function OperatorOS() {
         module has a finish line you can check yourself: if module one doesn't end with your own
         business printing on your own screen, it didn't work.
       </p>
+
+      <p className="grid-group-label" style={{ marginTop: "var(--sp-8)" }}>
+        How it compares
+      </p>
+      <div className="grid">
+        <a className="tile" href="/comparisons/operator-os-vs-quickbooks">
+          <span className="tile-title">Operator OS vs. QuickBooks</span>
+          <span className="tile-meta">
+            File-based double-entry books and a Monte Carlo cash forecast, vs. cloud accounting
+          </span>
+        </a>
+      </div>
 
       <div className="card">
         <p style={{ marginBottom: 0 }}>

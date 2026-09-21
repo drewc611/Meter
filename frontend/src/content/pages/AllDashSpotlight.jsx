@@ -59,7 +59,10 @@ export default function AllDashSpotlight() {
       <span className="badge">
         <i /> Local-first — no server, no account, installs to your phone
       </span>
-      <h1>Feed it what you already have. It builds the dashboard.</h1>
+      <h1>
+        Feed it what you already have. It <span className="accent-word">builds</span> the
+        dashboard.
+      </h1>
       <p className="lead">
         The All Dash is a command center for one project or one person. Drop in the meeting notes,
         the calendar export, the transcript, the spreadsheet you already have, and it builds tasks
@@ -100,6 +103,19 @@ export default function AllDashSpotlight() {
         adds a FastAPI service, a Next.js team workspace, a hash-chained AI audit ledger, and an
         MCP server for shared use — for when one person's dashboard needs to become a team's.
       </p>
+
+      <p className="grid-group-label" style={{ marginTop: "var(--sp-8)" }}>
+        How it compares
+      </p>
+      <div className="grid">
+        <a className="tile" href="/comparisons/the-all-dash-vs-notion">
+          <span className="tile-title">The All Dash vs. Notion</span>
+          <span className="tile-meta">
+            Builds the dashboard from your raw documents, local-first, vs. AI inside a workspace
+            you structure yourself
+          </span>
+        </a>
+      </div>
 
       <div className="card" style={{ marginTop: "var(--sp-10)" }}>
         <span className="kicker" style={{ marginBottom: "var(--sp-2)" }}>

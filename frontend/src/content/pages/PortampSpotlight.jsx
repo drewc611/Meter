@@ -82,7 +82,10 @@ export default function PortampSpotlight() {
       <span className="badge">
         <i /> Proprietary — early access
       </span>
-      <h1>Port a legacy front end without losing the look or the API contract.</h1>
+      <h1>
+        <span className="accent-word">Port</span> a legacy front end without losing the look or
+        the API contract.
+      </h1>
       <p className="lead">
         Portamp reads what a legacy application actually is — its components, its endpoints, its
         design tokens, the rules its validation enforced — and rebuilds it in React, Vue, Svelte,
@@ -123,6 +126,19 @@ export default function PortampSpotlight() {
         — a HAR of its traffic, a schema dump, an OpenAPI export — and every gap it can't fill is
         named, never guessed at.
       </p>
+
+      <p className="grid-group-label" style={{ marginTop: "var(--sp-8)" }}>
+        How it compares
+      </p>
+      <div className="grid">
+        <a className="tile" href="/comparisons/portamp-vs-github-copilot">
+          <span className="tile-title">Portamp vs. GitHub Copilot</span>
+          <span className="tile-meta">
+            A generated conformance suite vs. AI-assisted coding with parity verification left to
+            the developer
+          </span>
+        </a>
+      </div>
 
       <div className="card" style={{ marginTop: "var(--sp-10)" }}>
         <span className="kicker" style={{ marginBottom: "var(--sp-2)" }}>

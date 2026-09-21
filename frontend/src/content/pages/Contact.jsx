@@ -11,7 +11,9 @@ export default function Contact() {
   return (
     <ContentLayout>
       <span className="kicker">Get in touch</span>
-      <h1>Find the bottleneck. Build the leverage.</h1>
+      <h1>
+        Find the bottleneck. Build the <span className="accent-word">leverage</span>.
+      </h1>
       <p className="lead">
         Use Clark X for enterprise work, architecture, and new ventures — Merit AC is the proof
         point. Tell us where execution is slowing down and we&apos;ll follow up directly, not add
