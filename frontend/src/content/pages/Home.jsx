@@ -112,22 +112,23 @@ export default function Home() {
   return (
     <ContentLayout wide>
       <div className="hero-wash">
-        <span className="kicker">Clark X Group</span>
-        <span className="badge">
-          <i /> Merit AC: pre-launch prototype
-        </span>
-        <h1>We build the systems. Merit AC proves the method.</h1>
-        <p className="lead">
-          Clark X Group is a technology holding company. Merit AC, its flagship product, is an AI
-          intelligence hub and spend tracker built on one idea: show the work, not the hype.
-        </p>
-        <div className="cta-row">
-          <a className="btn btn-primary" href="#product">
-            Explore Merit AC
-          </a>
-          <a className="btn btn-secondary" href="/architecture">
-            See how it&apos;s built
-          </a>
+        <div className="hero-copy">
+          <span className="kicker">Clark X Group · pre-launch prototype</span>
+          <h1>
+            We build the systems. Merit AC <span className="accent-word">proves</span> the method.
+          </h1>
+          <p className="lead">
+            Clark X Group is a technology holding company. Merit AC, its flagship product, is an AI
+            intelligence hub and spend tracker built on one idea: show the work, not the hype.
+          </p>
+          <div className="cta-row">
+            <a className="btn btn-primary" href="#product">
+              Explore Merit AC
+            </a>
+            <a className="hero-secondary-link" href="/architecture">
+              See how it&apos;s built <span aria-hidden="true">→</span>
+            </a>
+          </div>
         </div>
 
         <a className="hero-preview" href="/app" aria-label="Open the Merit AC dashboard">
