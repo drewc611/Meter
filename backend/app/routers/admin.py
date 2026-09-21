@@ -1,5 +1,5 @@
-"""Admin endpoints: manual identity mapping, the scoring-job entry point,
-and the one-off waitlist announcement send."""
+"""Admin endpoints: identity provisioning and mapping, the scoring-job entry
+point, and the one-off waitlist announcement send."""
 
 import smtplib
 from datetime import datetime
@@ -52,6 +52,48 @@ to the full dashboard.</p>
 """
 
 
+@router.post("/identity", status_code=201, response_model=schemas.IdentityCreated)
+def create_identity(
+    body: schemas.IdentityCreateIn,
+    db: Session = Depends(get_db),
+    user: models.DashboardUser | None = Depends(get_current_user),
+):
+    """Provisions a new person directly -- the door a company-plan org never
+    had. Before this endpoint, the only code path that ever created an
+    Identity row was auth.py's own individual-signup flow
+    (_provision_default_identity), which explicitly assumes a company org's
+    people come from "SCIM/admin mapping instead" -- a path that was never
+    built. No SCIM protocol integration exists in this codebase; this is
+    the admin-driven equivalent of one, callable by any admin of the org.
+
+    Creates the named team if it doesn't already exist (same
+    get-or-create-by-name convention as auth.py's own provisioning), plus
+    an initial "manual" mapping keyed on the given email -- same convention
+    personal.py and _provision_default_identity already use for an
+    individual's own signup -- so the new person is immediately
+    attributable via POST /ingest/usage with source_system="manual",
+    external_id=<their email>, with no separate mapping call required.
+    """
+    org_id = resolve_org_id(db, user)
+    if org_id is None:
+        raise HTTPException(status_code=404, detail="No organization found")
+    if db.query(models.Identity).filter_by(org_id=org_id, email=body.email).one_or_none():
+        raise HTTPException(status_code=409, detail=f"An identity with email {body.email} already exists")
+    team = db.query(models.Team).filter_by(org_id=org_id, name=body.team).one_or_none()
+    if team is None:
+        team = models.Team(org_id=org_id, name=body.team)
+        db.add(team)
+        db.flush()
+    ident = models.Identity(
+        org_id=org_id, full_name=body.name, email=body.email, role=body.role, team_id=team.id, tier=body.tier
+    )
+    db.add(ident)
+    db.flush()
+    db.add(models.IdentityMapping(org_id=org_id, identity_id=ident.id, source_system="manual", external_id=body.email))
+    db.commit()
+    return schemas.IdentityCreated(identity_id=ident.id, team_id=team.id, mapped_external_id=body.email)
+
+
 @router.post("/identity-mapping", status_code=201, response_model=schemas.IdentityMapped)
 def map_identity(
     body: schemas.IdentityMappingIn,
@@ -62,7 +104,9 @@ def map_identity(
     org_id = resolve_org_id(db, user)
     ident = db.query(models.Identity).filter_by(org_id=org_id, email=body.email).one_or_none()
     if not ident:
-        raise HTTPException(status_code=404, detail=f"No Identity with email {body.email}. Provision via SCIM first.")
+        raise HTTPException(
+            status_code=404, detail=f"No Identity with email {body.email}. Provision via POST /admin/identity first."
+        )
     mapping = models.IdentityMapping(
         org_id=org_id, identity_id=ident.id, source_system=body.source_system, external_id=body.external_id
     )
