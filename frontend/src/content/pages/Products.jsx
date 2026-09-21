@@ -4,7 +4,7 @@ export const meta = {
   outFile: "products.html",
   title: "Products — Clark X Group",
   description:
-    "Every product Clark X Group has shipped: Merit AC, Operator OS, Financert, The All Dash, and Portamp — what each one does and who it's for.",
+    "Every product Clark X Group has shipped: Merit AC, Operator OS, Financert, The All Dash, Portamp, Toneara, and PrivaShield — what each one does and who it's for.",
 };
 
 const PRODUCTS = [
@@ -42,6 +42,20 @@ const PRODUCTS = [
     tag: "Venture",
     summary:
       "Ports a legacy front end to React, Vue, Svelte, or a dependency-free custom element, without losing the look or the API contract. Reads Angular, jQuery, native Windows executables, PDFs, even a running app with no source at all.",
+  },
+  {
+    href: "/toneara",
+    name: "Toneara",
+    tag: "Venture",
+    summary:
+      "Turns a text brief into a playable instrumental in the browser -- no account, no API key, no server. A deterministic, seeded engine, not a trained model, in exchange for zero friction and nothing sent anywhere.",
+  },
+  {
+    href: "/privashield",
+    name: "PrivaShield",
+    tag: "Venture",
+    summary:
+      "A self-hosted security platform: Suricata/Zeek detection, local-LLM-assisted triage, and Ed25519-signed policy governance -- AI may recommend, only signed human approval controls anything privileged.",
   },
 ];
 

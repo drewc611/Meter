@@ -112,28 +112,26 @@ export default function Home() {
   return (
     <ContentLayout wide>
       <div className="hero-wash">
-        <span className="kicker">Clark X Group</span>
-        <span className="badge">
-          <i /> Merit AC: pre-launch prototype
-        </span>
-        <h1>We build the systems. Merit AC proves the method.</h1>
-        <p className="lead">
-          Clark X Group is a technology holding company. Merit AC, its flagship product, is an AI
-          intelligence hub and spend tracker built on one idea: show the work, not the hype.
-        </p>
-        <div className="cta-row">
-          <a className="btn btn-primary" href="#product">
-            Explore Merit AC
-          </a>
-          <a className="btn btn-secondary" href="/architecture">
-            See how it&apos;s built
-          </a>
+        <div className="hero-copy">
+          <span className="kicker">Clark X Group · pre-launch prototype</span>
+          <h1>
+            We build the systems. Merit AC <span className="accent-word">proves</span> the method.
+          </h1>
+          <p className="lead">
+            Clark X Group is a technology holding company. Merit AC, its flagship product, is an AI
+            intelligence hub and spend tracker built on one idea: show the work, not the hype.
+          </p>
+          <div className="cta-row">
+            <a className="btn btn-primary" href="#product">
+              Explore Merit AC
+            </a>
+            <a className="hero-secondary-link" href="/architecture">
+              See how it&apos;s built <span aria-hidden="true">→</span>
+            </a>
+          </div>
         </div>
 
         <a className="hero-preview" href="/app" aria-label="Open the Merit AC dashboard">
-          <div className="hero-preview-bar">
-            <i /> <i /> <i />
-          </div>
           <img
             src="/images/dashboard-preview.png"
             alt="The Merit AC dashboard overview, showing AI spend, value per dollar, slop risk, and recoverable spend for a sample org"
@@ -193,6 +191,8 @@ export default function Home() {
           { label: "Financert", note: "Wealth allocation vs. the Fed's own data", href: "/financert" },
           { label: "The All Dash", note: "Local-first command center", href: "/all-dash" },
           { label: "Portamp", note: "Legacy front ends, ported and proven", href: "/portamp" },
+          { label: "Toneara", note: "Private, in-browser instrumental sketches", href: "/toneara" },
+          { label: "PrivaShield", note: "Self-hosted security, signed AI governance", href: "/privashield" },
         ]}
       />
       <p style={{ marginTop: "var(--sp-3)" }}>
