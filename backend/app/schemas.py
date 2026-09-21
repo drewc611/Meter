@@ -133,6 +133,19 @@ class IdentityMappingIn(BaseModel):
         return _validated_email(v)
 
 
+class IdentityCreateIn(BaseModel):
+    email: str
+    name: str = Field(min_length=1, max_length=MAX_NAME_LENGTH)
+    role: str = Field(min_length=1, max_length=MAX_NAME_LENGTH)
+    team: str = Field(min_length=1, max_length=MAX_NAME_LENGTH)
+    tier: str = Field(default="Standard", max_length=MAX_NAME_LENGTH)
+
+    @field_validator("email")
+    @classmethod
+    def _basic_email_shape(cls, v: str) -> str:
+        return _validated_email(v)
+
+
 class SignupIn(BaseModel):
     email: str
     password: str = Field(max_length=BCRYPT_MAX_PASSWORD_BYTES)
@@ -219,6 +232,13 @@ class IngestAccepted(BaseModel):
 class IdentityMapped(BaseModel):
     status: str = "mapped"
     identity_id: int
+
+
+class IdentityCreated(BaseModel):
+    status: str = "created"
+    identity_id: int
+    team_id: int
+    mapped_external_id: str
 
 
 class RecomputeResult(BaseModel):

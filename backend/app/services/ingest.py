@@ -85,7 +85,8 @@ def resolve_identity(
             db.commit()
         raise UnresolvedIdentityError(
             f"No identity mapped for {source_system}:{external_id}. "
-            f"Provision via SCIM sync or map manually before usage can be attributed."
+            f"Provision via POST /admin/identity, or map an existing person's new external id "
+            f"via POST /admin/identity-mapping, before usage can be attributed."
         )
     return mapping.identity
 

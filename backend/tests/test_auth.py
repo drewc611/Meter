@@ -507,6 +507,7 @@ def test_google_error_redirect_cannot_inject_query_parameters(client, monkeypatc
 # --------------------------------------------------------------- /admin/* RBAC (is_admin)
 
 _MAP_BODY = {"email": "nobody@example.com", "source_system": "x", "external_id": "y"}
+_CREATE_IDENTITY_BODY = {"email": "nobody@example.com", "name": "Nobody", "role": "Engineer", "team": "Engineering"}
 
 
 def _signup(client, email="a@example.com", name="Ada"):
@@ -572,6 +573,7 @@ def test_admin_endpoints_reject_non_admin_when_jwt_secret_set(client, monkeypatc
     token = _signup_with(client, "second@example.com", "Second", **body)["access_token"]
     headers = {"Authorization": f"Bearer {token}"}
     assert client.post("/admin/identity-mapping", json=_MAP_BODY, headers=headers).status_code == 403
+    assert client.post("/admin/identity", json=_CREATE_IDENTITY_BODY, headers=headers).status_code == 403
     assert client.post("/admin/recompute-scores", headers=headers).status_code == 403
 
 
@@ -581,4 +583,5 @@ def test_admin_endpoints_accept_admin(client, monkeypatch):
     headers = {"Authorization": f"Bearer {token}"}
     r = client.post("/admin/identity-mapping", json=_MAP_BODY, headers=headers)
     assert r.status_code == 404  # reached the handler (no such Identity) -- not blocked by auth
+    assert client.post("/admin/identity", json=_CREATE_IDENTITY_BODY, headers=headers).status_code == 201
     assert client.post("/admin/recompute-scores", headers=headers).status_code == 200

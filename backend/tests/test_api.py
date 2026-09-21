@@ -127,6 +127,64 @@ def test_unknown_outcome_type_without_weight_returns_400(client, db):
     assert r.status_code == 400
 
 
+def test_create_identity_provisions_a_new_person(client, db):
+    """Regression test for the SCIM gap: before POST /admin/identity
+    existed, the only code path that ever created an Identity row was
+    auth.py's own individual-signup flow -- a company org's admin had no
+    way to add anyone else. This is the door."""
+    _bootstrap_person(db)
+    r = client.post(
+        "/admin/identity",
+        json={"email": "new.hire@example.com", "name": "New Hire", "role": "Engineer", "team": "Engineering"},
+    )
+    assert r.status_code == 201
+    body = r.json()
+    assert body["mapped_external_id"] == "new.hire@example.com"
+
+    # Immediately attributable via the manual mapping this call creates --
+    # no separate /admin/identity-mapping step required.
+    now = datetime(*current_period()[0].timetuple()[:3], 10)
+    ingest = client.post(
+        "/ingest/usage",
+        json={
+            "source_system": "manual",
+            "external_id": "new.hire@example.com",
+            "tool": "anthropic_api",
+            "cost_usd": 10.0,
+            "occurred_at": now.isoformat(),
+        },
+    )
+    assert ingest.status_code == 201
+
+
+def test_create_identity_reuses_an_existing_team(client, db):
+    """/api/teams only ever reads PersonScore (see analytics.get_teams), so a
+    team with no scored people yet is invisible there -- check the raw Team
+    table directly instead, same as test_multi_tenant_isolation.py's
+    colliding-team test does."""
+    from app import models
+
+    _bootstrap_person(db)
+    first = client.post(
+        "/admin/identity",
+        json={"email": "a@example.com", "name": "A", "role": "Engineer", "team": "Engineering"},
+    ).json()
+    second = client.post(
+        "/admin/identity",
+        json={"email": "b@example.com", "name": "B", "role": "Designer", "team": "Engineering"},
+    ).json()
+    assert first["team_id"] == second["team_id"]
+    assert db.query(models.Team).filter_by(name="Engineering").count() == 1
+
+
+def test_create_identity_rejects_duplicate_email(client, db):
+    _bootstrap_person(db)
+    body = {"email": "dupe@example.com", "name": "Dupe", "role": "Engineer", "team": "Engineering"}
+    assert client.post("/admin/identity", json=body).status_code == 201
+    r = client.post("/admin/identity", json=body)
+    assert r.status_code == 409
+
+
 def test_full_pipeline_overview(client, db):
     _bootstrap_person(db)
     now = datetime(*current_period()[0].timetuple()[:3], 10)  # a day inside the current period
