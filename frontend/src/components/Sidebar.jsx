@@ -31,6 +31,17 @@ const NAV_ITEMS = [
     ),
   },
   {
+    view: "team",
+    label: "Team",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <circle cx="12" cy="8" r="3.6" />
+        <path d="M4.5 20c0-4.1 3.4-7.5 7.5-7.5s7.5 3.4 7.5 7.5" />
+        <path d="M12 12.5v-1" strokeDasharray="1.6 1.6" />
+      </svg>
+    ),
+  },
+  {
     view: "teams",
     label: "Teams & Roles",
     icon: (

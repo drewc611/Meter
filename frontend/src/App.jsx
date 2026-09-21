@@ -6,6 +6,7 @@ import Sidebar from "./components/Sidebar.jsx";
 import Topbar from "./components/Topbar.jsx";
 import Overview from "./views/Overview.jsx";
 import People from "./views/People.jsx";
+import Team from "./views/Team.jsx";
 import Teams from "./views/Teams.jsx";
 import Alerts from "./views/Alerts.jsx";
 import Integrations from "./views/Integrations.jsx";
@@ -30,6 +31,7 @@ function Dashboard() {
           presetFilter={peopleFilter}
           onFilterConsumed={() => setPeopleFilter(null)}
         />
+        <Team active={view === "team"} />
         <Teams active={view === "teams"} />
         <Alerts active={view === "alerts"} onNavigateToPeople={goToPeopleWithFilter} />
         <Integrations active={view === "integrations"} />

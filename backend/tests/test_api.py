@@ -157,6 +157,43 @@ def test_create_identity_provisions_a_new_person(client, db):
     assert ingest.status_code == 201
 
 
+def test_list_identities_shows_unscored_people_api_people_hides(client, db):
+    """/api/people only ever reads PersonScore, so a freshly provisioned
+    person with no usage yet is invisible there -- a design partner's admin
+    would see "nobody's here" with no way to tell that apart from "the add
+    didn't work". GET /admin/identities is the roster that shows both."""
+    _bootstrap_person(db)  # "Live Person", already mapped, no usage posted yet
+    client.post(
+        "/admin/identity",
+        json={"email": "new.hire@example.com", "name": "New Hire", "role": "Engineer", "team": "Engineering"},
+    )
+
+    assert client.get("/api/people").json() == []
+
+    roster = client.get("/admin/identities").json()
+    assert roster["count"] == 2
+    by_email = {row["email"]: row for row in roster["identities"]}
+    assert by_email["new.hire@example.com"]["has_scored_data"] is False
+    assert by_email["new.hire@example.com"]["team"] == "Engineering"
+
+    now = datetime(*current_period()[0].timetuple()[:3], 10)
+    client.post(
+        "/ingest/usage",
+        json={
+            "source_system": "manual",
+            "external_id": "new.hire@example.com",
+            "tool": "anthropic_api",
+            "cost_usd": 10.0,
+            "occurred_at": now.isoformat(),
+        },
+    )
+    assert client.post("/admin/recompute-scores").status_code == 200
+
+    roster = client.get("/admin/identities").json()
+    by_email = {row["email"]: row for row in roster["identities"]}
+    assert by_email["new.hire@example.com"]["has_scored_data"] is True
+
+
 def test_create_identity_reuses_an_existing_team(client, db):
     """/api/teams only ever reads PersonScore (see analytics.get_teams), so a
     team with no scored people yet is invisible there -- check the raw Team

@@ -94,6 +94,44 @@ def create_identity(
     return schemas.IdentityCreated(identity_id=ident.id, team_id=team.id, mapped_external_id=body.email)
 
 
+@router.get("/identities", response_model=schemas.IdentityRosterListOut)
+def list_identities(db: Session = Depends(get_db), user: models.DashboardUser | None = Depends(get_current_user)):
+    """Every Identity in the org, newest first -- deliberately not scoped by
+    PersonScore the way /api/people is (see the module docstring at the top
+    of services/analytics.py on that invariant). A brand-new design partner
+    has provisioned people with zero usage yet, and /api/people would show
+    them nothing at all, with no way to tell "nobody's been added" apart
+    from "added, but not scored yet". This is the one raw-Identity read this
+    router has, specifically to make that distinction visible during
+    onboarding.
+    """
+    org_id = resolve_org_id(db, user)
+    rows = (
+        db.query(models.Identity, models.Team.name)
+        .join(models.Team, models.Team.id == models.Identity.team_id)
+        .filter(models.Identity.org_id == org_id)
+        .order_by(models.Identity.created_at.desc())
+        .all()
+    )
+    scored_ids = {
+        row.identity_id for row in db.query(models.PersonScore.identity_id).filter_by(org_id=org_id).distinct()
+    }
+    identities = [
+        schemas.IdentityRosterOut(
+            id=ident.id,
+            name=ident.full_name,
+            email=ident.email,
+            role=ident.role,
+            team=team_name,
+            tier=ident.tier,
+            created_at=ident.created_at,
+            has_scored_data=ident.id in scored_ids,
+        )
+        for ident, team_name in rows
+    ]
+    return schemas.IdentityRosterListOut(count=len(identities), identities=identities)
+
+
 @router.post("/identity-mapping", status_code=201, response_model=schemas.IdentityMapped)
 def map_identity(
     body: schemas.IdentityMappingIn,

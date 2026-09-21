@@ -234,6 +234,22 @@ class IdentityCreated(BaseModel):
     mapped_external_id: str
 
 
+class IdentityRosterOut(BaseModel):
+    id: int
+    name: str
+    email: str
+    role: str
+    team: str
+    tier: str | None
+    created_at: datetime
+    has_scored_data: bool
+
+
+class IdentityRosterListOut(BaseModel):
+    count: int
+    identities: list[IdentityRosterOut]
+
+
 class RecomputeResult(BaseModel):
     period_start: datetime
     period_end: datetime
