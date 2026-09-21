@@ -80,7 +80,9 @@ export default function Pricing() {
   return (
     <ContentLayout active="pricing">
       <span className="kicker">Work with us</span>
-      <h1>Book a consultation, or subscribe</h1>
+      <h1>
+        Book a consultation, or <span className="accent-word">subscribe</span>
+      </h1>
       <p className="lead">
         Two ways to work with the team behind Merit AC: a paid consultation, or an ongoing
         subscription. No sales call required to see the price.

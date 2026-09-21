@@ -93,7 +93,10 @@ export default function OperatorOS() {
       <span className="badge">
         <i /> Runs entirely on your machine -- source in this repo
       </span>
-      <h1>Operator OS: the whole business, on your machine, in files you own.</h1>
+      <h1>
+        Operator OS: the whole business, on your machine, in files you{" "}
+        <span className="accent-word">own</span>.
+      </h1>
       <p className="lead">
         A file-based business operating system: real double-entry books, cash forecasting with the
         odds attached, import adapters, and an agent layer that runs on a schedule — all on your

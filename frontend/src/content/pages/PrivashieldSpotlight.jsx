@@ -47,7 +47,10 @@ export default function PrivashieldSpotlight() {
       <span className="badge pending">
         <i /> Pre-production -- privileged enforcement disabled by design
       </span>
-      <h1>AI that reads your security evidence. Signed humans decide what happens next.</h1>
+      <h1>
+        AI that reads your security evidence. <span className="accent-word">Signed</span> humans
+        decide what happens next.
+      </h1>
       <p className="lead">
         PrivaShield ingests real network telemetry, runs deterministic detection engines across it,
         and lets a self-hosted LLM read that evidence and recommend a response -- but the model never

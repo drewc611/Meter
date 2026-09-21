@@ -82,7 +82,10 @@ export default function PortampSpotlight() {
       <span className="badge">
         <i /> Proprietary — early access
       </span>
-      <h1>Port a legacy front end without losing the look or the API contract.</h1>
+      <h1>
+        <span className="accent-word">Port</span> a legacy front end without losing the look or
+        the API contract.
+      </h1>
       <p className="lead">
         Portamp reads what a legacy application actually is — its components, its endpoints, its
         design tokens, the rules its validation enforced — and rebuilds it in React, Vue, Svelte,

@@ -59,7 +59,10 @@ export default function AllDashSpotlight() {
       <span className="badge">
         <i /> Local-first — no server, no account, installs to your phone
       </span>
-      <h1>Feed it what you already have. It builds the dashboard.</h1>
+      <h1>
+        Feed it what you already have. It <span className="accent-word">builds</span> the
+        dashboard.
+      </h1>
       <p className="lead">
         The All Dash is a command center for one project or one person. Drop in the meeting notes,
         the calendar export, the transcript, the spreadsheet you already have, and it builds tasks

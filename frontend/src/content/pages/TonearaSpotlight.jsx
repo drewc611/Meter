@@ -47,7 +47,10 @@ export default function TonearaSpotlight() {
       <span className="badge pending">
         <i /> Release candidate 0.1.0
       </span>
-      <h1>Describe a sound. Hear it in seconds. Nothing leaves your browser.</h1>
+      <h1>
+        Describe a sound. Hear it in seconds.{" "}
+        <span className="accent-word">Nothing</span> leaves your browser.
+      </h1>
       <p className="lead">
         Toneara turns a short brief -- genre, mood, tempo, length -- into a playable instrumental
         sketch, generated entirely on your device. No account to create, no API key to paste in, no

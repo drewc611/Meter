@@ -66,7 +66,9 @@ export default function Challenge() {
       <span className="badge">
         <i /> Free, 30 days
       </span>
-      <h1>Build a Governed Agentic Delivery Platform</h1>
+      <h1>
+        Build a <span className="accent-word">Governed</span> Agentic Delivery Platform
+      </h1>
       <p className="lead">
         Thirty days of <a href="/prompts">real prompts</a> on governed agentic DevSecOps, ending
         here: a capstone project that turns the handbook into a working reference implementation.

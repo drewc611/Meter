@@ -15,7 +15,9 @@ export default function Architecture() {
       <span className="badge">
         <i /> Reflects the live deployment
       </span>
-      <h1>How Merit AC is built</h1>
+      <h1>
+        How Merit AC is <span className="accent-word">built</span>
+      </h1>
       <p className="lead">
         Exactly how Merit AC is built and hosted -- the pipeline, the data model, where it runs,
         and what's deliberately not built yet.

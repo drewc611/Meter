@@ -53,7 +53,10 @@ export default function FinancertSpotlight() {
       <span className="badge">
         <i /> Early access — self-hosted, real Federal Reserve data
       </span>
-      <h1>See how the top 1% actually hold their money. Then see where you stand.</h1>
+      <h1>
+        See how the top 1% actually hold their money. Then see where you{" "}
+        <span className="accent-word">stand</span>.
+      </h1>
       <p className="lead">
         Financert answers one question with real data: how do the wealthiest American households
         actually hold their money, and how does your portfolio compare? Enter what you own by

@@ -63,7 +63,9 @@ export default function Products() {
   return (
     <ContentLayout active="products">
       <span className="kicker">Clark X Group</span>
-      <h1>Every product we've shipped</h1>
+      <h1>
+        Every product we&apos;ve <span className="accent-word">shipped</span>
+      </h1>
       <p className="lead">
         Clark X Group is a technology holding company. Merit AC is the flagship — the rest are
         ventures built the same way: real, working software, not a pitch deck.
