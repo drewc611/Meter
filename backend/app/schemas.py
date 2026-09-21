@@ -1,8 +1,9 @@
 """Pydantic request/response models — the API contract the frontend codes against."""
 
 from datetime import datetime
+from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator
 
 # bcrypt hashes at most 72 *bytes* and raises ValueError past that, so both
 # password fields below are capped here -- an oversized password is then a
@@ -64,22 +65,29 @@ def _validated_email(v: str) -> str:
     return v
 
 
+# Four request models below all want the exact same email check -- rather
+# than each redeclaring an identical @field_validator classmethod (which is
+# what this was before, and what a naive copy-paste of a fifth one would
+# keep doing), this bakes _validated_email into the type itself. A field
+# typed ValidatedEmail runs it automatically; there's no boilerplate left to
+# copy wrong. LoginIn.email deliberately stays a plain str, not
+# ValidatedEmail -- validating it would reject some malformed logins with a
+# 422 instead of the current 401, a real behavior change this refactor
+# isn't making.
+ValidatedEmail = Annotated[str, AfterValidator(_validated_email)]
+
+
 # ------------------------------------------------------------- requests
 
 
 class WaitlistSignupIn(BaseModel):
-    email: str
+    email: ValidatedEmail
     name: str | None = Field(default=None, max_length=MAX_NAME_LENGTH)
     company: str | None = Field(default=None, max_length=200)
     # free text, e.g. the /clark-x lead form's "primary bottleneck" field
     note: str | None = Field(default=None, max_length=MAX_IDENTIFIER_LENGTH)
     # e.g. "challenge-paid-track" for the /challenge interest form
     source: str = Field(default="coming-soon", max_length=200)
-
-    @field_validator("email")
-    @classmethod
-    def _basic_email_shape(cls, v: str) -> str:
-        return _validated_email(v)
 
 
 class UsageEventIn(BaseModel):
@@ -123,39 +131,24 @@ class QualitySignalIn(BaseModel):
 
 
 class IdentityMappingIn(BaseModel):
-    email: str
+    email: ValidatedEmail
     source_system: str = Field(max_length=MAX_NAME_LENGTH)
     external_id: str = Field(max_length=MAX_IDENTIFIER_LENGTH)
 
-    @field_validator("email")
-    @classmethod
-    def _basic_email_shape(cls, v: str) -> str:
-        return _validated_email(v)
-
 
 class IdentityCreateIn(BaseModel):
-    email: str
+    email: ValidatedEmail
     name: str = Field(min_length=1, max_length=MAX_NAME_LENGTH)
     role: str = Field(min_length=1, max_length=MAX_NAME_LENGTH)
     team: str = Field(min_length=1, max_length=MAX_NAME_LENGTH)
     tier: str = Field(default="Standard", max_length=MAX_NAME_LENGTH)
 
-    @field_validator("email")
-    @classmethod
-    def _basic_email_shape(cls, v: str) -> str:
-        return _validated_email(v)
-
 
 class SignupIn(BaseModel):
-    email: str
+    email: ValidatedEmail
     password: str = Field(max_length=BCRYPT_MAX_PASSWORD_BYTES)
     name: str = Field(min_length=1, max_length=MAX_NAME_LENGTH)
     signup_code: str | None = Field(default=None, max_length=MAX_NAME_LENGTH)
-
-    @field_validator("email")
-    @classmethod
-    def _basic_email_shape(cls, v: str) -> str:
-        return _validated_email(v)
 
     @field_validator("password")
     @classmethod
