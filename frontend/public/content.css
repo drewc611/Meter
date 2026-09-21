@@ -15,37 +15,53 @@
      forced-*light* heuristics from repainting an unstyled-looking page. */
   color-scheme: dark;
 
-  /* neutrals -- near-black with a blue-indigo tint, not flat grey */
-  --paper: #0a0c1c;
-  --paper-2: #12152c;
-  --paper-3: #1a1f42;
-  --ink: #f0f1f8;
-  --muted: #9b9fc0;
-  --muted-2: #6b6f92;
-  --line: rgba(255, 255, 255, 0.1);
-  --line-strong: rgba(255, 255, 255, 0.18);
+  /* neutrals -- true near-black, no blue-indigo tint. The old tint read as
+     "generic AI-startup dark mode"; a neutral-warm black lets the accent
+     below do the identity work instead of the background. */
+  --paper: #0a0a0b;
+  --paper-2: #131315;
+  --paper-3: #1c1c1f;
+  --ink: #f3f1ec;
+  --muted: #9c988f;
+  --muted-2: #6c6963;
+  --line: rgba(255, 255, 255, 0.09);
+  --line-strong: rgba(255, 255, 255, 0.17);
 
-  /* one accent, doing real work */
-  --brand: #7c74f4;
-  --brand-soft: #8f87f6;
-  --brand-dark: #9b93f7;
-  --brand-pale: rgba(124, 116, 244, 0.16);
-  --brand-pale-strong: rgba(124, 116, 244, 0.32);
+  /* one accent, doing real work -- a considered gold/amber, not the default
+     violet every AI dashboard reaches for. "Merit" is a value judgment, and
+     gold is the color that already means that; it's also unclaimed by any
+     competitor in this space, where indigo is everyone's default. */
+  --brand: #cf9d35;
+  --brand-soft: #dbb15b;
+  --brand-dark: #e4c37e;
+  --brand-pale: rgba(207, 157, 53, 0.14);
+  --brand-pale-strong: rgba(207, 157, 53, 0.3);
   --good: #4ade9c;
   --good-pale: rgba(74, 222, 156, 0.14);
 
-  --card: rgba(255, 255, 255, 0.04);
-  --card-hover: rgba(255, 255, 255, 0.07);
+  --card: rgba(255, 255, 255, 0.035);
+  --card-hover: rgba(255, 255, 255, 0.065);
   --code-bg: rgba(0, 0, 0, 0.35);
-  --shadow-tile: 0 1px 2px rgba(0, 0, 0, 0.3), 0 16px 32px -16px rgba(0, 0, 0, 0.5);
-  --shadow-pop: 0 2px 4px rgba(0, 0, 0, 0.3), 0 24px 48px -20px rgba(0, 0, 0, 0.6);
+  --shadow-tile: 0 1px 2px rgba(0, 0, 0, 0.35), 0 16px 32px -16px rgba(0, 0, 0, 0.55);
+  --shadow-pop: 0 2px 4px rgba(0, 0, 0, 0.35), 0 24px 48px -20px rgba(0, 0, 0, 0.65);
 
-  /* the one gradient move -- one hue family (indigo/violet), one light
-     source from the top-right, used sparingly. On a near-black surface
-     this reads as a deliberate bloom, the same technique Stripe's own
-     dark marketing sections use, not a random pastel blob. */
-  --gradient-aurora: radial-gradient(65% 60% at 88% -10%, rgba(124, 116, 244, 0.28), transparent 60%),
-    radial-gradient(45% 50% at 15% 15%, rgba(109, 99, 234, 0.14), transparent 65%);
+  /* the one gradient move -- a single, restrained source in the brand gold,
+     not a two-blob bloom. Signal, not decoration: it exists so the hero
+     doesn't read as flat black, not to announce "AI product" the way a
+     violet gradient bloom now reflexively does. */
+  --gradient-aurora: radial-gradient(48% 38% at 84% -12%, rgba(207, 157, 53, 0.14), transparent 68%);
+
+  /* type scale, 1.333 (major third) off a 16px base -- was previously a
+     comment-only claim; these are the actual tokens, used below and
+     available to every content page instead of each heading picking its
+     own clamp() by eye. */
+  --fs-sm: 13px;
+  --fs-base: 16px;
+  --fs-md: 18px;
+  --fs-lg: 21px;
+  --fs-xl: 28px;
+  --fs-2xl: 38px;
+  --fs-3xl: 50px;
 
   /* 4px spacing scale */
   --sp-1: 4px;
@@ -59,9 +75,9 @@
   --sp-12: 48px;
   --sp-16: 64px;
 
-  --radius: 12px;
-  --radius-sm: 8px;
-  --radius-lg: 20px;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --radius-lg: 16px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
   --font-display: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -206,7 +222,7 @@ nav.site-nav a[aria-current="page"] {
   border-bottom-color: var(--brand);
 }
 nav.site-nav a.nav-cta {
-  color: #fff;
+  color: var(--paper);
   background: var(--brand);
   padding: 7px 18px;
   border-radius: 999px;
@@ -216,10 +232,10 @@ nav.site-nav a.nav-cta {
 }
 nav.site-nav a.nav-cta:hover,
 nav.site-nav a.nav-cta:focus-visible {
-  color: #fff;
-  background: var(--brand-dark);
+  color: var(--paper);
+  background: var(--brand-soft);
   transform: translateY(-1px);
-  box-shadow: 0 8px 16px -8px rgba(124, 116, 244, 0.55);
+  box-shadow: 0 8px 16px -8px rgba(207, 157, 53, 0.5);
 }
 
 /* ---------- mobile nav (CSS-only checkbox toggle, no JS) ---------- */
@@ -432,23 +448,10 @@ main.content.wide > .grid {
   box-shadow: var(--shadow-pop);
   overflow: hidden;
 }
-.hero-preview-bar {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  padding: 10px 14px;
-}
-.hero-preview-bar i {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--line-strong);
-}
 .hero-preview img {
   display: block;
   width: 100%;
   height: auto;
-  border-top: 1px solid var(--line);
 }
 
 .kicker {
@@ -484,7 +487,7 @@ main.content.wide > .grid {
 }
 .badge.pending i {
   background: var(--brand);
-  box-shadow: 0 0 8px rgba(124, 116, 244, 0.5);
+  box-shadow: 0 0 8px rgba(207, 157, 53, 0.5);
 }
 
 h1,
@@ -493,15 +496,15 @@ h3 {
   font-family: var(--font-display);
 }
 h1 {
-  font-size: clamp(34px, 5vw, 56px);
+  font-size: clamp(var(--fs-2xl), 5vw, var(--fs-3xl));
   margin: 0 0 var(--sp-5);
-  letter-spacing: -0.025em;
+  letter-spacing: -0.03em;
   font-weight: 800;
-  line-height: 1.08;
+  line-height: 1.05;
   text-wrap: balance;
 }
 h2 {
-  font-size: clamp(24px, 3vw, 28px);
+  font-size: clamp(var(--fs-xl), 3vw, var(--fs-xl));
   margin: var(--sp-12) 0 var(--sp-3);
   letter-spacing: -0.015em;
   font-weight: 700;
@@ -509,14 +512,14 @@ h2 {
   scroll-margin-top: 80px;
 }
 h3 {
-  font-size: 18px;
+  font-size: var(--fs-md);
   font-weight: 650;
   margin: var(--sp-6) 0 var(--sp-2);
   color: var(--ink);
 }
 p.lead {
   font-family: var(--font-body);
-  font-size: 20px;
+  font-size: var(--fs-lg);
   font-weight: 400;
   line-height: 1.55;
   color: var(--muted);
@@ -595,14 +598,19 @@ pre.pre-wrap {
   transform: scale(0.97);
 }
 .btn-primary {
+  /* Dark text on the gold fill, not white -- white-on-gold measures ~2.5:1,
+     well under the 4.5:1 a 15px bold label needs; near-black text against
+     this exact gold measures over 8:1, and reads as the "badge" pairing the
+     accent is named for rather than an accident of copying the old
+     white-on-indigo button. */
   background: var(--brand);
-  color: #fff;
-  box-shadow: 0 1px 2px rgba(79, 70, 229, 0.2), 0 12px 24px -12px rgba(124, 116, 244, 0.5);
+  color: var(--paper);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 24px -12px rgba(207, 157, 53, 0.55);
 }
 .btn-primary:hover,
 .btn-primary:focus-visible {
-  background: var(--brand-dark);
-  color: #fff;
+  background: var(--brand-soft);
+  color: var(--paper);
   transform: translateY(-1px);
 }
 .btn-secondary {
@@ -648,7 +656,7 @@ pre.pre-wrap {
   border-radius: var(--radius-sm);
   border: none;
   background: var(--brand);
-  color: #fff;
+  color: var(--paper);
   font-weight: 650;
   font-size: 14px;
   cursor: pointer;
@@ -772,7 +780,7 @@ pre.pre-wrap {
 .ask-msg-user {
   align-self: flex-end;
   background: var(--brand);
-  color: #fff;
+  color: var(--paper);
 }
 .ask-msg-assistant {
   align-self: flex-start;
@@ -1017,7 +1025,7 @@ th {
 .day-check input:checked + .day-check-mark {
   background: var(--brand);
   border-color: var(--brand);
-  color: #fff;
+  color: var(--paper);
 }
 .day-check input:focus-visible + .day-check-mark {
   outline: 2px solid var(--brand);
