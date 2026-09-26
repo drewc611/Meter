@@ -1127,6 +1127,40 @@ th {
   color: var(--muted);
 }
 
+/* A non-interactive variant of .grid a.tile for content that exists but
+   isn't reachable without membership -- same shape and rhythm as the real
+   tiles around it, dimmed and non-clickable rather than just omitted, so
+   the size of what's included stays honest instead of quietly shrinking
+   the grid. See AcademySpotlight.jsx. */
+.grid .tile-locked {
+  display: flex;
+  flex-direction: column;
+  min-height: 108px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--sp-5) var(--sp-6);
+  background: var(--card);
+  opacity: 0.55;
+  cursor: not-allowed;
+  position: relative;
+}
+.grid .tile-locked .tile-title,
+.grid .tile-locked .tile-meta {
+  color: var(--muted);
+}
+.grid .tile-locked::after {
+  content: "Membership";
+  position: absolute;
+  top: var(--sp-5);
+  right: var(--sp-5);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+}
+
 /* Per-day progress checklist (/prompts) -- a checkbox layered over each
    .tile rather than restructuring it, so .grid a.tile's own styling stays
    untouched. localStorage-only, no server round trip; see PromptsIndex.jsx. */

@@ -57,6 +57,13 @@ const PRODUCTS = [
     summary:
       "A self-hosted security platform: Suricata/Zeek detection, local-LLM-assisted triage, and Ed25519-signed policy governance -- AI may recommend, only signed human approval controls anything privileged.",
   },
+  {
+    href: "/academy",
+    name: "AI Skills Academy",
+    tag: "Venture",
+    summary:
+      "Courses, live workshops, and the 30-day hands-on challenge on governed agentic AI engineering -- the first few days free, the rest with membership.",
+  },
 ];
 
 export default function Products() {

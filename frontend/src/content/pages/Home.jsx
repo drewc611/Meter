@@ -193,6 +193,7 @@ export default function Home() {
           { label: "Portamp", note: "Legacy front ends, ported and proven", href: "/portamp" },
           { label: "Toneara", note: "Private, in-browser instrumental sketches", href: "/toneara" },
           { label: "PrivaShield", note: "Self-hosted security, signed AI governance", href: "/privashield" },
+          { label: "AI Skills Academy", note: "Courses, workshops, and the 30-day challenge", href: "/academy" },
         ]}
       />
       <p style={{ marginTop: "var(--sp-3)" }}>
