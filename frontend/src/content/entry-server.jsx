@@ -42,6 +42,7 @@ import AllDashSpotlight, { meta as allDashMeta } from "./pages/AllDashSpotlight.
 import PortampSpotlight, { meta as portampMeta } from "./pages/PortampSpotlight.jsx";
 import TonearaSpotlight, { meta as tonearaMeta } from "./pages/TonearaSpotlight.jsx";
 import PrivashieldSpotlight, { meta as privashieldMeta } from "./pages/PrivashieldSpotlight.jsx";
+import AcademySpotlight, { meta as academyMeta } from "./pages/AcademySpotlight.jsx";
 import NewsletterIndex, { meta as newsletterIndexMeta } from "./pages/NewsletterIndex.jsx";
 import NewsletterEntry, { newsletterMeta } from "./pages/NewsletterEntry.jsx";
 import AskAssistant, { meta as askAssistantMeta } from "./pages/AskAssistant.jsx";
@@ -89,6 +90,7 @@ const PAGES = [
   [PortampSpotlight, portampMeta],
   [TonearaSpotlight, tonearaMeta],
   [PrivashieldSpotlight, privashieldMeta],
+  [AcademySpotlight, academyMeta],
   [NewsletterIndex, newsletterIndexMeta, { entries: newsletterEntries }],
   [AskAssistant, askAssistantMeta],
   [Pricing, pricingMeta],
