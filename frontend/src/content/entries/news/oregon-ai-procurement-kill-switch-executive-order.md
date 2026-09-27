@@ -3,7 +3,7 @@ date: '2026-09-23'
 category: regulation
 title: Oregon orders a review of whether state AI contracts should require a kill switch
 dek: >-
-  Executive Order 26-26 gives Oregon''s CIO 90 days to propose safety-review
+  Executive Order 26-26 gives Oregon's CIO 90 days to propose safety-review
   standards for frontier AI the state government buys, including whether a
   shutoff requirement is workable -- not a mandate yet, an assessment.
 sources:

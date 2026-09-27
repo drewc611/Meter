@@ -4,7 +4,7 @@ category: product
 title: 'An unreleased "Claude Money" feature turned up in the Claude iOS app'
 dek: >-
   Screenshots surfaced by TestingCatalog show a bank-linking onboarding
-  screen under a new Money tab in Claude''s mobile navigation -- unannounced
+  screen under a new Money tab in Claude's mobile navigation -- unannounced
   and unconfirmed by Anthropic.
 sources:
   - label: 'Anthropic prepares Claude Money for personal finance -- TestingCatalog (Alexey Shabanov)'

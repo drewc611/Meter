@@ -3,7 +3,7 @@ date: '2026-09-23'
 category: research
 title: 'Claude autonomously found a new, CRISPR-like enzyme system -- once'
 dek: >-
-  Anthropic''s new life sciences research group says Claude searched 1.9
+  Anthropic's new life sciences research group says Claude searched 1.9
   billion protein clusters and surfaced an uncharacterized system in 21.5
   hours -- then failed to reproduce the find in ten follow-up runs.
 sources:

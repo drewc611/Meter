@@ -3,7 +3,7 @@ date: '2026-09-17'
 category: product
 title: 'Anthropic loosens Claude''s biosafety limits -- but only for verified researchers'
 dek: >-
-  The Life Sciences Verification Program trades Claude''s default
+  The Life Sciences Verification Program trades Claude's default
   biology-related blocks for credential checks and after-the-fact
   monitoring, developed in coordination with the US government, with a
   higher-risk tier that removes those blocks entirely.
