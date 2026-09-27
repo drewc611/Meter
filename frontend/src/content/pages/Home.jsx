@@ -86,7 +86,7 @@ const SURFACES = [
     meta: "A local-first business operating system, and the 30-day path to running one.",
     items: [
       { href: "/operator-os", title: "Operator OS", meta: "Books, cash forecasting, and agents on your own machine" },
-      { href: "/challenge", title: "The 30-day challenge", meta: "Build a governed agentic delivery platform, free" },
+      { href: "/challenge", title: "The 30-day challenge", meta: "Build a governed agentic delivery platform -- 3 days free" },
       { href: "/community", title: "Community", meta: "Not open yet — join the interest list" },
     ],
   },

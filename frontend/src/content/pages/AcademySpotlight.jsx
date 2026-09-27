@@ -237,11 +237,11 @@ export default function AcademySpotlight() {
 
       <p style={{ marginTop: "var(--sp-6)" }}>
         Everything above is real today except the course track and the first workshop date, both
-        marked as such rather than dressed up. The full 30-day archive is also readable for free at{" "}
-        <a href="/prompts">/prompts</a> and <a href="/challenge">/challenge</a> if you'd rather work
-        through it without a membership at all -- Academy membership buys structure, workshops, and
-        what's coming next, not exclusive access to content that already exists elsewhere on this
-        site.
+        marked as such rather than dressed up. The same 30-day archive is also sold a la carte, as a
+        one-time purchase with no recurring membership, at <a href="/prompts">/prompts</a> and{" "}
+        <a href="/challenge">/challenge</a> -- both start from the same {ACADEMY_FREE_PREVIEW_DAYS}
+        -day free preview. What Academy membership adds on top is the live workshops and the course
+        track as each one ships, not exclusive access to the challenge content itself.
       </p>
     </ContentLayout>
   );
