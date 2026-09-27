@@ -1,13 +1,18 @@
 import ContentLayout from "../components/ContentLayout.jsx";
 import Toc from "../components/Toc.jsx";
 import Code from "../components/Code.jsx";
-import { PAID_TRACK_PAYMENT_LINK, PAID_TRACK_PRICE_LABEL } from "../data/paidTrack.js";
+import {
+  CHALLENGE_ACCESS_PAYMENT_LINK,
+  CHALLENGE_ACCESS_PRICE_LABEL,
+  CHALLENGE_FREE_PREVIEW_DAYS,
+  PAID_TRACK_PAYMENT_LINK,
+  PAID_TRACK_PRICE_LABEL,
+} from "../data/paidTrack.js";
 
 export const meta = {
   outFile: "challenge.html",
   title: "The 30-Day Challenge: Build a Governed Agentic Delivery Platform — Merit AC",
-  description:
-    "A free 30-day run through governed agentic DevSecOps, ending in a real capstone project: build a Governed Agentic Delivery Platform, adapted from our own reference handbook.",
+  description: `A 30-day run through governed agentic DevSecOps, ending in a real capstone project -- the first ${CHALLENGE_FREE_PREVIEW_DAYS} days free, the rest for ${CHALLENGE_ACCESS_PRICE_LABEL}.`,
 };
 
 const COMPONENTS = [
@@ -64,7 +69,7 @@ export default function Challenge() {
     <ContentLayout active="challenge" wide>
       <span className="kicker">Challenge · from the Enterprise Agentic DevSecOps Handbook</span>
       <span className="badge">
-        <i /> Free, 30 days
+        <i /> Days 1–{CHALLENGE_FREE_PREVIEW_DAYS} free · rest {CHALLENGE_ACCESS_PRICE_LABEL}
       </span>
       <h1>
         Build a <span className="accent-word">Governed</span> Agentic Delivery Platform
@@ -72,10 +77,11 @@ export default function Challenge() {
       <p className="lead">
         Thirty days of <a href="/prompts">real prompts</a> on governed agentic DevSecOps, ending
         here: a capstone project that turns the handbook into a working reference implementation.
-        The objective is to build a production-oriented platform in which Claude Code can inspect
-        and modify a repository, Amazon Bedrock supplies governed model access, AgentCore-style
-        runtime and gateway boundaries constrain tool execution, and CI/CD independently validates
-        every proposed change.
+        The first {CHALLENGE_FREE_PREVIEW_DAYS} days are free, no signup required; the rest unlock
+        with a single one-time payment. The objective is to build a production-oriented platform in
+        which Claude Code can inspect and modify a repository, Amazon Bedrock supplies governed
+        model access, AgentCore-style runtime and gateway boundaries constrain tool execution, and
+        CI/CD independently validates every proposed change.
       </p>
 
       <Toc
@@ -89,6 +95,7 @@ export default function Challenge() {
           { href: "#security-tests", label: "Required security tests" },
           { href: "#evidence", label: "Evidence package" },
           { href: "#done", label: "Definition of done" },
+          { href: "#access", label: "Full access" },
           { href: "#paid-track", label: "Paid track" },
         ]}
       />
@@ -242,17 +249,39 @@ export default function Challenge() {
         </p>
       </div>
 
+      <h2 id="access">Full access</h2>
+      <div className="card">
+        <p className="kicker" style={{ marginBottom: "8px" }}>
+          {CHALLENGE_ACCESS_PRICE_LABEL}
+        </p>
+        <p>
+          Days 1–{CHALLENGE_FREE_PREVIEW_DAYS} of <a href="/prompts">the prompt archive</a> are free
+          to read, no signup required — the prompt, why it's built that way, and what to do with the
+          answer, for real. Unlocking the rest of the 30 days, including the six days that build the
+          capstone project described on this page, is a single one-time payment.
+        </p>
+        {CHALLENGE_ACCESS_PAYMENT_LINK ? (
+          <a className="btn btn-primary" href={CHALLENGE_ACCESS_PAYMENT_LINK}>
+            Unlock all 30 days — {CHALLENGE_ACCESS_PRICE_LABEL}
+          </a>
+        ) : (
+          <span className="badge pending">
+            <i /> Payment link coming soon — visit any locked day at{" "}
+            <a href="/prompts">/prompts</a> for the notify-me form
+          </span>
+        )}
+      </div>
+
       <h2 id="paid-track">Paid track</h2>
       <div className="card">
         <p className="kicker" style={{ marginBottom: "8px" }}>
           {PAID_TRACK_PRICE_LABEL}
         </p>
         <p>
-          The run above is free and complete on its own — build the platform, run the demo,
-          walk away with a real capstone and evidence package. The paid track is a structured
-          review of your finished build against the Definition of Done above: what's solid,
-          what's a gap dressed up as a control, and what to fix before you'd call it
-          production-ready.
+          Once you've built the platform and run the demo, you'll have a real capstone and
+          evidence package. The paid track above that is a structured review of your finished
+          build against the Definition of Done above: what's solid, what's a gap dressed up as a
+          control, and what to fix before you'd call it production-ready.
         </p>
         {PAID_TRACK_PAYMENT_LINK ? (
           <a className="btn btn-primary" href={PAID_TRACK_PAYMENT_LINK}>

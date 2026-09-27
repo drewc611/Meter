@@ -1,10 +1,15 @@
 import ContentLayout from "../components/ContentLayout.jsx";
 import { PROMPTS } from "../data/prompts.js";
+import {
+  CHALLENGE_ACCESS_PAYMENT_LINK,
+  CHALLENGE_ACCESS_PRICE_LABEL,
+  CHALLENGE_FREE_PREVIEW_DAYS,
+} from "../data/paidTrack.js";
 
 export const meta = {
   outFile: "prompts/index.html",
   title: "Prompts — Merit AC",
-  description: "A 30-day detailed AI prompt archive on governed agentic DevSecOps, adapted from our own reference handbook.",
+  description: `A 30-day AI prompt archive on governed agentic DevSecOps -- the first ${CHALLENGE_FREE_PREVIEW_DAYS} days free, the rest for ${CHALLENGE_ACCESS_PRICE_LABEL}.`,
 };
 
 const SECTIONS = [
@@ -18,7 +23,7 @@ export default function PromptsIndex() {
     <ContentLayout active="prompts">
       <span className="kicker">Content</span>
       <span className="badge">
-        <i /> 30 days, all real
+        <i /> Days 1–{CHALLENGE_FREE_PREVIEW_DAYS} free · rest {CHALLENGE_ACCESS_PRICE_LABEL}
       </span>
       <h1>Prompts</h1>
       <p className="lead">
@@ -31,7 +36,9 @@ export default function PromptsIndex() {
       <p>
         Every prompt is a full role, context, numbered-steps, constraints, and output-format brief —
         copy it as-is into ChatGPT, Claude, or any other assistant. Where a step needs your repo or
-        pipeline config, the prompt tells you what to paste in first.
+        pipeline config, the prompt tells you what to paste in first. Days 1–
+        {CHALLENGE_FREE_PREVIEW_DAYS} are free, no signup required; the rest unlock with a single
+        one-time payment -- see below.
       </p>
 
       <p className="day-progress" id="challengeProgress" role="status" aria-live="polite">
@@ -42,23 +49,50 @@ export default function PromptsIndex() {
         <div key={section.label}>
           <h2>{section.label}</h2>
           <div className="grid">
-            {PROMPTS.filter((p) => p.day >= section.days[0] && p.day <= section.days[1]).map((p) => (
-              <div className="tile-day-wrap" key={p.day}>
-                <a className="tile" href={`/prompts/day-${p.day}-${p.slug}`}>
+            {PROMPTS.filter((p) => p.day >= section.days[0] && p.day <= section.days[1]).map((p) =>
+              p.day <= CHALLENGE_FREE_PREVIEW_DAYS ? (
+                <div className="tile-day-wrap" key={p.day}>
+                  <a className="tile" href={`/prompts/day-${p.day}-${p.slug}`}>
+                    <span className="tile-title">Day {p.day}: {p.title}</span>
+                    <span className="tile-meta">{p.track}</span>
+                  </a>
+                  <label className="day-check" aria-label={`Mark Day ${p.day} as complete`}>
+                    <input type="checkbox" data-day={p.day} />
+                    <span className="day-check-mark" aria-hidden="true">
+                      ✓
+                    </span>
+                  </label>
+                </div>
+              ) : (
+                <div key={p.day} className="tile tile-locked" aria-disabled="true">
                   <span className="tile-title">Day {p.day}: {p.title}</span>
                   <span className="tile-meta">{p.track}</span>
-                </a>
-                <label className="day-check" aria-label={`Mark Day ${p.day} as complete`}>
-                  <input type="checkbox" data-day={p.day} />
-                  <span className="day-check-mark" aria-hidden="true">
-                    ✓
-                  </span>
-                </label>
-              </div>
-            ))}
+                </div>
+              )
+            )}
           </div>
         </div>
       ))}
+
+      <div className="card" id="unlock">
+        <p className="kicker" style={{ marginBottom: "8px" }}>
+          {CHALLENGE_ACCESS_PRICE_LABEL}
+        </p>
+        <p>
+          Days 1–{CHALLENGE_FREE_PREVIEW_DAYS} are free forever, no signup required. Unlocking the
+          rest is a single one-time payment -- no subscription, full access to all 30 days from
+          then on.
+        </p>
+        {CHALLENGE_ACCESS_PAYMENT_LINK ? (
+          <a className="btn btn-primary" href={CHALLENGE_ACCESS_PAYMENT_LINK}>
+            Unlock all 30 days — {CHALLENGE_ACCESS_PRICE_LABEL}
+          </a>
+        ) : (
+          <span className="badge pending">
+            <i /> Payment link coming soon — visit any locked day for the notify-me form
+          </span>
+        )}
+      </div>
 
       <div className="card">
         <p>

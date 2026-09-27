@@ -146,10 +146,11 @@ export default function Community() {
       </div>
 
       <p>
-        In the meantime: the <a href="/prompts">prompt archive</a>, <a href="/guides">guides</a>,
-        and the <a href="/challenge">challenge</a> are live and free. The{" "}
-        <a href="/models">models directory</a> and <a href="/glossary">glossary</a> are there too,
-        if it's a definition you're after rather than a build.
+        In the meantime: <a href="/guides">guides</a> are free, and the{" "}
+        <a href="/prompts">prompt archive</a> and the <a href="/challenge">challenge</a> are live
+        now with a free 3-day preview. The <a href="/models">models directory</a> and{" "}
+        <a href="/glossary">glossary</a> are there too, if it's a definition you're after rather
+        than a build.
       </p>
     </ContentLayout>
   );
