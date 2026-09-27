@@ -3,8 +3,8 @@ date: '2026-09-14'
 category: product
 title: 'Apple ships its rebuilt Siri, running partly on custom Google Gemini models'
 dek: >-
-  iOS 27''s English-only Siri AI beta splits work between on-device
-  processing and Apple''s Private Cloud Compute, with the heaviest reasoning
+  iOS 27's English-only Siri AI beta splits work between on-device
+  processing and Apple's Private Cloud Compute, with the heaviest reasoning
   routed to Apple Foundation Models built in collaboration with Google.
 sources:
   - label: 'Siri AI, a profoundly more capable and personal assistant, is here -- Apple (official newsroom)'

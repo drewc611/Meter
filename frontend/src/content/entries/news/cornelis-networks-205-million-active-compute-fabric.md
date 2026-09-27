@@ -3,9 +3,9 @@ date: '2026-09-14'
 category: funding
 title: 'Cornelis Networks raises $205M to make AI networking do compute, not just carry it'
 dek: >-
-  The Intel networking spinoff''s new Active Compute Fabric offloads
+  The Intel networking spinoff's new Active Compute Fabric offloads
   collective operations into the network itself, and its 400 Gbps CN5000
-  switch is shipping now as an open, GPU-agnostic alternative to Nvidia''s fabric.
+  switch is shipping now as an open, GPU-agnostic alternative to Nvidia's fabric.
 sources:
   - label: 'Cornelis Expands into Scale-Up Networking with Active Compute Fabric, $205M in Funding, and Qualcomm Collaboration -- Cornelis Networks (official)'
     url: 'https://www.cornelis.com/stories/cornelis-expands-into-scaleup-networking-with-active-compute-fabric'

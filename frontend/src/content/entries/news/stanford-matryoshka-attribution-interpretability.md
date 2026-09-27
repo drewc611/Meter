@@ -5,7 +5,7 @@ title: A new Stanford attribution method tops the interpretability benchmark by 
 dek: >-
   Matryoshka Attribution traces model outputs to the specific weights and
   representations responsible for them -- and can find the 1% of weights
-  that, restored, strip a fine-tuned model''s refusals back out.
+  that, restored, strip a fine-tuned model's refusals back out.
 sources:
   - label: 'Matryoshka attribution: Learning to attribute language model outputs to representations and weights — arXiv'
     url: 'https://arxiv.org/abs/2609.25518'

@@ -3,7 +3,7 @@ date: '2026-09-22'
 category: funding
 title: 'Go.AI raises $85M for on-prem AI hardware built for bank examiners, not developers'
 dek: >-
-  The Chicago startup''s pitch is auditable, air-gapped AI appliances for
+  The Chicago startup's pitch is auditable, air-gapped AI appliances for
   regulated industries -- 200+ customers, 8x revenue growth in a year, and
   already profitable going into the round.
 sources:

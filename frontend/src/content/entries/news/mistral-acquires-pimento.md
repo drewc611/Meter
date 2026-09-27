@@ -3,7 +3,7 @@ date: '2026-09-23'
 category: funding
 title: Mistral buys Paris adtech startup Pimento -- for the team, not the product
 dek: >-
-  Mistral''s third acquisition of 2026 folds Pimento''s engineers into Vibe,
+  Mistral's third acquisition of 2026 folds Pimento's engineers into Vibe,
   its conversational assistant -- and reporting on the actual price splits,
   with Mistral itself only confirming "several million euros."
 sources:
