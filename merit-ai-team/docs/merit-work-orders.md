@@ -36,10 +36,26 @@ copied from an unverified report) before being written up here. Three are
 ## WO-1
 id: WO-1
 rank: 1
-status: ready
+status: blocked
 kind: implement
 files: backend/app/services/scoring.py
 base-commit: 9da2e22
+blocked-reason:
+  This item's own acceptance test only varies idle-seat count (N in
+  {0, 3, 7}) against the median-skew defect it was written for. A second,
+  more severe defect in the same code path -- the scored denominator
+  (six decimals) diverging from displayed spend (two decimals) at the
+  same micros total, reproduced at ZERO idle seats and yielding
+  multipliers like -50,000,000,000.00 -- is not covered by this
+  acceptance test at all, and this fix's own median-narrowing side
+  effect makes that second defect relatively worse (a sub-cent spender
+  now passes this fix's `spends_micros > 0` filter and carries more
+  weight in a smaller median). If merit-apply implements and tests this
+  item as written, the acceptance test passes, the item is marked
+  closed, and the more severe defect ships anyway under a queue entry
+  that now reads "done." Re-scope this item to cover both defects
+  together, or sequence it explicitly after the precision-divergence
+  item, before re-opening it.
 mechanism:
   recompute_all() builds raw_values over every identity_id in the org
   (scoring.py:180, `db.query(Identity.id).filter(Identity.org_id == org_id)`),
@@ -106,44 +122,9 @@ acceptance:
   plus a test asserting no Identity or Team row is left behind after
   the rejected call.
 
-## WO-3
-id: WO-3
-rank: 3
-status: ready
-kind: implement
-files: frontend/public/images/dashboard-preview.png, .github/workflows/refresh-screenshots.yml
-base-commit: 9da2e22
-mechanism:
-  Home.jsx's hero embeds frontend/public/images/dashboard-preview.png
-  as "the actual dashboard, not a mockup." git log --follow on that
-  file shows exactly two commits, both 2026-09-07 -- it has not been
-  touched since. The lime-on-black content-site redesign landed 14
-  days later (4d53baa, 2026-09-21) and never touched the dashboard app
-  itself (see WO-6), so this screenshot is doubly stale: it's an old
-  capture of the pre-redesign dashboard, sitting inside a hero that's
-  now lime-and-black around it.
-  .github/workflows/refresh-screenshots.yml already exists and fires on
-  push to main touching frontend/src/**/styles.css/capture-screenshots.mjs,
-  but it runs npm run screenshot -> capture-screenshots.mjs, whose
-  OUT_DIR is docs/screenshots/ (5 files for the README: overview,
-  people, teams-roles, alerts, integrations) and only git adds that
-  directory (workflow line 61) -- it never writes or commits
-  frontend/public/images/dashboard-preview.png. There is no automated
-  path that keeps the hero image current.
-fix:
-  Regenerate dashboard-preview.png against the current build and
-  extend capture-screenshots.mjs (or the workflow) to also write and
-  commit it alongside the docs/screenshots/ set, so a future dashboard
-  or theme change can't silently leave the homepage hero stale again.
-acceptance:
-  dashboard-preview.png visibly matches the current dashboard build at
-  merge time, and a subsequent push touching styles.css regenerates it
-  automatically (verified by checking the workflow run's diff, not just
-  that the job succeeded).
-
 ## WO-12
 id: WO-12
-rank: 4
+rank: 1
 status: ready
 kind: implement
 files: backend/Dockerfile
@@ -314,6 +295,16 @@ They are not work orders and are not ranked in the queue above.
   not safe to hand to an unsupervised agent. Not currently scheduled anywhere
   (only `backend/Makefile` and `backend/README.md` reference it), so unlike
   WO-12 nothing is silently failing on a cron today.
+- **OOS-21 (was WO-3).** Regenerate `frontend/public/images/dashboard-preview.png`
+  and extend `capture-screenshots.mjs`/`refresh-screenshots.yml` so it stops
+  going stale silently. Moved here rather than left `status: ready`: its
+  acceptance criterion is "dashboard-preview.png visibly matches the current
+  dashboard build," which is a visual judgment call, not something a coding
+  agent can mechanically assert -- there is no image-diff or vision check
+  anywhere in this repo's tooling. Needs either a human eyeballing the
+  screenshot before merge, or a scoped acceptance rewrite (e.g. an exact
+  byte/hash match against a freshly captured reference image) before this
+  can go back in the ranked queue.
 
 **WO-18 note (2026-09-26):** a fenced block for WO-18 (the doubled-apostrophe
 `dek` fields) was drafted against base `e013e24` naming 4 news entries. Before
