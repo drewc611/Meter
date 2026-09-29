@@ -222,6 +222,41 @@ def test_create_identity_rejects_duplicate_email(client, db):
     assert r.status_code == 409
 
 
+def test_create_identity_rejects_external_id_collision_with_409(client, db):
+    """The email pre-check in create_identity can't catch this: a manual
+    mapping on the target external_id already exists under a DIFFERENT
+    identity (e.g. left behind after that identity was deleted, or wired up
+    directly via POST /admin/identity-mapping). The new identity's own email
+    is still unique, so the pre-check passes and the collision only surfaces
+    at commit, against IdentityMapping's uq_source_external constraint."""
+    from app import models
+
+    _bootstrap_person(db)
+    other = client.post(
+        "/admin/identity",
+        json={"email": "other@example.com", "name": "Other", "role": "Engineer", "team": "Engineering"},
+    ).json()
+    assert (
+        client.post(
+            "/admin/identity-mapping",
+            json={"email": "other@example.com", "source_system": "manual", "external_id": "new.hire@example.com"},
+        ).status_code
+        == 201
+    )
+
+    r = client.post(
+        "/admin/identity",
+        json={"email": "new.hire@example.com", "name": "New Hire", "role": "Engineer", "team": "Engineering"},
+    )
+    assert r.status_code == 409
+
+    # Nothing from the rejected call is left behind: no second Identity with
+    # this email, and the pre-existing mapping still points at `other`.
+    assert db.query(models.Identity).filter_by(email="new.hire@example.com").count() == 0
+    mapping = db.query(models.IdentityMapping).filter_by(external_id="new.hire@example.com").one()
+    assert mapping.identity_id == other["identity_id"]
+
+
 def test_full_pipeline_overview(client, db):
     _bootstrap_person(db)
     now = datetime(*current_period()[0].timetuple()[:3], 10)  # a day inside the current period

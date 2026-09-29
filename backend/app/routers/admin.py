@@ -6,6 +6,7 @@ from datetime import datetime
 from email.errors import MessageError  # stdlib; ..services.email below is the app's sender
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from .. import models, schemas
@@ -90,7 +91,17 @@ def create_identity(
     db.add(ident)
     db.flush()
     db.add(models.IdentityMapping(org_id=org_id, identity_id=ident.id, source_system="manual", external_id=body.email))
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        # The email pre-check above only catches a colliding Identity, not a
+        # leftover or directly-created IdentityMapping on the same
+        # external_id under a different identity -- that only surfaces here,
+        # at the uq_source_external constraint (models.py).
+        db.rollback()
+        raise HTTPException(
+            status_code=409, detail=f"External id {body.email} is already mapped to a different identity"
+        ) from None
     return schemas.IdentityCreated(identity_id=ident.id, team_id=team.id, mapped_external_id=body.email)
 
 
