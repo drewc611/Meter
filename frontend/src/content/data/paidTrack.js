@@ -10,12 +10,22 @@
 //     1. Stripe Dashboard -> Payment Links -> "+ New" -> one-time price,
 //        amount matching CHALLENGE_ACCESS_PRICE_LABEL below
 //     2. Product name: "Merit AC -- 30-day challenge, full access"
-//     3. Paste the resulting https://buy.stripe.com/... URL in as
-//        CHALLENGE_ACCESS_PAYMENT_LINK and redeploy
+//     3. Under "After payment", choose "Redirect customers to a website"
+//        and paste https://usemeritai.com/prompts/full-access-y1txjt9yz3eu
+//        (see pages/PromptsFullAccess.jsx) -- this step is the actual
+//        delivery mechanism. Without it, a buyer pays and lands on Stripe's
+//        generic thank-you page with nothing telling them where their
+//        content is. This site has no backend, no webhook, and no way to
+//        check who paid -- the redirect URL IS the product handoff.
+//     4. Paste the Payment Link's own https://buy.stripe.com/... URL in as
+//        CHALLENGE_ACCESS_PAYMENT_LINK below and redeploy
 //   Build review (one-time):
 //     1. Same flow, amount matching PAID_TRACK_PRICE_LABEL
 //     2. Product name: "Merit AC -- capstone build review"
-//     3. Paste it in as PAID_TRACK_PAYMENT_LINK and redeploy
+//     3. After payment: redirect to /contact (or wherever review delivery
+//        should start) -- a review is a service, not a page unlock, so this
+//        one doesn't need PromptsFullAccess.jsx's approach
+//     4. Paste it in as PAID_TRACK_PAYMENT_LINK and redeploy
 // Until each is done, its CTA shows an honest "coming soon" state instead
 // of a dead link.
 

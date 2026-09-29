@@ -33,6 +33,12 @@ function escapeHtml(value) {
 }
 
 function documentFor(meta, bodyHtml) {
+  // meta.noindex opts a page out of both search indexing and the generated
+  // sitemap below -- for a page that's real, built, and reachable by direct
+  // URL but deliberately not discoverable (e.g. a post-purchase unlock page
+  // with no other link pointing at it). Not access control: the file is
+  // still a plain static asset at a fixed, public URL once someone has it.
+  const robots = meta.noindex ? `\n<meta name="robots" content="noindex, nofollow">` : "";
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,7 +46,7 @@ function documentFor(meta, bodyHtml) {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="dark">
 <title>${escapeHtml(meta.title)}</title>
-<meta name="description" content="${escapeHtml(meta.description)}">
+<meta name="description" content="${escapeHtml(meta.description)}">${robots}
 <link rel="stylesheet" href="/content.css">
 </head>
 <body>
@@ -69,12 +75,13 @@ function urlFor(outFile) {
   return `https://usemeritai.com/${path}`;
 }
 
+const sitemapPages = pages.filter(({ meta }) => !meta.noindex);
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${pages.map(({ meta }) => `  <url><loc>${urlFor(meta.outFile)}</loc></url>`).join("\n")}
+${sitemapPages.map(({ meta }) => `  <url><loc>${urlFor(meta.outFile)}</loc></url>`).join("\n")}
 </urlset>
 `;
 writeFileSync(join(distDir, "sitemap.xml"), sitemap);
-console.log(`generated sitemap.xml (${pages.length} urls)`);
+console.log(`generated sitemap.xml (${sitemapPages.length} urls, ${pages.length - sitemapPages.length} noindex excluded)`);
 
 rmSync(ssrOutDir, { recursive: true, force: true });
