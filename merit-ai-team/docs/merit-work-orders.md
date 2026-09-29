@@ -183,7 +183,9 @@ acceptance:
 ## WO-17
 id: WO-17
 rank: 5
-status: ready
+status: pr-open
+pr: #184
+branch: merit/wo-17-strip-newlines
 kind: implement
 files: frontend/src/content/lib/loadEntries.js
 base-commit: e013e24
