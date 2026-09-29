@@ -17,6 +17,19 @@ from ..time_utils import utcnow
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
+
+def _is_external_id_collision(exc: IntegrityError) -> bool:
+    """True if `exc` is IdentityMapping's uq_source_external constraint,
+    false for any other IntegrityError (e.g. Identity.uq_identity_org_email
+    or Team.uq_team_org_name firing instead under a concurrent double-submit
+    past their own read-then-write pre-checks). SQLite names the failing
+    columns; Postgres names the constraint -- check for both rather than
+    assuming every IntegrityError at a given call site has one specific
+    cause."""
+    message = str(exc.orig)
+    return "uq_source_external" in message or "identity_mappings.external_id" in message
+
+
 _NOTIFY_SUBJECT = "Merit AC is live — see what your AI spend is actually producing"
 
 _NOTIFY_TEXT = """\
@@ -93,12 +106,17 @@ def create_identity(
     db.add(models.IdentityMapping(org_id=org_id, identity_id=ident.id, source_system="manual", external_id=body.email))
     try:
         db.commit()
-    except IntegrityError:
+    except IntegrityError as exc:
         # The email pre-check above only catches a colliding Identity, not a
         # leftover or directly-created IdentityMapping on the same
         # external_id under a different identity -- that only surfaces here,
-        # at the uq_source_external constraint (models.py).
+        # at the uq_source_external constraint (models.py). This commit can
+        # also fail uq_identity_org_email or uq_team_org_name under a
+        # concurrent double-submit (the pre-checks above are read-then-write,
+        # not atomic) -- don't blame those on the external id too.
         db.rollback()
+        if not _is_external_id_collision(exc):
+            raise
         raise HTTPException(
             status_code=409, detail=f"External id {body.email} is already mapped to a different identity"
         ) from None
