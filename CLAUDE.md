@@ -47,6 +47,10 @@ real work or slop. Early prototype status. Four parts:
 
 Branches: `main` (stable), `Develop` (active development).
 
+Development workflow (branching, Definition of Ready/Done, PR discipline) is
+in [`CONTRIBUTING.md`](CONTRIBUTING.md) — read it before opening a PR, not
+just this file.
+
 ## Commands
 
 ### Backend (run from `backend/`)
