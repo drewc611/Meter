@@ -93,7 +93,9 @@ acceptance:
 ## WO-2
 id: WO-2
 rank: 2
-status: ready
+status: pr-open
+pr: #183
+branch: merit/wo-2-identity-collision
 kind: implement
 files: backend/app/routers/admin.py
 base-commit: 9da2e22
