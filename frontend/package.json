@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/sync-newsletter.mjs && vite build && vite build --ssr src/content/entry-server.jsx --outDir dist-ssr && node scripts/prerender-content.mjs && node scripts/build-csp.mjs",
+    "build": "node scripts/sync-newsletter.mjs && vite build && vite build --ssr src/content/entry-server.jsx --outDir dist-ssr && node scripts/prerender-content.mjs && node scripts/build-csp.mjs && node scripts/check-built-meta.mjs",
     "preview": "vite preview",
     "screenshot": "node scripts/capture-screenshots.mjs"
   },
