@@ -125,7 +125,9 @@ acceptance:
 ## WO-12
 id: WO-12
 rank: 1
-status: ready
+status: pr-open
+pr: #182
+branch: merit/wo-12-dockerfile-copy
 kind: implement
 files: backend/Dockerfile
 base-commit: e013e24

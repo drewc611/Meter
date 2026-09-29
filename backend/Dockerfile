@@ -14,7 +14,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
-COPY seed.py entrypoint.sh ./
+COPY seed.py entrypoint.sh recompute.py github_sync.py ./
 
 # Run as a non-root user. /data is where the sqlite file lives — chowning it
 # here means a fresh named volume (which Docker seeds from the image's copy
