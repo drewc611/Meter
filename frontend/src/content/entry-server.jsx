@@ -26,6 +26,7 @@ import CloudArchitectureIndex, { meta as cloudArchitectureIndexMeta } from "./pa
 import ClaudeArchitectureIndex, { meta as claudeArchitectureIndexMeta } from "./pages/ClaudeArchitectureIndex.jsx";
 import PromptsIndex, { meta as promptsMeta } from "./pages/PromptsIndex.jsx";
 import PromptLibrary, { meta as promptLibraryMeta } from "./pages/PromptLibrary.jsx";
+import PromptsFullAccess, { meta as promptsFullAccessMeta } from "./pages/PromptsFullAccess.jsx";
 import OperatorOS, { meta as operatorOsMeta } from "./pages/OperatorOS.jsx";
 import Challenge, { meta as challengeMeta } from "./pages/Challenge.jsx";
 import Community, { meta as communityMeta } from "./pages/Community.jsx";
@@ -78,6 +79,7 @@ const PAGES = [
   [ClaudeArchitectureIndex, claudeArchitectureIndexMeta, { entries: claudeArchEntries }],
   [PromptsIndex, promptsMeta],
   [PromptLibrary, promptLibraryMeta],
+  [PromptsFullAccess, promptsFullAccessMeta],
   [OperatorOS, operatorOsMeta],
   [Challenge, challengeMeta],
   [Community, communityMeta],
