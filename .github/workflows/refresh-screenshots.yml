@@ -6,6 +6,10 @@ name: Refresh dashboard screenshots
 # the embedded fallback dataset (frontend/src/lib/fallbackData.js), not a
 # live backend, so no seeding/API step is needed -- see
 # frontend/scripts/capture-screenshots.mjs.
+#
+# Two jobs so the one that runs npm and Playwright never holds a write token:
+# `capture` is read-only and hands the PNGs over as an artifact; `commit` has
+# contents: write, runs no project code, and only accepts PNG files.
 
 on:
   push:
@@ -17,17 +21,20 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  screenshots:
+  capture:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: main
+          persist-credentials: false
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
         with:
           node-version: "22"
           cache: npm
@@ -54,8 +61,48 @@ jobs:
       - working-directory: frontend
         run: npm run screenshot
 
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: screenshots
+          path: docs/screenshots
+          if-no-files-found: error
+          retention-days: 1
+
+  commit:
+    needs: capture
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7
+        with:
+          name: screenshots
+          path: ${{ runner.temp }}/screenshots
+
       - name: Commit refreshed screenshots if changed
+        env:
+          SHOTS_DIR: ${{ runner.temp }}/screenshots
         run: |
+          set -euo pipefail
+          # The artifact comes from a job that ran npm packages, so it is input,
+          # not trusted output: flat directory of real PNG files or nothing.
+          png_signature=89504e470d0a1a0a
+          count=0
+          for f in "$SHOTS_DIR"/* "$SHOTS_DIR"/.[!.]*; do
+            [ -e "$f" ] || continue
+            if [ -L "$f" ] || [ ! -f "$f" ] || [ "${f##*.}" != "png" ] \
+              || [ "$(head -c 8 "$f" | od -An -tx1 | tr -d ' \n')" != "$png_signature" ]; then
+              echo "::error::unexpected entry in the screenshots artifact: ${f#"$SHOTS_DIR"/}"
+              exit 1
+            fi
+            count=$((count + 1))
+          done
+          [ "$count" -gt 0 ] || { echo "::error::the screenshots artifact is empty"; exit 1; }
+          cp "$SHOTS_DIR"/*.png docs/screenshots/
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add docs/screenshots
