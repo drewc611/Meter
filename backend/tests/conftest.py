@@ -5,12 +5,21 @@ every test, and exposes a session, a TestClient, and a small seeded dataset.
 """
 
 import os
+import secrets
 import tempfile
 
 # Must be set before importing anything under `app` — the engine binds to this
 # URL at import time.
 _TMPDIR = tempfile.mkdtemp(prefix="merit-tests-")
 os.environ["MERIT_DATABASE_URL"] = f"sqlite:///{_TMPDIR}/test_merit.db"
+# Most tests exercise /api/* and /admin/* without logging in, which the app only
+# allows with this opt-in (and never in production). Tests that need login or the
+# fail-closed behaviour set or delete MERIT_JWT_SECRET / this flag themselves.
+os.environ["MERIT_ALLOW_OPEN_DEV"] = "1"
+
+# Generated per run, never written down: nothing in the repo is a usable secret.
+TEST_JWT_SECRET = secrets.token_urlsafe(48)
+ROTATED_JWT_SECRET = secrets.token_urlsafe(48)
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402

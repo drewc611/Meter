@@ -5,9 +5,9 @@ from config. Run with:
 
     uvicorn app.main:app --reload --port 8000
 
-CORS defaults to wide-open for the local demo (the dashboard is often served
-from a file:// origin); set MERIT_CORS_ORIGINS to your real frontend origin(s)
-before this ever sees real customer data. See config.py.
+CORS defaults to the local dev origins (Vite and the compose nginx), never "*";
+set MERIT_CORS_ORIGINS to your real frontend origin(s) before this ever sees
+real customer data. See config.py.
 """
 
 import logging
@@ -20,7 +20,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
-from .config import cors_origins_from_env, in_production
+from .config import cors_origins_from_env, in_production, open_dev_allowed
 from .database import init_db
 from .dependencies import get_current_user, require_admin, require_api_key
 from .routers import admin, assistant, auth, dashboard, health, ingestion, waitlist
@@ -59,10 +59,10 @@ async def _validation_exception_handler(request: Request, exc: RequestValidation
 
 def check_startup_environment(cors_origins: list[str]) -> None:
     """Everything that has to be true about the environment before this app is
-    allowed to serve traffic. Raises RuntimeError on a production deployment
-    that would otherwise come up insecure, and warns rather than blocks
-    everywhere else -- a laptop running `make run` with no secrets set is a
-    supported way to use this, a public deployment in the same state is not.
+    allowed to serve traffic. Raises RuntimeError on any deployment that would
+    otherwise come up insecure. The one exception is a non-production run with
+    MERIT_ALLOW_OPEN_DEV=1 and no MERIT_JWT_SECRET, which is allowed to boot
+    with no login and says so in the log.
 
     Nothing here ever logs a secret's value, only that it is missing or weak.
     """
@@ -86,7 +86,16 @@ def check_startup_environment(cors_origins: list[str]) -> None:
                 "MERIT_JWT_SECRET is unset in production -- refusing to start. Set it to a long "
                 "random value (secrets.token_urlsafe(48)) before deploying."
             )
-        logger.warning("MERIT_JWT_SECRET is unset -- /api/* and /admin/* have no login enforced, anyone can read data.")
+        if not open_dev_allowed():
+            raise RuntimeError(
+                "MERIT_JWT_SECRET is unset -- refusing to start. Set it to a long random value "
+                "(secrets.token_urlsafe(48)), or set MERIT_ALLOW_OPEN_DEV=1 for a throwaway local run "
+                "with no login on /api/* and /admin/*."
+            )
+        logger.warning(
+            "MERIT_ALLOW_OPEN_DEV is set and MERIT_JWT_SECRET is not -- /api/* and /admin/* have no login "
+            "enforced, anyone who can reach this port can read and change data."
+        )
     elif len(jwt_secret) < 32:
         if prod:
             raise RuntimeError(
@@ -102,14 +111,18 @@ def check_startup_environment(cors_origins: list[str]) -> None:
             "(secrets.token_urlsafe(48))."
         )
 
-    # fly.toml sets MERIT_CORS_ORIGINS, but nothing made that mandatory -- and
-    # config.py defaults it to "*", which on a real deployment means any page
-    # on the internet can call this API with a visitor's browser. Refused for
-    # the same reason as the secret above: the deployment that most needs the
-    # origin list is the one where forgetting it is silent.
-    if prod and "*" in cors_origins:
+    # A wildcard lets any page on the internet call this API with a visitor's
+    # browser, so it is refused everywhere, not only in production. Production
+    # additionally has to name its origins: the local dev default would
+    # silently break the real frontend and hide that the setting was missed.
+    if "*" in cors_origins:
         raise RuntimeError(
-            "MERIT_CORS_ORIGINS is unset or '*' in production -- refusing to start. Set it to the "
+            "MERIT_CORS_ORIGINS contains '*' -- refusing to start. List the frontend origin(s) that "
+            "should be allowed to call this API, comma-separated."
+        )
+    if prod and not os.environ.get("MERIT_CORS_ORIGINS", "").strip():
+        raise RuntimeError(
+            "MERIT_CORS_ORIGINS is unset in production -- refusing to start. Set it to the "
             "frontend origin(s) that should be allowed to call this API, comma-separated."
         )
 

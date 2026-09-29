@@ -26,7 +26,7 @@ an individual tracking their own usage, not business/commercial use.
     GITHUB_TOKEN=ghp_xxx python personal.py sync-github \\
         --repo yourorg/yourrepo --github-username yourhandle --since 2026-07-01
 
-Then `python -m app.main` (or `make run`) and `POST /admin/recompute-scores`
+Then start the API (`MERIT_ALLOW_OPEN_DEV=1 make run`, or with `MERIT_JWT_SECRET` set) and `POST /admin/recompute-scores`
 (or restart -- seed.py's period math already runs on every request) to see
 yourself on the dashboard.
 """

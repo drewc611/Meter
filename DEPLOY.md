@@ -155,16 +155,16 @@ Still open:
 
 ## Turning on dashboard login
 
-`/api/*` and `/admin/*` stay open until `MERIT_JWT_SECRET` is set — same
-"unset = open" convention `MERIT_API_KEY` uses. Once it's set, visitors need
-a real account (password or Google) to see live data.
+`/api/*` and `/admin/*` require `MERIT_JWT_SECRET`: with it unset the app
+refuses to start, and there is no open mode in production. (A non-production run
+can opt out with `MERIT_ALLOW_OPEN_DEV=1`; that flag is ignored on a real
+deployment.) Visitors need a real account (password or Google) to see live data.
 
-On Fly this isn't just a warning: `create_app()` detects a real deployment
-via `FLY_APP_NAME` (set automatically by the Fly runtime) and refuses to
-boot at all if `MERIT_JWT_SECRET` is missing or under 32 characters, since
-that token is what every tenant boundary in this app rests on. Set the
-secret below before the first deploy that needs login, or the app won't
-start.
+`create_app()` detects a real deployment via `FLY_APP_NAME` (set automatically
+by the Fly runtime) and refuses to boot at all if `MERIT_JWT_SECRET` is missing
+or under 32 characters, or if `MERIT_CORS_ORIGINS` is unset, since the secret is
+what every tenant boundary in this app rests on. Set the secret below before the
+first deploy, or the app won't start.
 
 1. **Generate a strong signing secret and set it as a Fly secret:**
    ```bash

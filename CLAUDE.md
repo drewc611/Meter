@@ -55,7 +55,7 @@ Branches: `main` (stable), `Develop` (active development).
 make install   # pip install -r requirements.txt -r requirements-dev.txt
 make seed      # python seed.py — fabricates 6 months of sample data, scores it
 make github-sync  # python github_sync.py — pulls merged PRs/CI status from MERIT_GITHUB_OWNER/REPO
-make run       # uvicorn app.main:app --reload --port 8000
+make run       # uvicorn app.main:app --reload --port 8000 (needs MERIT_JWT_SECRET, or MERIT_ALLOW_OPEN_DEV=1 for no login)
 make test      # pytest
 make lint      # ruff check .
 make fmt       # ruff check --select I --fix . && ruff format .
@@ -127,9 +127,11 @@ docker compose down -v        # stop and wipe seeded data
 ```
 
 Frontend on :8080 (nginx — needed to reach the backend without file://
-CORS quirks), backend API on :8000. Before pointing this at real data, change
-`MERIT_CORS_ORIGINS` (wide open by default) and `MERIT_DATABASE_URL` (SQLite
-by default) on the backend service.
+CORS quirks), backend API on :8000, both bound to 127.0.0.1. Compose sets
+`MERIT_ALLOW_OPEN_DEV=1` and the local frontend origins in `MERIT_CORS_ORIGINS`.
+Before pointing this at real data, set `MERIT_JWT_SECRET`, remove the open-dev
+flag, list your real origins, and change `MERIT_DATABASE_URL` (SQLite by
+default) on the backend service.
 
 ### CI (`.github/workflows/ci.yml`)
 
@@ -211,8 +213,9 @@ which functions do what: [`backend/README.md`](backend/README.md#why-three-tiers
 
 ```
 main.py            FastAPI app factory (create_app) — mounts routers, CORS from config;
-                   check_startup_environment() refuses to boot a production deployment
-                   with a missing/weak MERIT_JWT_SECRET or wide-open MERIT_CORS_ORIGINS
+                   check_startup_environment() refuses to boot without MERIT_JWT_SECRET
+                   (unless MERIT_ALLOW_OPEN_DEV=1 outside production), with a wildcard
+                   MERIT_CORS_ORIGINS, and in production with a weak secret or no origins
 config.py          infra settings (database URL, CORS origins) read from env
 constants.py       tunable business constants: weight tables + segment/recovery knobs
 time_utils.py      single naive-UTC clock (utcnow), used everywhere instead of datetime.utcnow()

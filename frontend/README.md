@@ -84,7 +84,7 @@ npm run preview     # serve the dist/ build locally
 ```
 
 `npm run dev` and `npm run build` both need the backend running at
-`http://localhost:8000` to show live data (`cd ../backend && make run`) —
+`http://localhost:8000` to show live data (`cd ../backend && MERIT_ALLOW_OPEN_DEV=1 make run`) —
 without it, the dashboard falls back to the embedded demo snapshot in
 `src/lib/fallbackData.js` and the sidebar badge shows DEMO instead of LIVE.
 

@@ -9,7 +9,7 @@ from fastapi import Depends, Header, HTTPException, status
 from sqlalchemy.orm import Session
 
 from . import models
-from .config import in_production
+from .config import in_production, open_dev_allowed
 from .database import SessionLocal
 from .services import auth as auth_service
 
@@ -83,12 +83,18 @@ def get_current_user(
     authorization: str | None = Header(default=None), db: Session = Depends(get_db)
 ) -> models.DashboardUser | None:
     """Per-user login gate for /api/* and /admin/* -- a JWT from
-    /auth/login, /auth/signup, or the Google callback. Same unset-secret
-    convention as require_api_key: MERIT_JWT_SECRET unset means login is
-    off and this returns None; once set, a bad/missing/expired token is 401.
+    /auth/login, /auth/signup, or the Google callback. A bad, missing or
+    expired token is 401. With MERIT_JWT_SECRET unset this fails closed (503)
+    unless MERIT_ALLOW_OPEN_DEV opts a non-production run into no login, in
+    which case it returns None.
     """
     if not os.environ.get("MERIT_JWT_SECRET"):
-        return None
+        if open_dev_allowed():
+            return None
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Login is not configured: set MERIT_JWT_SECRET",
+        )
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing bearer token")
     token = authorization.removeprefix("Bearer ")

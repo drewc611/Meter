@@ -12,6 +12,7 @@ from app import models
 from app.money import usd_to_micros
 from app.periods import current_period
 from app.services import scoring
+from tests.conftest import TEST_JWT_SECRET
 
 
 def _signup(client, email, name):
@@ -31,14 +32,14 @@ def _ingest_token(client, user_token):
 
 
 def test_two_signups_get_separate_orgs(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     a = _signup(client, "a@example.com", "Ada")["user"]
     b = _signup(client, "b@example.com", "Bea")["user"]
     assert a["org_id"] != b["org_id"]
 
 
 def test_ingested_usage_stays_within_its_own_org(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     a = _signup(client, "a@example.com", "Ada")
     b = _signup(client, "b@example.com", "Bea")
     token_a, token_b = a["access_token"], b["access_token"]
@@ -67,7 +68,7 @@ def test_ingested_usage_stays_within_its_own_org(client, monkeypatch):
 
 
 def test_shadow_ai_candidates_stay_within_their_own_org(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     a = _signup(client, "a@example.com", "Ada")
     b = _signup(client, "b@example.com", "Bea")
     token_a, token_b = a["access_token"], b["access_token"]
@@ -98,7 +99,7 @@ def test_ingest_token_only_authenticates_its_own_org(client, monkeypatch):
     """Org A's token can't be used to write into org B, and vice versa --
     a token resolves to exactly one org, never "whichever org matches the
     external_id", which is the whole point of per-org tokens."""
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     a = _signup(client, "a@example.com", "Ada")
     _signup(client, "b@example.com", "Bea")
     ingest_token_a = _ingest_token(client, a["access_token"])
@@ -122,7 +123,7 @@ def test_colliding_team_and_email_across_two_orgs_does_not_violate_constraint(cl
     """Both orgs' auto-provisioned "Personal" team, and two different
     signups happening to share an email prefix pattern, must not collide --
     proves the rebuilt unique constraints are genuinely per-org."""
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     _signup(client, "a@example.com", "Ada")
     _signup(client, "b@example.com", "Bea")
 
@@ -133,7 +134,7 @@ def test_colliding_team_and_email_across_two_orgs_does_not_violate_constraint(cl
 
 
 def test_recompute_never_touches_the_other_orgs_scores(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     a = _signup(client, "a@example.com", "Ada")
     b = _signup(client, "b@example.com", "Bea")
     token_a, token_b = a["access_token"], b["access_token"]

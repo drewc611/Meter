@@ -100,9 +100,8 @@ and frontend have genuinely different shapes, and the split matches that:
   attach/detach churn that scale-to-zero would cause for a single-SQLite-file
   app.
 - **CORS is locked down** to the real production origins
-  (`MERIT_CORS_ORIGINS` in `fly.toml`), not left wide open the way the local
-  dev default is — the one thing that would have made this an easy first
-  mistake, done correctly.
+  (`MERIT_CORS_ORIGINS` in `fly.toml`), not the local dev origins the
+  setting falls back to outside production (`*` is refused everywhere).
 
 **Not yet for handling real customer data.** Real per-user login and
 `/admin/*` role checks are in (see `SECURITY.md`), but standard

@@ -5,6 +5,7 @@ Also covers /admin/notify-waitlist, the one-off announcement send."""
 import smtplib
 
 from app import models
+from tests.conftest import TEST_JWT_SECRET
 
 
 def test_join_waitlist(client, db):
@@ -102,7 +103,7 @@ def test_waitlist_endpoints_reject_a_self_signup_admin(client, monkeypatch):
     """The leak this gate exists to stop: with MERIT_SIGNUP_CODE unset,
     anyone can self-signup and is instantly is_admin of their own org --
     which must not be enough to read (or mail) other people's leads."""
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     monkeypatch.delenv("MERIT_ADMIN_EMAILS", raising=False)
     client.post("/waitlist", json={"email": "lead@example.com", "company": "Acme"})
     headers = _signup(client, "randomer@example.com")
@@ -111,7 +112,7 @@ def test_waitlist_endpoints_reject_a_self_signup_admin(client, monkeypatch):
 
 
 def test_waitlist_endpoints_accept_an_operator(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     monkeypatch.setenv("MERIT_ADMIN_EMAILS", "ops@usemeritai.com, other@example.com")
     client.post("/waitlist", json={"email": "lead@example.com", "company": "Acme"})
     headers = _signup(client, "ops@usemeritai.com")
@@ -124,7 +125,7 @@ def test_waitlist_endpoints_accept_an_operator(client, monkeypatch):
 def test_non_waitlist_admin_endpoints_still_only_need_is_admin(client, monkeypatch):
     """require_operator is scoped to the waitlist endpoints -- it must not
     have tightened the rest of /admin/*, which is org-scoped already."""
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     monkeypatch.delenv("MERIT_ADMIN_EMAILS", raising=False)
     headers = _signup(client, "randomer@example.com")
     assert client.post("/admin/recompute-scores", headers=headers).status_code == 200
