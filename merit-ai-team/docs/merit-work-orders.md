@@ -236,7 +236,9 @@ acceptance:
 ## WO-19
 id: WO-19
 rank: 6
-status: ready
+status: pr-open
+pr: #185 (stacked on #184 -- base branch is merit/wo-17-strip-newlines, not main; merge #184 first)
+branch: merit/wo-19-check-built-meta
 kind: implement
 files: frontend/scripts/check-built-meta.mjs, frontend/package.json
 base-commit: e013e24
