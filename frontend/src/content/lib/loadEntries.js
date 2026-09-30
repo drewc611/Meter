@@ -93,7 +93,7 @@ export function stripTags(html) {
     prev = result;
     result = result.replace(/<[^>]+>/g, "");
   } while (result !== prev);
-  return result;
+  return result.replace(/\s+/g, " ").trim();
 }
 
 // Markdown-body links go through sanitizeHtml above (allowedSchemes:
