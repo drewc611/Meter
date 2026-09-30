@@ -93,7 +93,17 @@ acceptance:
 ## WO-2
 id: WO-2
 rank: 2
-status: ready
+status: pr-open
+pr: #183
+branch: merit/wo-2-identity-collision
+hold-reason:
+  Fixed and CI-green (the fix also closed two gaps found in review: a
+  bare except IntegrityError that would have mislabeled an unrelated
+  Identity/Team constraint collision as the external-id one, and a
+  missing Team-row rollback assertion the acceptance below already
+  asked for) but deliberately left unmerged on Andrew's explicit
+  instruction, pending WO-23. Do not rebuild this branch -- it already
+  exists and is current.
 kind: implement
 files: backend/app/routers/admin.py
 base-commit: 9da2e22
@@ -125,8 +135,9 @@ acceptance:
 ## WO-12
 id: WO-12
 rank: 1
-status: pr-open
+status: merged
 pr: #182
+merge-commit: 9844c76
 branch: merit/wo-12-dockerfile-copy
 kind: implement
 files: backend/Dockerfile
@@ -183,8 +194,9 @@ acceptance:
 ## WO-17
 id: WO-17
 rank: 5
-status: pr-open
+status: merged
 pr: #184
+merge-commit: cbdd80a
 branch: merit/wo-17-strip-newlines
 kind: implement
 files: frontend/src/content/lib/loadEntries.js
@@ -236,8 +248,9 @@ acceptance:
 ## WO-19
 id: WO-19
 rank: 6
-status: pr-open
-pr: #185 (stacked on #184 -- base branch is merit/wo-17-strip-newlines, not main; merge #184 first)
+status: merged
+pr: #185
+merge-commit: 790a170
 branch: merit/wo-19-check-built-meta
 kind: implement
 files: frontend/scripts/check-built-meta.mjs, frontend/package.json
@@ -323,4 +336,24 @@ apostrophes. All 9 were fixed directly in this same change rather than queued,
 since the fix is a single-character edit per file and re-verified via
 `npm run build` (`grep -rl '&#39;&#39;' dist/` now exits 1). WO-19 above still
 queues the regression check so this can't silently reappear.
+
+**Reconciliation note (2026-09-30):** WO-12, WO-17, and WO-19 are now
+`status: merged` (were stuck reading `pr-open` on `main` after merge, because
+each item's own status-update commit lived on its PR branch, which a squash
+merge carries verbatim -- the PR itself landing didn't retroactively update
+the word "pr-open" to "merged"). WO-2 is now correctly `status: pr-open` with
+a `hold-reason` explaining why it's deliberately not merged -- `main`'s copy
+had been stuck reading `status: ready` for the same structural reason
+(its own status-update commit sits on the still-open `merit/wo-2-identity-
+collision` branch, never landed on `main`), which meant `merit-apply` reading
+`main` alone would have tried to rebuild a branch that already exists.
+**A separate finding flagged WO-22, WO-23, and WO-24 as drafted but never
+actually pasted into this file** (the same "wrote it up, didn't ship the
+write" failure mode this file's own header exists to fix), plus a WO-25 for
+this reconciliation itself. None of the four's actual content (mechanism/fix/
+acceptance) was included in what reached this session, so none of it can be
+transcribed here -- fabricating that content would violate this file's own
+verified-not-assumed standard. Whoever holds WO-22--25's real text needs to
+paste it in directly; this note exists so the gap is visible rather than
+silently absent.
 
