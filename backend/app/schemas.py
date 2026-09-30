@@ -37,6 +37,15 @@ MAX_IDENTIFIER_LENGTH = 500
 MAX_SINGLE_EVENT_COST_USD = 1_000_000
 MAX_VALUE_WEIGHT_MAGNITUDE = 1_000
 
+# tokens_in/tokens_out reach a plain SQLite Integer column (models.py) with
+# no further checking. Python ints are arbitrary precision, so an unbounded
+# `int` field here happily accepts something like 10**30 -- which then blows
+# up as an unhandled OverflowError ("Python int too large to convert to
+# SQLite INTEGER") at db.commit() inside services/ingest.py, the same bug
+# class cost_usd/value_weight/severity were bounded above to prevent. Well
+# under sqlite3's actual signed-64-bit ceiling, with room to spare.
+MAX_TOKEN_COUNT = 1_000_000_000
+
 
 def _bcrypt_safe_password(v: str) -> str:
     if len(v.encode("utf-8")) > BCRYPT_MAX_PASSWORD_BYTES:
@@ -98,8 +107,8 @@ class UsageEventIn(BaseModel):
     tool: str = Field(max_length=MAX_NAME_LENGTH)
     cost_usd: float = Field(ge=0, le=MAX_SINGLE_EVENT_COST_USD, allow_inf_nan=False)
     model: str | None = Field(default=None, max_length=MAX_NAME_LENGTH)
-    tokens_in: int = 0
-    tokens_out: int = 0
+    tokens_in: int = Field(default=0, ge=0, le=MAX_TOKEN_COUNT)
+    tokens_out: int = Field(default=0, ge=0, le=MAX_TOKEN_COUNT)
     occurred_at: datetime | None = None
     # Optional idempotency key -- a retry with the same event_id replays the
     # existing row instead of double-counting spend. Omit it and the call
@@ -159,7 +168,12 @@ class SignupIn(BaseModel):
 
 
 class LoginIn(BaseModel):
-    email: str
+    # Still plain str, not ValidatedEmail -- see the comment above
+    # ValidatedEmail's definition on why format validation stays off here.
+    # A length cap is a different concern (every other free-text field in
+    # this file has one; this was the one gap) and doesn't change the
+    # 401-vs-422 behavior that comment is protecting.
+    email: str = Field(max_length=254)
     password: str = Field(max_length=BCRYPT_MAX_PASSWORD_BYTES)
 
     @field_validator("password")

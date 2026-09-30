@@ -28,7 +28,10 @@ from .routers import admin, assistant, auth, dashboard, health, ingestion, waitl
 logger = logging.getLogger(__name__)
 
 
-def _json_safe(value):
+MAX_JSON_SAFE_DEPTH = 20
+
+
+def _json_safe(value, _depth=0):
     """A rejected request body can itself contain a value JSON can't
     represent -- a bare NaN/Infinity/-Infinity float, which Starlette's
     default JSONResponse (allow_nan=False, per the JSON spec) refuses to
@@ -37,13 +40,29 @@ def _json_safe(value):
     cost_usd didn't just fail validation -- the 422 response describing
     *why* it failed crashed with an unhandled 500 of its own. repr(), not
     str(): 'nan' alone reads as a plausible string value; "nan" (Python's
-    repr of the float) makes clear it's the number, not text."""
+    repr of the float) makes clear it's the number, not text.
+
+    _depth guards against the same crash this function exists to prevent,
+    from a different input shape: a request body assigning a deeply nested
+    list to any scalar-typed field (e.g. cost_usd: [[[[...]]]]) puts that
+    whole structure under exc.errors()["input"] unchanged, and this recursed
+    into it one Python stack frame per level with no limit -- reproduced as
+    an unauthenticated 500 (RecursionError) on /waitlist, /auth/login, and
+    /ingest/* with a few hundred nested brackets in a few-KB body. Past
+    MAX_JSON_SAFE_DEPTH this just stops descending and reports the shape
+    instead of the (already-illegible past that depth) content."""
     if isinstance(value, float) and (math.isnan(value) or math.isinf(value)):
         return repr(value)
+    if _depth >= MAX_JSON_SAFE_DEPTH:
+        if isinstance(value, dict):
+            return f"<dict, {len(value)} keys, truncated at depth {MAX_JSON_SAFE_DEPTH}>"
+        if isinstance(value, list):
+            return f"<list, {len(value)} items, truncated at depth {MAX_JSON_SAFE_DEPTH}>"
+        return value
     if isinstance(value, dict):
-        return {k: _json_safe(v) for k, v in value.items()}
+        return {k: _json_safe(v, _depth + 1) for k, v in value.items()}
     if isinstance(value, list):
-        return [_json_safe(v) for v in value]
+        return [_json_safe(v, _depth + 1) for v in value]
     return value
 
 

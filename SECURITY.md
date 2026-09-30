@@ -200,6 +200,57 @@ gaps against your own risk tolerance. The seeded demo data
 (`backend/seed.py`) is fabricated and safe to run publicly for exactly that
 reason.
 
+### Fixed in a third review
+
+Also covers the markdown-sanitization path in the frontend content pipeline,
+not just the backend and infra this time.
+
+- **A protocol-relative URL (`//evil.example/x`) bypassed the markdown-body
+  sanitizer's scheme allowlist.** `frontend/src/content/lib/loadEntries.js`
+  restricts links/images to `http`/`https`/`mailto`, but `sanitize-html`'s
+  `allowedSchemes` only constrains a URL that *has* a scheme — one with none
+  passes through unchanged. Reachable through this file's own documented
+  threat model: `/news` articles are drafted and merged by an unattended
+  pipeline with no human review gate, so a generated
+  `[text](//attacker.example/phish)` or `![](//attacker.example/beacon.gif)`
+  reached the page as-is — an off-site-navigation phishing link, or a
+  zero-click tracking beacon that leaks a reader's IP/User-Agent on page
+  view alone. `allowProtocolRelative: false` closes it; `isSafeUrl` (used for
+  frontmatter fields rendered straight into a JSX `href`, which never goes
+  through this sanitizer) already rejected these correctly and needed no
+  change.
+- **`_json_safe` (`backend/app/main.py`) recursed with no depth limit.**
+  It walks a rejected request body's echoed value to patch out non-finite
+  floats before the 422 response is serialized. A body assigning a deeply
+  nested list to any scalar field (e.g. `cost_usd: [[[[...]]]]`) put that
+  whole structure under `exc.errors()["input"]` unchanged, and this recursed
+  into it one stack frame per level — reproduced as an unauthenticated
+  `RecursionError`/500 on `/waitlist`, `/auth/login`, and `/ingest/*` with a
+  few hundred nested brackets in a few-KB body. It now stops descending past
+  a fixed depth and reports the shape instead of the content beyond that.
+- **`tokens_in`/`tokens_out` had no bounds**, unlike every other numeric
+  field hardened in the second review. An arbitrary-precision Python `int`
+  (e.g. `10**30`) passed validation and then raised an unhandled
+  `OverflowError` at `db.commit()` — SQLite's `INTEGER` storage caps at a
+  signed 64-bit value. Both fields are now bounded the same way
+  `cost_usd`/`value_weight`/`severity` already are.
+- **`LoginIn.email` had no length bound.** It deliberately isn't
+  `ValidatedEmail` (format-validating it would turn some malformed logins
+  into a 422 instead of the current 401), but that never justified skipping
+  a length cap too — it was the one free-text field in `schemas.py` left
+  unbounded after the second review's "free-text fields had no length
+  bound" fix. Capped at 254 characters now, with no change to the
+  401-vs-422 behavior.
+- **`.github/workflows/operator-os-desktop.yml` ran `tauri-apps/tauri-action`
+  and `dtolnay/rust-toolchain` on mutable refs (`@v1`, `@stable`)** in a job
+  whose env holds real Apple code-signing secrets (`APPLE_CERTIFICATE` and
+  friends) — the same threat model `backup-verification`/`github-sync`/
+  `nightly-recompute` already pin `superfly/flyctl-actions` to a commit SHA
+  for, since those hold `FLY_API_TOKEN`. Both are now pinned to a commit.
+  This workflow only fires on manual dispatch or a `desktop-v*` tag, never on
+  a PR, so the risk was purely upstream supply-chain, not reachable from
+  untrusted contributor code.
+
 ### Not set on the repository itself
 
 These are GitHub repository and account settings, not code, so nothing in
