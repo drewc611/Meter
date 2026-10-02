@@ -222,6 +222,100 @@ def test_create_identity_rejects_duplicate_email(client, db):
     assert r.status_code == 409
 
 
+def test_create_identity_rejects_external_id_collision_with_409(client, db):
+    """The email pre-check in create_identity can't catch this: a manual
+    mapping on the target external_id already exists under a DIFFERENT
+    identity (e.g. left behind after that identity was deleted, or wired up
+    directly via POST /admin/identity-mapping). The new identity's own email
+    is still unique, so the pre-check passes and the collision only surfaces
+    at commit, against IdentityMapping's uq_source_external constraint."""
+    from app import models
+
+    _bootstrap_person(db)
+    other = client.post(
+        "/admin/identity",
+        json={"email": "other@example.com", "name": "Other", "role": "Engineer", "team": "Engineering"},
+    ).json()
+    assert (
+        client.post(
+            "/admin/identity-mapping",
+            json={"email": "other@example.com", "source_system": "manual", "external_id": "new.hire@example.com"},
+        ).status_code
+        == 201
+    )
+
+    r = client.post(
+        "/admin/identity",
+        # A brand-new team name (not "Engineering", already created above) --
+        # otherwise this can't tell "no Team row survives the rollback" apart
+        # from "no new Team row was ever needed".
+        json={"email": "new.hire@example.com", "name": "New Hire", "role": "Engineer", "team": "Brand New Team"},
+    )
+    assert r.status_code == 409
+
+    # Nothing from the rejected call is left behind: no second Identity with
+    # this email, the pre-existing mapping still points at `other`, and the
+    # Team row created earlier in the same request (get-or-create, flushed
+    # but never committed) didn't survive the rollback either -- WO-2's own
+    # acceptance criterion asks for both.
+    assert db.query(models.Identity).filter_by(email="new.hire@example.com").count() == 0
+    assert db.query(models.Team).filter_by(name="Brand New Team").count() == 0
+    mapping = db.query(models.IdentityMapping).filter_by(external_id="new.hire@example.com").one()
+    assert mapping.identity_id == other["identity_id"]
+
+
+def test_is_external_id_collision_does_not_blame_unrelated_integrity_errors():
+    """create_identity's except IntegrityError block covers a commit that can
+    fail on three different unique constraints (Team, Identity,
+    IdentityMapping) under a concurrent double-submit, not just the
+    external-id collision it's written to explain -- _is_external_id_collision
+    is what tells them apart, tested directly against the real function
+    rather than a reimplementation of its logic. Reproducing the underlying
+    race through the synchronous test client isn't possible here: two
+    requests run strictly in sequence, and the first one's own pre-check
+    would already catch a same-request duplicate before either ever reaches
+    the commit that raises this."""
+    from sqlalchemy.exc import IntegrityError
+
+    from app.routers.admin import _is_external_id_collision
+
+    class _FakeOrigError(Exception):
+        def __init__(self, message):
+            self._message = message
+
+        def __str__(self):
+            return self._message
+
+    external_id_collision = IntegrityError(
+        "INSERT INTO identity_mappings ...",
+        {},
+        _FakeOrigError(
+            "UNIQUE constraint failed: identity_mappings.org_id, "
+            "identity_mappings.source_system, identity_mappings.external_id"
+        ),
+    )
+    email_collision = IntegrityError(
+        "INSERT INTO identities ...",
+        {},
+        _FakeOrigError("UNIQUE constraint failed: identities.org_id, identities.email"),
+    )
+    team_collision = IntegrityError(
+        "INSERT INTO teams ...",
+        {},
+        _FakeOrigError("UNIQUE constraint failed: teams.org_id, teams.name"),
+    )
+    postgres_style = IntegrityError(
+        "INSERT INTO identity_mappings ...",
+        {},
+        _FakeOrigError('duplicate key value violates unique constraint "uq_source_external"'),
+    )
+
+    assert _is_external_id_collision(external_id_collision) is True
+    assert _is_external_id_collision(postgres_style) is True
+    assert _is_external_id_collision(email_collision) is False
+    assert _is_external_id_collision(team_collision) is False
+
+
 def test_full_pipeline_overview(client, db):
     _bootstrap_person(db)
     now = datetime(*current_period()[0].timetuple()[:3], 10)  # a day inside the current period
