@@ -59,7 +59,7 @@ just this file.
 make install   # pip install -r requirements.txt -r requirements-dev.txt
 make seed      # python seed.py — fabricates 6 months of sample data, scores it
 make github-sync  # python github_sync.py — pulls merged PRs/CI status from MERIT_GITHUB_OWNER/REPO
-make run       # uvicorn app.main:app --reload --port 8000
+make run       # uvicorn app.main:app --reload --port 8000 (needs MERIT_JWT_SECRET, or MERIT_ALLOW_OPEN_DEV=1 for no login)
 make test      # pytest
 make lint      # ruff check .
 make fmt       # ruff check --select I --fix . && ruff format .
@@ -131,9 +131,11 @@ docker compose down -v        # stop and wipe seeded data
 ```
 
 Frontend on :8080 (nginx — needed to reach the backend without file://
-CORS quirks), backend API on :8000. Before pointing this at real data, change
-`MERIT_CORS_ORIGINS` (wide open by default) and `MERIT_DATABASE_URL` (SQLite
-by default) on the backend service.
+CORS quirks), backend API on :8000, both bound to 127.0.0.1. Compose sets
+`MERIT_ALLOW_OPEN_DEV=1` and the local frontend origins in `MERIT_CORS_ORIGINS`.
+Before pointing this at real data, set `MERIT_JWT_SECRET`, remove the open-dev
+flag, list your real origins, and change `MERIT_DATABASE_URL` (SQLite by
+default) on the backend service.
 
 ### CI (`.github/workflows/ci.yml`)
 
@@ -215,8 +217,9 @@ which functions do what: [`backend/README.md`](backend/README.md#why-three-tiers
 
 ```
 main.py            FastAPI app factory (create_app) — mounts routers, CORS from config;
-                   check_startup_environment() refuses to boot a production deployment
-                   with a missing/weak MERIT_JWT_SECRET or wide-open MERIT_CORS_ORIGINS
+                   check_startup_environment() refuses to boot without MERIT_JWT_SECRET
+                   (unless MERIT_ALLOW_OPEN_DEV=1 outside production), with a wildcard
+                   MERIT_CORS_ORIGINS, and in production with a weak secret or no origins
 config.py          infra settings (database URL, CORS origins) read from env
 constants.py       tunable business constants: weight tables + segment/recovery knobs
 time_utils.py      single naive-UTC clock (utcnow), used everywhere instead of datetime.utcnow()
@@ -305,3 +308,14 @@ hope this helps," no closing summary restating what was just shown. Open
 with the finding or the diff. When describing a change, show only the
 touched functions/hunks, not surrounding unchanged code, and say what the
 change actually does to behavior, not a paraphrase of the diff.
+
+## Security rules for AI-assisted changes (binding)
+
+Added by the 2026-09 security audit. Full text and references in
+`docs/security/AI-CODING-GUARDRAILS.md`; findings in `SECURITY-AUDIT-2026-09.md`.
+
+- Never write a literal secret, token, password or API key anywhere in the repo. Read it from the environment and **fail closed** when it is missing (`os.environ["X"]`, `${X:?required}`). No `getenv("X", "dev-secret")`, no `|| "changeme"`, no `${X:-password}`.
+- Never emit placeholder credentials (`change-me`, `dev-secret`, `password123`, `admin123`, `letmein`, `supersecret`). If a value is unknown, leave it required and unset, and say so in the PR.
+- Authentication defaults on. Debug servers (`debug=True`) are never committed. Containers run as a non-root `USER`.
+- Pin every GitHub Action to a full commit SHA; pass `${{ github.event.* }}` through `env:`, never into `run:`.
+- Before committing, run `bash scripts/check-placeholder-secrets.sh` and `gitleaks dir . --config .gitleaks.toml`; both must be clean. CI runs the same checks in `.github/workflows/secret-scan.yml`.

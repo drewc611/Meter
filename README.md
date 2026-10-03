@@ -123,8 +123,13 @@ linked from the "Sign in" button in the header.
 cd backend
 pip install -r requirements.txt
 python seed.py                        # fabricates 6 months of sample activity, scores it
-uvicorn app.main:app --reload --port 8000
+MERIT_ALLOW_OPEN_DEV=1 uvicorn app.main:app --reload --port 8000
 ```
+
+The API refuses to start with no login secret. `MERIT_ALLOW_OPEN_DEV=1` is the
+explicit opt-in for a throwaway local run with no login on `/api/*` and
+`/admin/*`; set `MERIT_JWT_SECRET` instead to run with login. It is ignored in
+production.
 
 Then, in a separate terminal:
 
@@ -157,9 +162,12 @@ lives in the `merit-db` named volume, so `docker compose down` and `up` again
 picks up right where you left off; `docker compose down -v` wipes it for a
 clean re-seed.
 
-Two things to change before this ever points at real data: `MERIT_CORS_ORIGINS`
-on the backend service (wide open by default — see `docker-compose.yml`) and
-`MERIT_DATABASE_URL` if you're swapping SQLite for Postgres. See
+The compose file binds both ports to `127.0.0.1`, allows only the local
+frontend origins in `MERIT_CORS_ORIGINS`, and sets `MERIT_ALLOW_OPEN_DEV=1` (no
+login), which is why it is not a production setup. Before this ever points at
+real data, set `MERIT_JWT_SECRET`, drop the open-dev flag, list your real origins
+in `MERIT_CORS_ORIGINS`, and change `MERIT_DATABASE_URL` if you're swapping
+SQLite for Postgres. See
 [`backend/README.md`](backend/README.md) for the full config surface.
 
 ## Deploying

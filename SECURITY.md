@@ -81,17 +81,16 @@ nonexistent email returned near-instantly while a real one didn't — same
 401 either way, but the timing gap alone let an attacker enumerate which
 emails have accounts.
 
-`MERIT_JWT_SECRET` being unset or under 32 characters is only ever logged,
-not enforced, when running locally — but `create_app()` refuses to start
-at all if it detects a real deployment (`FLY_APP_NAME` set by the Fly.io
-runtime itself, or `MERIT_ENV=production` set explicitly) and the secret is
-missing or weak, since every tenant boundary in this app rests on that
-token being unguessable. The same production check now covers
-`MERIT_CORS_ORIGINS`: `config.py` defaults it to `*` for the local demo, and
-a real deployment left that way lets any page on the internet call this API
-with a visitor's browser, so a production boot with no origin list is
-refused rather than merely logged. `fly.toml` already sets it. Both checks
-live in `main.check_startup_environment()`.
+`create_app()` refuses to start when `MERIT_JWT_SECRET` is unset, in every
+environment. The one exception is `MERIT_ALLOW_OPEN_DEV=1`, which lets a
+non-production run boot with no login and logs a warning; it is ignored when
+`FLY_APP_NAME` (set by the Fly.io runtime itself) or `MERIT_ENV=production` is
+set. A secret under 32 characters is refused on a real deployment and only
+logged locally, since every tenant boundary in this app rests on that token
+being unguessable. `MERIT_CORS_ORIGINS` is checked the same way: `*` is refused
+everywhere, an unset value falls back to the local dev origins outside
+production, and a production boot with no origin list is refused. `fly.toml`
+already sets it. All of this lives in `main.check_startup_environment()`.
 
 ### Fixed in a second review
 
@@ -132,8 +131,9 @@ regression test, and each test was confirmed to fail without its fix.
 - **`/auth/login`, `/auth/signup` and `/waitlist` had no rate limit.** All
   three are unauthenticated; the first was free password guessing. There is
   now a per-caller cap (`services/ratelimit.py`) — 10 logins per 5 minutes, 10
-  signups and 20 waitlist joins per hour — keyed on `Fly-Client-IP`, which
-  Fly's proxy overwrites. A general `X-Forwarded-For` read is deliberately not
+  signups and 20 waitlist joins per hour — keyed on `Fly-Client-IP` when
+  `FLY_APP_NAME` is set (Fly's proxy overwrites that header) and on the socket
+  peer everywhere else, where a client could send the header itself. A general `X-Forwarded-For` read is deliberately not
   honoured, since the client controls its left-hand entries and could use it
   both to dodge its own limit and to burn someone else's.
 - **The error detail in the OAuth failure redirect wasn't URL-encoded**, and

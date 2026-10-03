@@ -4,7 +4,10 @@ conftest's fresh_rate_limits fixture clears the counters between tests, so each
 of these starts from an empty window.
 """
 
+from types import SimpleNamespace
+
 from app.services import ratelimit
+from tests.conftest import TEST_JWT_SECRET
 
 
 def _login(client, email="nobody@example.com", **kwargs):
@@ -33,19 +36,30 @@ def test_waitlist_signup_is_capped(client):
     assert _join(client, 20).status_code == 429
 
 
-def test_the_limit_is_per_caller_not_global(client):
+def test_the_limit_is_per_caller_not_global(client, monkeypatch):
     """One noisy address must not lock everyone else out -- that would turn
     the limiter into the denial of service it's there to prevent."""
+    monkeypatch.setenv("FLY_APP_NAME", "meter")
     for i in range(20):
         _join(client, i)
     assert _join(client, 20).status_code == 429
     assert _join(client, 21, headers={"Fly-Client-IP": "198.51.100.7"}).status_code == 201
 
 
-def test_a_client_supplied_forwarded_header_is_ignored(client):
+def test_fly_client_ip_is_ignored_when_not_running_on_fly(client, monkeypatch):
+    """Nothing off Fly overwrites the header, so a client could rotate it to
+    get a fresh allowance on every request. The socket peer is used instead."""
+    monkeypatch.delenv("FLY_APP_NAME", raising=False)
+    for i in range(20):
+        assert _join(client, i, headers={"Fly-Client-IP": f"198.51.100.{i}"}).status_code == 201
+    assert _join(client, 20, headers={"Fly-Client-IP": "198.51.100.200"}).status_code == 429
+
+
+def test_a_client_supplied_forwarded_header_is_ignored(client, monkeypatch):
     """X-Forwarded-For's left-hand entries are written by the client, so
     honouring it would let an attacker rotate their own key and burn someone
     else's. Only Fly-Client-IP, which Fly's proxy overwrites, is trusted."""
+    monkeypatch.setenv("FLY_APP_NAME", "meter")
     for i in range(20):
         _join(client, i, headers={"X-Forwarded-For": "203.0.113.9"})
     assert _join(client, 20, headers={"X-Forwarded-For": "203.0.113.10"}).status_code == 429
@@ -60,7 +74,7 @@ def test_buckets_are_independent(client):
 
 
 def test_account_creation_is_capped(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     for i in range(10):
         r = client.post("/auth/signup", json={"email": f"u{i}@example.com", "password": "hunter22", "name": "U"})
         assert r.status_code == 201
@@ -80,8 +94,8 @@ class _Req:
     """The two attributes _caller() reads, without standing up a request."""
 
     def __init__(self, ip):
-        self.headers = {"fly-client-ip": ip}
-        self.client = None
+        self.headers = {}
+        self.client = SimpleNamespace(host=ip)
 
 
 def test_tracked_callers_are_capped(monkeypatch):

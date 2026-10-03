@@ -1,12 +1,12 @@
-fastapi>=0.141.1
-starlette>=1.0.1  # CVE-2026-48710 (BadHost) floor -- fastapi resolves past this already, pinned so a future resolve can't land below it
-uvicorn>=0.52.4
-sqlalchemy>=2.0.52
-pydantic>=2.13.5
-httpx>=0.28.1
-bcrypt>=5.0.0
-pyjwt>=2.13.0
-numpy>=2.2.6
-scikit-learn>=1.7.2
-pyyaml>=6.0  # parses the frontend's markdown-entry YAML frontmatter, see services/content_index.py
-anthropic>=1.5.0  # services/assistant.py; only imported when ANTHROPIC_API_KEY is actually set
+fastapi==0.141.1
+starlette==1.7.0  # CVE-2026-48710 (BadHost) is fixed from 1.0.1; keep this pin at or above that
+uvicorn==0.54.0
+sqlalchemy==2.1.1
+pydantic==2.13.5
+httpx==0.28.1
+bcrypt==5.0.0
+pyjwt==2.15.1
+numpy==2.4.6
+scikit-learn==1.9.1
+pyyaml==6.0.3  # parses the frontend's markdown-entry YAML frontmatter, see services/content_index.py
+anthropic==1.9.0  # services/assistant.py; only imported when ANTHROPIC_API_KEY is actually set

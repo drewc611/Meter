@@ -67,11 +67,12 @@ the caller's own `org_id`.
 ```bash
 pip install -r requirements.txt
 python seed.py                              # fabricates 6 months of activity for 20 people, scores it
-uvicorn app.main:app --reload --port 8000
+MERIT_ALLOW_OPEN_DEV=1 uvicorn app.main:app --reload --port 8000   # or set MERIT_JWT_SECRET to run with login
 curl http://localhost:8000/api/overview | python3 -m json.tool
 ```
 
 Or use the Makefile: `make install`, `make seed`, `make run`, `make test`, `make lint`, `make fmt`.
+`make run` needs the same environment as the `uvicorn` line above.
 
 Then, in `../frontend`: `npm install && npm run dev` (see
 [`frontend/README.md`](../frontend/README.md)). It tries
@@ -144,17 +145,20 @@ Two independent auth layers, covering two different kinds of caller:
   required — that's what actually makes multi-tenancy safe by default.
 - **`/api/*` and `/admin/*`** sit behind `dependencies.get_current_user` — a
   real per-user login (password or Google, via `/auth/*` above), backed by
-  a signed JWT. A no-op until `MERIT_JWT_SECRET` is set, at which point
-  every request needs a valid `Authorization: Bearer <token>` from
-  `/auth/login`, `/auth/signup`, or the Google callback, or it gets a
-  **401**. `/admin/*` additionally requires `is_admin` on that user
+  a signed JWT. Every request needs a valid `Authorization: Bearer <token>`
+  from `/auth/login`, `/auth/signup`, or the Google callback, or it gets a
+  **401**. With `MERIT_JWT_SECRET` unset the app refuses to start, and a
+  request that reaches an already-running process in that state gets a
+  **503**. The only way around this is `MERIT_ALLOW_OPEN_DEV=1` on a
+  non-production run, which turns login off; it is ignored in production. `/admin/*` additionally requires `is_admin` on that user
   (`dependencies.require_admin`) — a **403** for a logged-in non-admin.
   Every `/api/*`/`/admin/*` handler scopes its query to `user.org_id`
   (`dependencies.resolve_org_id`, with the same "unambiguous below two
   orgs" fallback as above when login is off).
 
-Both default to unset/open, so local dev, `docker compose`, and the test
-suite stay exactly as open as before; see [`DEPLOY.md`](../DEPLOY.md#turning-on-dashboard-login)
+`MERIT_API_KEY` still defaults to unset/open for `/ingest/*` while at most one
+org exists. `/api/*` and `/admin/*` no longer default to open: local dev,
+`docker compose` and the test suite set `MERIT_ALLOW_OPEN_DEV=1` on purpose. See [`DEPLOY.md`](../DEPLOY.md#turning-on-dashboard-login)
 for turning them on in production. `/healthz`, `/waitlist`, and
 `/assistant/ask` are always open — Fly's health check, an anonymous visitor
 signing up, and an anonymous visitor asking the assistant a question all
@@ -194,7 +198,10 @@ every issued session at once if that's ever needed.
 Env vars:
 
 ```bash
-MERIT_JWT_SECRET=...              # required to turn login on at all -- openssl rand -hex 32
+MERIT_JWT_SECRET=...              # required unless MERIT_ALLOW_OPEN_DEV=1 -- openssl rand -hex 32
+MERIT_ALLOW_OPEN_DEV=1             # optional, non-production only -- run /api/* and /admin/* with no login
+MERIT_CORS_ORIGINS=https://app.example.com   # comma-separated; required in production, "*" is refused everywhere.
+                                    # Unset outside production means localhost/127.0.0.1 on 5173, 4173, 8080
 GOOGLE_CLIENT_ID=...               # optional -- omit and "Sign in with Google" just won't work
 GOOGLE_CLIENT_SECRET=...
 GOOGLE_REDIRECT_URI=https://api.usemeritai.com/auth/google/callback

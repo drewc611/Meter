@@ -18,6 +18,7 @@ rather than touching Settings.
 from urllib.parse import parse_qs, quote, urlsplit
 
 from app.services import auth as auth_service
+from tests.conftest import ROTATED_JWT_SECRET, TEST_JWT_SECRET
 
 # --------------------------------------------------------------- MERIT_API_KEY
 
@@ -101,15 +102,16 @@ def test_api_key_no_longer_gates_dashboard_or_admin(client, monkeypatch):
 
 def test_healthz_always_open(client, monkeypatch):
     monkeypatch.setenv("MERIT_API_KEY", "s3cret")
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     assert client.get("/healthz").status_code == 200
 
 
 # --------------------------------------------------------------- MERIT_JWT_SECRET gate
 
 
-def test_dashboard_and_admin_open_when_jwt_secret_unset(client, monkeypatch):
+def test_dashboard_and_admin_open_when_jwt_secret_unset_with_open_dev_opt_in(client, monkeypatch):
     monkeypatch.delenv("MERIT_JWT_SECRET", raising=False)
+    monkeypatch.setenv("MERIT_ALLOW_OPEN_DEV", "1")
     assert client.get("/api/overview").status_code == 200
     r = client.post(
         "/admin/identity-mapping", json={"email": "a@example.com", "source_system": "x", "external_id": "y"}
@@ -117,15 +119,32 @@ def test_dashboard_and_admin_open_when_jwt_secret_unset(client, monkeypatch):
     assert r.status_code == 404  # reached the handler, not blocked
 
 
+def test_dashboard_and_admin_fail_closed_when_jwt_secret_unset_without_opt_in(client, monkeypatch):
+    monkeypatch.delenv("MERIT_JWT_SECRET", raising=False)
+    monkeypatch.delenv("MERIT_ALLOW_OPEN_DEV", raising=False)
+    assert client.get("/api/overview").status_code == 503
+    r = client.post(
+        "/admin/identity-mapping", json={"email": "a@example.com", "source_system": "x", "external_id": "y"}
+    )
+    assert r.status_code == 503
+
+
+def test_open_dev_opt_in_does_not_open_the_api_in_production(client, monkeypatch):
+    monkeypatch.delenv("MERIT_JWT_SECRET", raising=False)
+    monkeypatch.setenv("MERIT_ALLOW_OPEN_DEV", "1")
+    monkeypatch.setenv("FLY_APP_NAME", "meter")
+    assert client.get("/api/overview").status_code == 503
+
+
 def test_dashboard_rejects_missing_or_bad_token_when_set(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     assert client.get("/api/overview").status_code == 401
     assert client.get("/api/overview", headers={"Authorization": "Bearer garbage"}).status_code == 401
     assert client.get("/api/overview", headers={"Authorization": "NotBearer x"}).status_code == 401
 
 
 def test_dashboard_accepts_token_from_signup(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     signup = client.post("/auth/signup", json={"email": "a@example.com", "password": "hunter22", "name": "Ada"})
     assert signup.status_code == 201
     token = signup.json()["access_token"]
@@ -134,11 +153,11 @@ def test_dashboard_accepts_token_from_signup(client, monkeypatch):
 
 
 def test_token_signed_with_wrong_secret_is_rejected(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     token = client.post("/auth/signup", json={"email": "a@example.com", "password": "hunter22", "name": "Ada"}).json()[
         "access_token"
     ]
-    monkeypatch.setenv("MERIT_JWT_SECRET", "different")  # simulate a rotated secret
+    monkeypatch.setenv("MERIT_JWT_SECRET", ROTATED_JWT_SECRET)  # simulate a rotated secret
     r = client.get("/api/overview", headers={"Authorization": f"Bearer {token}"})
     assert r.status_code == 401
 
@@ -155,20 +174,20 @@ def test_signup_without_jwt_secret_returns_503(client, monkeypatch):
 
 
 def test_signup_rejects_duplicate_email(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     body = {"email": "a@example.com", "password": "hunter22", "name": "Ada"}
     assert client.post("/auth/signup", json=body).status_code == 201
     assert client.post("/auth/signup", json=body).status_code == 409
 
 
 def test_signup_rejects_short_password(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     r = client.post("/auth/signup", json={"email": "a@example.com", "password": "short", "name": "Ada"})
     assert r.status_code == 422
 
 
 def test_signup_requires_matching_code_when_set(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     monkeypatch.setenv("MERIT_SIGNUP_CODE", "letmein")
     body = {"email": "a@example.com", "password": "hunter22", "name": "Ada"}
     assert client.post("/auth/signup", json=body).status_code == 403
@@ -184,7 +203,7 @@ def test_signup_code_never_adopts_someones_personal_org(client, db, monkeypatch)
     company org -- created if there isn't one."""
     from app import models
 
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     monkeypatch.delenv("MERIT_SIGNUP_CODE", raising=False)
     alice = client.post(
         "/auth/signup", json={"email": "alice@example.com", "password": "hunter22", "name": "Alice"}
@@ -204,7 +223,7 @@ def test_signup_code_never_adopts_someones_personal_org(client, db, monkeypatch)
 
 
 def test_login_round_trip(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     client.post("/auth/signup", json={"email": "a@example.com", "password": "hunter22", "name": "Ada"})
     r = client.post("/auth/login", json={"email": "a@example.com", "password": "hunter22"})
     assert r.status_code == 200
@@ -214,14 +233,14 @@ def test_login_round_trip(client, monkeypatch):
 
 
 def test_login_rejects_wrong_password(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     client.post("/auth/signup", json={"email": "a@example.com", "password": "hunter22", "name": "Ada"})
     r = client.post("/auth/login", json={"email": "a@example.com", "password": "wrong password"})
     assert r.status_code == 401
 
 
 def test_login_rejects_unknown_email(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     r = client.post("/auth/login", json={"email": "nobody@example.com", "password": "hunter22"})
     assert r.status_code == 401
 
@@ -231,7 +250,7 @@ def test_login_pays_the_same_bcrypt_cost_for_an_unknown_email(client, monkeypatc
     DUMMY_PASSWORD_HASH, so it costs the same as a wrong password on a real
     account -- otherwise the timing gap alone reveals which emails have
     accounts, even though both return the identical 401."""
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     from app.services import auth as auth_service
 
     calls = []
@@ -250,7 +269,7 @@ def test_login_pays_the_same_bcrypt_cost_for_an_unknown_email(client, monkeypatc
 def test_login_pays_the_same_bcrypt_cost_for_a_google_only_account(client, monkeypatch):
     """A real account with no password set (Google-only) must also check
     against DUMMY_PASSWORD_HASH, not skip the bcrypt call entirely."""
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     from app import models
     from app.database import SessionLocal
     from app.services import auth as auth_service
@@ -285,7 +304,7 @@ def test_login_pays_the_same_bcrypt_cost_for_a_google_only_account(client, monke
 def test_oversized_password_is_422_on_signup_and_login(client, monkeypatch):
     """bcrypt raises past 72 bytes. Rejecting at the validation layer keeps
     that out of the handler entirely -- it used to surface as a 500."""
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     huge = "a" * 200
     assert (
         client.post("/auth/signup", json={"email": "a@example.com", "password": huge, "name": "Ada"}).status_code == 422
@@ -305,7 +324,7 @@ def test_oversized_password_does_not_reveal_whether_the_account_exists(client, m
     """The enumeration oracle this closes: an existing email used to crash
     into a 500 while an unknown one cleanly 401'd, because `or` short-circuits
     past verify_password. Both are the same status now."""
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     client.post("/auth/signup", json={"email": "real@example.com", "password": "hunter22", "name": "Ada"})
     huge = "a" * 200
     existing = client.post("/auth/login", json={"email": "real@example.com", "password": huge})
@@ -327,7 +346,7 @@ def test_verify_password_returns_false_for_oversized_input(monkeypatch):
 
 
 def test_me_requires_login_when_jwt_secret_set(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     assert client.get("/auth/me").status_code == 401
 
 
@@ -338,7 +357,7 @@ def test_me_returns_401_when_jwt_secret_unset(client, monkeypatch):
 
 
 def test_me_returns_current_user(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     token = client.post("/auth/signup", json={"email": "a@example.com", "password": "hunter22", "name": "Ada"}).json()[
         "access_token"
     ]
@@ -373,7 +392,7 @@ def test_google_login_redirects_to_google(client, monkeypatch):
 
 
 def _configure_google(monkeypatch, *, claims=None, **env):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     monkeypatch.setenv("GOOGLE_CLIENT_ID", "client123")
     monkeypatch.setenv("GOOGLE_CLIENT_SECRET", "secret123")
     monkeypatch.setenv("MERIT_FRONTEND_URL", "https://usemeritai.com")
@@ -521,7 +540,7 @@ def _signup_with(client, email, name, **extra):
 
 
 def test_first_signup_becomes_admin(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     user = _signup(client)["user"]
     assert user["is_admin"] is True
 
@@ -530,7 +549,7 @@ def test_every_signup_admins_its_own_org_when_no_signup_code(client, monkeypatch
     """With MERIT_SIGNUP_CODE unset (the public, free-personal-use posture),
     every signup gets a brand-new isolated Organization and is its sole
     admin -- there's no "second user" of someone else's org to not-admin."""
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     first = _signup(client, "first@example.com", "First")["user"]
     second = _signup(client, "second@example.com", "Second")["user"]
     assert first["is_admin"] is True
@@ -542,7 +561,7 @@ def test_second_signup_is_not_admin_when_signup_code_shares_one_org(client, monk
     """With MERIT_SIGNUP_CODE set (a company deployment gated to one org),
     signups join the single shared org instead -- the original bootstrap
     behavior this test used to cover, preserved for that case."""
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     monkeypatch.setenv("MERIT_SIGNUP_CODE", "letmein")
     body = {"signup_code": "letmein"}
     first = _signup_with(client, "first@example.com", "First", **body)["user"]
@@ -556,7 +575,7 @@ def test_merit_admin_emails_grants_admin_to_non_first_signup(client, monkeypatch
     """MERIT_ADMIN_EMAILS only makes sense within one shared org, so this
     also needs MERIT_SIGNUP_CODE set -- otherwise boss@example.com would
     just land in its own brand-new org and be admin of that regardless."""
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     monkeypatch.setenv("MERIT_SIGNUP_CODE", "letmein")
     monkeypatch.setenv("MERIT_ADMIN_EMAILS", "boss@example.com, other@example.com")
     body = {"signup_code": "letmein"}
@@ -566,7 +585,7 @@ def test_merit_admin_emails_grants_admin_to_non_first_signup(client, monkeypatch
 
 
 def test_admin_endpoints_reject_non_admin_when_jwt_secret_set(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     monkeypatch.setenv("MERIT_SIGNUP_CODE", "letmein")
     body = {"signup_code": "letmein"}
     _signup_with(client, "first@example.com", "First", **body)  # bootstrap admin, not used here
@@ -578,7 +597,7 @@ def test_admin_endpoints_reject_non_admin_when_jwt_secret_set(client, monkeypatc
 
 
 def test_admin_endpoints_accept_admin(client, monkeypatch):
-    monkeypatch.setenv("MERIT_JWT_SECRET", "shh")
+    monkeypatch.setenv("MERIT_JWT_SECRET", TEST_JWT_SECRET)
     token = _signup(client)["access_token"]  # first signup -> admin of its own org
     headers = {"Authorization": f"Bearer {token}"}
     r = client.post("/admin/identity-mapping", json=_MAP_BODY, headers=headers)

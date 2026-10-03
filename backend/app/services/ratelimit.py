@@ -55,14 +55,21 @@ def _caller(request: Request) -> str:
     """Who to count against.
 
     Fly-Client-IP is set by Fly's own proxy and overwrites anything the client
-    sent, so it's the one forwarded header here that can be trusted. A general
-    X-Forwarded-For read is deliberately *not* included: the client controls
-    the left-hand entries, so honouring it would let an attacker both dodge
-    their own limit and burn someone else's.
+    sent, so on Fly it's the one forwarded header here that can be trusted.
+    Anywhere else nothing in front of the app is known to strip it, so a client
+    could send its own and dodge the limit; there the socket peer is used
+    (FLY_APP_NAME is what Fly sets on every machine, same signal as
+    config.in_production). Behind some other reverse proxy the peer is that
+    proxy, so every caller shares one bucket -- coarse, but not spoofable.
+
+    A general X-Forwarded-For read is deliberately *not* included: the client
+    controls the left-hand entries, so honouring it would let an attacker both
+    dodge their own limit and burn someone else's.
     """
-    forwarded = request.headers.get("fly-client-ip")
-    if forwarded:
-        return forwarded.strip()
+    if os.environ.get("FLY_APP_NAME"):
+        forwarded = request.headers.get("fly-client-ip")
+        if forwarded:
+            return forwarded.strip()
     return request.client.host if request.client else "unknown"
 
 
